@@ -123,6 +123,7 @@ private slots:
     void on_comboBox_currentIndexChanged(const QString &arg1);
     void on_enableTeCheckBox_toggled(bool checked);   
     void on_pushButton_toggled(bool checked);
+    void on_checkGaussianBeam_clicked(bool checked);
 
 signals:
     void modified();
@@ -142,6 +143,8 @@ private:
     //Variabili membro riguardanti i controlli
     int operationCombo;
     double powerErg;
+    bool gaussianBeam;
+    double beamCorrection;
     double alpha;
     double pulseWidth;
     double divergence;
@@ -150,6 +153,7 @@ private:
     double T_Skin;
     double wavelength;
     double powerErgPeak;
+
     double effectivePowerErg;
     double myEMP;
     double powerErgForEMP;

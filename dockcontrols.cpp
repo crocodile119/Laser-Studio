@@ -117,7 +117,8 @@ DockControls::DockControls(QWidget *parent, DockResults *_dockResults, DockEffec
         MyLaserSP_Pr=nullptr;
         MyLaserMP_Pr=nullptr;
         exposureTime=0.25;
-
+        gaussianBeam=true;
+        beamCorrection=1.0;
         //Nel costruttore: PRF, BeamDiameter, PowerErg, Divergence, Wavelength, PulseWidth, Alpha
         MyLaserSafetyMP=new LaserSafetyMP(1, 7, 1, 1.5, 632, 0.25, 1.5);
         MyLaserCW_Pr=MyLaserSafetyMP;
@@ -130,7 +131,6 @@ DockControls::DockControls(QWidget *parent, DockResults *_dockResults, DockEffec
 
         MyLaserSkinSP_Pr=MyLaserSkinSafetyMP;
 
-        ui->enableTeCheckBox->setChecked(false);
         ui->comboBox->setCurrentIndex(1);
         setVIS();
 
@@ -580,7 +580,7 @@ void DockControls::on_powerErgControl_valueChanged()
     * Imposto il valore negli oggetti Laser *
     *****************************************/
 
-    MyLaserCW_Pr->setPowerErg(powerErg);
+    MyLaserCW_Pr->setPowerErg(powerErg*beamCorrection);
     MyLaserSkinSP_Pr->setPowerErg(powerErg);
 
     enablePeakControl();
@@ -597,7 +597,7 @@ void DockControls::on_powerErgControl_valueChanged()
    /*****************************************
     * Imposto il valore negli oggetti Laser *
     *****************************************/
-    MyLaserSP_Pr->setPowerErg(powerErg);
+    MyLaserSP_Pr->setPowerErg(powerErg*beamCorrection);
     MyLaserSkinSP_Pr->setPowerErg(powerErg);
 
     enablePeakControl();
@@ -615,7 +615,7 @@ void DockControls::on_powerErgControl_valueChanged()
     * Imposto il valore negli oggetti Laser *
     *****************************************/
 	
-        MyLaserMP_Pr->setPowerErg(powerErg);
+        MyLaserMP_Pr->setPowerErg(beamCorrection*powerErg);
         MyLaserSkinMP_Pr->setPowerErg(powerErg);
 
         enablePeakControl();
@@ -2139,7 +2139,7 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     myLaserGoggle->setFrequency(prf);
 
     powerErg=1.0e+00;//potenza
-    MyLaserCW_Pr->setPowerErg(powerErg);
+    MyLaserCW_Pr->setPowerErg(beamCorrection*powerErg);
     ui->powerErgControl->setValue(powerErg);
     myLaserGoggle->setPowerErg(powerErg);
 
@@ -2305,7 +2305,7 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
 	* il tempo di esposizione della cute a 10. 				 *
 	******************************************************************/
     powerErg=1.0e-03;
-    MyLaserCW_Pr->setPowerErg(powerErg);
+    MyLaserCW_Pr->setPowerErg(beamCorrection*powerErg);
     ui->powerErgControl->setValue(powerErg);
     myLaserGoggle->setPowerErg(powerErg);
 
@@ -2758,6 +2758,11 @@ void DockControls::setDialControls()
     ui->teControl->setDialNumber(10);
     ui->teControl->setEnabled(false);
 
+    ui->enableTeCheckBox->setEnabled(true);
+    ui->enableTeCheckBox->setChecked(false);
+
+    ui->checkGaussianBeam->setChecked(true);
+
     ui->peakControl->setTitle(tr("P<sub>picco</sub> [W]"));
     ui->peakControl->setMinimumExponent(1);
     ui->peakControl->setMaximumExponent(15);
@@ -3085,4 +3090,15 @@ void DockControls::modeLockingPeak()
 void DockControls::enablePeakControl()
 {
     ui->peakControl->setEnabled(isModeLocking());
+}
+
+void DockControls::on_checkGaussianBeam_clicked(bool checked)
+{
+    gaussianBeam=checked;
+    if(checked)
+        beamCorrection=1.0;
+          else
+        beamCorrection=2.5;
+
+    on_powerErgControl_valueChanged();
 }

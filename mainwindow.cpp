@@ -339,7 +339,6 @@ void MainWindow::setControls()
         laserWindow->myDockControls->ui->operationCombo->setCurrentIndex(0);
         laserWindow->myDockControls->setDialControls();
         laserWindow->myDockControls->ui->wavelengthScrollBar->setValue(633);
-        laserWindow->myDockControls->ui->T_SkinControl->setValue(5.0e+00);
 }
 
 void MainWindow::open()

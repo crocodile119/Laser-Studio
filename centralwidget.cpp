@@ -220,15 +220,16 @@ bool CentralWidget::writeFile(const QString &fileName)
         << myDockControls->ui->pulseControl->getScientificNumber() << myDockControls->ui->divergenceControl->getScientificNumber()
         << myDockControls->ui->beamDiameterControl->getScientificNumber() << myDockControls->ui->prfControl->getScientificNumber()
         << myDockControls->ui->wavelengthScrollBar->value() << myDockControls->ui->operationCombo->currentIndex()
-        << myDockControls->ui->comboBox->currentIndex() << myDockControls->ui->T_SkinControl->getScientificNumber()
-        << myDockControls->ui->teControl->getDialNumber() << myDockControls->ui->enableTeCheckBox->isChecked()
-        << myDockControls->ui->peakControl->getScientificNumber() << myDockControls->getLambertianMax() << myDockControls->getEMP()
-        << myDockControls->getBeamDiameter() << myDockControls->getPowerErg() << laserPosition << laserIsSelected << laserZValue
-        << aperture << installation << filterOn << transmittance << pos << isSelected << Type << Text << TextColor
-        << ReflectorDescriptionVect << BackgroundColor << StringPosition << OpticalDiameter << Divergence << ReflectorDistance
-        << ReflectionCoeff << ZValue << ReflectorKind << ReflectorPositioningVect << binocularPosVect << binocularOpticalGainVect
-        << binocularMagnificationVect << binocularTransmissionVect << binocular_D0Vect << binocularDescriptionVect << myLabPosition
-        << myLabRect << roomNumber << footprintPosVect << footprintRectVect << footprintDescriptionVect;
+        << myDockControls->ui->checkGaussianBeam->isChecked()<< myDockControls->ui->comboBox->currentIndex()
+        << myDockControls->ui->T_SkinControl->getScientificNumber()<< myDockControls->ui->teControl->getDialNumber()
+        << myDockControls->ui->enableTeCheckBox->isChecked()<< myDockControls->ui->peakControl->getScientificNumber()
+        << myDockControls->getLambertianMax() << myDockControls->getEMP()<< myDockControls->getBeamDiameter()
+        << myDockControls->getPowerErg() << laserPosition << laserIsSelected << laserZValue << aperture << installation
+        << filterOn << transmittance << pos << isSelected << Type << Text << TextColor << ReflectorDescriptionVect
+        << BackgroundColor << StringPosition << OpticalDiameter << Divergence << ReflectorDistance << ReflectionCoeff
+        << ZValue << ReflectorKind << ReflectorPositioningVect << binocularPosVect << binocularOpticalGainVect
+        << binocularMagnificationVect << binocularTransmissionVect << binocular_D0Vect << binocularDescriptionVect
+        << myLabPosition<< myLabRect << roomNumber << footprintPosVect << footprintRectVect << footprintDescriptionVect;
 
     QApplication::restoreOverrideCursor();
 
@@ -273,7 +274,8 @@ bool CentralWidget::readFile(const QString &fileName)
     qint32 comboBox;
     qreal T_SkinSpinBox;
     qreal teControl;
-    bool enableTeCheckBox;
+    bool isEnabledTeCheckBox;
+    bool isEnabledCheckGaussianBeam;
     qreal peakPowerErgControl;
 
     QList<QGraphicsItem *> items;
@@ -283,7 +285,7 @@ bool CentralWidget::readFile(const QString &fileName)
     in  >> myLabRoomInserted >> scintillationBool >> atmEffectsBool >> meteoRange >> a_coefficient >> atmoshericEffectsCoefficient
         >> scaleIndex >> scale >> force >> customer >> uasl >> uaslAssistant >> laserDescription >> placeDescription >> gridState
         >> powerErgControl >> alphaControl >> pulseControl >> divergenceControl >> beamDiameterControl >> prfControl >> wavelengthScrollBar
-        >> operationCombo >> comboBox >> T_SkinSpinBox >> teControl >> enableTeCheckBox >> peakPowerErgControl >> lambertianMax >> laserEMP
+        >> operationCombo >> isEnabledCheckGaussianBeam >> comboBox >> T_SkinSpinBox >> teControl >> isEnabledTeCheckBox >> peakPowerErgControl >> lambertianMax >> laserEMP
         >> laserBeamDiameter >> laserPowerErg >> laserPosition >> laserIsSelected >> laserZValue >> aperture >> installation >> filterOn
         >> transmittance >> posVect >> isSelectedVect >> TypeVect >> TextVect >> TextColorVect >> ReflectorDescriptionVect >> BackgroundColorVect
         >> StringPositionVect >> OpticalDiameterVect >> DivergenceVect >> ReflectorDistanceVect >> ReflectionCoeffVect >> ZValueVect
@@ -292,7 +294,7 @@ bool CentralWidget::readFile(const QString &fileName)
         >> footprintPosVect >> footprintRectVect >> footprintDescriptionVect;
 
      myDockControls->ui->operationCombo->setCurrentIndex(operationCombo);
-     myDockControls->ui->enableTeCheckBox->setChecked(enableTeCheckBox);
+     myDockControls->ui->enableTeCheckBox->setChecked(isEnabledTeCheckBox);
      myDockControls->ui->comboBox->setCurrentIndex(comboBox);
      myDockControls->ui->powerErgControl->setValue(powerErgControl);
      myDockControls->ui->alphaControl->setValue(alphaControl);
@@ -303,6 +305,7 @@ bool CentralWidget::readFile(const QString &fileName)
      myDockControls->ui->teControl->setDialNumber(teControl);
      myDockControls->ui->prfControl->setValue(prfControl);
      myDockControls->ui->T_SkinControl->setValue(T_SkinSpinBox);
+     myDockControls->ui->checkGaussianBeam->setChecked(isEnabledCheckGaussianBeam);
 
      if(myDockControls->ui->peakControl->isEnabled())
             myDockControls->ui->peakControl->setValue(peakPowerErgControl);

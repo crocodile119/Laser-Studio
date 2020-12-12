@@ -8,30 +8,34 @@ SliderScrollLabel::SliderScrollLabel(QWidget *parent) :
     scientNotLabelStyle="QLabel {background-color: #fafafa}\n"
                                "QLabel {border: 1px solid grey}\n"
                                "QLabel {border-radius: 8px}\n"
-                               "QLabel {color: #000000}";
+                               "QLabel {color: #000000}\n"
+                               "QLabel {padding-left: 5px\n}"
+                               "QLabel {padding-right: 5px}";
 
 
     scientNotLabelStyleOff="QLabel {background-color: #f0f0f0}\n"
                                   "QLabel {border: 1px solid #a0a0a0}\n"
                                   "QLabel {border-radius: 8px}\n"
-                                  "QLabel {color: #a0a0a0}";
+                                  "QLabel {color: #a0a0a0}\n"
+                                  "QLabel {padding-left: 5px\n}"
+                                  "QLabel {padding-right: 5px}";
 
 
 
-        setMaximumSize(QSize(220, 80));
+        setMaximumSize(QSize(220, 75));
         gridLayout = new QGridLayout(this);
         gridLayout->setObjectName(tr("gridLayout"));
 
         titleLabel = new QLabel(this);
         titleLabel->setObjectName(tr("titleLabel"));
-        titleLabel->setAlignment(Qt::AlignCenter);              
+        titleLabel->setAlignment(Qt::AlignCenter);
         titleLabel->setStyleSheet(tr("QLabel {background-color: #00c800}"
                                      "QLabel {color: #fafafa}"
                                      "QLabel {border-radius: 8px}"
                                      "QLabel {border: 0px}"
-                                     "QLabel {padding: 3px}"
-                                     "QLabel {margin-left: 50px}"
-                                     "QLabel {margin-right: 50px}"));
+                                     "QLabel {padding: 5px}"
+                                     "QLabel {margin-left: 55px}"
+                                     "QLabel {margin-right: 55px}"));
 
 
         gridLayout->addWidget(titleLabel, 0, 1, 1, 3);

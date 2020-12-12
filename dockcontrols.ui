@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>389</width>
-    <height>490</height>
+    <height>411</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,7 +19,7 @@
   <property name="minimumSize">
    <size>
     <width>389</width>
-    <height>404</height>
+    <height>411</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -44,49 +44,214 @@
   </property>
   <widget class="QWidget" name="dockWidgetContents">
    <layout class="QGridLayout" name="gridLayout_9">
-    <item row="5" column="0">
-     <widget class="QFrame" name="frame_6">
+    <item row="3" column="0">
+     <widget class="QFrame" name="frame_4">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
+       <enum>QFrame::Panel</enum>
       </property>
       <property name="frameShadow">
        <enum>QFrame::Sunken</enum>
       </property>
-      <layout class="QGridLayout" name="gridLayout_5">
+      <layout class="QGridLayout" name="gridLayout_6">
        <property name="leftMargin">
-        <number>0</number>
+        <number>5</number>
        </property>
        <property name="topMargin">
-        <number>0</number>
+        <number>5</number>
        </property>
        <property name="rightMargin">
-        <number>0</number>
+        <number>5</number>
        </property>
        <property name="bottomMargin">
-        <number>0</number>
+        <number>5</number>
        </property>
        <property name="spacing">
-        <number>0</number>
+        <number>2</number>
        </property>
-       <item row="0" column="1">
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <property name="spacing">
-          <number>2</number>
+       <item row="0" column="0">
+        <widget class="SliderScrollLabel" name="T_SkinControl" native="true">
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>50</height>
+          </size>
          </property>
+         <property name="font">
+          <font>
+           <pointsize>6</pointsize>
+          </font>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QFrame" name="frame">
+      <property name="frameShape">
+       <enum>QFrame::Panel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Sunken</enum>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_8">
+       <property name="leftMargin">
+        <number>5</number>
+       </property>
+       <property name="topMargin">
+        <number>5</number>
+       </property>
+       <property name="rightMargin">
+        <number>5</number>
+       </property>
+       <property name="bottomMargin">
+        <number>5</number>
+       </property>
+       <property name="spacing">
+        <number>2</number>
+       </property>
+       <item row="0" column="0" rowspan="2" colspan="2">
+        <widget class="DialControl" name="teControl" native="true">
+         <property name="minimumSize">
+          <size>
+           <width>80</width>
+           <height>90</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>113</width>
+           <height>129</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>6</pointsize>
+          </font>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2" rowspan="3">
+        <widget class="ScientificNotationControl" name="pulseControl" native="true">
+         <property name="minimumSize">
+          <size>
+           <width>80</width>
+           <height>90</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>113</width>
+           <height>129</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>6</pointsize>
+          </font>
+         </property>
+        </widget>
+       </item>
+      </layout>
+      <zorder>pulseControl</zorder>
+      <zorder>teControl</zorder>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="QFrame" name="frame_7">
+      <property name="frameShape">
+       <enum>QFrame::Panel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Sunken</enum>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_7">
+       <item row="0" column="0">
+        <widget class="QCheckBox" name="checkGaussianBeam">
+         <property name="font">
+          <font>
+           <pointsize>6</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QCheckBox{background: none}</string>
+         </property>
+         <property name="text">
+          <string>gaussiano</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QCheckBox" name="enableTeCheckBox">
+         <property name="font">
+          <font>
+           <pointsize>6</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QCheckBox{background: none}
+</string>
+         </property>
+         <property name="text">
+          <string>imposta Te</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="6" column="0" colspan="2">
+     <widget class="QFrame" name="frame_3">
+      <property name="frameShape">
+       <enum>QFrame::Panel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Sunken</enum>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_4">
+       <property name="leftMargin">
+        <number>5</number>
+       </property>
+       <property name="topMargin">
+        <number>5</number>
+       </property>
+       <property name="rightMargin">
+        <number>5</number>
+       </property>
+       <property name="bottomMargin">
+        <number>5</number>
+       </property>
+       <property name="spacing">
+        <number>2</number>
+       </property>
+       <item row="0" column="0">
+        <layout class="QGridLayout" name="gridLayout_3">
          <property name="leftMargin">
-          <number>5</number>
+          <number>0</number>
          </property>
          <property name="topMargin">
-          <number>5</number>
-         </property>
-         <property name="rightMargin">
-          <number>5</number>
+          <number>0</number>
          </property>
          <property name="bottomMargin">
-          <number>5</number>
+          <number>0</number>
          </property>
-         <item>
-          <widget class="QLabel" name="label_4">
+         <property name="horizontalSpacing">
+          <number>7</number>
+         </property>
+         <property name="verticalSpacing">
+          <number>0</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_2">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -101,7 +266,7 @@
            </property>
            <property name="maximumSize">
             <size>
-             <width>60</width>
+             <width>80</width>
              <height>20</height>
             </size>
            </property>
@@ -115,22 +280,75 @@
             <string notr="true">QLabel {background-color: #00c800}
 QLabel {color: #fafafa}
 QLabel {border: 0px solid grey}
-QLabel {border-radius: 8px}</string>
+QLabel {border-radius: 8px}
+</string>
            </property>
            <property name="text">
-            <string>Tipo</string>
+            <string>λ [nm]</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
-         <item>
-          <widget class="QComboBox" name="comboBox">
+         <item row="0" column="1">
+          <widget class="QScrollBar" name="wavelengthScrollBar">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="minimumSize">
             <size>
-             <width>80</width>
+             <width>25</width>
              <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="layoutDirection">
+            <enum>Qt::LeftToRight</enum>
+           </property>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="minimum">
+            <number>200</number>
+           </property>
+           <property name="maximum">
+            <number>20000</number>
+           </property>
+           <property name="value">
+            <number>633</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="invertedAppearance">
+            <bool>false</bool>
+           </property>
+           <property name="invertedControls">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QLabel" name="wavelengthLabel">
+           <property name="minimumSize">
+            <size>
+             <width>50</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>30</height>
             </size>
            </property>
            <property name="font">
@@ -139,33 +357,17 @@ QLabel {border-radius: 8px}</string>
             </font>
            </property>
            <property name="styleSheet">
-            <string notr="true"/>
+            <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 1px solid grey}
+QLabel {border-radius: 8px}</string>
            </property>
-           <item>
-            <property name="text">
-             <string>UVA</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>VIS</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>IRA</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>IRB</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>IRC</string>
-            </property>
-           </item>
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
           </widget>
          </item>
         </layout>
@@ -295,48 +497,6 @@ QLabel {border-radius: 8px}
           </widget>
          </item>
         </layout>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="3" column="0">
-     <widget class="QFrame" name="frame_4">
-      <property name="frameShape">
-       <enum>QFrame::Panel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Sunken</enum>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_6">
-       <property name="leftMargin">
-        <number>5</number>
-       </property>
-       <property name="topMargin">
-        <number>5</number>
-       </property>
-       <property name="rightMargin">
-        <number>5</number>
-       </property>
-       <property name="bottomMargin">
-        <number>5</number>
-       </property>
-       <property name="spacing">
-        <number>2</number>
-       </property>
-       <item row="0" column="0">
-        <widget class="SliderScrollLabel" name="T_SkinControl" native="true">
-         <property name="minimumSize">
-          <size>
-           <width>100</width>
-           <height>50</height>
-          </size>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>6</pointsize>
-          </font>
-         </property>
-        </widget>
        </item>
       </layout>
      </widget>
@@ -527,49 +687,49 @@ QLabel {border-radius: 8px}
       </layout>
      </widget>
     </item>
-    <item row="6" column="0" colspan="2">
-     <widget class="QFrame" name="frame_3">
+    <item row="5" column="0">
+     <widget class="QFrame" name="frame_6">
       <property name="frameShape">
-       <enum>QFrame::Panel</enum>
+       <enum>QFrame::StyledPanel</enum>
       </property>
       <property name="frameShadow">
        <enum>QFrame::Sunken</enum>
       </property>
-      <layout class="QGridLayout" name="gridLayout_4">
+      <layout class="QGridLayout" name="gridLayout_5">
        <property name="leftMargin">
-        <number>5</number>
+        <number>0</number>
        </property>
        <property name="topMargin">
-        <number>5</number>
+        <number>0</number>
        </property>
        <property name="rightMargin">
-        <number>5</number>
+        <number>0</number>
        </property>
        <property name="bottomMargin">
-        <number>5</number>
+        <number>0</number>
        </property>
        <property name="spacing">
-        <number>2</number>
+        <number>0</number>
        </property>
-       <item row="0" column="0">
-        <layout class="QGridLayout" name="gridLayout_3">
+       <item row="0" column="1">
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <property name="spacing">
+          <number>2</number>
+         </property>
          <property name="leftMargin">
-          <number>0</number>
+          <number>5</number>
          </property>
          <property name="topMargin">
-          <number>0</number>
+          <number>5</number>
+         </property>
+         <property name="rightMargin">
+          <number>5</number>
          </property>
          <property name="bottomMargin">
-          <number>0</number>
+          <number>5</number>
          </property>
-         <property name="horizontalSpacing">
-          <number>7</number>
-         </property>
-         <property name="verticalSpacing">
-          <number>0</number>
-         </property>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_2">
+         <item>
+          <widget class="QLabel" name="label_4">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -584,7 +744,7 @@ QLabel {border-radius: 8px}
            </property>
            <property name="maximumSize">
             <size>
-             <width>80</width>
+             <width>60</width>
              <height>20</height>
             </size>
            </property>
@@ -598,75 +758,22 @@ QLabel {border-radius: 8px}
             <string notr="true">QLabel {background-color: #00c800}
 QLabel {color: #fafafa}
 QLabel {border: 0px solid grey}
-QLabel {border-radius: 8px}
-</string>
+QLabel {border-radius: 8px}</string>
            </property>
            <property name="text">
-            <string>λ [nm]</string>
+            <string>Tipo</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
-         <item row="0" column="1">
-          <widget class="QScrollBar" name="wavelengthScrollBar">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
+         <item>
+          <widget class="QComboBox" name="comboBox">
            <property name="minimumSize">
             <size>
-             <width>25</width>
+             <width>80</width>
              <height>0</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>20</height>
-            </size>
-           </property>
-           <property name="layoutDirection">
-            <enum>Qt::LeftToRight</enum>
-           </property>
-           <property name="styleSheet">
-            <string notr="true"/>
-           </property>
-           <property name="minimum">
-            <number>200</number>
-           </property>
-           <property name="maximum">
-            <number>20000</number>
-           </property>
-           <property name="value">
-            <number>633</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="invertedAppearance">
-            <bool>false</bool>
-           </property>
-           <property name="invertedControls">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <widget class="QLabel" name="wavelengthLabel">
-           <property name="minimumSize">
-            <size>
-             <width>50</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>60</width>
-             <height>30</height>
             </size>
            </property>
            <property name="font">
@@ -675,93 +782,38 @@ QLabel {border-radius: 8px}
             </font>
            </property>
            <property name="styleSheet">
-            <string notr="true">QLabel {background-color: #fafafa}
-QLabel {color: #000000}
-QLabel {border: 1px solid grey}
-QLabel {border-radius: 8px}</string>
+            <string notr="true"/>
            </property>
-           <property name="text">
-            <string>TextLabel</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
+           <item>
+            <property name="text">
+             <string>UVA</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>VIS</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>IRA</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>IRB</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>IRC</string>
+            </property>
+           </item>
           </widget>
          </item>
         </layout>
        </item>
       </layout>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <widget class="QFrame" name="frame">
-      <property name="frameShape">
-       <enum>QFrame::Panel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Sunken</enum>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_8">
-       <property name="leftMargin">
-        <number>5</number>
-       </property>
-       <property name="topMargin">
-        <number>5</number>
-       </property>
-       <property name="rightMargin">
-        <number>5</number>
-       </property>
-       <property name="bottomMargin">
-        <number>5</number>
-       </property>
-       <property name="spacing">
-        <number>2</number>
-       </property>
-       <item row="0" column="0" rowspan="2" colspan="2">
-        <widget class="DialControl" name="teControl" native="true">
-         <property name="minimumSize">
-          <size>
-           <width>80</width>
-           <height>90</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>113</width>
-           <height>129</height>
-          </size>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>6</pointsize>
-          </font>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2" rowspan="3">
-        <widget class="ScientificNotationControl" name="pulseControl" native="true">
-         <property name="minimumSize">
-          <size>
-           <width>80</width>
-           <height>90</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>113</width>
-           <height>129</height>
-          </size>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>6</pointsize>
-          </font>
-         </property>
-        </widget>
-       </item>
-      </layout>
-      <zorder>pulseControl</zorder>
-      <zorder>teControl</zorder>
      </widget>
     </item>
     <item row="7" column="0">
@@ -776,52 +828,6 @@ QLabel {border-radius: 8px}</string>
        </size>
       </property>
      </spacer>
-    </item>
-    <item row="4" column="0">
-     <widget class="QFrame" name="frame_7">
-      <property name="frameShape">
-       <enum>QFrame::Panel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Sunken</enum>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_7">
-       <item row="0" column="0">
-        <widget class="QCheckBox" name="checkGaussianBeam">
-         <property name="font">
-          <font>
-           <pointsize>6</pointsize>
-          </font>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">QCheckBox{background: none}</string>
-         </property>
-         <property name="text">
-          <string>gaussiano</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QCheckBox" name="enableTeCheckBox">
-         <property name="font">
-          <font>
-           <pointsize>6</pointsize>
-          </font>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">QCheckBox{background: none}
-</string>
-         </property>
-         <property name="text">
-          <string>imposta Te</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
     </item>
    </layout>
   </widget>

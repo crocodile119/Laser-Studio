@@ -109,6 +109,8 @@ MainWindow::MainWindow()
 
     //Da valutare l'opportunità di aggiornare i controlli in questo modo.
     //deprecabile (accettabile solo come soluzione temporanea)
+
+    laserWindow->myDockControls->setVIS();
     laserWindow->myDockControls->ui->wavelengthScrollBar->setValue(634);
     laserWindow->myDockControls->ui->wavelengthScrollBar->setValue(633);
 
@@ -219,7 +221,6 @@ void MainWindow::setLaserPoint()
     myLabRoom=nullptr;
     gridlines=nullptr;
 
-    setUnifiedTitleAndToolBarOnMac(true);
     laserWindow->setGridState(false);
 
     laserpoint = new LaserPoint();
@@ -338,6 +339,8 @@ void MainWindow::setControls()
 {
         laserWindow->myDockControls->ui->operationCombo->setCurrentIndex(0);
         laserWindow->myDockControls->setDialControls();
+        laserWindow->myDockControls->ui->comboBox->setCurrentIndex(1);
+        laserWindow->myDockControls->setVIS();
         laserWindow->myDockControls->ui->wavelengthScrollBar->setValue(633);
 }
 

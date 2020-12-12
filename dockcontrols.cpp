@@ -132,7 +132,6 @@ DockControls::DockControls(QWidget *parent, DockResults *_dockResults, DockEffec
         MyLaserSkinSP_Pr=MyLaserSkinSafetyMP;
 
         ui->comboBox->setCurrentIndex(1);
-        setVIS();
 
         /************************************************************************************************
          * Imposto i valori dei controlli con le relative variabili membro.                             *
@@ -164,7 +163,7 @@ void DockControls::on_pushButton_toggled(bool checked)
 
         dockGoggle->setFixedWidth(width);
 
-        dockGoggle->ui->pushButton->setText(">>");
+        dockGoggle->ui->pushButton->setText("<<");
     }
 
     else{
@@ -174,7 +173,7 @@ void DockControls::on_pushButton_toggled(bool checked)
         chartView->hide();
         dockGoggle->setFixedWidth(DOCKGOGGLEMINIMUN);
 
-        dockGoggle->ui->pushButton->setText("<<");
+        dockGoggle->ui->pushButton->setText(">>");
     }
 }
 

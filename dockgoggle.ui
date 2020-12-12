@@ -82,7 +82,7 @@
              <x>0</x>
              <y>0</y>
              <width>271</width>
-             <height>434</height>
+             <height>432</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_6">
@@ -106,7 +106,7 @@
                  <x>0</x>
                  <y>0</y>
                  <width>662</width>
-                 <height>82</height>
+                 <height>80</height>
                 </rect>
                </property>
                <layout class="QGridLayout" name="gridLayout">
@@ -539,7 +539,7 @@ QLabel  {padding: 2px}</string>
              <x>0</x>
              <y>0</y>
              <width>271</width>
-             <height>434</height>
+             <height>432</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_4">
@@ -630,7 +630,7 @@ QLabel  {padding: 2px}</string>
                  <x>0</x>
                  <y>0</y>
                  <width>342</width>
-                 <height>82</height>
+                 <height>80</height>
                 </rect>
                </property>
                <layout class="QGridLayout" name="gridLayout_2">
@@ -891,7 +891,7 @@ QLabel  {padding: 2px}</string>
        </size>
       </property>
       <property name="text">
-       <string>&lt;&lt;</string>
+       <string>&gt;&gt;</string>
       </property>
       <property name="checkable">
        <bool>true</bool>

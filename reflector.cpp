@@ -216,15 +216,9 @@ void Reflector::paint(QPainter *painter,
     double secondPie=180.0;
 
     semiPath.arcTo(myBoudingRect, firstPie, secondPie);
-    semiPath.moveTo(QPointF(0.0, 0.0));
+    semiPath.lineTo(QPointF(0.0, 0.0));
 
-    QPainterPath radiationZone;
-    radiationZone.addEllipse(selectionReflectorRect());
-
-    QPainterPath hazardZone;
-    hazardZone=radiationZone.intersected(semiPath);
-
-    painter->drawPath(hazardZone);
+    painter->drawPath(semiPath);
     painter->setPen(pen);
     QRectF rect = outlineRect();
     painter->setBrush(Qt::NoBrush);
@@ -360,7 +354,7 @@ int Reflector::roundness(double size) const
 
 QRectF Reflector::selectionReflectorRect() const
 {
-    QSize rectSize(2*myPositioningElement, 2*myPositioningElement);
+    QSizeF rectSize(2*myPositioningElement, 2*myPositioningElement);
     QPointF center(0.0, 0.0);
     QRectF rect(center, rectSize);
     rect.translate(-rect.center());

@@ -250,12 +250,12 @@ void Reflector::paint(QPainter *painter,
     QRectF lineRect=reflectorPix.rect();
     painter->setPen(beamPen);
     QPoint p1= QPoint(0,0);
-    QPoint p2=QPoint(-1.6*lineRect.height()*sin(radDeg*double(180-positioning)),
-                     1.6*lineRect.height()*cos(radDeg*double(180-positioning)));
+    QPoint p2=QPoint(-1.6*lineRect.height()*sin(radDeg*double(180+positioning)),
+                     1.6*lineRect.height()*cos(radDeg*double(180+positioning)));
     QLine positioningLine(p1, p2);
 
-    positioningLine.translate(1.6*lineRect.height()*sin(radDeg*double(180-positioning))/2,
-                              -1.6*lineRect.height()*cos(radDeg*double(180-positioning))/2);
+    positioningLine.translate(1.6*lineRect.height()*sin(radDeg*double(180+positioning))/2,
+                              -1.6*lineRect.height()*cos(radDeg*double(180+positioning))/2);
     painter->drawLine(positioningLine);
 
     QPen textPen(myBeamColor);

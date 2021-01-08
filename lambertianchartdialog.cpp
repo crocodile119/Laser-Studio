@@ -184,6 +184,8 @@ void LambertianChartDialog::setExendedDiffusionChart()
     angularAxis->setRange(0, 360);
     exendedReflection->addAxis(angularAxis, QPolarChart::PolarOrientationAngular);
     series->attachAxis(angularAxis);
+
+    exendedReflection->setBackgroundBrush(QColor::fromRgb(240, 240, 240));
     exendedReflection->setMinimumSize(640, 480);
 
     QPen pen (QColor::fromRgb(0, 216, 0), 2, Qt::SolidLine, Qt::SquareCap, Qt::MiterJoin);

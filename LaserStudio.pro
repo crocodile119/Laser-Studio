@@ -135,7 +135,6 @@ FORMS    += \
     dockgoggle.ui \
     dockresults.ui \
     dockskin.ui \
-    dockwidget.ui \
     footprintdialog.ui \
     fresnelchartdialog.ui \
     gotopointdialog.ui \

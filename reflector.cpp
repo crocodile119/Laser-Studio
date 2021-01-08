@@ -38,6 +38,7 @@ Reflector::Reflector(double _opticalDiameter, double _divergence, double _reflec
     positioning=180;
     correctPositioning=180;
     scale=1.0;
+    laserPhase=0.0;
 
     myTarget=_myTarget;
     reflectionCoeff= 0.9;
@@ -277,7 +278,7 @@ void Reflector::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     if(myTarget==GLASS_TARGET)
     {
     double n = QInputDialog::getDouble(event->widget(), tr("Indice di rifrazione"),
-                                       tr("Inserisci l'indice di reifrazione:"),
+                                       tr("Inserisci l'indice di rifrazione:"),
                                        getRefration_n(), 1.200, 1.900, 3, &ok,Qt::WindowFlags() ,0.1);
     if (ok){
         setRefraction_n(n);

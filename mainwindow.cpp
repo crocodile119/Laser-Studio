@@ -54,7 +54,10 @@ MainWindow::MainWindow()
                      "QMenuBar::item:selected{color:#f0f0f0;}"
                      "QMenuBar::item:selected{background-color:#00c800;}"
                      "QToolBar{background-color:#555555;}"
-                     "QToolBar QToolButton:checked{background-color:#666666;}"));
+                     "QToolBar QToolButton:checked{background-color:#666666;}"
+                     "QTextEdit{background-color:#f0f0f0;}"
+                     "QGridLayout{color:#f0f0f0;}"
+                     "QGraphicsView{background-color:#f0f0f0;}"));
 
     QFont font;
     font.setPointSize(8);
@@ -4253,7 +4256,7 @@ void MainWindow::makeSceneOfSavedItems(){
          connect(reflector, SIGNAL(xChanged()), this, SLOT(setLaserpointShapePathForReflectors()));
          connect(reflector, SIGNAL(yChanged()), this, SLOT(setLaserpointShapePathForReflectors()));
 
-         //laserpoint->setSelected(false);
+         reflector->laserParametersChanged();
          ++seqNumber;
         ++i;
         }

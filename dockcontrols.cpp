@@ -1717,15 +1717,14 @@ else
         //Skin widgets
         setSkinWidgetsSingle();
 
-        /*******************
-         * reset controlli *
-         *******************/
 
-        ui->prfControl->setBackgroundColor("#e0e0e0");
-        ui->pulseControl->setBackgroundColor("#e0e0e0");
-        ui->prfControl->setBackgroundColor("#e0e0e0");
-        ui->pulseControl->setBackgroundColor("#e0e0e0");
-        ui->prfControl->setStatusTipHelp("");
+        /******************************************************************************************
+         * Imposto il colore del controllo della durata dell'impuso ed il tip che potrebbero      *
+         * essere cambiati se precedentemente nella modalità di funzionamento ad impulsi ripetuti *
+         * sono stati immessi valori non fisicamente realizzabili                                 *
+         ******************************************************************************************/
+
+        ui->pulseControl->setBackgroundColor("#555555");
         ui->pulseControl->setStatusTipHelp("");
     }
 else
@@ -1974,8 +1973,8 @@ if(n_laser==2)
 
         if(noFeasible)
         {
-            ui->prfControl->setBackgroundColor("#202020");
-            ui->pulseControl->setBackgroundColor("#202020");
+            ui->prfControl->setBackgroundColor("#8844ff");
+            ui->pulseControl->setBackgroundColor("#8844ff");
 
             ui->prfControl->setStatusTipHelp("Hai inserito un ingresso "
                                             " non fisicamente realizzabile");
@@ -1985,8 +1984,8 @@ if(n_laser==2)
         }
         else
         {
-            ui->prfControl->setBackgroundColor("#e0e0e0");
-            ui->pulseControl->setBackgroundColor("#e0e0e0");
+            ui->prfControl->setBackgroundColor("#555555");
+            ui->pulseControl->setBackgroundColor("#555555");
             ui->prfControl->setStatusTipHelp("");
             ui->pulseControl->setStatusTipHelp("");
         }

@@ -35,6 +35,7 @@
 
 
     chart->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    chart->setBackgroundBrush(QColor::fromRgb(240, 240, 240));
     chart->setMinimumSize(440, 300);
     scene()->addItem(chart);
 }

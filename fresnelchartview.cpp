@@ -37,7 +37,7 @@ const qreal FresnelChartView::radialMin = 0;
     setRadialAxis();
     setAngularAxis();
 
-
+    chart->setBackgroundBrush(QColor::fromRgb(240, 240, 240));
     chart->setMinimumSize(640, 480);
 
     scene()->addItem(chart);

@@ -213,7 +213,8 @@ void ScientificNotationControl::setEnabled(bool _enabled)
 
 void ScientificNotationControl::setBackgroundColor(QString htmlColor)
 {
-setStyleSheet("QDial {background-color:"+ htmlColor +";\n}");
+setStyleSheet("QDial {background-color:"+ htmlColor +";\n}"
+              "QScrollBar {background-color:"+ htmlColor +";\n}");
 }
 
 void ScientificNotationControl::setStatusTipHelp(QString whatThis)

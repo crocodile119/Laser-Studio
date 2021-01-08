@@ -39,6 +39,7 @@ LambertianChartView::LambertianChartView(QWidget *parent, std::vector<std::pair<
     setRadialAxis();
     setAngularAxis();
 
+    chart->setBackgroundBrush(QColor::fromRgb(240, 240, 240));
     chart->setMinimumSize(640, 480);
 
     scene()->addItem(chart);

@@ -281,7 +281,7 @@ QLabel {margin-right: 10px}</string>
         </property>
         <property name="styleSheet">
          <string notr="true">QTextEdit {background-color: #fafafa}
-QLabel {color: #000000}
+QTextEdit {color: #000000}
 QTextEdit {border: 0px solid grey}
 QTextEdit {border-radius: 8px}
 QTextEdit {padding: 3px}

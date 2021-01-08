@@ -39,6 +39,7 @@ WetChartView::WetChartView(QWidget *parent, std::vector<std::pair<double, double
 
     setRadialAxis();
     setAngularAxis();
+    chart->setBackgroundBrush(QColor::fromRgb(240, 240, 240));
     chart->setMinimumSize(640, 480);
 
     scene()->addItem(chart);

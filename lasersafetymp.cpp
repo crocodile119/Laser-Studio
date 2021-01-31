@@ -28,6 +28,7 @@ LaserSafetyMP::LaserSafetyMP(int _PRF, double _BeamDiameter, double _PowerErg,  
     MyLaser.setPulseDuration(PulseWidth);
 	MyLaser.EMP();
 	MyLaser.getEMP();
+    setTe();
 	//Imposto i parametri del laser relativi al treno di impulsi nel tempo di funzionamento
 	MyMeanPower_Laser.setWavelength(Wavelength);
 	MyMeanPower_Laser.setAlpha(Alpha);
@@ -79,9 +80,9 @@ void LaserSafetyMP::computePulseNumber()
     if((Wavelength>=400)and(Wavelength<=1.0e+06))
         {
         if(PRF> (1/Tmin))
-            PulseNumber=(int)(0.5+(1/Tmin)*exposureTime);//se il conteggio non è regolare il numero di impulsi è pari al rapporto del tempo di esposizione con Tmin
+            PulseNumber=(int)(0.5+(1/Tmin)*Te);//se il conteggio non è regolare il numero di impulsi è pari al rapporto del tempo di esposizione minimo tra T2 exposureTime con Tmin
             else
-            PulseNumber=PRF*exposureTime;//altrimenti è pari al prodotto della PRF con il tempo di esposizione.
+            PulseNumber=PRF*exposureTime;//altrimenti è pari al prodotto della PRF con exposureTime.
          }
     else
         {
@@ -92,8 +93,6 @@ void LaserSafetyMP::computePulseNumber()
      * PulseNumber è un intero quindi risulta nullo se il prodotto di PRF*ExposureTime è minore di 1    *
      * **************************************************************************************************/
 }
-
-
 
 void LaserSafetyMP::computeCP()
 {
@@ -111,6 +110,43 @@ void LaserSafetyMP::computeCP()
         {
          CP=1;
         }
+}
+
+void LaserSafetyMP::setTe()
+{
+    if(PRF>(1/Tmin))
+        T2=MyTmin_Laser.getT2();
+           else
+        T2=MyLaser.getT2();
+
+    setTimeBase();
+    Te=std::min(timeBase, T2);
+}
+
+double LaserSafetyMP::getTe()const
+{
+    return Te;
+}
+
+void LaserSafetyMP::setTimeBase()
+{
+        if ((Wavelength>=400) and (Wavelength<=700))
+            {
+            timeBase=0.25;
+            }
+            else if((Wavelength>=180)and (Wavelength<400))
+                {
+                timeBase=30000;
+                }
+                    else
+                    {
+                    timeBase=100;
+                    }
+}
+
+double LaserSafetyMP::getTimeBase()const
+{
+    return timeBase;
 }
 
 void LaserSafetyMP::computeTmin()
@@ -211,8 +247,10 @@ void LaserSafetyMP::computeSP_CP_EMP()
             {
             SP_EMP_forCP=SP_EMP_Result;// calcolo l'EMP del singolo impulso
             }
-
-        CP_EMP_Result=CP*SP_EMP_forCP;// calcolo l'EMP per considerare gli effetti termici del treno.
+            setTe();
+            computePulseNumber();
+            computeCP();
+            CP_EMP_Result=CP*SP_EMP_forCP;// calcolo l'EMP per considerare gli effetti termici del treno.
         }
     else{
     CP_EMP_Result=0;
@@ -529,8 +567,7 @@ void LaserSafetyMP::laserUpdate()
 	setExposureTime();
 	computeMeanPower();
 	computeMeanPowerIrradiance();
-	computePulseNumber();
-	computeCP();
+
 	computeMeanPowerEMP();
 	computeSP_CP_EMP();
 	equateMeanPowerEMP();

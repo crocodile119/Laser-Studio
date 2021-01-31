@@ -1484,6 +1484,9 @@ void DockControls::setWidgets()
         dockResults->ui->tminEMP_Label->setVisible(false);
         dockResults->ui->minEMP_Label->setVisible(false);
 
+        dockResults->ui->tTimeBase_Label->setVisible(false);
+        dockResults->ui->timeBase_Label->setVisible(false);
+
         dockResults->ui->tEMP_Label->setText((QString)MyLaserCW_Pr->getFormulaSort().c_str() + " " + empUnit);
         dockResults->ui->EMP_Label->setText(QString::number(MyLaserCW_Pr->getEMP(),'e', 2));
 
@@ -1638,6 +1641,9 @@ else
         dockResults->ui->tExposureTimeLabel->setVisible(false);
         dockResults->ui->ExposureTimeLabel->setVisible(false);
 
+        dockResults->ui->tTimeBase_Label->setVisible(false);
+        dockResults->ui->timeBase_Label->setVisible(false);
+
         dockResults->ui->tminEMP_Label->setVisible(false);
         dockResults->ui->minEMP_Label->setVisible(false);
 
@@ -1781,6 +1787,9 @@ if(n_laser==2)
         dockResults->ui->tExposureTimeLabel->setVisible(true);
         dockResults->ui->ExposureTimeLabel->setVisible(true);
 
+        dockResults->ui->tTimeBase_Label->setVisible(true);
+        dockResults->ui->timeBase_Label->setVisible(true);
+
         dockResults->ui->tThermalEMP_Label->setVisible(true);
         dockResults->ui->ThermalEMP_Label->setVisible(true);
 
@@ -1810,6 +1819,9 @@ if(n_laser==2)
         dockResults->ui->tExposureTimeLabel->setText("T<sub>e</sub> [s]");
         dockResults->ui->ExposureTimeLabel->setText(QString::number(MyLaserMP_Pr->getExposureTime(),'e', 2));
 
+        dockResults->ui->tTimeBase_Label->setText("T<sub>base</sub> [s]");
+        dockResults->ui->timeBase_Label->setText(QString::number(MyLaserMP_Pr->getTimeBase(),'e', 2));
+
         dockResults->ui->tPowerErgLabel->setText("Energia [J]");
         dockResults->ui->PowerErgLabel->setText(QString::number(MyLaserMP_Pr->getPowerErg(),'e', 2));
 
@@ -1828,12 +1840,12 @@ if(n_laser==2)
         dockResults->ui->tThermalEMP_Label->setText(thermalEMP);
 
         if((wavelength>=400)and(wavelength<=1.0e+06))
-        {
-        dockResults->ui->ThermalEMP_Label->setText(QString::number(MyLaserMP_Pr->getThermalEMP(),'e', 2));
-        }
-        else{
-        dockResults->ui->ThermalEMP_Label->setText("Non applicabile");
-        }
+            {
+            dockResults->ui->ThermalEMP_Label->setText(QString::number(MyLaserMP_Pr->getThermalEMP(),'e', 2));
+            }
+                else{
+                dockResults->ui->ThermalEMP_Label->setText("Non applicabile");
+                }
 
         dockResults->ui->tCountingLabel->setText("Conteggio");
         dockResults->ui->CountingLabel->setText(MyLaserMP_Pr->valutateCounting().c_str());

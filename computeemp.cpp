@@ -341,17 +341,24 @@ void computeEMP::ComputeParameters()
 							CC=1;		
 							}	
 
-		if (Alpha<ALPHA_MIN)
-				{
-					CE=1.0;
-				} else if ((Alpha>=ALPHA_MIN) and (Alpha<=ALPHA_MAX))
-					{
-						CE= Alpha/ALPHA_MIN;
-					}
-					else if (Alpha>ALPHA_MAX)
-						{
-						CE=pow(Alpha,2)/(ALPHA_MIN*ALPHA_MAX);
-						}
+        if ((Wavelength>=400) and (Wavelength<1400))
+        {
+            if (Alpha<ALPHA_MIN)
+                    {
+                        CE=1.0;
+                    } else if ((Alpha>=ALPHA_MIN) and (Alpha<=ALPHA_MAX))
+                        {
+                            CE= Alpha/ALPHA_MIN;
+                        }
+                        else if (Alpha>ALPHA_MAX)
+                            {
+                            CE=pow(Alpha,2)/(ALPHA_MIN*ALPHA_MAX);
+            }
+        }
+            else
+            {
+                CE=1.0;
+            }
 
 		if (Wavelength<450)
 					{

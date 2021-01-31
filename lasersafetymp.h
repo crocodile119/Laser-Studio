@@ -63,9 +63,15 @@ void computeTmin();
 double getTmin() const;
 string valutateCounting();
 double getMeanPower_EMP_Equate() const;
+void setTe();
+double getTe()const;
+double getTimeBase()const;
+void setTimeBase();
 
 private:
 int PRF;
+double Te;
+double timeBase;
 double MeanPower;
 double MeanPower_NOHD;
 double SinglePulse_NOHD;

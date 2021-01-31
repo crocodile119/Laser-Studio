@@ -291,8 +291,8 @@ QLabel {margin-right: 10px}</string>
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1165</width>
-         <height>110</height>
+         <width>1177</width>
+         <height>116</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
@@ -343,7 +343,7 @@ QLabel {margin-right: 10px}</string>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="tCountingLabel">
+           <widget class="QLabel" name="tPulseNumberLabel">
             <property name="font">
              <font>
               <pointsize>7</pointsize>
@@ -604,10 +604,9 @@ QLabel {margin-right: 10px}</string>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="tPulseNumberLabel">
+           <widget class="QLabel" name="tTimeBase_Label">
             <property name="font">
              <font>
-              <pointsize>7</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -778,6 +777,29 @@ QLabel {margin-right: 10px}</string>
            </widget>
           </item>
           <item>
+           <widget class="QLabel" name="CountingLabel">
+            <property name="font">
+             <font>
+              <family>Verdana</family>
+              <pointsize>7</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+            </property>
+            <property name="text">
+             <string>TextLabel</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <spacer name="verticalSpacer_10">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
@@ -847,7 +869,7 @@ QLabel {margin-right: 10px}</string>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="CountingLabel">
+           <widget class="QLabel" name="PulseNumberLabel">
             <property name="font">
              <font>
               <family>Verdana</family>
@@ -1044,15 +1066,7 @@ QLabel {margin-right: 10px}</string>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="PulseNumberLabel">
-            <property name="font">
-             <font>
-              <family>Verdana</family>
-              <pointsize>7</pointsize>
-              <weight>50</weight>
-              <bold>false</bold>
-             </font>
-            </property>
+           <widget class="QLabel" name="timeBase_Label">
             <property name="styleSheet">
              <string notr="true">QLabel {background-color: #fafafa}
 QLabel {color: #000000}
@@ -1107,6 +1121,28 @@ QLabel {margin-right: 10px}</string>
           </item>
           <item>
            <widget class="QLabel" name="tThermalEMP_Label">
+            <property name="font">
+             <font>
+              <pointsize>7</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel {background-color: #00c800}
+QLabel {color: #fafafa}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+            </property>
+            <property name="text">
+             <string>TextLabel</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="tCountingLabel">
             <property name="font">
              <font>
               <pointsize>7</pointsize>

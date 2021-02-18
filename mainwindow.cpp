@@ -41,6 +41,39 @@
 #endif
 #endif
 
+const QString MainWindow::HTML_DEF= "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n"
+                                    "<html>\n"
+                                    "<head>\n"
+                                    "<meta content=\"text/html; charset=ISO-8859-1\"\n"
+                                    "http-equiv=\"content-type\">\n"
+                                    "<title>Laser Report</title>\n"
+                                        "<style>"
+                                             "h1, h2, h3, h4 {\n"
+                                             "font-family: \"Trebuchet MS\", Arial, Helvetica, sans-serif;\n"
+                                             "}\n"
+                                             "table, th, td {\n"
+                                             "font-family: \"Trebuchet MS\", Arial, Helvetica, sans-serif;\n"
+                                             "font-size: large;\n"
+                                             "border-width: 1px;\n"
+                                             "border-color: #dddddd;\n"
+                                             "border-collapse: collapse;\n"
+                                             "text-align: left;\n"
+                                             "}\n"
+                                             "th {\n"
+                                             "padding-top: 12px;\n"
+                                             "padding-bottom: 12px;\n"
+                                             "text-align: left;\n"
+                                             "background-color: #00c800;\n"
+                                             "color: #fafafa;\n"
+                                             "}\n"
+                                             "td, th {\n"
+                                             "padding: 8px;\n"
+                                             "}\n"
+                                        "</style>\n"
+                                     "</head>\n"
+                                     "<body>\n"
+                                     "<br>\n";
+
 MainWindow::MainWindow()
       : laserWindow(new CentralWidget)
 {
@@ -161,43 +194,43 @@ MainWindow::MainWindow()
     setupLaserProspective();
 
 
-        connect(laserWindow->myDockControls, SIGNAL(NOHD_Changed()), this, SLOT(setDNRO_ForLaserpoint()));
-        connect(laserWindow->myDockControls, SIGNAL(NOHD_Changed()), this, SLOT(setDNRO_ForReflector()));
-        connect(laserWindow->myDockControls, SIGNAL(NOHD_Changed()), this, SLOT(setDNRO_ForBinocular()));
-        connect(laserWindow->myDockControls, SIGNAL(NOHD_Changed()), this, SLOT(setDNRO_ForFootprint()));
-        connect(laserWindow->myDockControls, SIGNAL(lambertianMaxChanged()), this, SLOT(setLambertianMaxForReflector()));
-        connect(laserWindow->myDockControls, SIGNAL(NSHD_Changed()), this, SLOT(setDNRC_ForLaserpoint()));
-        connect(laserWindow->myDockControls, SIGNAL(divergenceChanged()), this, SLOT(setDivergenceForReflector()));
-        connect(laserWindow->myDockControls, SIGNAL(modified()), this, SLOT(laserModified()));
-        connect(laserWindow->myDockControls, SIGNAL(beamDiameterChanged()), this, SLOT(setReflectorBeamDiameterForDiffusion()));
-        connect(laserWindow->myDockControls, SIGNAL(beamDiameterChanged()), this, SLOT(setBeamDiameterForBinocular()));
-        connect(laserWindow->myDockControls, SIGNAL(powerErgChanged()), this, SLOT(setReflectorPowerErgForDiffusion()));
-        connect(laserWindow->myDockControls, SIGNAL(EMP_Changed()), this, SLOT(setReflectorEMP_ForDiffusion()));
-        connect(laserWindow->myDockControls, SIGNAL(wavelengthChanged()), this, SLOT(setWavelengthForBinocular()));
-        connect(this, SIGNAL(reflectorListChanged()), this, SLOT(addElementList()));
-        connect(this, SIGNAL(myLabRoomListChanged()), this, SLOT(addLabList()));
-        connect(laserWindow->myDockReflectorsList->ui->laserListView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(propertyFromList()));
-        connect(laserWindow->myDockReflectorsList->ui->listView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(selectFromList()));        
-        connect(laserWindow->myDockReflectorsList->ui->environmentListView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(environmentFromList()));
-        connect(laserWindow->myDockReflectorsList->ui->binocularListView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(selectBinocularFromList()));        
-        connect(laserWindow->myDockReflectorsList->ui->listView, SIGNAL(clicked(QModelIndex)), this, SLOT(goToSelectedReflector()));
-        connect(laserWindow->myDockReflectorsList->ui->binocularListView, SIGNAL(clicked(QModelIndex)), this, SLOT(goToSelectedBinocular()));
-        connect(laserWindow->myDockReflectorsList->ui->laserListView, SIGNAL(clicked(QModelIndex)), this, SLOT(gotToLaserpoint()));
-        connect(laserWindow->myDockReflectorsList->ui->environmentListView, SIGNAL(clicked(QModelIndex)), this, SLOT(goToLab()));
-        connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(updateActions()));
-        connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(laserModified()));
-        connect(laserWindow->graphicsView->scene, SIGNAL(laserSelected()), this, SLOT(laserpointSelectionFromGraphics()));
-        connect(laserWindow->graphicsView->scene, SIGNAL(reflectorSelected()), this, SLOT(listSelectionFromGraphics()));
-        connect(laserWindow->graphicsView->scene, SIGNAL(binocularSelected()), this, SLOT(binocularListSelectionFromGraphics()));       
-        connect(laserWindow->graphicsView->scene, SIGNAL(labroomSelected()), this, SLOT(labroomSelectionFromGraphics()));
-        connect(laserWindow->graphicsView->scene, SIGNAL(deselected()), this, SLOT(listDeselectionFromGraphics()));
-        connect(laserWindow->graphicsView->scene, SIGNAL(footprintRelease()), this, SLOT(shadowZoneForLaser()));
-        connect(laserWindow->graphicsView, SIGNAL(mouseRelease()), this, SLOT(listMultipleSelectionFromGraphics()));
-        connect(laserWindow->myDockControls, SIGNAL(noFeasibleInput()), this, SLOT(noFeasibleInputFunction()));
-        connect(laserWindow->myDockControls, SIGNAL(operationChanged()), this, SLOT(deletedViewCenter()));      
-        connect(this, SIGNAL(binocularListChanged()), this, SLOT(addBinocularList()));      
-        connect(laserWindow->graphicsView->scene, SIGNAL(changed(const QList<QRectF> &)),this, SLOT(setViewportRect()));
-        connect(laserWindow->graphicsView, SIGNAL(viewportChanged()),this, SLOT(setViewportRect()));
+    connect(laserWindow->myDockControls, SIGNAL(NOHD_Changed()), this, SLOT(setDNRO_ForLaserpoint()));
+    connect(laserWindow->myDockControls, SIGNAL(NOHD_Changed()), this, SLOT(setDNRO_ForReflector()));
+    connect(laserWindow->myDockControls, SIGNAL(NOHD_Changed()), this, SLOT(setDNRO_ForBinocular()));
+    connect(laserWindow->myDockControls, SIGNAL(NOHD_Changed()), this, SLOT(setDNRO_ForFootprint()));
+    connect(laserWindow->myDockControls, SIGNAL(lambertianMaxChanged()), this, SLOT(setLambertianMaxForReflector()));
+    connect(laserWindow->myDockControls, SIGNAL(NSHD_Changed()), this, SLOT(setDNRC_ForLaserpoint()));
+    connect(laserWindow->myDockControls, SIGNAL(divergenceChanged()), this, SLOT(setDivergenceForReflector()));
+    connect(laserWindow->myDockControls, SIGNAL(modified()), this, SLOT(laserModified()));
+    connect(laserWindow->myDockControls, SIGNAL(beamDiameterChanged()), this, SLOT(setReflectorBeamDiameterForDiffusion()));
+    connect(laserWindow->myDockControls, SIGNAL(beamDiameterChanged()), this, SLOT(setBeamDiameterForBinocular()));
+    connect(laserWindow->myDockControls, SIGNAL(powerErgChanged()), this, SLOT(setReflectorPowerErgForDiffusion()));
+    connect(laserWindow->myDockControls, SIGNAL(EMP_Changed()), this, SLOT(setReflectorEMP_ForDiffusion()));
+    connect(laserWindow->myDockControls, SIGNAL(wavelengthChanged()), this, SLOT(setWavelengthForBinocular()));
+    connect(this, SIGNAL(reflectorListChanged()), this, SLOT(addElementList()));
+    connect(this, SIGNAL(myLabRoomListChanged()), this, SLOT(addLabList()));
+    connect(laserWindow->myDockReflectorsList->ui->laserListView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(propertyFromList()));
+    connect(laserWindow->myDockReflectorsList->ui->listView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(selectFromList()));
+    connect(laserWindow->myDockReflectorsList->ui->environmentListView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(environmentFromList()));
+    connect(laserWindow->myDockReflectorsList->ui->binocularListView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(selectBinocularFromList()));
+    connect(laserWindow->myDockReflectorsList->ui->listView, SIGNAL(clicked(QModelIndex)), this, SLOT(goToSelectedReflector()));
+    connect(laserWindow->myDockReflectorsList->ui->binocularListView, SIGNAL(clicked(QModelIndex)), this, SLOT(goToSelectedBinocular()));
+    connect(laserWindow->myDockReflectorsList->ui->laserListView, SIGNAL(clicked(QModelIndex)), this, SLOT(gotToLaserpoint()));
+    connect(laserWindow->myDockReflectorsList->ui->environmentListView, SIGNAL(clicked(QModelIndex)), this, SLOT(goToLab()));
+    connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(updateActions()));
+    connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(laserModified()));
+    connect(laserWindow->graphicsView->scene, SIGNAL(laserSelected()), this, SLOT(laserpointSelectionFromGraphics()));
+    connect(laserWindow->graphicsView->scene, SIGNAL(reflectorSelected()), this, SLOT(listSelectionFromGraphics()));
+    connect(laserWindow->graphicsView->scene, SIGNAL(binocularSelected()), this, SLOT(binocularListSelectionFromGraphics()));
+    connect(laserWindow->graphicsView->scene, SIGNAL(labroomSelected()), this, SLOT(labroomSelectionFromGraphics()));
+    connect(laserWindow->graphicsView->scene, SIGNAL(deselected()), this, SLOT(listDeselectionFromGraphics()));
+    connect(laserWindow->graphicsView->scene, SIGNAL(footprintRelease()), this, SLOT(shadowZoneForLaser()));
+    connect(laserWindow->graphicsView, SIGNAL(mouseRelease()), this, SLOT(listMultipleSelectionFromGraphics()));
+    connect(laserWindow->myDockControls, SIGNAL(noFeasibleInput()), this, SLOT(noFeasibleInputFunction()));
+    connect(laserWindow->myDockControls, SIGNAL(operationChanged()), this, SLOT(deletedViewCenter()));
+    connect(this, SIGNAL(binocularListChanged()), this, SLOT(addBinocularList()));
+    connect(laserWindow->graphicsView->scene, SIGNAL(changed(const QList<QRectF> &)),this, SLOT(setViewportRect()));
+    connect(laserWindow->graphicsView, SIGNAL(viewportChanged()),this, SLOT(setViewportRect()));
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -309,6 +342,10 @@ void MainWindow::newFile()
         laserWindow->clearInstallationDesription();
         setLaserPoint();
         showGridAction->setChecked(false);
+
+        onlyReflectorGoggleAction->setChecked(true);
+        setGoggleMaterial(LaserGoggle::ONLY_REFLECTOR);
+
         menuSceneScaleChanged("100%", 4);
 
         laserModel->addDescriptor(*laserpoint);
@@ -926,6 +963,13 @@ void MainWindow::createActions()
     showDockWidgetEffects->setStatusTip(tr("Visualizza parametri ed effetti"));
     viewMenu->addAction(showDockWidgetEffects);
 
+    addDockWidget(Qt::BottomDockWidgetArea, laserWindow->myDockLea);
+    showDockLea = new QAction(tr("Visualizza risultati i risultati della classificazione CEI EN 60825-1"), this);
+    showDockLea = laserWindow->myDockLea->toggleViewAction();
+    showDockLea->setIcon(QIcon(":/images/classifier.png"));
+    showDockLea->setStatusTip(tr("Visualizza risultati i risultati della classificazione CEI EN 60825-1"));
+    viewMenu->addAction(showDockLea);
+
     tabifyDockWidget(laserWindow->myDockEffects,laserWindow->myDockSkin);
     tabifyDockWidget(laserWindow->myDockSkin,laserWindow->myDockResults);
     setTabPosition(Qt::BottomDockWidgetArea, QTabWidget::North);
@@ -944,7 +988,7 @@ void MainWindow::createActions()
     showReflectorsList->setStatusTip(tr("Visualizza la lista dei riflettori"));
     viewMenu->addAction(showReflectorsList);
 
-    tabifyDockWidget(laserWindow->myDockReflectorsList, laserWindow->myDockGoggle);
+    tabifyDockWidget(laserWindow->myDockReflectorsList, laserWindow->myDockGoggle);  
     setTabPosition(Qt::RightDockWidgetArea, QTabWidget::North);
 
     viewMenu->addSeparator();
@@ -999,7 +1043,6 @@ void MainWindow::createActions()
     wetTargetAction->setStatusTip(tr("Dettagli del riflettore bagnato"));
     reflectorsEditMenu->addAction(wetTargetAction);
 
-
     fresnelTargetAction = new QAction(tr("Dettagli riflettore di vetro..."), this);
     connect(fresnelTargetAction, SIGNAL(triggered()),
             this, SLOT(fresnelTarget()));
@@ -1018,7 +1061,6 @@ void MainWindow::createActions()
             this, SLOT(properties()));
     propertiesAction->setStatusTip(tr("Proprietà dell'elemento selezionato"));
     reflectorsEditMenu->addAction(propertiesAction );
-
 
     environmentMenu= menuBar()->addMenu(tr("&Ambiente"));
     environmentMenu ->setFont(font);
@@ -1045,6 +1087,40 @@ void MainWindow::createActions()
     environmentGroup->addAction(setPolygonAct);
     environmentGroup->addAction(addLabAct);
     setPolygonAct->setChecked(true);
+
+    goggleMenu= environmentMenu ->addMenu(tr("Protettori ottici"));
+    goggleMenu ->setFont(font);
+
+    onlyReflectorGoggleAction=new QAction(tr("Riflettori semplici"), this);
+    onlyReflectorGoggleAction->setStatusTip(tr("Riflettori semplici"));
+    onlyReflectorGoggleAction->setCheckable(true);
+    LaserGoggle::material myGoggleMaterial= LaserGoggle::ONLY_REFLECTOR;
+    connect(onlyReflectorGoggleAction, &QAction::triggered, this, [myGoggleMaterial, this]() {setGoggleMaterial(myGoggleMaterial);});
+
+    goggleMenu->addAction(onlyReflectorGoggleAction);
+
+    glassGoggleAction=new QAction(tr("Vetro"), this);
+    glassGoggleAction->setStatusTip(tr("Vetro"));
+    glassGoggleAction->setCheckable(true);
+    myGoggleMaterial= LaserGoggle::GLASS;
+    connect(glassGoggleAction, &QAction::triggered, this, [myGoggleMaterial, this]() {setGoggleMaterial(myGoggleMaterial);});
+
+    goggleMenu->addAction(glassGoggleAction);
+
+    plasticGoggleAction=new QAction(tr("Plastica"), this);
+    plasticGoggleAction->setStatusTip(tr("Plastica"));
+    plasticGoggleAction->setCheckable(true);
+    myGoggleMaterial= LaserGoggle::PLASTIC;
+    connect(plasticGoggleAction, &QAction::triggered, this, [myGoggleMaterial, this]() {setGoggleMaterial(myGoggleMaterial);});
+
+    goggleMenu->addAction(plasticGoggleAction);
+
+    QActionGroup *goggleGroup = new QActionGroup(this);
+
+    goggleGroup->addAction(onlyReflectorGoggleAction);
+    goggleGroup->addAction(glassGoggleAction);
+    goggleGroup->addAction(plasticGoggleAction);
+    onlyReflectorGoggleAction->setChecked(true);
 
     reflectorsMenu= environmentMenu ->addMenu(tr("Aggiungi riflettore"));
     reflectorsMenu->setFont(font);
@@ -1142,6 +1218,11 @@ void MainWindow::createActions()
     fieldSettingsAction->setStatusTip(tr("Studio e verifica dell'installazione laser"));
     fieldSettingsAction ->setCheckable(true);
 
+    classifierSettingsAction = new QAction(tr("Classifica semplificata"), this);
+    connect(classifierSettingsAction, SIGNAL(triggered()), this, SLOT(setupClassifierProspective()));
+    classifierSettingsAction->setStatusTip(tr("Risultati classificazione apparecchiatura laser"));
+    classifierSettingsAction ->setCheckable(true);
+
     goggleSettingsAction = new QAction(tr("Scelta dispositivi di protezione"), this);
     connect(goggleSettingsAction, SIGNAL(triggered()), this, SLOT(setupGoggleProspective()));
     goggleSettingsAction->setStatusTip(tr("Scelta dispositivi di protezione con il calcolo della marcatura"));
@@ -1150,12 +1231,14 @@ void MainWindow::createActions()
     prospectiveMenu->addAction(laserSettingsAction);
     prospectiveMenu->addAction(goggleSettingsAction);
     prospectiveMenu->addAction(fieldSettingsAction);
+    prospectiveMenu->addAction(classifierSettingsAction);
 
     QActionGroup *prospectiveGroup = new QActionGroup(this);
 
     prospectiveGroup->addAction(laserSettingsAction);
     prospectiveGroup->addAction(fieldSettingsAction);
     prospectiveGroup->addAction(goggleSettingsAction);
+    prospectiveGroup->addAction(classifierSettingsAction);
     laserSettingsAction->setChecked(true);
 
     helpMenu = menuBar()->addMenu(tr("&Aiuto"));
@@ -1339,19 +1422,19 @@ void MainWindow::setImageRect()
     QString imageName = QFileDialog::getSaveFileName(this, tr("Esporta selezione scena"),
                                "../senza nome.png",
                                tr("Immagini (*.png *.xpm *.jpg)"));
-
+    if (!imageName.isEmpty())
+    {
         QApplication::setOverrideCursor(Qt::WaitCursor);
 
-        mySceneImage.save(imageName);
-
+        mySceneImage.save(imageName);      
+        statusBar()->showMessage(tr("Esportazione selezione scena terminata"), 2000);
+    }
         disconnect(laserWindow->graphicsView, SIGNAL(mouseRelease()), this, SLOT(setImageRect()));
         //laserWindow->graphicsView->setBackgroundBrush(Qt::NoBrush);
         enableControlsAndItems(true);
         exportImageAct->setChecked(false);
         myPainter.end();
         QApplication::restoreOverrideCursor();
-
-        statusBar()->showMessage(tr("Esportazione selezione scena terminata"), 2000);
 }
 
 void MainWindow::setupLaserProspective()
@@ -1373,6 +1456,9 @@ void MainWindow::setupLaserProspective()
 
     showReflectorsList->setChecked(false);
     laserWindow->myDockReflectorsList->hide();
+
+    showDockLea->setChecked(false);
+    laserWindow->myDockLea->hide();
 }
 
 void MainWindow::setupFieldProspective()
@@ -1394,6 +1480,9 @@ void MainWindow::setupFieldProspective()
 
     showReflectorsList->setChecked(true);
     laserWindow->myDockReflectorsList->show();
+
+    showDockLea->setChecked(false);
+    laserWindow->myDockLea->hide();
 }
 
 void MainWindow::setupGoggleProspective()
@@ -1415,6 +1504,33 @@ void MainWindow::setupGoggleProspective()
 
     showReflectorsList->setChecked(false);
     laserWindow->myDockReflectorsList->hide();
+
+    showDockLea->setChecked(false);
+    laserWindow->myDockLea->hide();
+}
+
+void MainWindow::setupClassifierProspective()
+{
+    showDockWidgetControls->setChecked(true);
+    laserWindow->myDockControls->show();
+
+    showDockWidgetResults->setChecked(false);
+    laserWindow->myDockResults->hide();
+
+    showDockWidgetEffects->setChecked(false);
+    laserWindow->myDockEffects->hide();;
+
+    showDockWidgetSkin->setChecked(false);
+    laserWindow->myDockSkin->hide();
+
+    showDockWidgetGoggle->setChecked(false);
+    laserWindow->myDockGoggle->hide();
+
+    showReflectorsList->setChecked(false);
+    laserWindow->myDockReflectorsList->hide();
+
+    showDockLea->setChecked(true);
+    laserWindow->myDockLea->show();
 }
 
 void MainWindow::createStatusBar()
@@ -1582,42 +1698,45 @@ void MainWindow::on_printPreviewAction_triggered()
 #endif
 }
 
+/*
+QString MainWindow::makeHtmlClassifier()
+{
+    QString html;
+
+    html=HTML_DEF;
+
+    int n_laser=laserWindow->myDockControls->get_n_laser();
+    if(n_laser==0)
+    {
+        if(laserWindow->myDockControls->)
+    }
+
+    html +="<h1>Laser Report</h1>\n"
+    "<table width=\"100%\">\n"
+    "<tr><th colspan=\"2\">Descrizione installazione</th>\n"
+
+    "<tr><td bgcolor=\"#fbfbfb\"><b>Forza Armata</b></td>\n"
+    "<td>"+laserWindow->getForce()+"</td></tr>\n"
+    "<tr><td bgcolor=\"#fbfbfb\"><b>Ente</b></td>\n"
+    "<td>"+laserWindow->getCustomer()+"</td></tr>\n"
+    "<tr><td bgcolor=\"#fbfbfb\"><b>Nominativo UASL</b></td>\n"
+    "<td>"+laserWindow->get_UASL()+"</td></tr>\n"
+    "<tr><td bgcolor=\"#fbfbfb\"><b>Assistenti UASL</b></td>\n"
+    "<td>"+laserWindow->get_UASL_Assistant()+"</td></tr>\n"
+    "<tr><td bgcolor=\"#fbfbfb\"><b>Descrizione apparcchiatura laser</b></td>\n"
+    "<td>"+laserWindow->getLaserDescription()+"</td></tr>\n"
+    "<tr><td bgcolor=\"#fbfbfb\"><b>Descrizione dei luoghi</b></td>\n"
+    "<td>"+laserWindow->getPlaceDescription()+"</td></tr>\n"
+    "</table><br>\n";
+
+    return html;
+}
+*/
 QString MainWindow::makeHtml()
 {
     QString html;
 
-    html="<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n"
-        "<html>\n"
-        "<head>\n"
-        "<meta content=\"text/html; charset=ISO-8859-1\"\n"
-        "http-equiv=\"content-type\">\n"
-        "<title>Laser Report</title>\n"
-            "<style>"
-                 "h1, h2, h3, h4 {\n"
-                 "font-family: \"Trebuchet MS\", Arial, Helvetica, sans-serif;\n"
-                 "}\n"
-                 "table, th, td {\n"
-                 "font-family: \"Trebuchet MS\", Arial, Helvetica, sans-serif;\n"
-                 "font-size: large;\n"
-                 "border-width: 1px;\n"
-                 "border-color: #dddddd;\n"
-                 "border-collapse: collapse;\n"
-                 "text-align: left;\n"
-                 "}\n"
-                 "th {\n"
-                 "padding-top: 12px;\n"
-                 "padding-bottom: 12px;\n"
-                 "text-align: left;\n"
-                 "background-color: #00c800;\n"
-                 "color: #fafafa;\n"
-                 "}\n"
-                 "td, th {\n"
-                 "padding: 8px;\n"
-                 "}\n"
-            "</style>\n"
-         "</head>\n"
-         "<body>\n"
-         "<br>\n";
+    html=HTML_DEF;
 
     html +="<h1>Laser Report</h1>\n"
            "<table width=\"100%\">\n"
@@ -1742,6 +1861,7 @@ QString kindOfLaser;
     }
     html +="\n</table><br>\n";
 
+    html+=htmlClassifier();
     html +="<table width=\"100%\">\n"
             "<tr>\n<th colspan=\"2\">Dispositivi protettori</tr>\n</th>\n";
 
@@ -1812,12 +1932,166 @@ QString kindOfLaser;
     return html;
 }
 
+QString MainWindow::htmlClassifier()
+{
+    QString html;
+
+    html=HTML_DEF;
+
+        html +="<table width=\"100%\">\n"
+               "<tr><th colspan=\"2\">Valutazione della classe secondo il metodo semplificato</th>\n";
+
+        foreach (QString entry, classifierOutput) {
+            QStringList fields = entry.split(":");
+            QString title = fields[0];
+            QString body = fields[1];
+
+            if(body==" "){
+                html +="<tr>\n<td colspan=\"2\"><i>" + title + "</i></td>\n</tr>\n";
+            }
+            else{
+            html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b></td>\n"
+                   "<td>" + body + "</td>\n</tr>\n";
+            }
+        }
+    html += "</table><br>\n";
+
+    return html;
+}
+
+void MainWindow::htmlClassifierResults()
+{
+    classifierOutput.clear();
+
+    QString couplingFactor1str= "Fattore di accoppiamento 1<sup>a</sup> condizione :" +  laserWindow->myDockLea->ui->couplingFactor1_Label->text();
+    QString couplingFactor3str= "Fattore di accoppiamento 3<sup>a</sup> condizione :" +  laserWindow->myDockLea->ui->couplingFactor3_Label->text();
+    QString apertureDiam1str= "Diametro diaframma 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDiam1_Label->text();
+    QString apertureDiam3str=  "Diametro diaframma 3<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDiam3_Label->text();
+    QString apertureDist1str=  "Distanza apertura 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDist1_Label->text();
+    QString apertureDist3str=  "Diametro apertura 3<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDist3_Label->text();
+    QString beamAperture1str=  "Dimensione del fascio all'apertura 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->beamAperture1_Label->text();
+    QString beamAperture3str= "Dimensione del fascio all'apertura 3<sup>a</sup> condizione :"+ laserWindow->myDockLea->ui->beamAperture3_Label->text();
+    QString formulaLEAstr= laserWindow->myDockLea->ui->tFormulaLEA_Label->text() + " :" + laserWindow->myDockLea->ui->formulaLEA_Label->text();
+    QString LEAstr= laserWindow->myDockLea->ui->tLEA_Label->text() + " :" + laserWindow->myDockLea->ui->LEA_Label->text();
+    QString powerErgCond1LEAstr= laserWindow->myDockLea->ui->tCond1LEA_Label->text() + " :" + laserWindow->myDockLea->ui->cond1LEA_Label->text();
+    QString powerErgCond3LEAstr= laserWindow->myDockLea->ui->tCond3LEA_Label->text() + " :" + laserWindow->myDockLea->ui->cond3LEA_Label->text();
+    QString classStr= "Classe sistema :" + laserWindow->myDockLea->ui->class_Label->text();
+
+    classifierOutput.append(couplingFactor1str);
+    classifierOutput.append(couplingFactor3str);
+    classifierOutput.append(apertureDiam1str);
+    classifierOutput.append(apertureDiam3str);
+    classifierOutput.append(apertureDist1str);
+    classifierOutput.append(apertureDist3str);
+
+    classifierOutput.append(beamAperture1str);
+    classifierOutput.append(beamAperture3str);
+    classifierOutput.append(formulaLEAstr);
+    classifierOutput.append(LEAstr);
+    classifierOutput.append(powerErgCond1LEAstr);
+    classifierOutput.append(powerErgCond3LEAstr);
+
+    classifierOutput.append(classStr);
+
+    if(laserWindow->myDockControls->ui->operationCombo->currentIndex()==1)
+    {
+    QString timeBaseStr ="Base dei tempi :" + laserWindow->myDockLea->ui->timeBase_Label->text();
+    classifierOutput.append(timeBaseStr);
+    }
+
+    if(laserWindow->myDockControls->ui->operationCombo->currentIndex()==2)
+    {
+
+    QString meanPowerEffects="Criterio della potenza media : ";
+    QString meanPowerLabelStr= laserWindow->myDockLea->ui->tCond3LEA_Label->text() + " :" + laserWindow->myDockLea->ui->MeanPowerLabel->text();
+    QString Te_Str= laserWindow->myDockLea->ui->tTe_Label->text() + " :" + laserWindow->myDockLea->ui->Te_Label->text();
+
+    QString couplingFactor1str_2= "Fattore di accoppiamento 1<sup>a</sup> condizione :" +  laserWindow->myDockLea->ui->couplingFactor1_Label_2->text();
+    QString couplingFactor3str_2= "Fattore di accoppiamento 3<sup>a</sup> condizione :" +  laserWindow->myDockLea->ui->couplingFactor3_Label_2->text();
+    QString apertureDiam1str_2= "Diametro diaframma 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDiam1_Label_2->text();
+    QString apertureDiam3str_2=  "Diametro diaframma 3<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDiam3_Label_2->text();
+    QString apertureDist1str_2=  "Distanza apertura 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDist1_Label_2->text();
+    QString apertureDist3str_2=  "Diametro apertura 3<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDist3_Label_2->text();
+    QString beamAperture1str_2=  "Dimensione del fascio all'apertura 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->beamAperture1_Label_2->text();
+    QString beamAperture3str_2= "Dimensione del fascio all'apertura 3<sup>a</sup> condizione :"+ laserWindow->myDockLea->ui->beamAperture3_Label_2->text();
+    QString formulaLEAstr_2= laserWindow->myDockLea->ui->tFormulaLEA_Label->text() + " :" + laserWindow->myDockLea->ui->FormulaLEA_Label_2->text();
+    QString LEAstr_2= laserWindow->myDockLea->ui->tLEA_Label->text() + " :" + laserWindow->myDockLea->ui->LEA_Label_2->text();
+    QString powerErgCond1LEAstr_2= laserWindow->myDockLea->ui->tCond1LEA_Label->text() + " :" + laserWindow->myDockLea->ui->cond1LEA_Label_2->text();
+    QString powerErgCond3LEAstr_2= laserWindow->myDockLea->ui->tCond3LEA_Label->text() + " :" + laserWindow->myDockLea->ui->cond3LEA_Label_2->text();
+    QString classStr_2= "Classe sistema :" + laserWindow->myDockLea->ui->class_Label->text();
+
+    classifierOutput.append(meanPowerEffects);
+    classifierOutput.append(meanPowerLabelStr);
+    classifierOutput.append(Te_Str);
+    classifierOutput.append(couplingFactor1str_2);
+    classifierOutput.append(couplingFactor3str_2);
+    classifierOutput.append(apertureDiam1str_2);
+    classifierOutput.append(apertureDiam3str_2);
+    classifierOutput.append(apertureDist1str_2);
+    classifierOutput.append(apertureDist3str_2);
+
+    classifierOutput.append(beamAperture1str_2);
+    classifierOutput.append(beamAperture3str_2);
+    classifierOutput.append(formulaLEAstr_2);
+    classifierOutput.append(LEAstr_2);
+    classifierOutput.append(powerErgCond1LEAstr_2);
+    classifierOutput.append(powerErgCond3LEAstr_2);
+
+    double wavelength= laserWindow->myDockControls->getWavelength();
+    if((wavelength>=400)and(wavelength<=1400))
+    {
+    QString thermalEffects="Effetti termici : ";
+    QString couplingFactor1str_3= "Fattore di accoppiamento 1<sup>a</sup> condizione :" +  laserWindow->myDockLea->ui->couplingFactor1_Label_3->text();
+    QString couplingFactor3str_3= "Fattore di accoppiamento 3<sup>a</sup> condizione :" +  laserWindow->myDockLea->ui->couplingFactor3_Label_3->text();
+    QString apertureDiam1str_3= "Diametro diaframma 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDiam1_Label_3->text();
+    QString apertureDiam3str_3=  "Diametro diaframma 3<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDiam3_Label_3->text();
+    QString apertureDist1str_3=  "Distanza apertura 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDist1_Label_3->text();
+    QString apertureDist3str_3=  "Diametro apertura 3<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDist3_Label_3->text();
+    QString beamAperture1str_3=  "Dimensione del fascio all'apertura 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->beamAperture1_Label_3->text();
+    QString beamAperture3str_3= "Dimensione del fascio all'apertura 3<sup>a</sup> condizione :"+ laserWindow->myDockLea->ui->beamAperture3_Label_3->text();
+    QString formulaLEAstr_3= laserWindow->myDockLea->ui->tFormulaLEA_Label->text() + " :" + laserWindow->myDockLea->ui->FormulaLEA_Label_3->text();
+    QString LEAstr_3= laserWindow->myDockLea->ui->tLEA_Label->text() + " :" + laserWindow->myDockLea->ui->LEA_Label_3->text();
+    QString powerErgCond1LEAstr_3= laserWindow->myDockLea->ui->tCond1LEA_Label->text() + " :" + laserWindow->myDockLea->ui->cond1LEA_Label_3->text();
+    QString powerErgCond3LEAstr_3= laserWindow->myDockLea->ui->tCond3LEA_Label->text() + " :" + laserWindow->myDockLea->ui->cond3LEA_Label_3->text();
+
+    QString Ti_Str= laserWindow->myDockLea->ui->tTi_Label->text() + " :" + laserWindow->myDockLea->ui->Ti_Label->text();
+    QString Ti_prf_Str= laserWindow->myDockLea->ui->tTi_prf_Label->text() + " :" + laserWindow->myDockLea->ui->Ti_prf_Label->text();
+    QString C5_Str= laserWindow->myDockLea->ui->tC5_Label->text() + " :" + laserWindow->myDockLea->ui->C5_Label->text();
+    QString pulseNumberLabel_Str= laserWindow->myDockLea->ui->tPulseNumberLabel->text() + " :" + laserWindow->myDockLea->ui->PulseNumberLabel->text();
+    QString countingLabel_Str= laserWindow->myDockLea->ui->tCountingLabel->text() + " :" + laserWindow->myDockLea->ui->CountingLabel->text();
+
+    classifierOutput.append(thermalEffects);
+    classifierOutput.append(Ti_Str);
+    classifierOutput.append(Ti_prf_Str);
+    classifierOutput.append(C5_Str);
+    classifierOutput.append(pulseNumberLabel_Str);
+    classifierOutput.append(countingLabel_Str);
+
+    classifierOutput.append(couplingFactor1str_3);
+    classifierOutput.append(couplingFactor3str_3);
+    classifierOutput.append(apertureDiam1str_3);
+    classifierOutput.append(apertureDiam3str_3);
+    classifierOutput.append(apertureDist1str_3);
+    classifierOutput.append(apertureDist3str_3);
+
+    classifierOutput.append(beamAperture1str_3);
+    classifierOutput.append(beamAperture3str_3);
+    classifierOutput.append(formulaLEAstr_3);
+    classifierOutput.append(LEAstr_3);
+    classifierOutput.append(powerErgCond1LEAstr_3);
+    classifierOutput.append(powerErgCond3LEAstr_3);
+    }
+    }
+}
+
+
 void MainWindow::printReport(QPrinter *printer)
 {
     #if defined(QT_PRINTSUPPORT_LIB) && QT_CONFIG(printdialog)
 
         firstPageReport();
         htmlResults();
+        htmlClassifierResults();
 
         QTextDocument textDocument;
         textDocument.setHtml(makeHtml());
@@ -3551,6 +3825,7 @@ void MainWindow::createToolBars()
     viewToolBar->addAction(showDockWidgetResults);
     viewToolBar->addAction(showDockWidgetSkin);
     viewToolBar->addAction(showDockWidgetEffects);
+    viewToolBar->addAction(showDockLea);
     viewToolBar->addAction(showDockWidgetGoggle);
     viewToolBar->addAction(showReflectorsList);
     viewToolBar->addAction(centerOnViewAction);
@@ -4147,6 +4422,14 @@ void MainWindow::makeSceneOfSavedItems(){
     scale=laserWindow->getScale();
     showGridAction->setChecked(laserWindow->getGridState());
     backgroundGrid();
+
+    LaserGoggle::material goggleMaterial=laserWindow->myDockControls->getGoggleMaterial();
+    if(goggleMaterial==LaserGoggle::GLASS)
+        glassGoggleAction->setChecked(true);
+    else if(goggleMaterial==LaserGoggle::PLASTIC)
+        plasticGoggleAction->setChecked(true);
+    else if(goggleMaterial==LaserGoggle::ONLY_REFLECTOR)
+        onlyReflectorGoggleAction->setChecked(true);
 
     laserpoint = new LaserPoint();
     laserWindow->graphicsView->scene->addItem(laserpoint);
@@ -4989,4 +5272,10 @@ QString MainWindow::installationKind()const
         installation="Poligono di tiro militare";
 
      return  installation;
+}
+
+void MainWindow::setGoggleMaterial(LaserGoggle::material myMaterial)
+{
+    laserWindow->myDockControls->setGoggleMaterial(myMaterial);
+    setWindowModified(true);
 }

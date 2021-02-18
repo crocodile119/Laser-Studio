@@ -5,37 +5,34 @@
 
 using namespace std;
 
-LaserSafetyCW::LaserSafetyCW(double _BeamDiameter, double _PowerErg,  double _Divergence, double _Wavelength, 
-						double _ExposureTime, double _Alpha):LaserSafety(_BeamDiameter, _PowerErg, _Divergence, _Wavelength, 
-						_ExposureTime, _Alpha)
+LaserSafetyCW::LaserSafetyCW(double _beamDiameter, double _powerErg,  double _divergence, double _wavelength,
+                        double _exposureTime, double _alpha):LaserSafety(_beamDiameter, _powerErg, _divergence,
+                        _wavelength, _exposureTime, _alpha)
 {
-			
-BeamDiameter=_BeamDiameter; 
-PowerErg=_PowerErg;
-Divergence=_Divergence;
-Wavelength=_Wavelength;
-Alpha=_Alpha;
-timeEditable=false;
+    setBeamDiameter(_beamDiameter);
+    setPowerErg(_powerErg);
+    setDivergence(_divergence);
+    setWavelength(_wavelength);
+    setAlpha(_alpha);
 
-setExposureTime();
-MyLaser.setWavelength(Wavelength);
-MyLaser.setAlpha(Alpha);
-MyLaser.setPulseDuration(getExposureTime());
-MyLaser.EMP();
-MyLaser.getEMP();
+    timeEditable=false;
 
-computeNOHD();
-computeLambertianMax();
+    setExposureTime();
+    myLaser.EMP();
+    myLaser.getEMP();
+
+    computeNOHD();
+    computeLambertianMax();
 }
 
 void LaserSafetyCW::computeNOHD()
 {
-		double underroot;
+    double underroot;
 		
-        underroot=(4*getPowerErgForEMP())/(PI*EMP_Result);
-		NOHD=(sqrt(underroot)-(BeamDiameter/1000))/(Divergence/1000);
-		if (NOHD<0)
-            NOHD=0;
+    underroot=(4*getPowerErgForEMP())/(PI*EMP_Result);
+    NOHD=(sqrt(underroot)-(beamDiameter/1000))/(divergence/1000);
+    if (NOHD<0)
+        NOHD=0;
 }
 
 /*****************************************************************************************************************
@@ -46,12 +43,12 @@ void LaserSafetyCW::computeNOHD()
 double LaserSafetyCW::getPowerErgForEMP()
 {
     double powerErgForEMP;
-    FormulaSort=getFormulaSort();
+    formulaSort=getFormulaSort();
 
-    if(FormulaSort=="E")
-        powerErgForEMP=PowerErg;
+    if(formulaSort=="E")
+        powerErgForEMP=powerErg;
             else
-        powerErgForEMP=PowerErg*exposureTime;
+        powerErgForEMP=powerErg*exposureTime;
 
     return powerErgForEMP;
 }
@@ -63,40 +60,43 @@ double LaserSafetyCW::getPowerErgForEMP()
 void LaserSafetyCW::computeLambertianMax()
 {
     double ForLambertianMax;
-    FormulaSort=getFormulaSort();
+    formulaSort=getFormulaSort();
 
-    if(FormulaSort=="E")
-        ForLambertianMax=PowerErg;
+    if(formulaSort=="E")
+        ForLambertianMax=powerErg;
             else
-        ForLambertianMax=PowerErg*exposureTime;
+        ForLambertianMax=powerErg*exposureTime;
 
-        double underroot;
+    double underroot;
 
-        underroot=(ForLambertianMax)/(PI*EMP_Result);
-        lambertianMax=(sqrt(underroot));
+    underroot=(ForLambertianMax)/(PI*EMP_Result);
+    lambertianMax=(sqrt(underroot));
 }
 
 void LaserSafetyCW::laserUpdate()
 {  
-MyLaser.setWavelength(Wavelength);
-MyLaser.setAlpha(Alpha);
-MyLaser.setPulseDuration(getExposureTime());
-MyLaser.EMP();
-EMP_Result=getEMP();
-computeNOHD();
-computeLambertianMax();
+    myLaser.EMP();
+    EMP_Result=getEMP();
+    computeNOHD();
+    computeLambertianMax();
 }
 
 void LaserSafetyCW::setExposureTime()
 {
     if(!timeEditable)
     {
-        if ((Wavelength>=400) and (Wavelength<=700)){
-        exposureTime=0.25;}
-        else if((Wavelength>=180)and (Wavelength<400)){
-         exposureTime=30000;}
-         else{
-                exposureTime=10;}
+        if ((wavelength>=400) and (wavelength<=700))
+        {
+        exposureTime=0.25;
+        }
+        else if((wavelength>=180)and (wavelength<400))
+        {
+        exposureTime=30000;
+        }
+        else
+        {
+        exposureTime=10;
+        }
     }
 }
 

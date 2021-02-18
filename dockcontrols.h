@@ -10,6 +10,9 @@
 #include "lasersafety.h"
 #include "lasersafetycw.h"
 #include "lasersafetymp.h"
+#include "laserclasscw.h"
+#include "laserclasssp.h"
+#include "laserclassmp.h"
 #include "laserskinsafety.h"
 #include "laserskinsafetymp.h"
 #include "lasergoggle.h"
@@ -20,11 +23,13 @@
 #include "dockresults.h"
 #include "dockskin.h"
 #include "dockgoggle.h"
+#include "docklea.h"
 #include "reflectorsqlist.h"
 #include "ui_dockeffects.h"
 #include "ui_dockresults.h"
 #include "ui_dockskin.h"
 #include "ui_dockgoggle.h"
+#include "ui_docklea.h"
 #include "ui_reflectorsqlist.h"
 
 
@@ -38,7 +43,7 @@ class DockControls : public QDockWidget
 
 public:
     explicit DockControls(QWidget *parent, DockResults *dockResults, DockEffects *dockEffects,
-                          DockSkin *dockSkin, DockGoggle *dockGoggle);
+                          DockSkin *dockSkin, DockGoggle *dockGoggle, DockLea *dockLea);
     ~DockControls();
     Ui::DockControls *ui;
 
@@ -68,6 +73,8 @@ public:
     //void setBeamDiameterDial(const int);
     //void setPowerErgDial(const int);
     void setDialControls();
+    void setGoggleMaterial(LaserGoggle::material);
+    LaserGoggle::material getGoggleMaterial()const;
 
     void setUVA();
     void setVIS();
@@ -97,12 +104,21 @@ public:
     void dComputeOpticalDensity();
     double getOpticalDensity();
     double getDOpticalDensity();
-    void displayOpticalDensity();
-    void displayDOpticalDensity();
+    int get_n_laser()const;
     bool isModeLocking();
     void effectivePowerErgPeak();
     void modeLockingPeak();
     void enablePeakControl();
+	
+	//funzioni membro lea
+    void set_LEA_Widgets();
+    void setWidgetsForOperation(LaserClassMP *);
+    void setWidgetsForCW_Operation();
+    void setWidgetsForSinglePulse_Operation();
+    void setWidgetsForMultiPulse_Operation();
+    void setWidgetsForThermal();
+    void setWidgetsForThermalTi();    
+    QString getLaserClassString(const LaserClassCW::laserClass &);
 
 
 private slots:
@@ -124,6 +140,7 @@ private slots:
     void on_enableTeCheckBox_toggled(bool checked);   
     void on_pushButton_toggled(bool checked);
     void on_checkGaussianBeam_clicked(bool checked);
+    void on_internalWaist_checkBox_toggled(bool checked);
 
 signals:
     void modified();
@@ -170,6 +187,7 @@ private:
     DockEffects *dockEffects;
     DockSkin *dockSkin;
     DockGoggle *dockGoggle;
+    DockLea *dockLea;
     ReflectorsQList *dockReflectorsList;
 
     int n_laser;
@@ -196,6 +214,13 @@ private:
     LaserSkinSafetyMP* MyLaserSkinSafetyMP;
     LaserSkinSafety* MyLaserSkinSP_Pr;
     LaserSkinSafetyMP* MyLaserSkinMP_Pr;
+	
+    LaserClassMP* MyLaserClassMP;
+    LaserClassCW* MyLaserClassCW_Pr;
+    LaserClassSP* MyLaserClassSP_Pr;
+    LaserClassMP* MyLaserClassMP_Pr;
+
+    LaserGoggle::material goggleMaterial;
 };
 
 #endif // DOCKCONTROLS_H

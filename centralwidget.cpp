@@ -12,11 +12,13 @@
 #include "dockskin.h"
 #include "dockgoggle.h"
 #include "dockcontrols.h"
+#include "docklea.h"
 #include "ui_dockeffects.h"
 #include "ui_dockresults.h"
 #include "ui_dockskin.h"
 #include "ui_dockgoggle.h"
 #include "ui_dockcontrols.h"
+#include "ui_docklea.h"
 #include "laserpoint.h"
 #include "binocular.h"
 #include "footprintobject.h"
@@ -38,13 +40,14 @@ CentralWidget::CentralWidget(QWidget *parent) :
     myDockEffects =new DockEffects();
     myDockSkin = new DockSkin();
     myDockGoggle = new DockGoggle();
+    myDockLea= new DockLea();
     myDockReflectorsList=new ReflectorsQList();
 
     clearInstallationDesription();
     scale=1;
     scaleIndex=4;
     myLabRoomInserted=false;
-    myDockControls= new DockControls(nullptr, myDockResults, myDockEffects, myDockSkin, myDockGoggle);
+    myDockControls= new DockControls(nullptr, myDockResults, myDockEffects, myDockSkin, myDockGoggle, myDockLea);
 
     gridLayout = new QGridLayout(this);
     graphicsView =new DisplayScene();
@@ -107,6 +110,7 @@ bool CentralWidget::writeFile(const QString &fileName)
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
     myLabRoomInserted=false;
+    goggleMaterial=myDockControls->getGoggleMaterial();
     QVector <QPointF> pos;
     QVector <bool> isSelected;
     QVector <int> Type ;
@@ -215,7 +219,7 @@ bool CentralWidget::writeFile(const QString &fileName)
     }
 
     out << myLabRoomInserted << scintillationBool << atmEffectsBool << meteoRange << a_coefficient << atmoshericEffectsCoefficient
-        << scaleIndex << scale << force << customer << uasl << uaslAssistant << laserDescription << placeDescription << gridState
+        << scaleIndex << scale << force << customer << uasl << uaslAssistant << laserDescription << placeDescription << gridState << goggleMaterial
         << myDockControls->ui->powerErgControl->getScientificNumber() << myDockControls->ui->alphaControl->getScientificNumber()
         << myDockControls->ui->pulseControl->getScientificNumber() << myDockControls->ui->divergenceControl->getScientificNumber()
         << myDockControls->ui->beamDiameterControl->getScientificNumber() << myDockControls->ui->prfControl->getScientificNumber()
@@ -283,7 +287,7 @@ bool CentralWidget::readFile(const QString &fileName)
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
     in  >> myLabRoomInserted >> scintillationBool >> atmEffectsBool >> meteoRange >> a_coefficient >> atmoshericEffectsCoefficient
-        >> scaleIndex >> scale >> force >> customer >> uasl >> uaslAssistant >> laserDescription >> placeDescription >> gridState
+        >> scaleIndex >> scale >> force >> customer >> uasl >> uaslAssistant >> laserDescription >> placeDescription >> gridState >> goggleMaterial
         >> powerErgControl >> alphaControl >> pulseControl >> divergenceControl >> beamDiameterControl >> prfControl >> wavelengthScrollBar
         >> operationCombo >> isEnabledCheckGaussianBeam >> comboBox >> T_SkinSpinBox >> teControl >> isEnabledTeCheckBox >> peakPowerErgControl >> lambertianMax >> laserEMP
         >> laserBeamDiameter >> laserPowerErg >> laserPosition >> laserIsSelected >> laserZValue >> aperture >> installation >> filterOn
@@ -306,6 +310,8 @@ bool CentralWidget::readFile(const QString &fileName)
      myDockControls->ui->prfControl->setValue(prfControl);
      myDockControls->ui->T_SkinControl->setValue(T_SkinSpinBox);
      myDockControls->ui->checkGaussianBeam->setChecked(isEnabledCheckGaussianBeam);
+
+     myDockControls->setGoggleMaterial(goggleMaterial);
 
      if(myDockControls->ui->peakControl->isEnabled())
             myDockControls->ui->peakControl->setValue(peakPowerErgControl);

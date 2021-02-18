@@ -4,119 +4,120 @@
 
 using namespace std;
 
-LaserSkinSafetyMP::LaserSkinSafetyMP(int _PRF, double _exposureTime, double _BeamDiameter, double _PowerErg,  double _Divergence, double _Wavelength,
-                        double _PulseWidth, double _Alpha):LaserSkinSafety(_BeamDiameter, _PowerErg, _Divergence, _Wavelength,
-						_PulseWidth, _Alpha)
+LaserSkinSafetyMP::LaserSkinSafetyMP(int _PRF, double _exposureTime, double _beamDiameter, double _powerErg,  double _divergence, double _wavelength,
+                        double _pulseWidth, double _alpha):LaserSkinSafety(_beamDiameter, _powerErg, _divergence, _wavelength,
+                        _pulseWidth, _alpha)
 {
 	//costruttore
-	BeamDiameter=_BeamDiameter; 
-	PowerErg=_PowerErg;
-	Divergence=_Divergence;
-	Wavelength=_Wavelength;
-	Alpha=_Alpha;
+    setBeamDiameter(_beamDiameter);
+    setPowerErg(_powerErg);
+    setDivergence(_divergence);
+    setWavelength(_wavelength);
+    setAlpha(_alpha);
     exposureTime= _exposureTime;
     PRF=_PRF;
 		
 	//Imposto i parametri del laser relativi al singolo impulso
-    MySkinLaser.setWavelength(_Wavelength);
-    MySkinLaser.setAlpha(_Alpha);
-    MySkinLaser.setPulseDuration(getPulseWidth());
-    MySkinLaser.adaptForSkinEMP();
-    MySkinLaser.EMP();
-    MySkinLaser.getEMP();
+    mySkinLaser.adaptForSkinEMP();
+    mySkinLaser.EMP();
+    mySkinLaser.getEMP();
 	//Imposto i parametri del laser relativi al treno di impulsi nel tempo di funzionamento
-    MyMeanPower_SkinLaser.setWavelength(Wavelength);
-    MyMeanPower_SkinLaser.setAlpha(Alpha);
-    MyMeanPower_SkinLaser.setPulseDuration(exposureTime);
-    MyMeanPower_SkinLaser.adaptForSkinEMP();
-    MyMeanPower_SkinLaser.EMP();
-    MyMeanPower_SkinLaser.getEMP();
+    myMeanPower_SkinLaser.adaptForSkinEMP();
+    myMeanPower_SkinLaser.EMP();
+    myMeanPower_SkinLaser.getEMP();
 }
  
+void LaserSkinSafetyMP::setPulseWidth(const double& _pulseWidth)
+{
+    if(_pulseWidth==pulseWidth)
+        return;
+
+    mySkinLaser.setWavelength(_pulseWidth);
+    myMeanPower_SkinLaser.setPulseWidth(exposureTime);
+    pulseWidth=_pulseWidth;
+}
+
  void LaserSkinSafetyMP::computeMeanPower()
 {
-	MeanPower=PowerErg*PRF;
+    meanPower=powerErg*PRF;
 }
 
 void LaserSkinSafetyMP::computeMeanPowerEMP()
 {
-    MyMeanPower_SkinLaser.setWavelength(Wavelength);
-    MyMeanPower_SkinLaser.setAlpha(Alpha);
-    MyMeanPower_SkinLaser.setPulseDuration(exposureTime);// il termpo di esposizione di considera la durata del treno
-    MyMeanPower_SkinLaser.EMP();
-    MyMeanPower_SkinLaser.adaptForSkinEMP();
-    MeanPow_EMP_Result=MyMeanPower_SkinLaser.getEMP();// restituisce l'EMP in funzione del paramatri forniti.
-    PowerFormulaEMP=MyMeanPower_SkinLaser.getFormulaEMP();
-    PowerFormulaSort=MyMeanPower_SkinLaser.getFormulaSort();
-    PowerSkinEMP=MyMeanPower_SkinLaser.getEMP();
+    myMeanPower_SkinLaser.setWavelength(wavelength);
+    myMeanPower_SkinLaser.setAlpha(alpha);
+    myMeanPower_SkinLaser.setPulseWidth(exposureTime);// il termpo di esposizione di considera la durata del treno
+    myMeanPower_SkinLaser.EMP();
+    myMeanPower_SkinLaser.adaptForSkinEMP();
+    meanPow_EMP_Result=myMeanPower_SkinLaser.getEMP();// restituisce l'EMP in funzione del paramatri forniti.
+    powerFormulaEMP=myMeanPower_SkinLaser.getFormulaEMP();
+    powerFormulaSort=myMeanPower_SkinLaser.getFormulaSort();
+    powerSkinEMP=myMeanPower_SkinLaser.getEMP();
 
         if(PRF!=0)
         {
-            if(PowerFormulaSort=="H")
-                MeanPow_EMP_Result=PowerSkinEMP/(exposureTime*PRF);// calcola l'H medio come il rapporo dell'H in Te con N.
-            else if(PowerFormulaSort=="E")
-                MeanPow_EMP_Result=PowerSkinEMP/(PRF*PulseWidth);//calcola l'E medio come il rapporo dell'H medio con t.
+            if(powerFormulaSort=="H")
+                meanPow_EMP_Result=powerSkinEMP/(exposureTime*PRF);// calcola l'H medio come il rapporo dell'H in Te con N.
+            else if(powerFormulaSort=="E")
+                meanPow_EMP_Result=powerSkinEMP/(PRF*pulseWidth);//calcola l'E medio come il rapporo dell'H medio con t.
         }
         else
         {
-        MeanPow_EMP_Result=PowerSkinEMP;//utile per evitare divisione per 0 quando la PRF si riduce a 0.
+        meanPow_EMP_Result=powerSkinEMP;//utile per evitare divisione per 0 quando la PRF si riduce a 0.
         }
 }
 
 void LaserSkinSafetyMP::computeMeanPowerIrradiance()
 {
 	computeBeamArea();
-	MeanPowerIrradiance=MeanPower*1000000/getBeamArea();
+    meanPowerIrradiance=meanPower*1000000/getBeamArea();
 }
 
 void LaserSkinSafetyMP::computePulseNumber()
 {
-    PulseNumber=PRF*exposureTime;
+    pulseNumber=PRF*exposureTime;
 }
 
 void LaserSkinSafetyMP::computeSP_EMP()
 {
-    MySkinLaser.setWavelength(Wavelength);
-    MySkinLaser.setAlpha(Alpha);
-    MySkinLaser.setPulseDuration(getPulseWidth());
-    MySkinLaser.EMP();// calcolo l'EMP per il singolo impulso
-    MySkinLaser.adaptForSkinEMP();
-    Formula=MySkinLaser.getFormulaEMP();
-    FormulaSort=MySkinLaser.getFormulaSort();
-    SP_EMP_Result=MySkinLaser.getEMP();// calcolo l'EMP del singolo impulso
+    mySkinLaser.EMP();// calcolo l'EMP per il singolo impulso
+    mySkinLaser.adaptForSkinEMP();
+    formula=mySkinLaser.getFormulaEMP();
+    formulaSort=mySkinLaser.getFormulaSort();
+    SP_EMP_Result=mySkinLaser.getEMP();// calcolo l'EMP del singolo impulso
 }
 
 void LaserSkinSafetyMP::equateMeanPowerEMP()
 {    
-    if(FormulaSort=="H")
+    if(formulaSort=="H")
     {
 //se l'EMP calcolato per il tempo di funzionamento è espresso in esposizione radiante esprimo l'emissione radiante in esposizione radiante
-        if(PowerFormulaSort=="H")
-            MeanPow_EMP_Equate=MeanPow_EMP_Result;
+        if(powerFormulaSort=="H")
+            meanPow_EMP_Equate=meanPow_EMP_Result;
         else
 //altrimenti trasformo l'EMP in esposizione radiante un irradianza dividendo per il tempo di esposizione.
-        if(PowerFormulaSort=="E")
+        if(powerFormulaSort=="E")
         {
-            MeanPow_EMP_Equate=MeanPow_EMP_Result*PulseWidth;//ottengo il valore della radianza media da E
+            meanPow_EMP_Equate=meanPow_EMP_Result*pulseWidth;//ottengo il valore della radianza media da E
         }
     }
 // viceversa se l'EMP del tempo di funzionamento è espresso in irradianza
     else
-    if(FormulaSort=="E")
+    if(formulaSort=="E")
     {
-        if(PowerFormulaSort=="H")
+        if(powerFormulaSort=="H")
         {
-            MeanPow_EMP_Equate=MeanPow_EMP_Result/PulseWidth;//calcolo E da H dividendo per t.
+            meanPow_EMP_Equate=meanPow_EMP_Result/pulseWidth;//calcolo E da H dividendo per t.
         }
         else
-        if(PowerFormulaSort=="E")
-        MeanPow_EMP_Equate=MeanPow_EMP_Result;
+        if(powerFormulaSort=="E")
+        meanPow_EMP_Equate=meanPow_EMP_Result;
     }
 }
 
 double LaserSkinSafetyMP::getMeanPower_EMP_Equate() const
 {
-return MeanPow_EMP_Equate;
+return meanPow_EMP_Equate;
 }
 
 double LaserSkinSafetyMP::returnMultiPulse_EMP()
@@ -126,7 +127,7 @@ double LaserSkinSafetyMP::returnMultiPulse_EMP()
     | SP_EMP_Result:		EMP dell'impulso singolo																				 |																								 |
 	| MeanPow_EMP_Result:	EMP medio del treno di impulsi omogeneizzato all'unità di misura dell'EMP del singolo impulso.			 |																						     |
 	---------------------------------------------------------------------------------------------------------------------------------*/	
-    EMP_Result=fmin(SP_EMP_Result, MeanPow_EMP_Equate);
+    EMP_Result=fmin(SP_EMP_Result, meanPow_EMP_Equate);
 	return EMP_Result;
 }
 
@@ -138,20 +139,20 @@ void LaserSkinSafetyMP::computeMeanPower_NSHD()
    ----------------------------------------------------------------------------------------------------------*/
 {
     double ForNSHD;
-	PowerFormulaSort= getMeanPowerFormulaSort();//Ricavo l'unità di misura dell'EMP relativo alla potenza media
+    powerFormulaSort= getMeanPowerFormulaSort();//Ricavo l'unità di misura dell'EMP relativo alla potenza media
 	
-	if(PowerFormulaSort=="E")
-        ForNSHD=MeanPower;// se l'EMP è espresso in irradianza si considera la potenza media
+    if(powerFormulaSort=="E")
+        ForNSHD=meanPower;// se l'EMP è espresso in irradianza si considera la potenza media
             else
-        ForNSHD=MeanPower*exposureTime;// altrimenti si ricava l'energia
+        ForNSHD=meanPower*exposureTime;// altrimenti si ricava l'energia
 
 		double underroot;
     //si applica la formula pe il calcolo della NSHD
 
-        underroot=(4*ForNSHD)/(PI*PowerSkinEMP);//si impiega l'EMP per gli effetti medi
-        MeanPower_NSHD=(sqrt(underroot)-(BeamDiameter/1000))/(Divergence/1000);
-        if (MeanPower_NSHD<0)// se il risultato è minore di zero allora la NSHD viene impostato a zero.
-            MeanPower_NSHD=0;
+        underroot=(4*ForNSHD)/(PI*powerSkinEMP);//si impiega l'EMP per gli effetti medi
+        meanPower_NSHD=(sqrt(underroot)-(beamDiameter/1000))/(divergence/1000);
+        if (meanPower_NSHD<0)// se il risultato è minore di zero allora la NSHD viene impostato a zero.
+            meanPower_NSHD=0;
 }
 
 void LaserSkinSafetyMP::computeSinglePulse_NSHD()
@@ -160,22 +161,22 @@ void LaserSkinSafetyMP::computeSinglePulse_NSHD()
    ----------------------------------------------------------------------------------------------------------*/
 {		
     double ForNSHD=0;
-	FormulaSort=getFormulaSort();
+    formulaSort=getFormulaSort();
 	
-    if(FormulaSort=="E"){
-           ForNSHD=PowerErg/PulseWidth;// se l'EMP è espresso in irradianza si considera la potenza (PowerErg è l'energia dell'impulso).
+    if(formulaSort=="E"){
+           ForNSHD=powerErg/pulseWidth;// se l'EMP è espresso in irradianza si considera la potenza (PowerErg è l'energia dell'impulso).
            }
-             else if(FormulaSort=="H")
+             else if(formulaSort=="H")
                 {
-                ForNSHD=PowerErg;// altrimenti si considera l'energia dell'impulso
+                ForNSHD=powerErg;// altrimenti si considera l'energia dell'impulso
                 }
 
 		double underroot;
     //si applica la formula pe il calcolo della NSHD
         underroot=(4*ForNSHD)/(PI*SP_EMP_Result);//si impiega l'EMP del singolo impulso
-        SinglePulse_NSHD=(sqrt(underroot)-(BeamDiameter/1000))/(Divergence/1000);
-        if (SinglePulse_NSHD<0)// se il risultato è minore di zero allora la NSHD viene impostato a zero.
-            SinglePulse_NSHD=0;
+        singlePulse_NSHD=(sqrt(underroot)-(beamDiameter/1000))/(divergence/1000);
+        if (singlePulse_NSHD<0)// se il risultato è minore di zero allora la NSHD viene impostato a zero.
+            singlePulse_NSHD=0;
 }
 
 void LaserSkinSafetyMP::computeNSHD()
@@ -185,7 +186,7 @@ void LaserSkinSafetyMP::computeNSHD()
     |SinglePulse_NSHD																						 |
     |MeanPower_NSHD																							 |
     ---------------------------------------------------------------------------------------------------------*/
-    NSHD=fmax(MeanPower_NSHD, SinglePulse_NSHD);
+    NSHD=fmax(meanPower_NSHD, singlePulse_NSHD);
 }
 
 	/*--------------------------------------------------------------------------------------------------------
@@ -211,19 +212,19 @@ void LaserSkinSafetyMP::laserSkinUpdate()
     ---------------------------------------------------------------------------------------------------------*/
 string LaserSkinSafetyMP::getMeanPowerFormulaSort()
 {
-    FormulaSort=MyMeanPower_SkinLaser.getFormulaSort();
-	return FormulaSort;
+    formulaSort=myMeanPower_SkinLaser.getFormulaSort();
+    return formulaSort;
 }
 
 string LaserSkinSafetyMP::getMeanPowerFormulaEMP()
 {
-    Formula=MyMeanPower_SkinLaser.getFormulaEMP();
-	return Formula;
+    formula=myMeanPower_SkinLaser.getFormulaEMP();
+    return formula;
 }
 
 double LaserSkinSafetyMP::getEMP_MP()
 {
-    return MyMeanPower_SkinLaser.getEMP();
+    return myMeanPower_SkinLaser.getEMP();
 }
 
 void LaserSkinSafetyMP::setPRF(const int _PRF)
@@ -238,17 +239,17 @@ int LaserSkinSafetyMP::getPRF() const
 
 double LaserSkinSafetyMP::getMeanPower() const
 {
-	return MeanPower;
+    return meanPower;
 }
 
 double LaserSkinSafetyMP::getMeanIrradiance() const
 {
-	return MeanPowerIrradiance;
+    return meanPowerIrradiance;
 }
 
 double LaserSkinSafetyMP::getPulseNumber() const
 {
-	return PulseNumber;
+    return pulseNumber;
 }
 
 double LaserSkinSafetyMP::getExposureTime() const
@@ -273,5 +274,5 @@ double LaserSkinSafetyMP::getEMP_1stCondition()const
 
 double LaserSkinSafetyMP::getEMP_2ndCondition()const
 {
-    return MeanPow_EMP_Result;
+    return meanPow_EMP_Result;
 }

@@ -6,10 +6,13 @@
 #include <utility>
 #include <algorithm>
 
-const int LaserGoggle::timeBaseLowWavelength =30000;
-const int LaserGoggle::timeBaseWavelength = 5;
+const int LaserGoggle::TIMEBASE = 5;
+const int LaserGoggle::TIMEBASE_LOW_WAVELENGTH =30000;
 const double LaserGoggle::PI=3.141592653589793238462643383;
-
+const int LaserGoggle::TABLEROWS = 10;
+const double LaserGoggle::CONTINUOS_OPERATION=0.0;
+const double LaserGoggle::GLASS_EXPONENT=1.1693;
+const double LaserGoggle::PLASTIC_EXPONENT=1.2233;
 
 LaserGoggle::LaserGoggle(int _wavelength, double _pulseWidth, double _powerErg, double _beamDiameter)
 {
@@ -19,9 +22,11 @@ LaserGoggle::LaserGoggle(int _wavelength, double _pulseWidth, double _powerErg, 
     ***************************************************************************************************/
 
     buildScaleNumbers();
-    n=10;
+    n=TABLEROWS;
     expositionData = new double[n];
     wavelength = _wavelength;
+
+    materialCorrection=1.0;
 
     /***************************************************************************************************
      * L'impulso non può avere durata nulla, gli assegno nel caso di durata 0 il valore convenzionale  *
@@ -33,16 +38,15 @@ LaserGoggle::LaserGoggle(int _wavelength, double _pulseWidth, double _powerErg, 
      *  - inserire direttamente la base dei tempi pertinente.                                          *
      ***************************************************************************************************/
 
-        if(_pulseWidth==0)
-        {
-            if((wavelength>=180)&&(wavelength<=315))
-                pulseWidth = timeBaseLowWavelength;
-                    else
-                    if((wavelength>315)&&(wavelength<=1.0e+06))
-                        pulseWidth = timeBaseWavelength;
-        }
-            else
-                pulseWidth = _pulseWidth;
+    if(_pulseWidth==CONTINUOS_OPERATION)
+    {
+      if((wavelength>=180)&&(wavelength<=315))
+          pulseWidth = TIMEBASE_LOW_WAVELENGTH;
+      else if((wavelength>315)&&(wavelength<=1.0e+06))
+          pulseWidth = TIMEBASE;
+     }
+     else
+     pulseWidth = _pulseWidth;
 
     powerErg = _powerErg;
     myMeanPower=0;
@@ -56,17 +60,18 @@ LaserGoggle::LaserGoggle(int _wavelength, double _pulseWidth, double _powerErg, 
 LaserGoggle::LaserGoggle(int _wavelength, double _pulseWidth, double _powerErg, double _beamDiameter, int _frequency)
 {
     buildScaleNumbers();
-    n=10;
+    n=TABLEROWS;
     expositionData = new double[n];
     wavelength = _wavelength;
 
-    if(_pulseWidth==0)
+    materialCorrection=1.0;
+
+    if(_pulseWidth==CONTINUOS_OPERATION )
     {
         if((wavelength>=180)&&(wavelength<=315))
-            pulseWidth = timeBaseLowWavelength;
-                else
-                if((wavelength>315)&&(wavelength<=1.0e+06))
-                    pulseWidth = timeBaseWavelength;
+            pulseWidth = TIMEBASE_LOW_WAVELENGTH;
+        else if((wavelength>315)&&(wavelength<=1.0e+06))
+            pulseWidth = TIMEBASE;
     }
         else
             pulseWidth = _pulseWidth;
@@ -83,7 +88,7 @@ LaserGoggle::LaserGoggle(int _wavelength, double _pulseWidth, double _powerErg, 
 
 int* LaserGoggle::buildScaleNumbers()
 {
-   LB_Scale = new int[10];
+   LB_Scale = new int[TABLEROWS];
    LB_Scale[0] = 1;
    LB_Scale[1] = 2;
    LB_Scale[2] = 3;
@@ -97,28 +102,28 @@ int* LaserGoggle::buildScaleNumbers()
    return LB_Scale;
 }
 
-double* LaserGoggle::selectData(const double &wavelength, const double &pulseWidth)
+double* LaserGoggle::selectData(const double &wavelength, const double &applicableTime)
 {
     if((wavelength>=180.0) && (wavelength<315.0))
         {
-        if(pulseWidth>=3.0e+04)
+        if(applicableTime>=3.0e+04)
         {
             double D180_315_Values[] = {0.01, 0.1, 1.0, 10.0, 1.0e+02, 1.0e+03, 1.0e+04, 1.0e+05, 1.0e+06, 1.0e+07};
             for (int i=0; i<n; i++)
             expositionData[i]=D180_315_Values[i];
             pulseCode="D";
         }
-        if((pulseWidth>=1.0e-09)&&(pulseWidth<3.0e+04))
+        if((applicableTime>=1.0e-09)&&(applicableTime<3.0e+04))
         {
             double IR180_315_Values[] = {3.0e+02, 3.0e+03, 3.0e+04, 3.0e+05,  3.0e+06, 3.0e+07, 3.0e+08, 3.0e+09, 3.0e+10,3.0e+11};
             for (int i=0; i<n; i++)
             expositionData[i]=IR180_315_Values[i];
-            if (pulseWidth<1.0e-06)
+            if (applicableTime<1.0e-06)
                 pulseCode="R";
             else
                 pulseCode="I";
         }
-        if(pulseWidth<1.0e-09)
+        if(applicableTime<1.0e-09)
         {
             double M180_315_Values[] = {3.0e+11, 3.0e+12, 3.0e+13, 3.0e+14, 3.0e+15, 3.0e+16, 3.0e+17, 3.0e+18, 3.0e+19, 3.0e+20};
             for (int i=0; i<n; i++)
@@ -129,24 +134,24 @@ double* LaserGoggle::selectData(const double &wavelength, const double &pulseWid
 
     if((wavelength>=315.0) && (wavelength<1400.0))
         {
-        if(pulseWidth>=5.0e-04)
+        if(applicableTime>=5.0e-04)
         {
             double D315_1400_Values[] = { 1.0e+02, 1.0e+03, 1.0e+04, 1.0e+05, 1.0e+06, 1.0e+07, 1.0e+08, 1.0e+09, 1.0e+10, 1.0e+11};
             for (int i=0; i<n; i++)
             expositionData[i]=D315_1400_Values[i];
             pulseCode="D";
         }
-        if((pulseWidth>=1.0e-09)&&(pulseWidth<5.0e-04))
+        if((applicableTime>=1.0e-09)&&(applicableTime<5.0e-04))
         {
             double IR315_1400_Values[] = {0.05, 0.5 , 5, 50, 5.0e+02, 5.0e+03, 5.0e+04, 5.0e+05, 5.0e+06, 5.0e+07};
             for (int i=0; i<n; i++)
             expositionData[i]=IR315_1400_Values[i];
-            if (pulseWidth<1.0e-06)
+            if (applicableTime<1.0e-06)
                 pulseCode="R";
             else
                 pulseCode="I";
         }
-        if(pulseWidth<1.0e-09)
+        if(applicableTime<1.0e-09)
         {
             double M315_1400_Values[] = {1.5e-03, 1.5e-02, 0.15, 1.5, 15, 1.5e+02, 1.5e+03, 1.5e+04, 1.5e+05, 1.5e+06};
             for (int i=0; i<n; i++)
@@ -158,24 +163,24 @@ double* LaserGoggle::selectData(const double &wavelength, const double &pulseWid
 
     if((wavelength>=1400.0) && (wavelength<1.0e+06))
         {
-        if(pulseWidth>=1.0e-01)
+        if(applicableTime>=1.0e-01)
         {
             double D1400_1mm_Values[] = {1.0e+04, 1.0e+05, 1.0e+06, 1.0e+07, 1.0e+08, 1.0e+09, 1.0e+10, 1.0e+11, 1.0e+12, 1.0e+13};
             for (int i=0; i<n; i++)
             expositionData[i]=D1400_1mm_Values[i];
             pulseCode="D";
         }
-        if((pulseWidth>=1.0e-09)&&(pulseWidth<1.0e-01))
+        if((applicableTime>=1.0e-09)&&(applicableTime<1.0e-01))
         {
             double IR1400_1mm_Values[] = { 1.0e+03, 1.0e+04, 1.0e+05, 1.0e+06, 1.0e+07, 1.0e+08, 1.0e+09, 1.0e+10, 1.0e+11, 1.0e+12};
             for (int i=0; i<n; i++)
             expositionData[i]=IR1400_1mm_Values[i];
-            if (pulseWidth<1.0e-06)
+            if (applicableTime<1.0e-06)
                 pulseCode="R";
             else
                 pulseCode="I";
         }
-        if(pulseWidth<1.0e-09)
+        if(applicableTime<1.0e-09)
         {
             double M1400_1mm_Values[] = {1.0e+12,  1.0e+13, 1.0e+14, 1.0e+15, 1.0e+16, 1.0e+17, 1.0e+18, 1.0e+19, 1.0e+20, 1.0e+21};
             for (int i=0; i<n; i++)
@@ -188,75 +193,71 @@ double* LaserGoggle::selectData(const double &wavelength, const double &pulseWid
 }
 
 vector< pair <int,double> > LaserGoggle::buildDataVector(const double expositionData[], const int LB_Scale[])
-    {
-      vector< pair <int,double> > dataVector;
-      // Entering values in vector of pairs
+{
+    vector< pair <int,double> > dataVector;
+    // Entering values in vector of pairs
+    for (int i=0; i<n; i++)
+    dataVector.push_back( make_pair(LB_Scale[i],expositionData[i]) );
 
-          for (int i=0; i<n; i++)
-             dataVector.push_back( make_pair(LB_Scale[i],expositionData[i]) );
-
-            return dataVector;
-    }
+    return dataVector;
+}
 
 
- double LaserGoggle::laserIrrRadCorrected(double _laserOutput)
-    {
-       myExpositionValue=pulseTrainCorrectionK()*pulseTrainCorrectionKi()*laserIrrRad(_laserOutput);
-       return myExpositionValue;
-    }
+double LaserGoggle::laserIrrRadCorrected(double _laserOutput)
+{
+    myExpositionValue=pulseTrainCorrectionK()*pulseTrainCorrectionKi()*laserIrrRad(_laserOutput);
+    return myExpositionValue;
+}
 
-  int LaserGoggle::scaleNumber(vector< pair <int,double> > _dataVector,double myExpositionValue)
-  {
+int LaserGoggle::scaleNumber(vector< pair <int,double> > _dataVector,double myExpositionValue)
+{
     int i=0;
 
-        while((_dataVector[i].second<myExpositionValue)&& (i<n-1))
-            i++;
+    while((_dataVector[i].second<myExpositionValue)&& (i<n-1))
+    i++;
 
-                if(i==n)
-                        myScaleNumber=0;
-                else
-                    myScaleNumber= _dataVector[i].first;
+    if(i==n)
+    myScaleNumber=0;
+    else
+    myScaleNumber= _dataVector[i].first;
 
-        return myScaleNumber;
+    return myScaleNumber;
+}
+
+double LaserGoggle::pulseTrainCorrectionK()
+{
+    double myNymberOfPulse=numberOfPulse();
+
+    if(frequency>1)
+    {
+        if((wavelength>=400)and(wavelength<=1.0e+06))
+        k= pow(myNymberOfPulse, 0.25);
+        else
+        k=1;
+    }
+    else
+    {
+       if(frequency==0)
+       k=1;
     }
 
-  double LaserGoggle::pulseTrainCorrectionK()
-  {
-      double myNymberOfPulse=numberOfPulse();
+    return k;
+}
 
-      if(frequency>1){
-          if((wavelength>=400)and(wavelength<=1.0e+06))
-              {
-               k= pow(myNymberOfPulse, 0.25);
-               //cout<< "Coefficiente k: "<< k <<endl;
-              }
-          else
-              {
-                  k=1;
-              }
-      }
-      else
+double LaserGoggle::frequencyCorrection()
+{
+    /* se la lunghezza d'onda appartiene ad alcun intervallo del prospetto B.2 EN207
+     * la correzione non va applicata, ciò equivale a porre il valore di Ti=1/frequency
+     * e quello di ni_max=frequency */
+    if(frequency>1)
+    {
+        if ((wavelength >= 180) && (wavelength<400))
         {
-          if(frequency==0)
-              k=1;
+        Ti=1/frequency;
+        ni_max=frequency;
         }
-  return k;
-  }
-
-  double LaserGoggle::frequencyCorrection()
-  {
-      /* se la lunghezza d'onda appartiene ad alcun intervallo del prospetto B.2 EN207
-       * la correzione non va applicata, ciò equivale a porre il valore di Ti=1/frequency
-       * e quello di ni_max=frequency */
-      if(frequency>1)
-      {
-      if ((wavelength >= 180) && (wavelength<400))
-          {
-          Ti=1/frequency;
-          ni_max=frequency;
-          }
-      else
-       /* Nel caso si applichi il prospetto B.2 EN207 si memorizzano i valori di Ti e ni_max*/
+    else
+    /* Nel caso si applichi il prospetto B.2 EN207 si memorizzano i valori di Ti e ni_max*/
       if ((wavelength >= 400) && (wavelength<1050))
           {
           Ti=18e-06;
@@ -287,68 +288,67 @@ vector< pair <int,double> > LaserGoggle::buildDataVector(const double exposition
           }
       /* Se la frequenza è maggiore del valore di ni_max si calcolano il valore di ki ed il valore della
        * potenza media. Successivamente si aggiorna il valore della frequenza (cfr. paragrafo B.3.3.2 EN207). */
-
       if(frequency>ni_max)
               ki=frequency*Ti;
           else
               ki=1;
 
-      /* La funzione restituisce il valore  ni_max*/
-      }
-          return ni_max;
+/* La funzione restituisce il valore  ni_max*/
+    }
+    return ni_max;
+}
 
-  }
+int LaserGoggle::numberOfPulse()
+{
+    /*************************************************************************************************
+     *  La base dei tempi da considerare è quella dei 5 secondi nel caso di lunghezze                *
+     * d'onda maggiori di 315 nm. Il valore di tale costante è memorizzato nella costante            *
+     * timeBaseWavelength. Per lunghezze d'onda minori di 315 nm il progetto dei protettori          *
+     * corrisponde alla base dei tempi di 30000 s tuttavia la verifica di reisitenza                 *
+     * dei protettori è di 5s. Si assume per tale motivo una base dei tempi corrispondente ai        *
+     * 5s fatto salvo eventuali esigenze, in quel caso bisognerà apportare correzioni al programma   *
+     * Dopo una seconda revisione di ritiene più opportuno considerare per lunghezze d'onda minori   *
+     * di 380 nm una base dei tempi di 30000 tale valore risulta valido solo per il calcolo degli    *
+     * effetti medi                                                                                  *
+     *************************************************************************************************/
+    frequencyCorrection();
 
-  int LaserGoggle::numberOfPulse()
-  {
-      /*************************************************************************************************
-       *  La base dei tempi da considerare è quella dei 5 secondi nel caso di lunghezze                *
-       * d'onda maggiori di 315 nm. Il valore di tale costante è memorizzato nella costante            *
-       * timeBaseWavelength. Per lunghezze d'onda minori di 315 nm il progetto dei protettori          *
-       * corrisponde alla base dei tempi di 30000 s tuttavia la verifica di reisitenza                 *
-       * dei protettori è di 5s. Si assume per tale motivo una base dei tempi corrispondente ai        *
-       * 5s fatto salvo eventuali esigenze, in quel caso bisognerà apportare correzioni al programma   *
-       * Dopo una seconda revisione di ritiene più opportuno considerare per lunghezze d'onda minori   *
-       * di 380 nm una base dei tempi di 30000 tale valore risulta valido solo per il calcolo degli    *
-       * effetti medi                                                                                  *
-       *************************************************************************************************/
-      frequencyCorrection();
-
-      if((wavelength>=180)&&(wavelength<=315))
+    if((wavelength>=180)&&(wavelength<=315))
       {
-        numberOfPulses = fminf(ni_max, frequency)*timeBaseLowWavelength;
+        numberOfPulses = fminf(ni_max, frequency)*TIMEBASE_LOW_WAVELENGTH;
       }
-          else
-          if((wavelength>315)&&(wavelength<=1.0e+06))
-          {
-              numberOfPulses = fminf(ni_max, frequency)*timeBaseWavelength;
-          }
-          //cout<< "number of pulses: " << numberOfPulses << endl;
-      return numberOfPulses;
-  }
+    else if((wavelength>315)&&(wavelength<=1.0e+06))
+      {
+        numberOfPulses = fminf(ni_max, frequency)*TIMEBASE;
+      }
 
-  string LaserGoggle::goggleMark(int _wavelength, double _pulseWidth, double _powerErg, double _beamDiameter, double _frequency)
-   {
-      setWavelength(_wavelength);
-      setPulseWidth(_pulseWidth);
-      setPowerErg(_powerErg);
-      setBeamDiameter(_beamDiameter);
-      setFrequency(_frequency);
-      prepareGoggleMark();
-      string myGoggleMark;
-      myGoggleMark=printGoggleCode();
-      return myGoggleMark;
+    return numberOfPulses;
+}
+
+string LaserGoggle::goggleMark(int _wavelength, double _pulseWidth, double _powerErg, double _beamDiameter, double _frequency)
+{
+    setWavelength(_wavelength);
+    setPulseWidth(_pulseWidth);
+    setPowerErg(_powerErg);
+    setBeamDiameter(_beamDiameter);
+    setFrequency(_frequency);
+    prepareGoggleMark();
+    string myGoggleMark;
+    myGoggleMark=printGoggleCode();
+
+    return myGoggleMark;
    }
 
-  string LaserGoggle::goggleMark()
-   {
-      prepareGoggleMark();
-      string myGoggleMark;
-      myGoggleMark=printGoggleCode();
-      return myGoggleMark;
-   }
+string LaserGoggle::goggleMark()
+{
+    prepareGoggleMark();
+    string myGoggleMark;
+    myGoggleMark=printGoggleCode();
 
- void LaserGoggle::prepareGoggleMark()
+    return myGoggleMark;
+}
+
+void LaserGoggle::prepareGoggleMark()
 {
   expositionData=selectData(wavelength, pulseWidth);
   //printData();
@@ -365,46 +365,75 @@ vector< pair <int,double> > LaserGoggle::buildDataVector(const double exposition
   //cout<< "\nNumero di scala calcolato: " << myScaleNumber << endl;
 }
 
-  string LaserGoggle::printGoggleCode()
-  {
-      if(myScaleNumber)
-      {
-      std::string wavelength_str = std::to_string(getWavelength());
-      std::string myScaleNumber_str = std::to_string(myScaleNumber);
-      myGoggleCode= wavelength_str + " " + pulseCode + " LB" + myScaleNumber_str;
-      }
-      else
-          myGoggleCode= "Eccede i valori specificati dalla EN207, non applicabile.";
+string LaserGoggle::printGoggleCode()
+{
+    if(myScaleNumber)
+    {
+    std::string wavelength_str = std::to_string(getWavelength());
+    std::string myScaleNumber_str = std::to_string(myScaleNumber);
+    myGoggleCode= wavelength_str + " " + pulseCode + " LB" + myScaleNumber_str;
+    }
+    else
+    myGoggleCode= "Eccede i valori specificati dalla EN207, non applicabile.";
 
-      return myGoggleCode;
-  }
+    return myGoggleCode;
+}
 
-  vector< pair <int,double> > LaserGoggle::getDataVector()
-  {
-      return dataVector;
-  }
+vector< pair <int,double> > LaserGoggle::getDataVector()
+{
+    return dataVector;
+}
 
-  string LaserGoggle::getCodeUnit()
-  {
-      string energy="[J/m<sup>2</sup>]";
-      string power="[W/m<sup>2</sup>]";
+string LaserGoggle::getCodeUnit()
+{
+    string energy="[J/m<sup>2</sup>]";
+    string power="[W/m<sup>2</sup>]";
 
-      if(pulseCode=="D")
-          codeUnit=power;
-      else
-          if(pulseCode=="M"){
-              if((wavelength>=315.0)and(wavelength<1400.0))
-                  codeUnit=energy;
-              else
-                  codeUnit=power;}
-      else
-          if((pulseCode=="R") || (pulseCode=="I"))
-              codeUnit=energy;
+    if(pulseCode=="D")
+        codeUnit=power;
+    else if(pulseCode=="M")
+    {
+    if((wavelength>=315.0)and(wavelength<1400.0))
+        codeUnit=energy;
+    else
+        codeUnit=power;
+    }
+    else if((pulseCode=="R") || (pulseCode=="I"))
+        codeUnit=energy;
 
       return codeUnit;
-  }
+}
 
-  string LaserGoggle::outputSort()
+void LaserGoggle::setMaterial(material typeOfMaterial)
+{
+    double myBeam;
+
+    if(beamDiameter<15)
+    myBeam=beamDiameter;
+    else
+    myBeam=15;
+
+    switch (typeOfMaterial)
+        {
+        case GLASS:
+        materialCorrection=pow(myBeam, GLASS_EXPONENT);
+        break;
+
+        case PLASTIC:
+        materialCorrection=pow(myBeam, PLASTIC_EXPONENT);
+        break;
+
+        case ONLY_REFLECTOR:
+        materialCorrection=1.0;
+        break;
+
+        default:
+        materialCorrection=1.0;
+        break;
+        }
+}
+
+string LaserGoggle::outputSort()
   {
       if(pulseCode=="D")
           laserOutputSort="E";
@@ -438,7 +467,7 @@ vector< pair <int,double> > LaserGoggle::buildDataVector(const double exposition
   double LaserGoggle::laserIrrRad(double powerErg)
   {
       double beamArea= PI*pow(beamDiameter,2)/(4*1.0e+06);
-      irrRad=powerErg/beamArea;
+      irrRad=materialCorrection*powerErg/beamArea;
       return irrRad;
   }
 
@@ -452,7 +481,7 @@ vector< pair <int,double> > LaserGoggle::buildDataVector(const double exposition
       return wavelength;
   }
 
-  void LaserGoggle::setWavelength(const double _wavelength)
+  void LaserGoggle::setWavelength(const double & _wavelength)
   {
       wavelength=_wavelength;
   }
@@ -462,15 +491,15 @@ vector< pair <int,double> > LaserGoggle::buildDataVector(const double exposition
       return pulseWidth;
   }
 
-  void LaserGoggle::setPulseWidth(const double _pulseWidth)
+  void LaserGoggle::setPulseWidth(const double & _pulseWidth)
   {
       if(_pulseWidth==0)
       {
           if((wavelength>=180)&&(wavelength<=315))
-              pulseWidth = timeBaseLowWavelength;
+              pulseWidth = TIMEBASE_LOW_WAVELENGTH;
                   else
                   if((wavelength>315)&&(wavelength<=1.0e+06))
-                      pulseWidth = timeBaseWavelength;
+                      pulseWidth = TIMEBASE;
       }
           else
               pulseWidth = _pulseWidth;
@@ -481,7 +510,7 @@ vector< pair <int,double> > LaserGoggle::buildDataVector(const double exposition
       return powerErg;
   }
 
-  void LaserGoggle::setPowerErg(const double _powerErg)
+  void LaserGoggle::setPowerErg(const double & _powerErg)
   {
       powerErg=_powerErg;
   }
@@ -491,7 +520,7 @@ vector< pair <int,double> > LaserGoggle::buildDataVector(const double exposition
       return beamDiameter;
   }
 
-  void LaserGoggle::setBeamDiameter(const double _beamDiameter)
+  void LaserGoggle::setBeamDiameter(const double & _beamDiameter)
   {
       beamDiameter=_beamDiameter;
   }
@@ -501,7 +530,7 @@ vector< pair <int,double> > LaserGoggle::buildDataVector(const double exposition
       return frequency;
   }
 
-  void LaserGoggle::setFrequency(const double _frequency)
+  void LaserGoggle::setFrequency(const double & _frequency)
   {
       frequency=_frequency;
   }
@@ -544,11 +573,17 @@ vector< pair <int,double> > LaserGoggle::buildDataVector(const double exposition
   }
 
 
-   void LaserGoggle::printVector( vector< pair <int,double> > dataVector)
-     {
-      vector< pair <int,double> >::const_iterator constIterator; // const_iterator
-      // display vector elements using const_iterator
-      for ( constIterator = dataVector.begin();
-           constIterator != dataVector.end(); ++constIterator )
-         cout << "\nNumero di scala: " << constIterator->first << " valore corrispondente: " <<  constIterator->second;
-   } // end function printVector
+void LaserGoggle::printVector( vector< pair <int,double> > dataVector)
+{
+    vector< pair <int,double> >::const_iterator constIterator; // const_iterator
+    // display vector elements using const_iterator
+    for ( constIterator = dataVector.begin();
+    constIterator != dataVector.end(); ++constIterator )
+    cout << "\nNumero di scala: " << constIterator->first << " valore corrispondente: " <<  constIterator->second;
+}
+
+LaserGoggle::~LaserGoggle()
+{
+    delete expositionData;
+    delete LB_Scale;
+}

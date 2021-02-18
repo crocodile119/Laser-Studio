@@ -1,0 +1,2225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DockLea</class>
+ <widget class="QDockWidget" name="DockLea">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1480</width>
+    <height>317</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>87</width>
+    <height>115</height>
+   </size>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <property name="windowTitle">
+   <string>Classifica semplificata</string>
+  </property>
+  <widget class="QWidget" name="dockWidgetContents">
+   <layout class="QGridLayout" name="gridLayout_7">
+    <item row="0" column="0">
+     <widget class="QScrollArea" name="scrollArea">
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <property name="widgetResizable">
+       <bool>true</bool>
+      </property>
+      <widget class="QWidget" name="scrollAreaWidgetContents">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>1462</width>
+         <height>277</height>
+        </rect>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_16">
+        <item row="1" column="0">
+         <widget class="QTabWidget" name="tabWidget">
+          <property name="tabPosition">
+           <enum>QTabWidget::North</enum>
+          </property>
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <widget class="QWidget" name="tab">
+           <attribute name="title">
+            <string>Pagina 1</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_13">
+            <item row="0" column="0">
+             <widget class="QFrame" name="frame_counting">
+              <property name="frameShape">
+               <enum>QFrame::Panel</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Sunken</enum>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_18">
+               <item row="1" column="1">
+                <widget class="QFrame" name="frame_thermalC5">
+                 <property name="frameShape">
+                  <enum>QFrame::Panel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Sunken</enum>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_73">
+                  <item row="4" column="0">
+                   <widget class="QLabel" name="tTi_prf_Label">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800}
+QLabel {color: #fafafa}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>T&lt;sub&gt;i&lt;/sub&gt; &amp;#215; PRF</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QLabel" name="Te_Label">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="1">
+                   <widget class="QLabel" name="Ti_prf_Label">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="1">
+                   <widget class="QLabel" name="Ti_Label">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="tTe_Label">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800}
+QLabel {color: #fafafa}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>T&lt;sub&gt;e&lt;/sub&gt;</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="QLabel" name="tTi_Label">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800}
+QLabel {color: #fafafa}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>T&lt;sub&gt;i&lt;/sub&gt;</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QFrame" name="frame_baseTime">
+                 <property name="frameShape">
+                  <enum>QFrame::Panel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Sunken</enum>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_19">
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="tTimeBase_Label">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>Base dei tempi</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QLabel" name="timeBase_Label">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="0" column="2" rowspan="2">
+                <widget class="QFrame" name="frame_pulses">
+                 <property name="frameShape">
+                  <enum>QFrame::Panel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Sunken</enum>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_9">
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="tC5_Label">
+                    <property name="font">
+                     <font>
+                      <pointsize>7</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800}
+QLabel {color: #fafafa}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>C&lt;sub&gt;5&lt;/sub&gt;</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QLabel" name="C5_Label">
+                    <property name="font">
+                     <font>
+                      <family>Verdana</family>
+                      <pointsize>7</pointsize>
+                      <weight>50</weight>
+                      <bold>false</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="tPulseNumberLabel">
+                    <property name="font">
+                     <font>
+                      <pointsize>7</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800}
+QLabel {color: #fafafa}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>Numero impusi</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QLabel" name="PulseNumberLabel">
+                    <property name="font">
+                     <font>
+                      <family>Verdana</family>
+                      <pointsize>7</pointsize>
+                      <weight>50</weight>
+                      <bold>false</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="tMeanPowerLabel">
+                    <property name="font">
+                     <font>
+                      <pointsize>7</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800}
+QLabel {color: #fafafa}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>P&lt;sub&gt;m&lt;/sub&gt;</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="1">
+                   <widget class="QLabel" name="CountingLabel">
+                    <property name="font">
+                     <font>
+                      <family>Verdana</family>
+                      <pointsize>7</pointsize>
+                      <weight>50</weight>
+                      <bold>false</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="QLabel" name="tCountingLabel">
+                    <property name="font">
+                     <font>
+                      <pointsize>7</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800}
+QLabel {color: #fafafa}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>Conteggio</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QLabel" name="MeanPowerLabel">
+                    <property name="font">
+                     <font>
+                      <family>Verdana</family>
+                      <pointsize>7</pointsize>
+                      <weight>50</weight>
+                      <bold>false</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="0" column="0" rowspan="2">
+                <widget class="QFrame" name="frame_class">
+                 <property name="frameShape">
+                  <enum>QFrame::Panel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Sunken</enum>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_21">
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="tClass_Label">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>Classe sistema</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QLabel" name="class_Label">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QFrame" name="frame_base">
+              <property name="frameShape">
+               <enum>QFrame::Panel</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Sunken</enum>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_3">
+               <item row="0" column="2">
+                <widget class="QFrame" name="frame_2M_Output">
+                 <property name="frameShape">
+                  <enum>QFrame::Panel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Sunken</enum>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_15">
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="tCond3LEA_Label">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QLabel" name="cond3LEA_Label">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="tCond1LEA_Label">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QLabel" name="cond1LEA_Label">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="1" column="3">
+                <widget class="QFrame" name="frame_12">
+                 <property name="frameShape">
+                  <enum>QFrame::Panel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Sunken</enum>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_14">
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="tApertureDiam3_Label">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>a&lt;sub&gt;Ap 3&lt;/sub&gt;</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QLabel" name="apertureDiam3_Label">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QLabel" name="apertureDist3_Label">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="tApertureDist3_Label">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>d&lt;sub&gt;3&lt;/sub&gt;</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="1" column="2">
+                <widget class="QFrame" name="frame_cond1">
+                 <property name="frameShape">
+                  <enum>QFrame::Panel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Sunken</enum>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_8">
+                  <item row="1" column="1">
+                   <widget class="QLabel" name="apertureDiam1_Label">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QLabel" name="apertureDist1_Label">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="tApertureDist1_Label">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>d&lt;sub&gt;1&lt;/sub&gt;</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="tApertureDiam1_Label">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>a&lt;sub&gt;Ap 1&lt;/sub&gt;</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QFrame" name="frame_4">
+                 <property name="frameShape">
+                  <enum>QFrame::Panel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Sunken</enum>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_6">
+                  <item row="1" column="1">
+                   <widget class="QLabel" name="beamAperture1_Label">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QLabel" name="beamAperture3_Label">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="tBeamAperture3_Label">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>a&lt;sub&gt;B3&lt;/sub&gt;</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="tBeamAperture1_Label">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>a&lt;sub&gt;B1&lt;/sub&gt;</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="0" column="3">
+                <widget class="QFrame" name="frame_18">
+                 <property name="frameShape">
+                  <enum>QFrame::Panel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Sunken</enum>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_20">
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="tCouplingFactor1_Label">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>η&lt;sub&gt;1&lt;/sub&gt;</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QLabel" name="couplingFactor1_Label">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="tCouplingFactor3_Label">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>η&lt;sub&gt;3&lt;/sub&gt;</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QLabel" name="couplingFactor3_Label">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QFrame" name="frame_15">
+                 <property name="frameShape">
+                  <enum>QFrame::Panel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Sunken</enum>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_17">
+                  <item row="1" column="1">
+                   <widget class="QLabel" name="LEA_Label">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QLabel" name="formulaLEA_Label">
+                    <property name="font">
+                     <font>
+                      <family>Verdana</family>
+                      <pointsize>7</pointsize>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="tFormulaLEA_Label">
+                    <property name="font">
+                     <font>
+                      <pointsize>7</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>Formula 3B</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="tLEA_Label">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>LEA 3B</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="0" column="0" rowspan="2">
+                <widget class="QFrame" name="frame_3">
+                 <property name="frameShape">
+                  <enum>QFrame::Panel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Sunken</enum>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout">
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="base_Label">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 8px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="1" column="0">
+             <spacer name="verticalSpacer">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tab_2">
+           <attribute name="title">
+            <string>Pagina 2</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_2">
+            <item row="2" column="0">
+             <spacer name="verticalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="0" column="2">
+             <spacer name="horizontalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="0" column="0">
+             <widget class="QFrame" name="frame_meanPower">
+              <property name="frameShape">
+               <enum>QFrame::Panel</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Sunken</enum>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_12">
+               <item row="0" column="0" rowspan="2">
+                <widget class="QFrame" name="frame_2">
+                 <property name="frameShape">
+                  <enum>QFrame::Panel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Sunken</enum>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_11">
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="meanPowerValuation_Label">
+                    <property name="baseSize">
+                     <size>
+                      <width>0</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                      <strikeout>false</strikeout>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 8px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QFrame" name="frame_21">
+                 <property name="frameShape">
+                  <enum>QFrame::Panel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Sunken</enum>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_10">
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="tLEA_Label_2">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>LEA 1-1M</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QLabel" name="LEA_Label_2">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QLabel" name="FormulaLEA_Label_2">
+                    <property name="font">
+                     <font>
+                      <family>Verdana</family>
+                      <pointsize>7</pointsize>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="tFormulaLEA_Label_2">
+                    <property name="font">
+                     <font>
+                      <pointsize>7</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>Formula  1-1M</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="0" column="2">
+                <widget class="QFrame" name="frame_23">
+                 <property name="frameShape">
+                  <enum>QFrame::Panel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Sunken</enum>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_24">
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="tCond1LEA_Label_2">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QLabel" name="cond1LEA_Label_2">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QLabel" name="cond3LEA_Label_2">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="tCond3LEA_Label_2">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="0" column="3">
+                <widget class="QFrame" name="frame_43">
+                 <property name="frameShape">
+                  <enum>QFrame::Panel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Sunken</enum>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_44">
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="tCouplingFactor3_Label_2">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>η&lt;sub&gt;3&lt;/sub&gt;</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="tCouplingFactor1_Label_2">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>η&lt;sub&gt;1&lt;/sub&gt;</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QLabel" name="couplingFactor3_Label_2">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QLabel" name="couplingFactor1_Label_2">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QFrame" name="frame_47">
+                 <property name="frameShape">
+                  <enum>QFrame::Panel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Sunken</enum>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_48">
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="tBeamAperture3_Label_2">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>a&lt;sub&gt;B3&lt;/sub&gt;</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="tBeamAperture1_Label_2">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>a&lt;sub&gt;B1&lt;/sub&gt;</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QLabel" name="beamAperture1_Label_2">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QLabel" name="beamAperture3_Label_2">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="1" column="2">
+                <widget class="QFrame" name="frame_cond1_1">
+                 <property name="frameShape">
+                  <enum>QFrame::Panel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Sunken</enum>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_41">
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="tApertureDist1_Label_2">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>d&lt;sub&gt;1&lt;/sub&gt;</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QLabel" name="apertureDist1_Label_2">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="tApertureDiam1_Label_2">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>a&lt;sub&gt;Ap 1&lt;/sub&gt;</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QLabel" name="apertureDiam1_Label_2">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="1" column="3">
+                <widget class="QFrame" name="frame_39">
+                 <property name="frameShape">
+                  <enum>QFrame::Panel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Sunken</enum>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_40">
+                  <item row="1" column="1">
+                   <widget class="QLabel" name="apertureDiam3_Label_2">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="tApertureDist3_Label_2">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>d&lt;sub&gt;3&lt;/sub&gt;</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QLabel" name="apertureDist3_Label_2">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="tApertureDiam3_Label_2">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>a&lt;sub&gt;Ap 3&lt;/sub&gt;</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QFrame" name="frame_thermal">
+              <property name="frameShape">
+               <enum>QFrame::Panel</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Sunken</enum>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_5">
+               <item row="0" column="0" rowspan="2">
+                <widget class="QFrame" name="frame">
+                 <property name="frameShape">
+                  <enum>QFrame::Panel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Sunken</enum>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_4">
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="thermal_label">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 8px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QFrame" name="frame_29">
+                 <property name="frameShape">
+                  <enum>QFrame::Panel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Sunken</enum>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_30">
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="tLEA_Label_3">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>LEA 1-1M</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QLabel" name="LEA_Label_3">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QLabel" name="FormulaLEA_Label_3">
+                    <property name="font">
+                     <font>
+                      <family>Verdana</family>
+                      <pointsize>7</pointsize>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="tFormulaLEA_Label_3">
+                    <property name="font">
+                     <font>
+                      <pointsize>7</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>Formula  1-1M</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="0" column="2">
+                <widget class="QFrame" name="frame_31">
+                 <property name="frameShape">
+                  <enum>QFrame::Panel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Sunken</enum>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_32">
+                  <item row="0" column="1">
+                   <widget class="QLabel" name="cond1LEA_Label_3">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QLabel" name="cond3LEA_Label_3">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="tCond1LEA_Label_3">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="tCond3LEA_Label_3">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="0" column="3">
+                <widget class="QFrame" name="frame_41">
+                 <property name="frameShape">
+                  <enum>QFrame::Panel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Sunken</enum>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_42">
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="tCouplingFactor1_Label_3">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>η&lt;sub&gt;1&lt;/sub&gt;</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="tCouplingFactor3_Label_3">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>η&lt;sub&gt;3&lt;/sub&gt;</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QLabel" name="couplingFactor1_Label_3">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QLabel" name="couplingFactor3_Label_3">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QFrame" name="frame_49">
+                 <property name="frameShape">
+                  <enum>QFrame::Panel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Sunken</enum>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_50">
+                  <item row="1" column="1">
+                   <widget class="QLabel" name="beamAperture3_Label_3">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QLabel" name="beamAperture1_Label_3">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="tBeamAperture1_Label_3">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>a&lt;sub&gt;B1&lt;/sub&gt;</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="tBeamAperture3_Label_3">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>a&lt;sub&gt;B3&lt;/sub&gt;</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="1" column="2">
+                <widget class="QFrame" name="frame_cond1_2">
+                 <property name="frameShape">
+                  <enum>QFrame::Panel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Sunken</enum>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_43">
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="tApertureDiam1_Label_3">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>a&lt;sub&gt;Ap 1&lt;/sub&gt;</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QLabel" name="apertureDist1_Label_3">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="tApertureDist1_Label_3">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>d&lt;sub&gt;1&lt;/sub&gt;</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QLabel" name="apertureDiam1_Label_3">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="1" column="3">
+                <widget class="QFrame" name="frame_cond_1_2">
+                 <property name="frameShape">
+                  <enum>QFrame::Panel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Sunken</enum>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_45">
+                  <item row="1" column="1">
+                   <widget class="QLabel" name="apertureDiam3_Label_3">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="tApertureDist3_Label_3">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>d&lt;sub&gt;3&lt;/sub&gt;</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QLabel" name="apertureDist3_Label_3">
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="tApertureDiam3_Label_3">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {background-color: #00c800;
+color: #fafafa;
+border: 0px solid grey;
+border-radius: 8px;
+padding: 3px;
+margin-right: 10px}</string>
+                    </property>
+                    <property name="text">
+                     <string>a&lt;sub&gt;Ap 3&lt;/sub&gt;</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

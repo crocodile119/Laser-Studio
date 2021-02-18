@@ -9,6 +9,9 @@ class LaserSafetyMP : public LaserSafetyCW
 public:
 LaserSafetyMP(int, double, double, double, double, double, double);
 
+void setWavelength(const double& _wavelength);
+void setAlpha(const double& _alpha);
+void setPulseWidth(const double& _pulseWidth);
 void computeNOHD();
 void computeLambertianMax();
 void laserUpdate();
@@ -34,7 +37,7 @@ string getSkinDamage_MP() const;
 string getEyeDamage_MP() const;
 string getPhotochemicalNote_MP() const;
 double getEMP_MP();
-void setPRF(const int);
+void setPRF(const int&);
 int getPRF() const;
 double getMeanPower() const;
 double getMeanIrradiance() const;
@@ -72,32 +75,32 @@ private:
 int PRF;
 double Te;
 double timeBase;
-double MeanPower;
-double MeanPower_NOHD;
-double SinglePulse_NOHD;
-double PulseTrain_NOHD;
+double meanPower;
+double meanPower_NOHD;
+double singlePulse_NOHD;
+double pulseTrain_NOHD;
 
-double MeanPowerLambertianMax;
-double SinglePulseLambertianMax;
-double PulseTrainLambertianMax;
+double meanPowerLambertianMax;
+double singlePulseLambertianMax;
+double pulseTrainLambertianMax;
 
-double MeanPowerIrradiance;
-int PulseNumber;
+double meanPowerIrradiance;
+int pulseNumber;
 double CP;
-computeEMP MyMeanPower_Laser;
-computeEMP MyTmin_Laser;
+ComputeEMP myMeanPower_Laser;
+ComputeEMP myTmin_Laser;
 //oggetto relativo all'esposizione al treno di impulsi
-double MeanPow_EMP_Result;
-double PowerEMP;
+double meanPow_EMP_Result;
+double powerEMP;
 double CP_EMP_Result;
 double SP_EMP_Result;
 double EMP_ForOD;
-string PowerFormulaSort;
-string PowerFormulaEMP;
-double MeanPow_EMP_Equate;
+string powerFormulaSort;
+string powerFormulaEMP;
+double meanPow_EMP_Equate;
 double Tmin;
-string Formula_Tmin;
-string FormulaSort_Tmin;
+string formula_Tmin;
+string formulaSort_Tmin;
 };
 
 #endif // LASERSAFETYMP_H

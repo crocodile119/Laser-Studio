@@ -52,6 +52,8 @@ public:
     bool eventFilter (QObject *watched, QEvent *event)override;
     int seqNumerCount()const;
 
+    const static QString HTML_DEF;
+
     void setEMP();
     void setPowerErg();
     void setBeamDiameter();
@@ -135,6 +137,7 @@ private slots:
     void setupLaserProspective();
     void setupFieldProspective();
     void setupGoggleProspective();
+    void setupClassifierProspective();
     void setCondMeteo();
     void atmosphericEffectsOn(bool);
     void scintillationOn(bool);
@@ -166,6 +169,8 @@ private slots:
 
     void addElementList();
     void goToLab();
+
+    void setGoggleMaterial(LaserGoggle::material);
     void goToSelectedReflector();
     void goToSelectedBinocular();
     void gotToLaserpoint();
@@ -220,7 +225,9 @@ private:
     void backgroundGridPixmap();
 
     QString makeHtml();
+    //QString makeHtmlClassifier();
     void htmlResults();
+    void htmlClassifierResults();
     void firstPageReport();
     void footprintsPageReport();
     void reflectorsPageReport();
@@ -228,6 +235,7 @@ private:
     QString htmlReflectors();
     QString htmlBinoculars();
     QString htmlFootprints();
+    QString htmlClassifier();
     QString htmlMeteo();
     void printHtml(const QString&);
     void laserMoved();
@@ -261,6 +269,7 @@ private:
     QStringList footprints;
     QStringList laser;
     QStringList skin;
+    QStringList classifierOutput;
     QLabel *statusLabel;
     CentralWidget *laserWindow;
     QStringList *firstPage;
@@ -293,6 +302,7 @@ private:
     QMenu *displayMenu;
     QMenu *environmentMenu;
     QMenu *placeMenu;
+    QMenu *goggleMenu;
 
     QToolBar *fileToolBar;
     QToolBar *viewToolBar;
@@ -311,6 +321,7 @@ private:
     QAction *quitAct;
     QAction *laserSettingsAction;
     QAction *fieldSettingsAction;
+    QAction *classifierSettingsAction;
     QAction *goggleSettingsAction;
     QAction *showGridAction;
     QAction *recentFileActions[MaxRecentFiles];
@@ -325,6 +336,7 @@ private:
     QAction *showDockWidgetSkin;
     QAction *showDockWidgetGoggle;
     QAction *showReflectorsList;
+    QAction *showDockLea;
     QAction *centerOnViewAction;
     QAction *printPreviewAct;
     QAction *zoomInAction;
@@ -371,6 +383,11 @@ private:
     QAction *wetTargetAction;
     QAction *fresnelTargetAction;
     QAction *lambertianTargetAction;
+
+    QAction *onlyReflectorGoggleAction;
+    QAction *glassGoggleAction;
+    QAction *plasticGoggleAction;
+
 
     QGraphicsView *view;
     QList <pair<Reflector *, int>> myReflectors;

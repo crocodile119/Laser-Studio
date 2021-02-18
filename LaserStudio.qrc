@@ -62,5 +62,9 @@
         <file>images/polygon.png</file>
         <file>images/package.png</file>
         <file>images/camouflage.png</file>
+        <file>images/classifier.png</file>
+        <file>CLASSE_3B_dataBinary.dat</file>
+        <file>CLASSE_1_1M_dataBinary.dat</file>
+        <file>CLASSE_3R_dataBinary.dat</file>
     </qresource>
 </RCC>

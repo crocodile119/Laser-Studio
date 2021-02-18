@@ -71,7 +71,6 @@ void LambertianReflector::computeZs(double _lambertianMax, double reflectionCoef
             myZsVector.push_back(make_pair(myZsAngle, myZsVector_second));
          i++;
       }
-//   printVector(myZsVector);
 }
 
 bool LambertianReflector::evaluateDiffusionDistance()

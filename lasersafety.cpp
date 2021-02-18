@@ -7,100 +7,112 @@ using namespace std;
 
 const double LaserSafety::PI = 3.141592653589793;
 		
-LaserSafety::LaserSafety(double _BeamDiameter, double _PowerErg,  double _Divergence, double _Wavelength, 
-						double _PulseWidth, double _Alpha):MyLaser(_Wavelength, _PulseWidth, _Alpha)
-{
-BeamDiameter=_BeamDiameter; 
-PowerErg=_PowerErg;
-Divergence=_Divergence;
-Wavelength=_Wavelength;
-PulseWidth=_PulseWidth;
+LaserSafety::LaserSafety(double _beamDiameter, double _powerErg,  double _divergence, double _wavelength,
+                        double _pulseWidth, double _alpha):myLaser(_wavelength, _pulseWidth, _alpha)
+{   
+    setBeamDiameter(_beamDiameter);
+    setPowerErg(_powerErg);
+    setDivergence(_divergence);
+    setWavelength(_wavelength);
+    setPulseWidth(_pulseWidth);
+    setAlpha(_alpha);
 
-MyLaser.setWavelength(Wavelength);
-MyLaser.setAlpha(_Alpha);
-MyLaser.setPulseDuration(PulseWidth);
-MyLaser.EMP();
-MyLaser.getEMP();
-Formula=MyLaser.getFormulaEMP();
-FormulaSort=MyLaser.getFormulaSort();
-CA=MyLaser.getCA();
-CB=MyLaser.getCB();
-CC=MyLaser.getCC();
-CE=MyLaser.getCE();
-T1=MyLaser.getT1();
-T2=MyLaser.getT2();
-Gamma=MyLaser.getGamma();
-Radiation=MyLaser.getRadiation();
-SkinDamage=MyLaser.getSkinDamage();
-EyeDamage=MyLaser.getEyeDamage();
-Note=MyLaser.getPhotochemicalNote();
+    myLaser.EMP();
+    myLaser.getEMP();
+    formula=myLaser.getFormulaEMP();
+    formulaSort=myLaser.getFormulaSort();
+    CA=myLaser.getCA();
+    CB=myLaser.getCB();
+    CC=myLaser.getCC();
+    CE=myLaser.getCE();
+    T1=myLaser.getT1();
+    T2=myLaser.getT2();
 
-computeNOHD();
-computeLambertianMax();
-computePowerForExended();
+    gamma=myLaser.getGamma();
+    radiation=myLaser.getRadiation();
+    skinDamage=myLaser.getSkinDamage();
+    eyeDamage=myLaser.getEyeDamage();
+    notes=myLaser.getPhotochemicalNote();
 
+    computeNOHD();
+    computeLambertianMax();
+    computePowerForExended();
 }
 
 void LaserSafety::laserUpdate()
 {
-MyLaser.setWavelength(Wavelength);
-MyLaser.setAlpha(Alpha);
-MyLaser.setPulseDuration(getPulseWidth());
-MyLaser.EMP();
-EMP_Result=getEMP();
-computePowerForExended();
-computeNOHD();
-computeLambertianMax();
+    myLaser.EMP();
+    EMP_Result=getEMP();
+    computePowerForExended();
+    computeNOHD();
+    computeLambertianMax();
 }
 
-double LaserSafety::getWavelength()
+double LaserSafety::getWavelength() const
 {
-return Wavelength;
+    return wavelength;
 }
 
-void LaserSafety::setWavelength(const double _Wavelength)
+void LaserSafety::setWavelength(const double & _wavelength)
 {
-Wavelength=_Wavelength;
+    if(_wavelength==wavelength)
+        return;
+
+    myLaser.setWavelength(_wavelength);
+    wavelength=_wavelength;
 }
 
-void LaserSafety::setPowerErg(const double _PowerErg)
+void LaserSafety::setPowerErg(const double &_powerErg)
 {
-PowerErg=_PowerErg;
+    if(_powerErg==powerErg)
+        return;
+
+    powerErg=_powerErg;
 }
 
 double LaserSafety::getPowerErg() const
 {
-return PowerErg;
+    return powerErg;
 }
 
 double LaserSafety::getAlpha() const
 {
-return Alpha;
+    return alpha;
 }
 
-void LaserSafety::setAlpha(const double _Alpha)
+void LaserSafety::setAlpha(const double & _alpha)
 {
-Alpha=_Alpha;
+    if(_alpha==alpha)
+        return;
+
+    myLaser.setAlpha(_alpha);
+    alpha=_alpha;
 }
 
 double LaserSafety::getDivergence() const
 {
-return Divergence;
+    return divergence;
 }
 
-void LaserSafety::setDivergence(const double _Divergence)
+void LaserSafety::setDivergence(const double & _divergence)
 {
-Divergence=_Divergence;
+    if(_divergence==divergence)
+        return;
+
+    divergence=_divergence;
 }
 
 double LaserSafety::getBeamDiameter() const
 {
-return BeamDiameter;
+return beamDiameter;
 }
 
-void LaserSafety::setBeamDiameter(const double _BeamDiameter)
+void LaserSafety::setBeamDiameter(const double& _beamDiameter)
 {
-BeamDiameter=_BeamDiameter;
+    if(_beamDiameter==beamDiameter)
+        return;
+
+    beamDiameter=_beamDiameter;
 }
 
 double LaserSafety::getNOHD() const
@@ -115,19 +127,19 @@ double LaserSafety::getLambertianMax() const
 
 void LaserSafety::computeBeamArea()
 {
-    BeamArea=PI*pow(BeamDiameter*1.0e-03, 2)/4;
+    beamArea=PI*pow(beamDiameter*1.0e-03, 2)/4;
 }
 
 double LaserSafety::getBeamArea() const
 {
-	return BeamArea;
+    return beamArea;
 }
 
 void LaserSafety::computeNOHD()
 {
     double underroot;
     underroot=(4*getPowerErgForEMP())/(PI*EMP_Result);
-    NOHD=(sqrt(underroot)-(BeamDiameter/1000))/(Divergence/1000);
+    NOHD=(sqrt(underroot)-(beamDiameter/1000))/(divergence/1000);
 		if (NOHD<0)
             NOHD=0;
 }
@@ -140,12 +152,12 @@ void LaserSafety::computeNOHD()
 double LaserSafety::getPowerErgForEMP()
 {
     double powerErgForEMP;
-    FormulaSort=getFormulaSort();
+    formulaSort=getFormulaSort();
 
-    if(FormulaSort=="E")
-        powerErgForEMP=PowerErg/PulseWidth;
+    if(formulaSort=="E")
+        powerErgForEMP=powerErg/pulseWidth;
     else
-        powerErgForEMP=PowerErg;
+        powerErgForEMP=powerErg;
 
     return powerErgForEMP;
 }
@@ -157,12 +169,12 @@ double LaserSafety::getPowerErgForEMP()
 void LaserSafety::computeLambertianMax()
 {
     double ForLambertianMax;
-    FormulaSort=getFormulaSort();
+    formulaSort=getFormulaSort();
 
-    if(FormulaSort=="E")
-        ForLambertianMax=PowerErg/PulseWidth;
+    if(formulaSort=="E")
+        ForLambertianMax=powerErg/pulseWidth;
     else
-        ForLambertianMax=PowerErg;
+        ForLambertianMax=powerErg;
 
     double underroot;
 
@@ -172,96 +184,100 @@ void LaserSafety::computeLambertianMax()
 
 double LaserSafety::getCA() const
 {
-	return MyLaser.getCA();
+    return myLaser.getCA();
 }
 
 double LaserSafety::getCB() const
 {
-	return MyLaser.getCB();
+    return myLaser.getCB();
 }
 
 double LaserSafety::getCC() const
 {
-	return MyLaser.getCC();
+    return myLaser.getCC();
 }
 
 double LaserSafety::getCE() const
 {
-	return MyLaser.getCE();
+    return myLaser.getCE();
 }
 
 double LaserSafety::getT1() const
 {
-	return MyLaser.getT1();
+    return myLaser.getT1();
 }
 
 double LaserSafety::getT2() const
 {
-	return MyLaser.getT2();
+    return myLaser.getT2();
 }
 
 string LaserSafety::getRadiation() const
 {
-	return MyLaser.getRadiation();
+    return myLaser.getRadiation();
 }
 
 string LaserSafety::getSkinDamage() const
 {
-	return MyLaser.getSkinDamage();
+    return myLaser.getSkinDamage();
 }
 
 string LaserSafety::getEyeDamage() const
 {
-	return MyLaser.computeEMP::getEyeDamage();
+    return myLaser.getEyeDamage();
 }
 
 string LaserSafety::getPhotochemicalNote() const
 {
-	return MyLaser.getPhotochemicalNote();
+    return myLaser.getPhotochemicalNote();
 }
 
 double LaserSafety::getGamma() const
 {
-	return MyLaser.getGamma();
+    return myLaser.getGamma();
 }
 
 double LaserSafety::getEMP()
 {
-	return MyLaser.getEMP();
+    return myLaser.getEMP();
 }
 
 string LaserSafety::getFormulaEMP() const
 {    
-    qDebug()<<"formula: "<<QString::fromStdString(MyLaser.getFormulaEMP());
-	return MyLaser.getFormulaEMP();
+    qDebug()<<"formula: "<<QString::fromStdString(myLaser.getFormulaEMP());
+    return myLaser.getFormulaEMP();
 }
 
 string LaserSafety::getFormulaSort() const
 {
-	return MyLaser.computeEMP::getFormulaSort();
+    return myLaser.getFormulaSort();
 }
 
 void LaserSafety::EMP()
 {
-	MyLaser.EMP();
+    myLaser.EMP();
 }
 
-void LaserSafety::setPulseWidth(const double _PulseWidth)
+void LaserSafety::setPulseWidth(const double & _pulseWidth)
 {
-	PulseWidth=_PulseWidth;
+    if(_pulseWidth==pulseWidth)
+        return;
+
+    myLaser.setPulseWidth(_pulseWidth);
+    pulseWidth=_pulseWidth;
 }
 
 double LaserSafety::getPulseWidth() const
 {
-	return PulseWidth;
+    return pulseWidth;
 }
 
 double LaserSafety::getPowerForExended() const
 {
-	return PowerForExended;
+    return powerForExended;
 }
 
 void LaserSafety::computePowerForExended()
 {
-	PowerForExended=PowerErg/PulseWidth;
+    powerForExended=powerErg/pulseWidth;
 }

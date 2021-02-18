@@ -8,6 +8,7 @@
 #include "dockeffects.h"
 #include "dockcontrols.h"
 #include "dockskin.h"
+#include "docklea.h"
 #include "displayscene.h"
 #include "reflectorsqlist.h"
 #include "link.h"
@@ -69,6 +70,7 @@ public:
     DockResults *myDockResults;
     DockEffects *myDockEffects;
     DockSkin *myDockSkin;
+    DockLea *myDockLea;
     DockGoggle *myDockGoggle;
     ReflectorsQList *myDockReflectorsList;
     DisplayScene *graphicsView;
@@ -144,6 +146,7 @@ private:
     QString customer;
     QString uasl;
     QString uaslAssistant;
+    LaserGoggle::material goggleMaterial;
     QString laserDescription;
     QString placeDescription;
 

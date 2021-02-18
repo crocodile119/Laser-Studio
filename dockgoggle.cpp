@@ -12,5 +12,3 @@ DockGoggle::~DockGoggle()
 {
     delete ui;
 }
-
-

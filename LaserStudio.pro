@@ -20,6 +20,7 @@ SOURCES +=\
     binocularslistmodel.cpp \
     centralwidget.cpp \
     computeemp.cpp \
+    computelea.cpp \
     description.cpp \
     dialcontrol.cpp \
     diffusionhazard.cpp \
@@ -27,8 +28,10 @@ SOURCES +=\
     dockcontrols.cpp \
     dockeffects.cpp \
     dockgoggle.cpp \
+    docklea.cpp \
     dockresults.cpp \
     dockskin.cpp \
+    empleatables.cpp \
     environmentlistmodel.cpp \
     footprintdialog.cpp \
     footprintobject.cpp \
@@ -43,6 +46,9 @@ SOURCES +=\
     lambertianchartdialog.cpp \
     lambertianchartview.cpp \
     lambertianreflector.cpp \
+    laserclasscw.cpp \
+    laserclassmp.cpp \
+    laserclasssp.cpp \
     lasergoggle.cpp \
     laserlistmodel.cpp \
     laserpoint.cpp \
@@ -64,6 +70,7 @@ SOURCES +=\
     scalenumbersmodelview.cpp \
     scientificnotationcontrol.cpp \
     sliderscrolllabel.cpp \
+    tablescontroller.cpp \
     wetchartdialog.cpp \
     wetchartview.cpp \
     wetreflector.cpp
@@ -76,6 +83,7 @@ HEADERS  += mainwindow.h \
     binocularslistmodel.h \
     centralwidget.h \
     computeemp.h \
+    computelea.h \
     description.h \
     dialcontrol.h \
     diffusionhazard.h \
@@ -83,9 +91,11 @@ HEADERS  += mainwindow.h \
     dockcontrols.h \
     dockeffects.h \
     dockgoggle.h \
+    docklea.h \
     dockresults.h \
     dockskin.h \
-    empsdata.h \
+    empdata.h \
+    empleatables.h \
     environmentlistmodel.h \
     footprintdialog.h \
     footprintobject.h \
@@ -100,6 +110,9 @@ HEADERS  += mainwindow.h \
     lambertianchartdialog.h \
     lambertianchartview.h \
     lambertianreflector.h \
+    laserclasscw.h \
+    laserclassmp.h \
+    laserclasssp.h \
     lasergoggle.h \
     laserlistmodel.h \
     laserpoint.h \
@@ -109,6 +122,7 @@ HEADERS  += mainwindow.h \
     lasersafetymp.h \
     laserskinsafety.h \
     laserskinsafetymp.h \
+    leadata.h \
     link.h \
     mychartview.h \
     objectlink.h \
@@ -120,6 +134,7 @@ HEADERS  += mainwindow.h \
     scalenumbersmodelview.h \
     scientificnotationcontrol.h \
     sliderscrolllabel.h \
+    tablescontroller.h \
     wetchartdialog.h \
     wetchartview.h \
     wetreflector.h
@@ -133,6 +148,7 @@ FORMS    += \
     dockcontrols.ui \
     dockeffects.ui \
     dockgoggle.ui \
+    docklea.ui \
     dockresults.ui \
     dockskin.ui \
     footprintdialog.ui \

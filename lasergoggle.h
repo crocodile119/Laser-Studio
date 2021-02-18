@@ -11,11 +11,20 @@ using namespace std;
 class LaserGoggle
 {
 public:
-    static const int timeBaseLowWavelength;
-    static const int timeBaseWavelength;
+    static const int TIMEBASE;
+    static const int TIMEBASE_LOW_WAVELENGTH;
+    static const int TABLEROWS;
     static const double PI;
+    static const double CONTINUOS_OPERATION; 
+    static const double GLASS_EXPONENT;
+    static const double PLASTIC_EXPONENT;
+
+    enum material{ONLY_REFLECTOR, GLASS, PLASTIC};
+    enum laserOperation{CONTINUOSWAVE, IMPULSATO, IMPULSIRIPETUTI};
     LaserGoggle(int, double, double, double);
     LaserGoggle(int, double, double, double, int);
+    ~LaserGoggle();
+
     double* selectData(const double &, const double &);
     vector< pair <int,double> > buildDataVector(const double[], const int[]);
     vector< pair <int,double> > getDataVector();
@@ -36,15 +45,16 @@ public:
 
 //getters && setters
     int getWavelength();
-    void setWavelength(const double);
+    void setWavelength(const double &);
     double getPulseWidth();
-    void setPulseWidth(const double);
+    void setPulseWidth(const double &);
+    void setMaterial(material typeOfMaterial);
     double getPowerErg();
-    void setPowerErg(const double);
+    void setPowerErg(const double &);
     double getBeamDiameter();
-    void setBeamDiameter(const double);
+    void setBeamDiameter(const double &);
     double getFrequency();
-    void setFrequency(const double);
+    void setFrequency(const double &);
     int getScaleNumber()const;
     int getNumberOfPulse()const;
     double getCoefficient_ki()const;
@@ -69,12 +79,12 @@ private:
     double wavelength;
     double pulseWidth;
     double beamDiameter;
+    double materialCorrection;
 
     double irrRad;
     double myMeanPower;
     int numberOfPulses;
     string myGoggleCode;
-    enum laserOperation{CONTINUOSWAVE, IMPULSATO, IMPULSIRIPETUTI};
     int frequency;
     double ki;
     double k;

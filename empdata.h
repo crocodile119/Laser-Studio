@@ -5,24 +5,26 @@
  *      Author: GIORCARM
  */
 
-#ifndef EMPSPDATA_H_
-#define EMPSPDATA_H_
+#ifndef EMPPDATA_H
+#define EMPPDATA_H
 
 //using namespace std;
 
 struct empdata {
     int formulaNumber;
-    double Wavelenght1;
-    double Wavelenght2;
-    double Time1;
-    double Time2;
+    double wavelenght1;
+    double wavelenght2;
+    double time1;
+    double time2;
     int CA;
     int CB;
     int CC;
     int CE;
     int t;
-    int Effects;
+    int effects;
     double formula;
-    int Sort;
+    int sort;
+
+    enum empData{TABLE_EMP};
     };
-#endif /* EMPSPDATA_H_ */
+#endif /* EMPPDATA_H */

@@ -14,7 +14,7 @@ const int DockControls::DOCKGOGGLEMINIMUN=405;
 const int DockControls::DOCKGOGGLEMAXIMUN=550;
 
 DockControls::DockControls(QWidget *parent, DockResults *_dockResults, DockEffects *_dockEffects,
-                           DockSkin *_dockSkin, DockGoggle *_dockGoggle) : QDockWidget(parent), ui(new Ui::DockControls)
+                           DockSkin *_dockSkin, DockGoggle *_dockGoggle, DockLea* _dockLea) : QDockWidget(parent), ui(new Ui::DockControls)
 {
     ui->setupUi(this);
 
@@ -22,6 +22,16 @@ DockControls::DockControls(QWidget *parent, DockResults *_dockResults, DockEffec
     dockEffects=_dockEffects;
     dockSkin= _dockSkin;
     dockGoggle= _dockGoggle;
+    dockLea= _dockLea;
+
+
+    wavelength=633;
+    prf=1;
+    beamDiameter=7;
+    powerErg=1;
+    divergence=1.5;
+    pulseWidth=0.25;
+    alpha=1.5;
 
      /**********************************************************************************************
      * LaserGoggle ha due costruttori quello a 4 parametri che prevede il funzionamento            *
@@ -33,89 +43,79 @@ DockControls::DockControls(QWidget *parent, DockResults *_dockResults, DockEffec
 
     //Impiego il costruttore con cinque parmetri wavelength, pulseWidth, powerErg, beamDiameter, frequenza
 
-        myLaserGoggle=new LaserGoggle(633, 0, 1, 7, 0);
-        string myNewGoggleMark = myLaserGoggle->goggleMark(633, 0, 1, 7, 0);
+    myLaserGoggle=new LaserGoggle(wavelength, 0, powerErg, beamDiameter, 0);
+    string myNewGoggleMark = myLaserGoggle->goggleMark(wavelength, 0, powerErg, beamDiameter, 0);
 
-        vector<pair<int, double>> dataVector;
-        dataVector=myLaserGoggle->getDataVector();
-        laserOutput=myLaserGoggle->laserIrrRadCorrected(1);
-        myModel=new ScaleNumbersModelView(this);
-        myModel->setTableList(dataVector);
-        dockGoggle->ui->tableView->setModel(myModel);
+    //Ricavo il calori riguardanti la tabella EN 207 corrispondente alla lunghezza d'onda e alla base dei tempi
+    //necassaria sia per costruire la il Widget della tabella dei numeri di scala e il grafico.
+    vector<pair<int, double>> dataVector;
+    dataVector=myLaserGoggle->getDataVector();
 
-        chartView = new MyChartView(0, dataVector, laserOutput);
-        chartView->setRenderHint(QPainter::Antialiasing);
-        dockGoggle->ui->gridLayout_5->addWidget(chartView, 1, 0, Qt::AlignCenter);
+    //il valore di laser output serve per tracciare la retta orizzontale relativa all'uscita del laser.
+    laserOutput=myLaserGoggle->laserIrrRadCorrected(powerErg);
 
-        /************************************************************************************************
-         * Essendo il funzionamento all'avvio di tipo Continuos Wave disabilito sia il controllo        *
-         * dell'impulso che della frequenza di ripetizione degli impulsi.                               *
-         ************************************************************************************************/
+    myModel=new ScaleNumbersModelView(this);
+    myModel->setTableList(dataVector);
+    dockGoggle->ui->tableView->setModel(myModel);
 
-        ui->pulseControl->setEnabled(false);
-        ui->prfControl->setEnabled(false);
-        ui->peakControl->setEnabled(false);
+    chartView = new MyChartView(0, dataVector, laserOutput);
+    chartView->setRenderHint(QPainter::Antialiasing);
+    dockGoggle->ui->gridLayout_5->addWidget(chartView, 1, 0, Qt::AlignCenter);
 
-        /************************************************************************************************
-         * Imposto la base dei tempi nel funzionamento Continuos Wave all'avvio. La base dei tempi è    *
-         * quella preveista dala norma EN207 e non ha relazione con la base dei tempi impiegata per il  *
-         * calcolo dell'EMP dell'impulso che della frequenza di ripetizione degli impulsi.              *                *
-         ************************************************************************************************/
+   /************************************************************************************************
+    * Essendo il funzionamento all'avvio di tipo Continuos Wave disabilito sia il controllo        *
+    * dell'impulso che della frequenza di ripetizione degli impulsi che il valore di picco della   *
+    * corrente (riguarda il funzionamento del tipo mode locking).                                  *
+    ************************************************************************************************/
 
-        if((wavelength>=180)&&(wavelength<=315))
-            myTimeBase=LaserGoggle::timeBaseLowWavelength;
-                else
-            if((wavelength>315)&&(wavelength<=1.0e+06))
-                    myTimeBase=LaserGoggle::timeBaseWavelength;
+    ui->pulseControl->setEnabled(false);
+    ui->prfControl->setEnabled(false);
+    ui->peakControl->setEnabled(false);
 
-        /************************************************************************************************
-         * Inizializzo laser frequenza nulla per uso calcolare gli effetti medi nel caso di             *
-         * funzionamento ad impulsi ripetuti                                                            *
-         ************************************************************************************************/
+    /************************************************************************************************
+     * Imposto la base dei tempi nel funzionamento Continuos Wave all'avvio. La base dei tempi è    *
+     * quella preveista dala norma EN207 e non ha relazione con la base dei tempi impiegata per il  *
+     * calcolo dell'EMP dell'impulso che della frequenza di ripetizione degli impulsi.              *                *
+     ************************************************************************************************/
 
-        myDLaserGoggle=new LaserGoggle(632, myTimeBase, 0, 7);
-        string myNewDGoggleMark = myDLaserGoggle->goggleMark(632, myTimeBase, 0, 7, 0);
+    if((wavelength>=180)&&(wavelength<=315))
+        myTimeBase=LaserGoggle::TIMEBASE;
+    else if((wavelength>315)&&(wavelength<=1.0e+06))
+        myTimeBase=LaserGoggle::TIMEBASE_LOW_WAVELENGTH;
 
-        vector<pair<int, double>> frequencyDataVector;
-        myDLaserGoggle->printVector(frequencyDataVector);
-        frequencyDataVector=myDLaserGoggle->getDataVector();
-        dLaserOutput=myDLaserGoggle->laserIrrRadCorrected(0);
-        myDModel=new ScaleNumbersModelView(this);
-        myDModel->setTableList(frequencyDataVector);
-        dockGoggle->ui->dTableView->setModel(myDModel);
+    /************************************************************************************************
+     * Inizializzo laser frequenza nulla per uso calcolare gli effetti medi nel caso di             *
+     * funzionamento ad impulsi ripetuti. Valgono e considerazioni fatte in precedenza.             *                                                          *
+     ************************************************************************************************/
 
-        dChartView = new MyChartView(0, frequencyDataVector, dLaserOutput);
-        dChartView->setRenderHint(QPainter::Antialiasing);
-        dockGoggle->ui->dGridLayout->addWidget(dChartView, 1, 0, Qt::AlignCenter);
+     myDLaserGoggle=new LaserGoggle(wavelength, myTimeBase, 0, beamDiameter);
+     string myNewDGoggleMark = myDLaserGoggle->goggleMark(wavelength, myTimeBase, 0, beamDiameter, 0);
 
-        dockGoggle->ui->scaleNumberDLabel->setVisible(false);
-        dockGoggle->ui->tScaleNumberDLabel->setVisible(false);
-        dockGoggle->ui->n_maxLabel->setVisible(false);
-        dockGoggle->ui->tn_maxLabel->setVisible(false);
-        dockGoggle->ui->coefficient_kLabel->setVisible(false);
-        dockGoggle->ui->tCoefficient_kLabel->setVisible(false);
-        dockGoggle->ui->coefficient_kiLabel->setVisible(false);
-        dockGoggle->ui->tCoefficient_kiLabel->setVisible(false);
-        dockGoggle->ui->dLaserOutputLabel->setVisible(false);
-        dockGoggle->ui->tDLaserOutputLabel->setVisible(false);
-        dockGoggle->ui->numberOfPulseLabel->setVisible(false);
-        dockGoggle->ui->tNumberOfPulseLabel->setVisible(false);
-        dockGoggle->ui->meanPowerLabel->setVisible(false);
-        dockGoggle->ui->tMeanPowerLabel->setVisible(false);
+     vector<pair<int, double>> frequencyDataVector;
+     myDLaserGoggle->printVector(frequencyDataVector);
+     frequencyDataVector=myDLaserGoggle->getDataVector();
+     dLaserOutput=myDLaserGoggle->laserIrrRadCorrected(0);
+     myDModel=new ScaleNumbersModelView(this);
+     myDModel->setTableList(frequencyDataVector);
+     dockGoggle->ui->dTableView->setModel(myDModel);
 
-        dispayScaleNumber();
-        displayLaserOutput();
+     dChartView = new MyChartView(0, frequencyDataVector, dLaserOutput);
+     dChartView->setRenderHint(QPainter::Antialiasing);
+     dockGoggle->ui->dGridLayout->addWidget(dChartView, 1, 0, Qt::AlignCenter);
 
-        //inizializzo il laser per il calcolo dei livelli di emissione e la NOHD occhi
-        n_laser=0;
+     dispayScaleNumber();
+     displayLaserOutput();
 
-        showControls(false);
+     //inizializzo il laser per il calcolo dei livelli di emissione e la NOHD occhi
+     n_laser=0;
 
-        dockGoggle->setFixedWidth(DOCKGOGGLEMINIMUN);
+     showControls(false);
 
-        MyLaserCW_Pr=nullptr;
+     dockGoggle->setFixedWidth(DOCKGOGGLEMINIMUN);
+
+     MyLaserCW_Pr=nullptr;
         MyLaserSP_Pr=nullptr;
-        MyLaserMP_Pr=nullptr;
+     MyLaserMP_Pr=nullptr;
         exposureTime=0.25;
         gaussianBeam=true;
         beamCorrection=1.0;
@@ -136,6 +136,14 @@ DockControls::DockControls(QWidget *parent, DockResults *_dockResults, DockEffec
         /************************************************************************************************
          * Imposto i valori dei controlli con le relative variabili membro.                             *
          ************************************************************************************************/
+
+        MyLaserClassCW_Pr=nullptr;
+        MyLaserClassSP_Pr=nullptr;
+        MyLaserClassMP_Pr=nullptr;
+
+        //Nel costruttore: prf, beamDiameter, powerErg, divergence, wavelength, pulseWidth, alpha
+        MyLaserClassMP=new LaserClassMP(prf, beamDiameter, powerErg, divergence, wavelength, pulseWidth, alpha);
+        MyLaserClassCW_Pr=MyLaserClassMP;
 
         setDialControls();
 
@@ -198,15 +206,19 @@ void DockControls::on_wavelengthScrollBar_valueChanged(int value)
     /*****************
     * CONTINUOS WAVE *
     * ****************/
-
+					
     if(n_laser==0)
     {
     /*****************************************
      * Imposto il valore negli oggetti Laser *
      *****************************************/
 
+    MyLaserCW_Pr->setExposureTime();
     MyLaserCW_Pr->setWavelength(wavelength);
     MyLaserSkinSP_Pr->setWavelength(wavelength);
+	
+    MyLaserClassCW_Pr->setTimeBase();
+    MyLaserClassCW_Pr->setWavelength(wavelength);
 
     /**********************************************************************
      * Imposto il valore nell'oggetto occhiali protettori.                *
@@ -218,12 +230,12 @@ void DockControls::on_wavelengthScrollBar_valueChanged(int value)
 
     if(((myLaserGoggle->getWavelength()>315) && (myLaserGoggle->getWavelength()<=1e+06)))//base dei tempi 5 s
          {
-             myLaserGoggle->setPulseWidth(LaserGoggle::timeBaseWavelength);
+             myLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE);
           }
         else
             if(((myLaserGoggle->getWavelength()>=180) && (myLaserGoggle->getWavelength()<=315)))//base dei tempi 30000 s
               {
-                 myLaserGoggle->setPulseWidth(LaserGoggle::timeBaseLowWavelength);
+                 myLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE_LOW_WAVELENGTH);
               }
 
     /**************************************************************
@@ -268,7 +280,9 @@ void DockControls::on_wavelengthScrollBar_valueChanged(int value)
 
     MyLaserSP_Pr->setWavelength(wavelength);
     MyLaserSkinSP_Pr->setWavelength(wavelength);
-
+	
+    MyLaserClassSP_Pr->setWavelength(wavelength);
+				
     /**********************************************************************
      * Imposto il valore nell'oggetto occhiali protettori.                *
      * Il valore della base dei tempi dipende dalla lunghezza d'onda e va *
@@ -319,9 +333,16 @@ void DockControls::on_wavelengthScrollBar_valueChanged(int value)
      * Imposto il valore negli oggetti Laser *
      *****************************************/
 
+     MyLaserMP_Pr->setTimeBase();
+     MyLaserMP_Pr->computeTmin();
+
+     MyLaserMP_Pr->computeTmin();
+     MyLaserMP_Pr->setExposureTime();
      MyLaserMP_Pr->setWavelength(wavelength);
      MyLaserSkinMP_Pr->setWavelength(wavelength);
 
+     MyLaserClassMP_Pr->setTimeBase();
+     MyLaserClassMP_Pr->setWavelength(wavelength);
 
      /***********************************************************************
       * Imposto il valore negli oggetti occhiali protettori.                *
@@ -340,12 +361,12 @@ void DockControls::on_wavelengthScrollBar_valueChanged(int value)
 
     if(((myDLaserGoggle->getWavelength()>315) && (myDLaserGoggle->getWavelength()<=1e+06)))//base dei tempi 5 s
          {
-             myDLaserGoggle->setPulseWidth(LaserGoggle::timeBaseWavelength);
+             myDLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE);
           }
         else{
             if(((myDLaserGoggle->getWavelength()>=180) && (myDLaserGoggle->getWavelength()<=315)))//base dei tempi 30000 5
               {
-                 myDLaserGoggle->setPulseWidth(LaserGoggle::timeBaseLowWavelength);
+                 myDLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE_LOW_WAVELENGTH);
               }
             }
     /**************************************************************
@@ -387,8 +408,8 @@ void DockControls::on_wavelengthScrollBar_valueChanged(int value)
     /*******************************************
      * Imposto i widget per la visualizzazione *
      *******************************************/
-
     setWidgets();
+    set_LEA_Widgets();
 
     /*******************************************************
     * Imposto altri valori necessarie per la parte grafica *
@@ -419,6 +440,7 @@ void DockControls::on_teControl_valueChanged()
              ********************************************************/
              MyLaserCW_Pr->setExposureTimeEditable(true);
              MyLaserCW_Pr->setEditedExposureTime(exposureTime);
+             MyLaserCW_Pr->setPulseWidth(exposureTime);
              }
           else
           if(n_laser==2)
@@ -431,6 +453,7 @@ void DockControls::on_teControl_valueChanged()
              ********************************************************/
              MyLaserMP_Pr->setExposureTimeEditable(true);
              MyLaserMP_Pr->setEditedExposureTime(exposureTime);
+             MyLaserMP_Pr->setPulseWidth(exposureTime);
             }
     setWidgets();
     emit EMP_Changed();//Cambia l'EMP
@@ -582,6 +605,8 @@ void DockControls::on_powerErgControl_valueChanged()
     MyLaserCW_Pr->setPowerErg(powerErg*beamCorrection);
     MyLaserSkinSP_Pr->setPowerErg(powerErg);
 
+    MyLaserClassCW_Pr->setPowerErg(powerErg);
+
     enablePeakControl();
     effectivePowerErgPeak();
     modeLockingPeak();
@@ -598,6 +623,8 @@ void DockControls::on_powerErgControl_valueChanged()
     *****************************************/
     MyLaserSP_Pr->setPowerErg(powerErg*beamCorrection);
     MyLaserSkinSP_Pr->setPowerErg(powerErg);
+
+    MyLaserClassSP_Pr->setPowerErg(powerErg);
 
     enablePeakControl();
     effectivePowerErgPeak();
@@ -616,6 +643,8 @@ void DockControls::on_powerErgControl_valueChanged()
 	
         MyLaserMP_Pr->setPowerErg(beamCorrection*powerErg);
         MyLaserSkinMP_Pr->setPowerErg(powerErg);
+
+        MyLaserClassMP_Pr->setPowerErg(powerErg);
 
         enablePeakControl();
         effectivePowerErgPeak();
@@ -680,6 +709,7 @@ void DockControls::on_powerErgControl_valueChanged()
     * Imposto i widget per la visualizzazione *
     *******************************************/
     setWidgets();
+    set_LEA_Widgets();
 
     /*******************************************************
     * Imposto altri valori necessarie per la parte grafica *
@@ -820,6 +850,8 @@ void DockControls::on_pulseControl_valueChanged()
 			 MyLaserSkinSP_Pr->setPulseWidth(pulseWidth);
 			 myLaserGoggle->setPulseWidth(pulseWidth);
 
+             MyLaserClassSP_Pr->setPulseWidth(pulseWidth);
+
              enablePeakControl();
              effectivePowerErgPeak();
              modeLockingPeak();
@@ -858,6 +890,8 @@ void DockControls::on_pulseControl_valueChanged()
 			 MyLaserMP_Pr->setPulseWidth(pulseWidth);
              MyLaserSkinMP_Pr->setPulseWidth(pulseWidth);
              myLaserGoggle->setPulseWidth(pulseWidth);
+             MyLaserClassMP_Pr->setPulseWidth(pulseWidth);
+
 			 QString scaleNumberString = QString::fromStdString(myLaserGoggle->goggleMark());
 
              enablePeakControl();
@@ -891,6 +925,7 @@ void DockControls::on_pulseControl_valueChanged()
      * Imposto i widget per la visualizzazione *
      *******************************************/
 		 setWidgets();
+         set_LEA_Widgets();
 		 
 	/*******************************************************
     * Imposto altri valori necessarie per la parte grafica *
@@ -926,12 +961,12 @@ void DockControls::displayTimeBase()
         if((wavelength>=180)&&(wavelength<=315))
         {
             dockGoggle->ui->tTimeBaseLabel->setText("T<sub>b</sub> [s]");
-            dockGoggle->ui->timeBaseLabel->setText(QString::number(LaserGoggle::timeBaseLowWavelength));
+            dockGoggle->ui->timeBaseLabel->setText(QString::number(LaserGoggle::TIMEBASE_LOW_WAVELENGTH));
         }
                 else
         {
             dockGoggle->ui->tTimeBaseLabel->setText("T<sub>b</sub> [s]");
-            dockGoggle->ui->timeBaseLabel->setText(QString::number(LaserGoggle::timeBaseWavelength));
+            dockGoggle->ui->timeBaseLabel->setText(QString::number(LaserGoggle::TIMEBASE));
         }
     }
 }
@@ -1001,17 +1036,6 @@ void DockControls::dispayDScaleNumber()
     dockGoggle->ui->scaleNumberDLabel->setText(scaleNumberDString);
 }
 
-
-void DockControls::displayOpticalDensity()
-{
-
-}
-
-void DockControls::displayDOpticalDensity()
-{
-
-}
-
 void DockControls::on_prfControl_valueChanged()
 {
    /********************************************
@@ -1041,6 +1065,7 @@ void DockControls::on_prfControl_valueChanged()
 	
     MyLaserMP_Pr->setPRF(prf);
     MyLaserSkinMP_Pr->setPRF(prf);
+    MyLaserClassMP_Pr->setPRF(prf);
     myLaserGoggle->setFrequency(prf);
 
     /********************************************************************
@@ -1102,6 +1127,7 @@ void DockControls::on_prfControl_valueChanged()
     * Imposto i widget per la visualizzazione *
     *******************************************/
     setWidgets();
+    set_LEA_Widgets();
 
     /*******************************************************
     * Imposto altri valori necessarie per la parte grafica *
@@ -1143,6 +1169,7 @@ void DockControls::on_beamDiameterControl_valueChanged()
     *****************************************/
     MyLaserCW_Pr->setBeamDiameter(beamDiameter);
     MyLaserSkinSP_Pr->setBeamDiameter(beamDiameter);
+    MyLaserClassCW_Pr->setBeamDiameter(beamDiameter);
 	myLaserGoggle->setBeamDiameter(beamDiameter);
 
     enablePeakControl();
@@ -1160,7 +1187,8 @@ void DockControls::on_beamDiameterControl_valueChanged()
     * Imposto il valore negli oggetti Laser *
     *****************************************/
 	MyLaserSP_Pr->setBeamDiameter(beamDiameter);
-	MyLaserSkinSP_Pr->setBeamDiameter(beamDiameter);
+	MyLaserSkinSP_Pr->setBeamDiameter(beamDiameter);   
+    MyLaserClassSP_Pr->setBeamDiameter(beamDiameter);
 	myLaserGoggle->setBeamDiameter(beamDiameter);
 
     enablePeakControl();
@@ -1177,7 +1205,8 @@ void DockControls::on_beamDiameterControl_valueChanged()
     * Imposto il valore negli oggetti Laser *
     *****************************************/
     MyLaserMP_Pr->setBeamDiameter(beamDiameter);
-    MyLaserSkinMP_Pr->setBeamDiameter(beamDiameter);
+    MyLaserSkinMP_Pr->setBeamDiameter(beamDiameter); 
+    MyLaserClassMP_Pr->setBeamDiameter(beamDiameter);
 	myLaserGoggle->setBeamDiameter(beamDiameter);
     myDLaserGoggle->setBeamDiameter(beamDiameter);
 
@@ -1212,7 +1241,7 @@ void DockControls::on_beamDiameterControl_valueChanged()
     * Imposto i widget per la visualizzazione *
     *******************************************/
     setWidgets();
-
+    set_LEA_Widgets();
 
    /********************************************************
     * Imposto altri valori necessarie per la parte grafica *
@@ -1264,19 +1293,33 @@ void DockControls::showControls(bool _show)
                               dockGoggle->ui->dTimeBaseLabel->setVisible(_show and details);
                                 dockGoggle->ui->tMeanPowerLabel->setVisible(_show and details);
                                   dockGoggle->ui->meanPowerLabel->setVisible(_show and details);
+
+                                  dockGoggle->ui->tabWidget->setTabVisible(1, _show);
+                                  dockLea->ui->tabWidget->setTabVisible(1, _show);
                                     if (_show)
                                     {
                                         if(details)
                                             dChartView->show();
 
-                                        dockGoggle->ui->page_2->show();
+                                        dockGoggle->ui->tabWidget->setTabText(0,"Criterio dell'impulso");
+                                        dockGoggle->ui->tabWidget->setTabText(1,"Criterio della potenza media");
+
+                                        dockLea->ui->tabWidget->setTabText(0, "Criterio dell'energia");
+                                        dockLea->ui->tabWidget->setTabText(1,"Criteri della potenza media e degli effetti termici");
                                      }
                                     else
                                     {
                                         if(details)
                                             dChartView->hide();
 
-                                        dockGoggle->ui->page_2->hide();
+                                        if(n_laser==0){
+                                            dockGoggle->ui->tabWidget->setTabText(0,"Criterio della potenza");
+                                            dockLea->ui->tabWidget->setTabText(0,"Criterio della potenza");
+                                            }
+                                        else if(n_laser==1){
+                                            dockGoggle->ui->tabWidget->setTabText(0,"Criterio dell'energia");
+                                            dockLea->ui->tabWidget->setTabText(0,"Criterio dell'energia");
+                                            }
                                     }
 }
 
@@ -1374,6 +1417,7 @@ void DockControls::on_divergenceControl_valueChanged()
     *****************************************/
     MyLaserCW_Pr->setDivergence(divergence);
     MyLaserSkinSP_Pr->setDivergence(divergence);
+    MyLaserClassCW_Pr->setDivergence(divergence);
     }
     else
 	/*************
@@ -1386,6 +1430,7 @@ void DockControls::on_divergenceControl_valueChanged()
     *****************************************/
     MyLaserSP_Pr->setDivergence(divergence);
     MyLaserSkinSP_Pr->setDivergence(divergence);
+    MyLaserClassSP_Pr->setDivergence(divergence);
     }
     else
    /********************
@@ -1397,13 +1442,15 @@ void DockControls::on_divergenceControl_valueChanged()
     * Imposto il valore negli oggetti Laser *
     *****************************************/
     MyLaserMP_Pr->setDivergence(divergence);
-    MyLaserSkinMP_Pr->setDivergence(divergence);
+    MyLaserSkinMP_Pr->setDivergence(divergence);    
+    MyLaserClassMP_Pr->setDivergence(divergence);
     }
 	
    /*******************************************
     * Imposto i widget per la visualizzazione *
     *******************************************/
     setWidgets();
+    set_LEA_Widgets();
 	
    /********************************************************
     * Imposto altri valori necessarie per la parte grafica *
@@ -2107,6 +2154,11 @@ if(n_laser==2)
     }
 }
 
+int DockControls::get_n_laser()const
+{
+    return n_laser;
+}
+
 void DockControls::on_operationCombo_currentIndexChanged(int index)
 {
 	/******************************************
@@ -2132,8 +2184,12 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     *****************************************/
     MyLaserCW_Pr=MyLaserSafetyMP;
     MyLaserSkinSP_Pr=MyLaserSkinSafetyMP;
+    MyLaserClassCW_Pr=MyLaserClassMP;
+
+    MyLaserClassCW_Pr->setTimeBase();
 
     MyLaserCW_Pr->setExposureTime();
+
     ui->pulseControl->setEnabled(false);
 
 	/*****************************************************************************
@@ -2172,19 +2228,14 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     else
         MyLaserCW_Pr->setExposureTime();
 
-   /**************************************************************************************
-	* Nascondo la scheda relativa al laser effetti medi in modalità ad IMPULSI RIPETUTI. *
-	**************************************************************************************/
-    dockGoggle->ui->page_2->hide();
-
     if(((myLaserGoggle->getWavelength()>315) && (myLaserGoggle->getWavelength()<=1e+06)))
          {
-             myLaserGoggle->setPulseWidth(LaserGoggle::timeBaseWavelength);
+             myLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE);
           }
         else
             if(((myLaserGoggle->getWavelength()>=180) && (myLaserGoggle->getWavelength()<=315)))
               {
-                 myLaserGoggle->setPulseWidth(LaserGoggle::timeBaseLowWavelength);
+                 myLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE_LOW_WAVELENGTH);
               }
 
    /******************************************************************************************	
@@ -2205,6 +2256,8 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     display_ni_max();
 	//Nascondo i controlli riguardanti i protettori ottici non previsti
     showControls(false);
+
+    dockLea->ui->tab_2->hide();
 
     }
     else
@@ -2228,6 +2281,8 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     *****************************************/
     MyLaserSP_Pr=MyLaserSafetyMP;
     MyLaserSkinSP_Pr=MyLaserSkinSafetyMP;
+
+    MyLaserClassSP_Pr=MyLaserClassMP;
 	
    /******************************************************************
 	* Ogni volta che passo alla modalità di funzionamento IMPULSATO  *
@@ -2243,6 +2298,7 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     pulseWidth=1.0e-06;
     ui->pulseControl->setEnabled(true);
     ui->pulseControl->setValue(pulseWidth);
+    MyLaserSP_Pr->getPulseWidth();
     MyLaserSkinSP_Pr->setPulseWidth(pulseWidth);
 
     powerErg=1.0e-03;
@@ -2263,11 +2319,6 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     ui->enableTeCheckBox->setEnabled(false);
     ui->teControl->setEnabled(false);
 
-	/**************************************************************************************
-	* Nascondo la scheda relativa al laser effetti medi in modalità ad IMPULSI RIPETUTI. *
-	**************************************************************************************/
-    dockGoggle->ui->page_2->hide();
-
    /******************************************************************************************	
 	* Invoco le funzioni per il prelievo dei dati e il tracciamento dei grafici per l'oggetto *
 	* myLaserGoggle                                                                          *
@@ -2286,6 +2337,8 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     display_ni_max();
 	//Nascondo i controlli riguardanti i protettori ottici non previsti
 	showControls(false);
+
+    dockLea->ui->tab_2->hide();
     }
     else
    /********************
@@ -2308,6 +2361,8 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     MyLaserMP_Pr=MyLaserSafetyMP;
     MyLaserSkinMP_Pr=MyLaserSkinSafetyMP;
 
+    MyLaserClassMP_Pr=MyLaserClassMP;
+
    /******************************************************************
 	* Ogni volta che passo alla modalità di funzionamento AD IMPULSI *
 	* RIPETUTI imposto il valore dell'energia dell'impusl a 1.0e+03, il valore della     *
@@ -2321,6 +2376,9 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
 
     //ogni volta cha passo al funzionamento ad impulsi ripetuti imposto la durata degli impulsi a 1.0e-06 s
     pulseWidth=1.0e-06;
+    MyLaserMP_Pr->setExposureTime();
+    MyLaserMP_Pr->computeTmin();
+    MyLaserClassMP_Pr->setTimeBase();
     ui->pulseControl->setEnabled(true);
     ui->pulseControl->setValue(pulseWidth);
     MyLaserSkinMP_Pr->setPulseWidth(pulseWidth);
@@ -2332,6 +2390,7 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     ui->prfControl->setValue(prf);
     MyLaserMP_Pr->setPRF(prf);
     MyLaserSkinMP_Pr->setPRF(prf);
+    MyLaserClassMP_Pr->setPRF(prf);
     myLaserGoggle->setFrequency(prf);
 	
     T_Skin=5.0;
@@ -2341,7 +2400,6 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     ui->T_SkinControl->setEnabled(true);
 
 	//Imposto il tempo di esposizione alla radiazione laser.
-    MyLaserMP_Pr->setExposureTime();
 
     /****************************************************************************************
     * se l'impostazione del tempo di esposizione è abilitata aggiorno il laser con          *
@@ -2352,7 +2410,7 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     ui->enableTeCheckBox->setEnabled(true);
 
     if(isTeEdtitingEnabled()){
-        MyLaserCW_Pr->setEditedExposureTime(ui->teControl->getDialNumber());
+        MyLaserMP_Pr->setEditedExposureTime(ui->teControl->getDialNumber());
         ui->teControl->setEnabled(true);}
     else
         MyLaserMP_Pr->setExposureTime();
@@ -2372,14 +2430,19 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
 
     if(((myDLaserGoggle->getWavelength()>315) && (myDLaserGoggle->getWavelength()<=1e+06)))
       {
-         myDLaserGoggle->setPulseWidth(LaserGoggle::timeBaseWavelength);
+         myDLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE);
       }
       else
     if(((myDLaserGoggle->getWavelength()>=180) && (myDLaserGoggle->getWavelength()<=315)))
       {
-         myDLaserGoggle->setPulseWidth(LaserGoggle::timeBaseLowWavelength);
+         myDLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE);
       }
    
+
+    MyLaserClassMP_Pr->setPowerErg(powerErg);
+    MyLaserClassMP_Pr->setPRF(prf);
+    MyLaserClassMP_Pr->setTimeBase();
+
    /******************************************************************************************	
 	* Invoco le funzioni per il prelievo dei dati e il tracciamento dei grafici per l'oggetto *
 	* myLaserGoggle                                                                          *
@@ -2411,7 +2474,9 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     * Imposto i widget per la visualizzazione *
     *******************************************/
     setWidgets();
+    set_LEA_Widgets();
 
+    dockLea->ui->tab_2->show();
    /*******************************************************
     * Imposto altri valori necessari per la parte grafica *
     *******************************************************/
@@ -2432,55 +2497,55 @@ void DockControls::setSkinWidgetsSingle()
 {
 //Skin widgets
 
-QString empSkinUnit;
-QString skinPowerErgUnit;
+    QString empSkinUnit;
+    QString skinPowerErgUnit;
 
-if(MyLaserSkinSP_Pr->getFormulaSort()=="E")
-{
-        empSkinUnit="[W/m<sup>2</sup>]";
-}
-else
-    if(MyLaserSkinSP_Pr->getFormulaSort()=="H")
+    if(MyLaserSkinSP_Pr->getFormulaSort()=="E")
     {
-        empSkinUnit="[J/m<sup>2</sup>]";
+            empSkinUnit="[W/m<sup>2</sup>]";
     }
+    else
+        if(MyLaserSkinSP_Pr->getFormulaSort()=="H")
+        {
+            empSkinUnit="[J/m<sup>2</sup>]";
+        }
 
-if(n_laser==0)
-            skinPowerErgUnit="Potenza [W]";
-else
-    if(n_laser==1)
-            skinPowerErgUnit="Energia [J]";
+    if(n_laser==0)
+                skinPowerErgUnit="Potenza [W]";
+    else
+        if(n_laser==1)
+                skinPowerErgUnit="Energia [J]";
 
-dockSkin->ui->tFormulaSkinMP_Label->setVisible(false);
-dockSkin->ui->FormulaSkinMP_Label->setVisible(false);
+    dockSkin->ui->tFormulaSkinMP_Label->setVisible(false);
+    dockSkin->ui->FormulaSkinMP_Label->setVisible(false);
 
-dockSkin->ui->tMeanPowerSkinLabel->setVisible(false);
-dockSkin->ui->MeanPowerSkinLabel->setVisible(false);
+    dockSkin->ui->tMeanPowerSkinLabel->setVisible(false);
+    dockSkin->ui->MeanPowerSkinLabel->setVisible(false);
 
-dockSkin->ui->tMeanIrradianceSkinLabel->setVisible(false);
-dockSkin->ui->MeanIrradianceSkinLabel->setVisible(false);
+    dockSkin->ui->tMeanIrradianceSkinLabel->setVisible(false);
+    dockSkin->ui->MeanIrradianceSkinLabel->setVisible(false);
 
-dockSkin->ui->tEMP_MP_SkinLabel->setVisible(false);
-dockSkin->ui->EMP_MP_SkinLabel->setVisible(false);
+    dockSkin->ui->tEMP_MP_SkinLabel->setVisible(false);
+    dockSkin->ui->EMP_MP_SkinLabel->setVisible(false);
 
-dockSkin->ui->tPulseNumberSkinLabel->setVisible(false);
-dockSkin->ui->PulseNumberSkinLabel->setVisible(false);
+    dockSkin->ui->tPulseNumberSkinLabel->setVisible(false);
+    dockSkin->ui->PulseNumberSkinLabel->setVisible(false);
 
-dockSkin->ui->tminEMP_SkinLabel->setVisible(false);
-dockSkin->ui->minEMP_SkinLabel->setVisible(false);
+    dockSkin->ui->tminEMP_SkinLabel->setVisible(false);
+    dockSkin->ui->minEMP_SkinLabel->setVisible(false);
 
-dockSkin->ui->tPowerErgSkinLabel->setText(skinPowerErgUnit);
-dockSkin->ui->powerErgSkinLabel->setText(QString::number(MyLaserSkinSP_Pr->getPowerErg(),'e', 2));
+    dockSkin->ui->tPowerErgSkinLabel->setText(skinPowerErgUnit);
+    dockSkin->ui->powerErgSkinLabel->setText(QString::number(MyLaserSkinSP_Pr->getPowerErg(),'e', 2));
 
-dockSkin->ui->tEMP_SkinLabel->setText(MyLaserSkinSP_Pr->getFormulaSort().c_str() + empSkinUnit);
-dockSkin->ui->EMP_SkinLabel->setText(QString::number(MyLaserSkinSP_Pr->getEMP(),'e', 2));
+    dockSkin->ui->tEMP_SkinLabel->setText(MyLaserSkinSP_Pr->getFormulaSort().c_str() + empSkinUnit);
+    dockSkin->ui->EMP_SkinLabel->setText(QString::number(MyLaserSkinSP_Pr->getEMP(),'e', 2));
 
-dockSkin->ui->tFormulaSkinLabel->setText("Formula");
-dockSkin->ui->FormulaSkinLabel->setText(MyLaserSkinSP_Pr->getFormulaEMP().c_str());
+    dockSkin->ui->tFormulaSkinLabel->setText("Formula");
+    dockSkin->ui->FormulaSkinLabel->setText(MyLaserSkinSP_Pr->getFormulaEMP().c_str());
 
-dockSkin->ui->tNSHDLabel->setText((QString)"DNRP [m]");
+    dockSkin->ui->tNSHDLabel->setText((QString)"DNRP [m]");
 
-bool DNRO_scientNot;
+    bool DNRO_scientNot;
 
 
     if(n_laser==0)
@@ -2778,7 +2843,6 @@ void DockControls::setDialControls()
     ui->peakControl->setMaximumExponent(15);
     ui->peakControl->setValue(8.0e+00);
 }
-
 
 void DockControls::on_comboBox_currentIndexChanged(const QString &arg1)
 {
@@ -3111,4 +3175,784 @@ void DockControls::on_checkGaussianBeam_clicked(bool checked)
         beamCorrection=2.5;
 
     on_powerErgControl_valueChanged();
+}
+
+void DockControls::set_LEA_Widgets()
+{
+    if(((wavelength>=400)and(wavelength<=700)))
+        dockLea->ui->frame_2M_Output->setVisible(true);
+        else          
+        dockLea->ui->frame_2M_Output->setVisible(false);
+
+        if(((wavelength<302.5)or(wavelength>4000)))
+        {
+                dockLea->ui->frame_cond1->setVisible(false);
+                dockLea->ui->frame_cond1_1->setVisible(false);
+                dockLea->ui->frame_cond1_2->setVisible(false);
+                dockLea->ui->tBeamAperture1_Label->setVisible(false);
+                dockLea->ui->beamAperture1_Label->setVisible(false);
+                dockLea->ui->tBeamAperture1_Label_2->setVisible(false);
+                dockLea->ui->beamAperture1_Label_2->setVisible(false);
+                dockLea->ui->tBeamAperture1_Label_3->setVisible(false);
+                dockLea->ui->beamAperture1_Label_3->setVisible(false);
+        }
+            else
+            {
+                dockLea->ui->frame_cond1->setVisible(true);
+                dockLea->ui->frame_cond1_1->setVisible(true);
+                dockLea->ui->frame_cond1_2->setVisible(true);
+                dockLea->ui->tBeamAperture1_Label->setVisible(true);
+                dockLea->ui->beamAperture1_Label->setVisible(true);
+                dockLea->ui->tBeamAperture1_Label_2->setVisible(true);
+                dockLea->ui->beamAperture1_Label_2->setVisible(true);
+                dockLea->ui->tBeamAperture1_Label_3->setVisible(true);
+                dockLea->ui->beamAperture1_Label_3->setVisible(true);
+            }
+
+
+    if(n_laser==0)
+    {
+        MyLaserClassCW_Pr->updateAll();
+        setWidgetsForCW_Operation();
+        dockLea->ui->frame_base->setVisible(true);
+        dockLea->ui->frame_meanPower->setVisible(false);
+        dockLea->ui->frame_thermal->setVisible(false);
+        dockLea->ui->base_Label->setText("CW");
+        dockLea->ui->frame_pulses->setVisible(false);      
+        dockLea->ui->frame_baseTime->setVisible(true);
+        dockLea->ui->frame_thermalC5->setVisible(false);
+    }
+    else if(n_laser==1)
+    {
+        MyLaserClassSP_Pr->updateAll();
+        setWidgetsForSinglePulse_Operation();
+        dockLea->ui->frame_base->setVisible(true);
+        dockLea->ui->frame_meanPower->setVisible(false);
+        dockLea->ui->frame_thermal->setVisible(false);
+        dockLea->ui->frame_pulses->setVisible(false);
+        dockLea->ui->frame_baseTime->setVisible(false);
+        dockLea->ui->base_Label->setText("SP");
+        dockLea->ui->frame_thermalC5->setVisible(false);
+    }
+    else if(n_laser==2)
+    {
+        MyLaserClassMP_Pr->updateAll();
+        setWidgetsForMultiPulse_Operation();
+        dockLea->ui->frame_base->setVisible(true);
+        dockLea->ui->frame_meanPower->setVisible(true);
+        dockLea->ui->frame_pulses->setVisible(true);    
+        dockLea->ui->frame_baseTime->setVisible(true);
+        dockLea->ui->base_Label->setText("MP \nimpulso \nsingolo");
+        dockLea->ui->meanPowerValuation_Label->setText("Effetti \nmedi");
+        dockLea->ui->frame_thermalC5->setVisible(true);
+
+        if((wavelength>=400)and(wavelength<=1400))
+        {
+         dockLea->ui->frame_thermal->setVisible(true);
+
+            if(prf<1/MyLaserClassMP_Pr->getTi())
+            {
+                setWidgetsForThermal();
+                dockLea->ui->thermal_label->setText("Effetti \ntermici");
+            }
+            else
+            {
+                setWidgetsForThermalTi();
+                dockLea->ui->thermal_label->setText("Effetti termici \nalta frequenza");
+            }
+        }
+        else
+                dockLea->ui->frame_thermal->setVisible(false);
+    }
+}
+
+QString DockControls::getLaserClassString(const LaserClassCW::laserClass & myLaserClass)
+{
+    QString laserClassString;
+    if(myLaserClass==LaserClassCW::CLASSE_1)
+        laserClassString="Classe 1";
+    else if(myLaserClass==LaserClassCW::CLASSE_1M)
+        laserClassString="Classe 1M";
+    else if(myLaserClass==LaserClassCW::CLASSE_2)
+        laserClassString="Classe 2";
+    else if(myLaserClass==LaserClassCW::CLASSE_2M)
+        laserClassString="Classe 2M";
+    else if(myLaserClass==LaserClassCW::CLASSE_3R)
+        laserClassString="Classe 3R";
+    else if(myLaserClass==LaserClassCW::CLASSE_3B)
+        laserClassString="Classe 3B";
+    else if(myLaserClass==LaserClassCW::CLASSE_4)
+        laserClassString="Classe 4";
+    else
+        laserClassString="Non classificato";
+
+    return laserClassString;
+}
+
+void DockControls::setWidgetsForCW_Operation()
+{
+    ui->powerErgControl->setTitle("Potenza [W]");
+    dockLea->ui->couplingFactor1_Label->setText(QString::number(MyLaserClassCW_Pr->getCouplingFactor_Cond_1(), 'e', 2));
+    dockLea->ui->couplingFactor3_Label->setText(QString::number(MyLaserClassCW_Pr->getCouplingFactor_Cond_3(), 'e', 2));
+    dockLea->ui->apertureDiam1_Label->setText(QString::number(MyLaserClassCW_Pr->getApCond_1(), 'e', 2)+" mm");
+    dockLea->ui->apertureDiam3_Label->setText(QString::number(MyLaserClassCW_Pr->getApCond_3(), 'e', 2)+" mm");
+    dockLea->ui->apertureDist1_Label->setText(QString::number(MyLaserClassCW_Pr->getDistCond_1(), 'e', 2)+" mm");
+    dockLea->ui->apertureDist3_Label->setText(QString::number(MyLaserClassCW_Pr->getDistCond_3(), 'e', 2)+" mm");
+    dockLea->ui->beamAperture1_Label->setText(QString::number(MyLaserClassCW_Pr->getBeamAtStop_Cond_1(), 'e', 2)+" mm");
+    dockLea->ui->beamAperture3_Label->setText(QString::number(MyLaserClassCW_Pr->getBeamAtStop_Cond_3(), 'e', 2)+" mm");
+
+
+    LaserClassCW::laserClass myLaserClass=MyLaserClassCW_Pr->getLaserClass();
+    QString FormulaLEA;
+    QString FormulaLEA_Tipo;
+    QString FormulaLEA_Unit;
+    QString LEA_Value;
+    QString PowerErgCond_1;
+    QString PowerErgCond_3;
+    QString FormulaLEA_Label;
+    QString LEA_Value_Label;
+    QString tFormulaLEA_Label;
+    QString tLEA_Value_Label;
+    QString PowerErgCond_1_Label;
+    QString PowerErgCond_3_Label;
+    classData myClassData;
+
+    if ((myLaserClass==LaserClassCW::CLASSE_1)or(myLaserClass==LaserClassCW::CLASSE_1M))
+    {
+        myClassData=CLASSE_1_1M;
+        tFormulaLEA_Label="Formula 1 - 1M";
+        tLEA_Value_Label="LEA 1 - 1M";
+    }
+    else if ((myLaserClass==LaserClassCW::CLASSE_2)or(myLaserClass==LaserClassCW::CLASSE_2M))
+    {
+        myClassData=CLASSE_2_2M;
+        tFormulaLEA_Label="Formula 2 - 2M";
+        tLEA_Value_Label="LEA 2 - 2M";
+    }
+    else if (myLaserClass==LaserClassCW::CLASSE_3R)
+    {
+        myClassData=CLASSE_3R;
+        tFormulaLEA_Label="Formula 3R";
+        tLEA_Value_Label="LEA 3R";
+    }
+    else if ((myLaserClass==LaserClassCW::CLASSE_3B)or(myLaserClass==LaserClassCW::CLASSE_4))
+    {
+        myClassData=CLASSE_3B;
+        tFormulaLEA_Label="Formula 3B";
+        tLEA_Value_Label="LEA 3B";
+    }
+    else
+    {
+        myClassData=SENZA_CLASSIFICA;        
+        tFormulaLEA_Label="NC";
+        tLEA_Value_Label="NC";
+    }
+
+
+    FormulaLEA_Tipo=QString::fromStdString(MyLaserClassCW_Pr->getLEA_FormulaTipo()[(int)myClassData]);
+    FormulaLEA=QString::fromStdString(MyLaserClassCW_Pr->getLEA_Formula()[(int)myClassData]);
+    FormulaLEA_Unit=QString::fromStdString(MyLaserClassCW_Pr->getLEA_FormulaUnit()[(int)myClassData]);
+    LEA_Value=QString::number(MyLaserClassCW_Pr->getLEA()[(int)myClassData], 'e', 2);
+    FormulaLEA_Label=QString("%1=%2 %3")
+                             .arg(FormulaLEA_Tipo)
+                             .arg(FormulaLEA)
+                             .arg(FormulaLEA_Unit);
+
+    LEA_Value_Label=QString("%1=%2 %3")
+                             .arg(FormulaLEA_Tipo)
+                             .arg(LEA_Value)
+                             .arg(FormulaLEA_Unit);
+
+    PowerErgCond_1=QString::number(MyLaserClassCW_Pr->getPowerErg_Cond_1()[(int)myClassData], 'e', 2);
+    PowerErgCond_3=QString::number(MyLaserClassCW_Pr->getPowerErg_Cond_3()[(int)myClassData], 'e', 2);
+
+    PowerErgCond_1_Label=QString("%1=%2 %3")
+                             .arg(FormulaLEA_Tipo)
+                             .arg(PowerErgCond_1)
+                             .arg(FormulaLEA_Unit);
+
+    PowerErgCond_3_Label=QString("%1=%2 %3")
+                             .arg(FormulaLEA_Tipo)
+                             .arg(PowerErgCond_3)
+                             .arg(FormulaLEA_Unit);
+
+    dockLea->ui->formulaLEA_Label->setText(FormulaLEA_Label);
+    dockLea->ui->LEA_Label->setText(LEA_Value_Label);
+
+    dockLea->ui->tFormulaLEA_Label->setText(tFormulaLEA_Label);
+    dockLea->ui->tLEA_Label->setText(tLEA_Value_Label);
+
+    dockLea->ui->cond1LEA_Label->setText(PowerErgCond_1_Label);
+    dockLea->ui->cond3LEA_Label->setText(PowerErgCond_3_Label);
+
+    QString tPowerErgCond_1_Label=QString("%1<sub>Acc 1</sub>").arg(FormulaLEA_Tipo);
+    dockLea->ui->tCond1LEA_Label->setText(tPowerErgCond_1_Label);
+
+    QString tPowerErgCond_3_Label=QString("%1<sub>Acc 3</sub>").arg(FormulaLEA_Tipo);
+    dockLea->ui->tCond3LEA_Label->setText(tPowerErgCond_3_Label);
+
+
+    QString TimeBase_Label=QString("%1 s")
+                         .arg(QString::number(MyLaserClassCW_Pr->getTimeBase()));
+
+    dockLea->ui->timeBase_Label->setText(TimeBase_Label);
+
+    dockLea->ui->class_Label->setText(getLaserClassString(myLaserClass));
+}
+
+void DockControls::setWidgetsForSinglePulse_Operation()
+{
+    ui->powerErgControl->setTitle("Energia [J]");
+    dockLea->ui->couplingFactor1_Label->setText(QString::number(MyLaserClassSP_Pr->getCouplingFactor_Cond_1(), 'e', 2));
+    dockLea->ui->couplingFactor3_Label->setText(QString::number(MyLaserClassSP_Pr->getCouplingFactor_Cond_3(), 'e', 2));
+    dockLea->ui->apertureDiam1_Label->setText(QString::number(MyLaserClassSP_Pr->getApCond_1(), 'e', 2)+" mm");
+    dockLea->ui->apertureDiam3_Label->setText(QString::number(MyLaserClassSP_Pr->getApCond_3(), 'e', 2)+" mm");
+    dockLea->ui->apertureDist1_Label->setText(QString::number(MyLaserClassSP_Pr->getDistCond_1(), 'e', 2)+" mm");
+    dockLea->ui->apertureDist3_Label->setText(QString::number(MyLaserClassSP_Pr->getDistCond_3(), 'e', 2)+" mm");
+    dockLea->ui->beamAperture1_Label->setText(QString::number(MyLaserClassSP_Pr->getBeamAtStop_Cond_1(), 'e', 2)+" mm");
+    dockLea->ui->beamAperture3_Label->setText(QString::number(MyLaserClassSP_Pr->getBeamAtStop_Cond_3(), 'e', 2)+" mm");
+
+    dockLea->ui->timeBase_Label->setText("N.A.");
+
+    LaserClassCW::laserClass myLaserClass=MyLaserClassSP_Pr->getLaserClass();
+    QString FormulaLEA;
+    QString FormulaLEA_Tipo;
+    QString FormulaLEA_Unit;
+    QString LEA_Value;
+    QString PowerErgCond_1;
+    QString PowerErgCond_3;
+    QString FormulaLEA_Label;
+    QString LEA_Value_Label;
+    QString tFormulaLEA_Label;
+    QString tLEA_Value_Label;
+    QString PowerErgCond_1_Label;
+    QString PowerErgCond_3_Label;
+    classData myClassData;
+
+    if ((myLaserClass==LaserClassCW::CLASSE_1)or(myLaserClass==LaserClassCW::CLASSE_1M))
+    {
+        myClassData=CLASSE_1_1M;
+        tFormulaLEA_Label="Formula 1 - 1M";
+        tLEA_Value_Label="LEA 1 - 1M";
+    }
+    else if ((myLaserClass==LaserClassCW::CLASSE_2)or(myLaserClass==LaserClassCW::CLASSE_2M))
+    {
+        myClassData=CLASSE_2_2M;
+        tFormulaLEA_Label="Formula 2 - 2M";
+        tLEA_Value_Label="LEA 2 - 2M";
+    }
+    else if (myLaserClass==LaserClassCW::CLASSE_3R)
+    {
+        myClassData=CLASSE_3R;
+        tFormulaLEA_Label="Formula 3R";
+        tLEA_Value_Label="LEA 3R";
+    }
+    else if ((myLaserClass==LaserClassCW::CLASSE_3B)or(myLaserClass==LaserClassCW::CLASSE_4))
+    {
+        myClassData=CLASSE_3B;
+        tFormulaLEA_Label="Formula 3B";
+        tLEA_Value_Label="LEA 3B";
+    }
+    else
+    {
+        myClassData=SENZA_CLASSIFICA;
+        tFormulaLEA_Label="NC";
+        tLEA_Value_Label="NC";
+    }
+
+    FormulaLEA_Tipo=QString::fromStdString(MyLaserClassSP_Pr->getLEA_FormulaTipo()[(int)myClassData]);
+    FormulaLEA=QString::fromStdString(MyLaserClassSP_Pr->getLEA_Formula()[(int)myClassData]);
+    FormulaLEA_Unit=QString::fromStdString(MyLaserClassSP_Pr->getLEA_FormulaUnit()[(int)myClassData]);
+    LEA_Value=QString::number(MyLaserClassSP_Pr->getLEA()[(int)myClassData], 'e', 2);
+    FormulaLEA_Label=QString("%1=%2 %3")
+                             .arg(FormulaLEA_Tipo)
+                             .arg(FormulaLEA)
+                             .arg(FormulaLEA_Unit);
+
+    LEA_Value_Label=QString("%1=%2 %3")
+                             .arg(FormulaLEA_Tipo)
+                             .arg(LEA_Value)
+                             .arg(FormulaLEA_Unit);
+
+    PowerErgCond_1=QString::number(MyLaserClassSP_Pr->getPowerErg_Cond_1()[(int)myClassData], 'e', 2);
+    PowerErgCond_3=QString::number(MyLaserClassSP_Pr->getPowerErg_Cond_3()[(int)myClassData], 'e', 2);
+
+    PowerErgCond_1_Label=QString("%1=%2 %3")
+                             .arg(FormulaLEA_Tipo)
+                             .arg(PowerErgCond_1)
+                             .arg(FormulaLEA_Unit);
+
+    PowerErgCond_3_Label=QString("%1=%2 %3")
+                             .arg(FormulaLEA_Tipo)
+                             .arg(PowerErgCond_3)
+                             .arg(FormulaLEA_Unit);
+
+    dockLea->ui->formulaLEA_Label->setText(FormulaLEA_Label);
+    dockLea->ui->LEA_Label->setText(LEA_Value_Label);
+
+    dockLea->ui->tFormulaLEA_Label->setText(tFormulaLEA_Label);
+    dockLea->ui->tLEA_Label->setText(tLEA_Value_Label);
+
+    dockLea->ui->cond1LEA_Label->setText(PowerErgCond_1_Label);
+    dockLea->ui->cond3LEA_Label->setText(PowerErgCond_3_Label);
+
+    QString tPowerErgCond_1_Label=QString("%1<sub>Acc 1</sub>").arg(FormulaLEA_Tipo);
+    dockLea->ui->tCond1LEA_Label->setText(tPowerErgCond_1_Label);
+
+    QString tPowerErgCond_3_Label=QString("%1<sub>Acc 3</sub>").arg(FormulaLEA_Tipo);
+    dockLea->ui->tCond3LEA_Label->setText(tPowerErgCond_3_Label);
+
+
+    QString TimeBase_Label=QString("%1 s")
+                         .arg(QString::number(MyLaserClassSP_Pr->getTimeBase()));
+
+    dockLea->ui->timeBase_Label->setText(TimeBase_Label);
+
+    dockLea->ui->class_Label->setText(getLaserClassString(myLaserClass));
+}
+
+void DockControls::setWidgetsForMultiPulse_Operation()
+{
+    ui->powerErgControl->setTitle("Energia [J]");
+    dockLea->ui->Te_Label->setText(QString::number(MyLaserClassMP_Pr->getTe(), 'e', 2)+" s");
+    dockLea->ui->Ti_Label->setText(QString::number(MyLaserClassMP_Pr->getTi(), 'e', 2)+" s");
+
+    dockLea->ui->couplingFactor1_Label->setText(QString::number(MyLaserClassMP_Pr->getCouplingFactor_Cond_1(), 'e', 2));
+    dockLea->ui->couplingFactor3_Label->setText(QString::number(MyLaserClassMP_Pr->getCouplingFactor_Cond_3(), 'e', 2));
+    dockLea->ui->apertureDiam1_Label->setText(QString::number(MyLaserClassMP_Pr->getApCond_1(), 'e', 2)+" mm");
+    dockLea->ui->apertureDiam3_Label->setText(QString::number(MyLaserClassMP_Pr->getApCond_3(), 'e', 2)+" mm");
+    dockLea->ui->apertureDist1_Label->setText(QString::number(MyLaserClassMP_Pr->getDistCond_1(), 'e', 2)+" mm");
+    dockLea->ui->apertureDist3_Label->setText(QString::number(MyLaserClassMP_Pr->getDistCond_3(), 'e', 2)+" mm");
+    dockLea->ui->beamAperture1_Label->setText(QString::number(MyLaserClassMP_Pr->getBeamAtStop_Cond_1(), 'e', 2)+" mm");
+    dockLea->ui->beamAperture3_Label->setText(QString::number(MyLaserClassMP_Pr->getBeamAtStop_Cond_3(), 'e', 2)+" mm");
+    dockLea->ui->Ti_prf_Label->setText(QString::number(MyLaserClassMP_Pr->getTi()*MyLaserMP_Pr->getPRF()));
+
+    QString TimeBase_Label=QString("%1 s")
+                         .arg(QString::number(MyLaserMP_Pr->getTimeBase()));
+
+
+    LaserClassCW::laserClass myLaserClass=MyLaserClassMP_Pr->getLaserClass();
+    QString FormulaLEA;
+    QString FormulaLEA_Tipo;
+    QString FormulaLEA_Unit;
+    QString LEA_Value;
+    QString PowerErgCond_1;
+    QString PowerErgCond_3;
+    QString FormulaLEA_Label;
+    QString LEA_Value_Label;
+    QString tFormulaLEA_Label;
+    QString tLEA_Value_Label;
+    QString PowerErgCond_1_Label;
+    QString PowerErgCond_3_Label;
+    classData myClassData;
+
+    if ((myLaserClass==LaserClassCW::CLASSE_1)or(myLaserClass==LaserClassCW::CLASSE_1M))
+    {
+        myClassData=CLASSE_1_1M;
+        tFormulaLEA_Label="Formula 1 - 1M";
+        tLEA_Value_Label="LEA 1 - 1M";
+    }
+    else if ((myLaserClass==LaserClassCW::CLASSE_2)or(myLaserClass==LaserClassCW::CLASSE_2M))
+    {
+        myClassData=CLASSE_2_2M;
+        tFormulaLEA_Label="Formula 2 - 2M";
+        tLEA_Value_Label="LEA 2 - 2M";
+    }
+    else if (myLaserClass==LaserClassCW::CLASSE_3R)
+    {
+        myClassData=CLASSE_3R;
+        tFormulaLEA_Label="Formula 3R";
+        tLEA_Value_Label="LEA 3R";
+    }
+    else if ((myLaserClass==LaserClassCW::CLASSE_3B)or(myLaserClass==LaserClassCW::CLASSE_4))
+    {
+        myClassData=CLASSE_3B;
+        tFormulaLEA_Label="Formula 3B";
+        tLEA_Value_Label="LEA 3B";
+    }
+    else
+    {
+        myClassData=SENZA_CLASSIFICA;
+        tFormulaLEA_Label="NC";
+        tLEA_Value_Label="NC";
+    }
+
+
+    FormulaLEA_Tipo=QString::fromStdString(MyLaserClassMP_Pr->getLEA_FormulaTipo()[(int)myClassData]);
+    FormulaLEA=QString::fromStdString(MyLaserClassMP_Pr->getLEA_Formula()[(int)myClassData]);
+    FormulaLEA_Unit=QString::fromStdString(MyLaserClassMP_Pr->getLEA_FormulaUnit()[(int)myClassData]);
+    LEA_Value=QString::number(MyLaserClassMP_Pr->getLEA()[(int)myClassData], 'e', 2);
+    FormulaLEA_Label=QString("%1=%2 %3")
+                             .arg(FormulaLEA_Tipo)
+                             .arg(FormulaLEA)
+                             .arg(FormulaLEA_Unit);
+
+    LEA_Value_Label=QString("%1=%2 %3")
+                             .arg(FormulaLEA_Tipo)
+                             .arg(LEA_Value)
+                             .arg(FormulaLEA_Unit);
+
+    PowerErgCond_1=QString::number(MyLaserClassMP_Pr->getPowerErg_Cond_1()[(int)myClassData], 'e', 2);
+    PowerErgCond_3=QString::number(MyLaserClassMP_Pr->getPowerErg_Cond_3()[(int)myClassData], 'e', 2);
+
+    PowerErgCond_1_Label=QString("%1=%2 %3")
+                             .arg(FormulaLEA_Tipo)
+                             .arg(PowerErgCond_1)
+                             .arg(FormulaLEA_Unit);
+
+    PowerErgCond_3_Label=QString("%1=%2 %3")
+                             .arg(FormulaLEA_Tipo)
+                             .arg(PowerErgCond_3)
+                             .arg(FormulaLEA_Unit);
+
+    dockLea->ui->formulaLEA_Label->setText(FormulaLEA_Label);
+    dockLea->ui->LEA_Label->setText(LEA_Value_Label);
+
+    dockLea->ui->tFormulaLEA_Label->setText(tFormulaLEA_Label);
+    dockLea->ui->tLEA_Label->setText(tLEA_Value_Label);
+
+    dockLea->ui->cond1LEA_Label->setText(PowerErgCond_1_Label);
+    dockLea->ui->cond3LEA_Label->setText(PowerErgCond_3_Label);
+
+    QString tPowerErgCond_1_Label=QString("%1<sub>Acc 1</sub>").arg(FormulaLEA_Tipo);
+    dockLea->ui->tCond1LEA_Label->setText(tPowerErgCond_1_Label);
+
+    QString tPowerErgCond_3_Label=QString("%1<sub>Acc 3</sub>").arg(FormulaLEA_Tipo);
+    dockLea->ui->tCond3LEA_Label->setText(tPowerErgCond_3_Label);
+
+    dockLea->ui->timeBase_Label->setText(TimeBase_Label);
+
+    dockLea->ui->class_Label->setText(getLaserClassString(myLaserClass));
+
+//    dockLea->ui->class_Label->setText(QString::fromStdString(MyLaserClassMP_Pr->getLaserClass()));
+
+
+     /*****************************************************
+      * valutazione relativa l'emissione media del laser  *
+      * ***************************************************/
+
+    dockLea->ui->couplingFactor1_Label_2->setText(QString::number(MyLaserClassMP_Pr->getMeanCouplingFactor_Cond_1(), 'e', 2));
+    dockLea->ui->couplingFactor3_Label_2->setText(QString::number(MyLaserClassMP_Pr->getMeanCouplingFactor_Cond_3(), 'e', 2));
+    dockLea->ui->apertureDiam1_Label_2->setText(QString::number(MyLaserClassMP_Pr->getMeanApCond_1(), 'e', 2)+" mm");
+    dockLea->ui->apertureDiam3_Label_2->setText(QString::number(MyLaserClassMP_Pr->getMeanApCond_3(), 'e', 2)+" mm");
+    dockLea->ui->apertureDist1_Label_2->setText(QString::number(MyLaserClassMP_Pr->getMeanDistCond_1(), 'e', 2)+" mm");
+    dockLea->ui->apertureDist3_Label_2->setText(QString::number(MyLaserClassMP_Pr->getMeanDistCond_3(), 'e', 2)+" mm");
+    dockLea->ui->beamAperture1_Label_2->setText(QString::number(MyLaserClassMP_Pr->getMeanBeamAtStop_Cond_1(), 'e', 2)+" mm");
+    dockLea->ui->beamAperture3_Label_2->setText(QString::number(MyLaserClassMP_Pr->getMeanBeamAtStop_Cond_3(), 'e', 2)+" mm");
+
+
+    FormulaLEA_Tipo=QString::fromStdString(MyLaserClassMP_Pr->getMeanLEA_FormulaTipo()[(int)myClassData]);
+    FormulaLEA=QString::fromStdString(MyLaserClassMP_Pr->getMeanLEA_Formula()[(int)myClassData]);
+    FormulaLEA_Unit=QString::fromStdString(MyLaserClassMP_Pr->getMeanLEA_FormulaUnit()[(int)myClassData]);
+    LEA_Value=QString::number(MyLaserClassMP_Pr->getMeanLEA()[(int)myClassData], 'e', 2);
+    FormulaLEA_Label=QString("%1=%2 %3")
+                             .arg(FormulaLEA_Tipo)
+                             .arg(FormulaLEA)
+                             .arg(FormulaLEA_Unit);
+
+    LEA_Value_Label=QString("%1=%2 %3")
+                             .arg(FormulaLEA_Tipo)
+                             .arg(LEA_Value)
+                             .arg(FormulaLEA_Unit);
+
+    PowerErgCond_1=QString::number(MyLaserClassMP_Pr->getMeanPowerErg_Cond_1()[(int)myClassData], 'e', 2);
+    PowerErgCond_3=QString::number(MyLaserClassMP_Pr->getMeanPowerErg_Cond_3()[(int)myClassData], 'e', 2);
+
+    PowerErgCond_1_Label=QString("%1=%2 %3")
+                             .arg(FormulaLEA_Tipo)
+                             .arg(PowerErgCond_1)
+                             .arg(FormulaLEA_Unit);
+
+    PowerErgCond_3_Label=QString("%1=%2 %3")
+                             .arg(FormulaLEA_Tipo)
+                             .arg(PowerErgCond_3)
+                             .arg(FormulaLEA_Unit);
+
+    dockLea->ui->FormulaLEA_Label_2->setText(FormulaLEA_Label);
+    dockLea->ui->LEA_Label_2->setText(LEA_Value_Label);
+
+    dockLea->ui->tFormulaLEA_Label_2->setText(tFormulaLEA_Label);
+    dockLea->ui->tLEA_Label_2->setText(tLEA_Value_Label);
+
+    dockLea->ui->cond1LEA_Label_2->setText(PowerErgCond_1_Label);
+    dockLea->ui->cond3LEA_Label_2->setText(PowerErgCond_3_Label);
+
+    QString tPowerErgCond_1_Label_2=QString("%1<sub>Acc 1</sub>").arg(FormulaLEA_Tipo);
+    dockLea->ui->tCond1LEA_Label_2->setText(tPowerErgCond_1_Label);
+
+    QString tPowerErgCond_3_Label_2=QString("%1<sub>Acc 3</sub>").arg(FormulaLEA_Tipo);
+    dockLea->ui->tCond3LEA_Label_2->setText(tPowerErgCond_3_Label);
+
+    dockLea->ui->class_Label->setText(getLaserClassString(myLaserClass));
+
+    dockLea->ui->MeanPowerLabel->setText(QString::number(MyLaserClassMP_Pr->getMeanPower(),'e', 2)+" W");
+    dockLea->ui->CountingLabel->setText(QString::fromStdString(MyLaserMP_Pr->valutateCounting()));
+
+            if((wavelength>=400)and(wavelength<=1400)){
+                dockLea->ui->C5_Label->setText(QString::number(MyLaserClassMP_Pr->getC5Coefficient(),'e', 2));}
+                else{
+                dockLea->ui->C5_Label->setText("Non applicabile");}
+
+    dockLea->ui->PulseNumberLabel->setText(QString::number(MyLaserClassMP_Pr->getPulseNumber()));
+}
+
+void DockControls::setWidgetsForThermal()
+{
+
+    /********************************************************************
+     * valutazione relativa agli effetti termici del laser per prf<1/Ti *
+     * ******************************************************************/
+
+	LaserClassCW::laserClass myLaserClass=MyLaserClassMP_Pr->getLaserClass();
+    QString FormulaLEA;
+    QString FormulaLEA_Tipo;
+    QString FormulaLEA_Unit;
+    QString LEA_Value;
+    QString PowerErgCond_1;
+    QString PowerErgCond_3;
+    QString FormulaLEA_Label;
+    QString LEA_Value_Label;
+    QString tFormulaLEA_Label;
+    QString tLEA_Value_Label;
+    QString PowerErgCond_1_Label;
+    QString PowerErgCond_3_Label;
+    classData myClassData;
+	
+    dockLea->ui->couplingFactor1_Label_3->setText(QString::number(MyLaserClassMP_Pr->getCouplingFactor_Cond_1(), 'e', 2));
+    dockLea->ui->couplingFactor3_Label_3->setText(QString::number(MyLaserClassMP_Pr->getCouplingFactor_Cond_3(), 'e', 2));
+    dockLea->ui->apertureDiam1_Label_3->setText(QString::number(MyLaserClassMP_Pr->getApCond_1(), 'e', 2)+" mm");
+    dockLea->ui->apertureDiam3_Label_3->setText(QString::number(MyLaserClassMP_Pr->getApCond_3(), 'e', 2)+" mm");
+    dockLea->ui->apertureDist1_Label_3->setText(QString::number(MyLaserClassMP_Pr->getDistCond_1(), 'e', 2)+" mm");
+    dockLea->ui->apertureDist3_Label_3->setText(QString::number(MyLaserClassMP_Pr->getDistCond_3(), 'e', 2)+" mm");
+    dockLea->ui->beamAperture1_Label_3->setText(QString::number(MyLaserClassMP_Pr->getBeamAtStop_Cond_1(), 'e', 2)+" mm");
+    dockLea->ui->beamAperture3_Label_3->setText(QString::number(MyLaserClassMP_Pr->getBeamAtStop_Cond_3(), 'e', 2)+" mm");
+
+	    QString TimeBase_Label=QString("%1 s")
+                         .arg(QString::number(MyLaserMP_Pr->getTimeBase()));
+
+
+    myLaserClass=MyLaserClassMP_Pr->getLaserClass();
+
+    if ((myLaserClass==LaserClassCW::CLASSE_1)or(myLaserClass==LaserClassCW::CLASSE_1M))
+    {
+        myClassData=CLASSE_1_1M;
+        tFormulaLEA_Label="Formula 1 - 1M";
+        tLEA_Value_Label="LEA 1 - 1M";
+    }
+    else if ((myLaserClass==LaserClassCW::CLASSE_2)or(myLaserClass==LaserClassCW::CLASSE_2M))
+    {
+        myClassData=CLASSE_2_2M;
+        tFormulaLEA_Label="Formula 2 - 2M";
+        tLEA_Value_Label="LEA 2 - 2M";
+    }
+    else if (myLaserClass==LaserClassCW::CLASSE_3R)
+    {
+        myClassData=CLASSE_3R;
+        tFormulaLEA_Label="Formula 3R";
+        tLEA_Value_Label="LEA 3R";
+    }
+    else if ((myLaserClass==LaserClassCW::CLASSE_3B)or(myLaserClass==LaserClassCW::CLASSE_4))
+    {
+        myClassData=CLASSE_3B;
+        tFormulaLEA_Label="Formula 3B";
+        tLEA_Value_Label="LEA 3B";
+    }
+    else
+    {
+        myClassData=SENZA_CLASSIFICA;
+        tFormulaLEA_Label="NC";
+        tLEA_Value_Label="NC";
+    }
+
+    FormulaLEA_Tipo=QString::fromStdString(MyLaserClassMP_Pr->getLEA_FormulaTipo()[(int)myClassData]);
+    FormulaLEA=QString::fromStdString(MyLaserClassMP_Pr->getLEA_Formula()[(int)myClassData]);
+    FormulaLEA_Unit=QString::fromStdString(MyLaserClassMP_Pr->getLEA_FormulaUnit()[(int)myClassData]);
+    LEA_Value=QString::number(MyLaserClassMP_Pr->getLEA_Corrected()[(int)myClassData], 'e', 2);
+    FormulaLEA_Label=QString("%1=%2 %3")
+                             .arg(FormulaLEA_Tipo)
+                             .arg(FormulaLEA)
+                             .arg(FormulaLEA_Unit);
+
+    LEA_Value_Label=QString("%1=%2 %3")
+                             .arg(FormulaLEA_Tipo)
+                             .arg(LEA_Value)
+                             .arg(FormulaLEA_Unit);
+
+    PowerErgCond_1=QString::number(MyLaserClassMP_Pr->getMeanPowerErg_Cond_1()[(int)myClassData], 'e', 2);
+    PowerErgCond_3=QString::number(MyLaserClassMP_Pr->getMeanPowerErg_Cond_3()[(int)myClassData], 'e', 2);
+
+    PowerErgCond_1_Label=QString("%1=%2 %3")
+                             .arg(FormulaLEA_Tipo)
+                             .arg(PowerErgCond_1)
+                             .arg(FormulaLEA_Unit);
+
+    PowerErgCond_3_Label=QString("%1=%2 %3")
+                             .arg(FormulaLEA_Tipo)
+                             .arg(PowerErgCond_3)
+                             .arg(FormulaLEA_Unit);
+
+    dockLea->ui->FormulaLEA_Label_3->setText(FormulaLEA_Label);
+    dockLea->ui->LEA_Label_3->setText(LEA_Value_Label);
+
+    dockLea->ui->tFormulaLEA_Label_3->setText(tFormulaLEA_Label);
+    dockLea->ui->tLEA_Label_3->setText(tLEA_Value_Label);
+
+    dockLea->ui->cond1LEA_Label_3->setText(PowerErgCond_1_Label);
+    dockLea->ui->cond3LEA_Label_3->setText(PowerErgCond_3_Label);
+
+    QString tPowerErgCond_1_Label=QString("%1<sub>Acc 1</sub>").arg(FormulaLEA_Tipo);
+    dockLea->ui->tCond1LEA_Label_3->setText(tPowerErgCond_1_Label);
+
+    QString tPowerErgCond_3_Label=QString("%1<sub>Acc 3</sub>").arg(FormulaLEA_Tipo);
+    dockLea->ui->tCond3LEA_Label_3->setText(tPowerErgCond_3_Label);
+
+    dockLea->ui->class_Label->setText(getLaserClassString(myLaserClass));
+}
+
+
+
+void DockControls::setWidgetsForThermalTi()
+{
+        /********************************************************************
+         * valutazione relativa agli effetti termici del laser per prf>1/Ti *
+         * ******************************************************************/
+	LaserClassCW::laserClass myLaserClass=MyLaserClassMP_Pr->getLaserClass();
+    QString FormulaLEA;
+    QString FormulaLEA_Tipo;
+    QString FormulaLEA_Unit;
+    QString LEA_Value;
+    QString PowerErgCond_1;
+    QString PowerErgCond_3;
+    QString FormulaLEA_Label;
+    QString LEA_Value_Label;
+    QString tFormulaLEA_Label;
+    QString tLEA_Value_Label;
+    QString PowerErgCond_1_Label;
+    QString PowerErgCond_3_Label;
+    classData myClassData;
+	
+    dockLea->ui->couplingFactor1_Label_3->setText(QString::number(MyLaserClassMP_Pr->getTiCouplingFactor_Cond_1(), 'e', 2));
+    dockLea->ui->couplingFactor3_Label_3->setText(QString::number(MyLaserClassMP_Pr->getTiCouplingFactor_Cond_3(), 'e', 2));
+    dockLea->ui->apertureDiam1_Label_3->setText(QString::number(MyLaserClassMP_Pr->getTiApCond_1(), 'e', 2)+" m");
+    dockLea->ui->apertureDiam3_Label_3->setText(QString::number(MyLaserClassMP_Pr->getTiApCond_3(), 'e', 2)+" m");
+    dockLea->ui->apertureDist1_Label_3->setText(QString::number(MyLaserClassMP_Pr->getTiDistCond_1(), 'e', 2)+" m");
+    dockLea->ui->apertureDist3_Label_3->setText(QString::number(MyLaserClassMP_Pr->getTiDistCond_3(), 'e', 2)+" m");
+    dockLea->ui->beamAperture1_Label_3->setText(QString::number(MyLaserClassMP_Pr->getTiBeamAtStop_Cond_1(), 'e', 2)+" m");
+    dockLea->ui->beamAperture3_Label_3->setText(QString::number(MyLaserClassMP_Pr->getTiBeamAtStop_Cond_3(), 'e', 2)+" m");
+
+	QString TimeBase_Label=QString("%1 s")
+					.arg(QString::number(MyLaserMP_Pr->getTimeBase()));
+
+    if ((myLaserClass==LaserClassCW::CLASSE_1)or(myLaserClass==LaserClassCW::CLASSE_1M))
+    {
+        myClassData=CLASSE_1_1M;
+        tFormulaLEA_Label="Formula 1 - 1M";
+        tLEA_Value_Label="LEA 1 - 1M";
+    }
+    else if ((myLaserClass==LaserClassCW::CLASSE_2)or(myLaserClass==LaserClassCW::CLASSE_2M))
+    {
+        myClassData=CLASSE_2_2M;
+        tFormulaLEA_Label="Formula 2 - 2M";
+        tLEA_Value_Label="LEA 2 - 2M";
+    }
+    else if (myLaserClass==LaserClassCW::CLASSE_3R)
+    {
+        myClassData=CLASSE_3R;
+        tFormulaLEA_Label="Formula 3R";
+        tLEA_Value_Label="LEA 3R";
+    }
+    else if ((myLaserClass==LaserClassCW::CLASSE_3B)or(myLaserClass==LaserClassCW::CLASSE_4))
+    {
+        myClassData=CLASSE_3B;
+        tFormulaLEA_Label="Formula 3B";
+        tLEA_Value_Label="LEA 3B";
+    }
+    else
+    {
+        myClassData=SENZA_CLASSIFICA;
+        tFormulaLEA_Label="NC";
+        tLEA_Value_Label="NC";
+    }
+
+    FormulaLEA_Tipo=QString::fromStdString(MyLaserClassMP_Pr->getTiLEA_FormulaTipo()[(int)myClassData]);
+    FormulaLEA=QString::fromStdString(MyLaserClassMP_Pr->getTiLEA_Formula()[(int)myClassData]);
+    FormulaLEA_Unit=QString::fromStdString(MyLaserClassMP_Pr->getTiLEA_FormulaUnit()[(int)myClassData]);
+    LEA_Value=QString::number(MyLaserClassMP_Pr->getTiLEA_Corrected()[(int)myClassData], 'e', 2);
+    FormulaLEA_Label=QString("%1=%2 %3")
+                             .arg(FormulaLEA_Tipo)
+                             .arg(FormulaLEA)
+                             .arg(FormulaLEA_Unit);
+
+    LEA_Value_Label=QString("%1=%2 %3")
+                             .arg(FormulaLEA_Tipo)
+                             .arg(LEA_Value)
+                             .arg(FormulaLEA_Unit);
+
+    PowerErgCond_1=QString::number(MyLaserClassMP_Pr->getTiPowerErg_Cond_1()[(int)myClassData], 'e', 2);
+    PowerErgCond_3=QString::number(MyLaserClassMP_Pr->getTiPowerErg_Cond_3()[(int)myClassData], 'e', 2);
+
+    PowerErgCond_1_Label=QString("%1=%2 %3")
+                             .arg(FormulaLEA_Tipo)
+                             .arg(PowerErgCond_1)
+                             .arg(FormulaLEA_Unit);
+
+    PowerErgCond_3_Label=QString("%1=%2 %3")
+                             .arg(FormulaLEA_Tipo)
+                             .arg(PowerErgCond_3)
+                             .arg(FormulaLEA_Unit);
+
+    dockLea->ui->FormulaLEA_Label_3->setText(FormulaLEA_Label);
+    dockLea->ui->LEA_Label_3->setText(LEA_Value_Label);
+
+    dockLea->ui->tFormulaLEA_Label_3->setText(tFormulaLEA_Label);
+    dockLea->ui->tLEA_Label_3->setText(tLEA_Value_Label);
+
+    dockLea->ui->cond1LEA_Label_3->setText(PowerErgCond_1_Label);
+    dockLea->ui->cond3LEA_Label_3->setText(PowerErgCond_3_Label);
+
+    QString tPowerErgCond_1_Label_3=QString("%1<sub>Acc 1</sub>").arg(FormulaLEA_Tipo);
+    dockLea->ui->tCond1LEA_Label_3->setText(tPowerErgCond_1_Label_3);
+
+    QString tPowerErgCond_3_Label_3=QString("%1<sub>Acc 3</sub>").arg(FormulaLEA_Tipo);
+    dockLea->ui->tCond3LEA_Label_3->setText(tPowerErgCond_3_Label_3);;
+
+    dockLea->ui->class_Label->setText(getLaserClassString(myLaserClass));
+}
+
+void DockControls::on_internalWaist_checkBox_toggled(bool checked)
+{
+    if(n_laser==0)
+        MyLaserClassCW_Pr->setInternalWaist(checked);
+    if(n_laser==1)
+        MyLaserClassSP_Pr->setInternalWaist(checked);
+    if(n_laser==2)
+        MyLaserClassMP_Pr->setInternalWaist(checked);
+
+    set_LEA_Widgets();
+}
+
+void DockControls::setGoggleMaterial(LaserGoggle::material myMaterial)
+{
+    goggleMaterial=myMaterial;
+    myLaserGoggle->setMaterial(myMaterial);
+    myDLaserGoggle->setMaterial(myMaterial);
+
+    fetchLaserOutput();
+    dispayScaleNumber();
+    displayLaserOutput();
+    displayTimeBase();
+    displayNumberOfPulse();
+    displayCoefficient_k();
+    displayCoefficient_ki();
+    display_ni_max();
+
+    fetchDLaserOutput();
+    dispayDScaleNumber();
+    displayDLaserOutput();
+    displayDTimeBase();
+}
+
+LaserGoggle::material DockControls::getGoggleMaterial()const
+{
+    return goggleMaterial;
 }

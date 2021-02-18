@@ -1,28 +1,29 @@
 #ifndef COMPUTEEMP_H
 #define COMPUTEEMP_H
-#include "empsdata.h"
+#include "empdata.h"
+#include "empleatables.h"
 #include <string>
 #include <QtGui>
+#include <array>
 
 using namespace std;
 
 
 
-class computeEMP
+class ComputeEMP
 {
 public:
-    computeEMP(double=632, double=20, double=1.5);
+    ComputeEMP(double=632, double=20, double=1.5);
 	
 	const static double ALPHA_MIN;
 	const static double ALPHA_MAX;
-    static int fileReadCount;
 
 	void EMP();
-    void setWavelength(const double);
+    void setWavelength(const double&);
     double getWavelength() const;
-    void setPulseDuration(const double);
-    double getPulseDuration() const;
-	void setAlpha(const double);
+    void setPulseWidth(const double&);
+    double getPulseWidth() const;
+    void setAlpha(const double&);
 	double getAlpha() const;
 	double getCA() const;
     double getCB() const;
@@ -48,15 +49,26 @@ public:
 	void outputLine();
     void adaptForSkinEMP();
 
+    void selectLeaRow();
+    string valuateFormula(const empdata & myEmpData);
+
+    string valuateFormulaTipo(const empdata & myEmpData);
+    string valuateFormulaUnit(const empdata & myEmpData);
+
+    QString typeOfSkinDamage(const int &);
+    QString typeOfEyeDamage(const int &);
+    QString typeOfRadiation(const int &);
+    void writeEmpInStructValues();
+
+
 
 private:
     QFile fileBinary;
-    double Wavelength;
-    double PulseDuration;
-	double Alpha;
-    empdata LimitValues;
-	string Formula;
-    string FormulaSort;
+    double wavelength;
+    double pulseWidth;
+    double alpha;
+    string formula;
+    string formulaSort;
 	double EMP_Result;
 	double CA;
     double CB;
@@ -65,10 +77,18 @@ private:
 	double T1;
 	double T2;
 	double t_exp;
-	string Radiation;
-	string SkinDamage;
-	string EyeDamage;
-    string Note;
+    string radiation;
+    string skinDamage;
+    string eyeDamage;
+    string notes;
+
+    std::array<empdata, EmpLeaTables::TABLEROW_EMP> empStructValues;
+    empdata myEmpData;
+
+    string EMP_Formula;
+    int EMP_FormulaSort;
+    string EMP_FormulaTipo;
+    string EMP_FormulaUnit;
 	
 	//Photochemical effects vs thermal effects assasment variables
 	//Photochemical effects

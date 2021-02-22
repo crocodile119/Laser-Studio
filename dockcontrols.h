@@ -73,6 +73,7 @@ public:
     //void setBeamDiameterDial(const int);
     //void setPowerErgDial(const int);
     void setDialControls();
+    void updateGoggle();
     void setGoggleMaterial(LaserGoggle::material);
     LaserGoggle::material getGoggleMaterial()const;
 

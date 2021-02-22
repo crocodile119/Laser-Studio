@@ -429,12 +429,13 @@ void LaserClassMP::setAlpha(const double& _alpha)
 
 void LaserClassMP::setPulseWidth(const double& _pulseWidth)
 {
+    myMeanLaserClass.setPulseWidth(timeBase);
+    myTiLaserClass.setPulseWidth(Ti);
+
     if(_pulseWidth==pulseWidth)
         return;
 
     myLaserClass.setPulseWidth(_pulseWidth);
-    myMeanLaserClass.setPulseWidth(timeBase);
-    myTiLaserClass.setPulseWidth(Ti);
     pulseWidth=_pulseWidth;
 }
 

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>414</width>
-    <height>431</height>
+    <height>457</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,7 +19,7 @@
   <property name="minimumSize">
    <size>
     <width>414</width>
-    <height>431</height>
+    <height>457</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -79,7 +79,7 @@
          <property name="minimumSize">
           <size>
            <width>100</width>
-           <height>50</height>
+           <height>70</height>
           </size>
          </property>
          <property name="font">
@@ -180,7 +180,7 @@
           </font>
          </property>
          <property name="styleSheet">
-          <string notr="true">QCheckBox{background: none}</string>
+          <string notr="true"/>
          </property>
          <property name="text">
           <string>gaussiano</string>
@@ -198,8 +198,7 @@
           </font>
          </property>
          <property name="styleSheet">
-          <string notr="true">QCheckBox{background: none}
-</string>
+          <string notr="true"/>
          </property>
          <property name="text">
           <string>imposta Te</string>
@@ -214,7 +213,7 @@
           </font>
          </property>
          <property name="styleSheet">
-          <string notr="true">QCheckBox{background: none}</string>
+          <string notr="true"/>
          </property>
          <property name="text">
           <string>waist interno</string>

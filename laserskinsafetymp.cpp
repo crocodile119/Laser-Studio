@@ -29,11 +29,12 @@ LaserSkinSafetyMP::LaserSkinSafetyMP(int _PRF, double _exposureTime, double _bea
  
 void LaserSkinSafetyMP::setPulseWidth(const double& _pulseWidth)
 {
+    myMeanPower_SkinLaser.setPulseWidth(exposureTime);
+
     if(_pulseWidth==pulseWidth)
         return;
 
-    mySkinLaser.setWavelength(_pulseWidth);
-    myMeanPower_SkinLaser.setPulseWidth(exposureTime);
+    mySkinLaser.setPulseWidth(_pulseWidth);
     pulseWidth=_pulseWidth;
 }
 
@@ -70,7 +71,7 @@ void LaserSkinSafetyMP::computeMeanPowerEMP()
 void LaserSkinSafetyMP::computeMeanPowerIrradiance()
 {
 	computeBeamArea();
-    meanPowerIrradiance=meanPower*1000000/getBeamArea();
+    meanPowerIrradiance=meanPower/getBeamArea();
 }
 
 void LaserSkinSafetyMP::computePulseNumber()

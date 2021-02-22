@@ -4674,12 +4674,11 @@ void MainWindow::makeSceneOfSavedItems(){
      }
 
      environmentModel->myDataHasChanged();
-     double wavelength=laserWindow->myDockControls->getWavelength();
 
-     laserWindow->myDockControls->ui->wavelengthScrollBar->setValue(wavelength);
+     laserWindow->myDockControls->updateGoggle();
 
     setWindowModified(false);
-     updateActions();
+    updateActions();
     }
 
 void MainWindow::enableControlsAndItems(bool enabled)

@@ -50,20 +50,21 @@ void LaserSafetyMP::setAlpha(const double& _alpha)
     if(_alpha==alpha)
         return;
 
-    myLaser.setWavelength(_alpha);
-    myMeanPower_Laser.setWavelength(_alpha);
-    myTmin_Laser.setWavelength(_alpha);
+    myLaser.setAlpha(_alpha);
+    myMeanPower_Laser.setAlpha(_alpha);
+    myTmin_Laser.setAlpha(_alpha);
     alpha=_alpha;
 }
 
 void LaserSafetyMP::setPulseWidth(const double& _pulseWidth)
 {
+    myMeanPower_Laser.setPulseWidth(exposureTime);
+    myTmin_Laser.setPulseWidth(Tmin);
+
     if(_pulseWidth==pulseWidth)
         return;
 
-    myLaser.setWavelength(_pulseWidth);
-    myMeanPower_Laser.setPulseWidth(exposureTime);
-    myTmin_Laser.setPulseWidth(Tmin);
+    myLaser.setPulseWidth(_pulseWidth);
     pulseWidth=_pulseWidth;
 }
 	/*-------------------------------------------------------------------------------------------------------
@@ -515,7 +516,7 @@ void LaserSafetyMP::computeMeanPowerLambertianMax()
     powerFormulaSort= getMeanPowerFormulaSort();//Ricavo l'unità di misura dell'EMP relativo alla potenza media
 
     if(powerFormulaSort=="E")
-        forLambertianMax=meanPower;// se l'EMP è espresso in irradianza si considera la potenza media
+        forLambertianMax=powerErg/pulseWidth;// se l'EMP è espresso in irradianza si considera la potenza media
             else
         forLambertianMax=meanPower*exposureTime;// altrimenti si ricava l'irradianza
 

@@ -2188,9 +2188,7 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
 
     MyLaserClassCW_Pr->setTimeBase();
 
-    MyLaserCW_Pr->setExposureTime();
-
-    ui->pulseControl->setEnabled(false);
+    MyLaserCW_Pr->setPulseWidth(MyLaserCW_Pr->getExposureTime());
 
 	/*****************************************************************************
 	* Ogni volta che passoa alla modalità di funzionamento CONTINUOS WAVE        *
@@ -2225,8 +2223,9 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     if(isTeEdtitingEnabled()){
         MyLaserCW_Pr->setEditedExposureTime(ui->teControl->getDialNumber());
         ui->teControl->setEnabled(true);}
-    else
+    else{
         MyLaserCW_Pr->setExposureTime();
+        ui->pulseControl->setEnabled(false);}
 
     if(((myLaserGoggle->getWavelength()>315) && (myLaserGoggle->getWavelength()<=1e+06)))
          {
@@ -2993,23 +2992,25 @@ double powerErg;
 double firstAndThirdEMP;
 double opticalDensityRatio=0.0;
 double beamArea;
+double timeBase;
 QString formulaSort;
 
 if(n_laser==0)
 {
-    double meanIrradiance;
+    double irradiance;
     CW_EMP=MyLaserCW_Pr->getEMP();
-    formulaSort=MyLaserCW_Pr->getFormulaSort().c_str();
+    formulaSort=QString::fromStdString(MyLaserCW_Pr->getFormulaSort());
     MyLaserCW_Pr->computeBeamArea();
+    timeBase=myLaserGoggle->getPulseWidth();
     beamArea=MyLaserCW_Pr->getBeamArea();
     powerErg=MyLaserCW_Pr->getPowerErg();
-    meanIrradiance=4*powerErg/beamArea;
+    irradiance=4*powerErg/beamArea;
 
     if(formulaSort=='E')
-        opticalDensityRatio=meanIrradiance/CW_EMP;
+        opticalDensityRatio=irradiance/CW_EMP;
     else{
      if(formulaSort=='H')
-         opticalDensityRatio=meanIrradiance*exposureTime/CW_EMP;
+         opticalDensityRatio=irradiance*timeBase/CW_EMP;
     }
 
     opticalDensity=std::log10(opticalDensityRatio);
@@ -3017,22 +3018,22 @@ if(n_laser==0)
 else
     if(n_laser==1)
     {
-    double meanExposure;
+    double energyExposure;
 
     SP_EMP= MyLaserSP_Pr->getEMP();
     powerErg=MyLaserSP_Pr->getPowerErg();
-    formulaSort=MyLaserSP_Pr->getFormulaSort().c_str();
+    formulaSort=QString::fromStdString(MyLaserSP_Pr->getFormulaSort());
     double pulseWidth=MyLaserSP_Pr->getPulseWidth();
     MyLaserSP_Pr->computeBeamArea();
     beamArea=MyLaserSP_Pr->getBeamArea();
-    meanExposure=4*powerErg/beamArea;
+    energyExposure=4*powerErg/beamArea;
 
     if(formulaSort=='E'){
-        opticalDensityRatio=meanExposure/(SP_EMP*pulseWidth);
+        opticalDensityRatio=energyExposure/(SP_EMP*pulseWidth);
     }
     else{
      if(formulaSort=='H')
-         opticalDensityRatio=meanExposure/SP_EMP;
+         opticalDensityRatio=energyExposure/SP_EMP;
     }
 
     opticalDensity=std::log10(opticalDensityRatio);
@@ -3042,77 +3043,71 @@ else
    if(n_laser==2)
    {
    double energyExposure;
+   double timeForPulse;
 
-   double TimeForPulse;
-
+   MyLaserMP_Pr->computeEMP_ForOD();
    firstAndThirdEMP=MyLaserMP_Pr->getEMP_ForOD();
-   MyLaserMP_Pr->getThermalEMP();
-
+   pulseWidth=myLaserGoggle->getPulseWidth();
+   formulaSort=QString::fromStdString(MyLaserMP_Pr->getFormulaSort());
+   qDebug() << "Primo e terzo emp: " << firstAndThirdEMP;
 
    if(MyLaserMP_Pr->getPRF()>1/MyLaserMP_Pr->getTmin())
    {
        if(firstAndThirdEMP==MyLaserMP_Pr->getThermalEMP())
-           TimeForPulse=MyLaserMP_Pr->getTmin();
+           timeForPulse=MyLaserMP_Pr->getTmin();
        else
-            TimeForPulse=MyLaserMP_Pr->getPulseWidth();
+           timeForPulse=MyLaserMP_Pr->getPulseWidth();
    }
    else
-          TimeForPulse=MyLaserMP_Pr->getPulseWidth();
+       timeForPulse=MyLaserMP_Pr->getPulseWidth();
 
-   MyLaserMP_Pr->getPulseWidth();
    powerErg=MyLaserMP_Pr->getPowerErg();
 
    MyLaserMP_Pr->computeBeamArea();
    beamArea=MyLaserMP_Pr->getBeamArea();
    energyExposure=powerErg/beamArea;
 
-   MyLaserMP_Pr->computeEMP_ForOD();
-   firstAndThirdEMP=MyLaserMP_Pr->getEMP_ForOD();
-   qDebug() << "Primo e terzo emp: " << firstAndThirdEMP;
+    if(formulaSort=="E")
+        opticalDensityRatio=energyExposure/(firstAndThirdEMP*timeForPulse);
+    else if(formulaSort=="H")
+        opticalDensityRatio=energyExposure/firstAndThirdEMP;
 
-    if(MyLaserMP_Pr->getFormulaSort()=="E")
-        opticalDensityRatio=energyExposure/(firstAndThirdEMP*TimeForPulse);
-    else if(MyLaserMP_Pr->getFormulaSort()=="H")
-            opticalDensityRatio=energyExposure/firstAndThirdEMP;
-
-        opticalDensity=std::log10(opticalDensityRatio);
+    opticalDensity=std::log10(opticalDensityRatio);
     }
 }
 
 void DockControls::dComputeOpticalDensity()
 {
-    double secondEMP=0.0;
-    double powerErg;
-    double meanPower;
-    double beamArea;
-    int PRF;
-    double opticalDensityRatio;
-    double meanIrradiance;
-    QString formulaSort;
-
-    MyLaserMP_Pr->computeBeamArea();
-    beamArea=MyLaserMP_Pr->getBeamArea();
-
     if(n_laser==2){
+        double secondEMP=0.0;
+        double powerErg;
+        double meanPower;
+        double beamArea;
+        int PRF;
+        double opticalDensityRatio;
+        double irradiance;
+        QString formulaSort;
+
+        MyLaserMP_Pr->computeBeamArea();
+        beamArea=MyLaserMP_Pr->getBeamArea();
+
         powerErg=MyLaserMP_Pr->getPowerErg();
-        formulaSort=MyLaserMP_Pr->getMeanPowerFormulaSort().c_str();
+        formulaSort=QString::fromStdString(MyLaserMP_Pr->getFormulaSort());
         PRF=MyLaserMP_Pr->getPRF();
         meanPower=powerErg*PRF;
-        meanIrradiance=meanPower/beamArea;
+        irradiance=meanPower/beamArea;
 
-        if(formulaSort=='E'){
-             secondEMP=MyLaserMP_Pr->getEMP_MP();
-                }
-                else{
-                    if(formulaSort=='H')
-                        secondEMP=MyLaserMP_Pr->getEMP_MP()/MyLaserMP_Pr->getExposureTime();
-                }
+        if(formulaSort=='E')
+             {secondEMP=MyLaserMP_Pr->getEMP_MP();}
+        else{
+           if(formulaSort=='H')
+              secondEMP=MyLaserMP_Pr->getEMP_MP()/MyLaserMP_Pr->getExposureTime();}
 
-        opticalDensityRatio=meanIrradiance/secondEMP;
+        opticalDensityRatio=irradiance/secondEMP;
 
         dOpticalDensity=std::log10(opticalDensityRatio);
-      }
-    else
+        }
+        else
         dOpticalDensity=0;
 }
 
@@ -3185,11 +3180,6 @@ void DockControls::on_checkGaussianBeam_clicked(bool checked)
 
 void DockControls::set_LEA_Widgets()
 {
-    if(((wavelength>=400)and(wavelength<=700)))
-        dockLea->ui->frame_2M_Output->setVisible(true);
-        else          
-        dockLea->ui->frame_2M_Output->setVisible(false);
-
         if(((wavelength<302.5)or(wavelength>4000)))
         {
                 dockLea->ui->frame_cond1->setVisible(false);

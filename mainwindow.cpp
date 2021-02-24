@@ -352,6 +352,7 @@ void MainWindow::newFile()
         laserSelectionModel->select(laserModel->index(0, 0), QItemSelectionModel::Select);
         setControls();
 
+
         //backgroundGrid();
 
         setCurrentFile("");
@@ -380,8 +381,8 @@ void MainWindow::setControls()
         laserWindow->myDockControls->ui->operationCombo->setCurrentIndex(0);
         laserWindow->myDockControls->setDialControls();
         laserWindow->myDockControls->ui->comboBox->setCurrentIndex(1);
-        laserWindow->myDockControls->setVIS();
-        laserWindow->myDockControls->ui->wavelengthScrollBar->setValue(633);
+        //laserWindow->myDockControls->setVIS();
+        //laserWindow->myDockControls->ui->wavelengthScrollBar->setValue(633);
 }
 
 void MainWindow::open()
@@ -427,9 +428,7 @@ void MainWindow::open()
         }
     }
 }
-//! [3]
 
-//! [4]
 bool MainWindow::save()
 {
     if (curFile.isEmpty()) {

@@ -3004,7 +3004,7 @@ if(n_laser==0)
     timeBase=myLaserGoggle->getPulseWidth();
     beamArea=MyLaserCW_Pr->getBeamArea();
     powerErg=MyLaserCW_Pr->getPowerErg();
-    irradiance=4*powerErg/beamArea;
+    irradiance=powerErg/beamArea;
 
     if(formulaSort=='E')
         opticalDensityRatio=irradiance/CW_EMP;
@@ -3026,7 +3026,7 @@ else
     double pulseWidth=MyLaserSP_Pr->getPulseWidth();
     MyLaserSP_Pr->computeBeamArea();
     beamArea=MyLaserSP_Pr->getBeamArea();
-    energyExposure=4*powerErg/beamArea;
+    energyExposure=powerErg/beamArea;
 
     if(formulaSort=='E'){
         opticalDensityRatio=energyExposure/(SP_EMP*pulseWidth);

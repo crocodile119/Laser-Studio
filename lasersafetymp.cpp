@@ -585,6 +585,7 @@ void LaserSafetyMP::computeLambertianMax()
 
 void LaserSafetyMP::laserUpdate()
 {
+    computePulseNumber();
 	computeMeanPower();
 	computeMeanPowerIrradiance();
 

@@ -7,7 +7,7 @@ using namespace std;
 class LaserClassMP: public LaserClassSP
 {
 public:
-    LaserClassMP(int, double, double, double, double, double, double);
+    LaserClassMP(double, double, double, double, double, double, double);
     void meanClassUpdate(const double&, const double&);
     void tiClassUpdate(const double&, const double&);
     void c5ClassUpdate();
@@ -18,7 +18,7 @@ public:
     double getTi()const;
     void computeC5();
     void setPRF(const double &_prf);
-    int getPRF()const;
+    double getPRF()const;
     void setTimeBase();
     double* powerErgUnit(int*, const double &, const double &);
     double* computeMeanLEA_Corrected(int*);
@@ -90,7 +90,7 @@ public:
     void updateAll();
 
 protected:
-    int prf;
+    double prf;
     double Ti;
     double meanPower;
     int pulseNumber;

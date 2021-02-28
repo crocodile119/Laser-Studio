@@ -352,9 +352,6 @@ void MainWindow::newFile()
         laserSelectionModel->select(laserModel->index(0, 0), QItemSelectionModel::Select);
         setControls();
 
-
-        //backgroundGrid();
-
         setCurrentFile("");
 
         laserpoint->setSelected(true);
@@ -363,6 +360,9 @@ void MainWindow::newFile()
         QFont font;
         font.setPointSize(7);
         setFont(font);
+
+        setupLaserProspective();
+        laserSettingsAction->setChecked(true);
 
         connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(updateActions()));
         connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(laserModified()));
@@ -378,11 +378,9 @@ void MainWindow::newFile()
 
 void MainWindow::setControls()
 {
-        laserWindow->myDockControls->ui->operationCombo->setCurrentIndex(0);
-        laserWindow->myDockControls->setDialControls();
-        laserWindow->myDockControls->ui->comboBox->setCurrentIndex(1);
-        //laserWindow->myDockControls->setVIS();
-        //laserWindow->myDockControls->ui->wavelengthScrollBar->setValue(633);
+    laserWindow->myDockControls->ui->comboBox->setCurrentIndex(1);
+    laserWindow->myDockControls->ui->operationCombo->setCurrentIndex(0);
+    laserWindow->myDockControls->setDialControls();
 }
 
 void MainWindow::open()
@@ -395,6 +393,8 @@ void MainWindow::open()
         {
         loadFile(fileName);
         makeSceneOfSavedItems();
+        setupLaserProspective();
+        laserSettingsAction->setChecked(true);
 
         connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(updateActions()));
         connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(laserModified()));
@@ -457,6 +457,8 @@ void MainWindow::openRecentFile()
             loadFile(action->data().toString());
 
         makeSceneOfSavedItems();
+        setupLaserProspective();
+        laserSettingsAction->setChecked(true);
 
         connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setUpdatedPosition()));
         connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setUpdatedPosition()));
@@ -1790,7 +1792,7 @@ QString kindOfLaser;
         }
             else if(laserWindow->myDockControls->ui->operationCombo->currentIndex()==2)
             {
-              kindOfLaser="Laser ad impulsi ripetuti";
+              kindOfLaser="Laser ad impulsi multipli";
             }
 
     html += "<table width=\"100%\">\n"
@@ -4313,11 +4315,8 @@ void MainWindow::makeSceneOfSavedItems(){
     //Dati membro necessari per aggiungere alla scena i riflettori salvati
     QVector <int> seqNumberVect;
     QVector <QPointF> posVect;
-    QVector <bool> isSelectedVect;
     QVector <int> TypeVect;
     QVector <QString> TextVect;
-    QVector <QColor> TextColorVect;
-    QVector <QColor> BackgroundColorVect;
     QVector <QString> StringPositionVect;
     QVector <double> OpticalDiameterVect;
     QVector <double> DivergenceVect;
@@ -4337,10 +4336,7 @@ void MainWindow::makeSceneOfSavedItems(){
 
     //dati relativi al singolo riflettore
     QPointF myPos;
-    bool myIsSelected;
     QString myText;
-    QColor myTextColor;
-    QColor myBackgroundColor;
     QString myStringPosition;
     double myOpticalDiameter;
     double myDivergence;
@@ -4445,11 +4441,8 @@ void MainWindow::makeSceneOfSavedItems(){
 
     //Leggo i vettori riguardanti i riflettori
     posVect=laserWindow->getPosVect();
-    isSelectedVect= laserWindow->getIsSelectedVect();
     TypeVect= laserWindow->getTypeVect();
     TextVect= laserWindow->getTextVect();
-    TextColorVect= laserWindow->getTextColorVect();
-    BackgroundColorVect= laserWindow->getBackgroundColorVect();
     StringPositionVect= laserWindow->getStringPositionVect();
     OpticalDiameterVect= laserWindow->getOpticalDiameterVect();
     DivergenceVect= laserWindow->getDivergenceVect();
@@ -4490,10 +4483,6 @@ void MainWindow::makeSceneOfSavedItems(){
         {
          myOpticalDiameter=OpticalDiameterVect.at(i);
          myPos=posVect.at(i);
-         myIsSelected=isSelectedVect.at(i);
-         myText=TextVect.at(i);
-         myTextColor=TextColorVect.at(i);
-         myBackgroundColor=BackgroundColorVect.at(i);
          myStringPosition=StringPositionVect.at(i);
          myDivergence=DivergenceVect.at(i);
          myReflectorDistance=ReflectorDistanceVect.at(i);
@@ -4514,10 +4503,9 @@ void MainWindow::makeSceneOfSavedItems(){
          laserWindow->graphicsView->scene->addItem(reflector);
          reflector->setPos(myPos);
 
-         reflector->setSelected(myIsSelected);
          reflector->setSeqNumber(seqNumber);
-         reflector->setTextColor(myTextColor);
-         reflector->setBackgroundColor(myBackgroundColor);
+         reflector->setReflectorColor();
+         reflector->setBackgroundColor(QColor(247, 247, 247, 170));
          reflector->setZValue(myZValue);
          reflector->setReflectorKindString();
          reflector->setReflectionCoeff(myReflectionCoeff);

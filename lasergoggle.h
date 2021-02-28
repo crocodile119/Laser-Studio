@@ -20,9 +20,9 @@ public:
     static const double PLASTIC_EXPONENT;
 
     enum material{ONLY_REFLECTOR, GLASS, PLASTIC};
-    enum laserOperation{CONTINUOSWAVE, IMPULSATO, IMPULSIRIPETUTI};
+    enum laserOperation{CONTINUOSWAVE, IMPULSATO, IMPULSIMULTIPLI};
     LaserGoggle(int, double, double, double);
-    LaserGoggle(int, double, double, double, int);
+    LaserGoggle(int, double, double, double, double);
     ~LaserGoggle();
 
     double* selectData(const double &, const double &);
@@ -85,7 +85,7 @@ private:
     double myMeanPower;
     int numberOfPulses;
     string myGoggleCode;
-    int frequency;
+    double frequency;
     double ki;
     double k;
     int myScaleNumber;

@@ -7,9 +7,11 @@ using namespace std;
 class LaserSkinSafetyMP : public LaserSkinSafety
 {
 public:
-LaserSkinSafetyMP(int, double, double, double, double, double, double, double);
+LaserSkinSafetyMP(double, double, double, double, double, double, double, double);
 
 void setPulseWidth(const double &);
+void setWavelength(const double &);
+void setAlpha(const double &);
 void computeNSHD();
 void laserSkinUpdate();
 void computeMeanPower();
@@ -22,7 +24,7 @@ string getMeanPowerFormulaEMP();
 void computePulseNumber();
 double getEMP_MP();
 void setPRF(const int);
-int getPRF() const;
+double getPRF() const;
 double getMeanPower() const;
 double getMeanIrradiance() const;
 double getPulseNumber() const;
@@ -37,7 +39,7 @@ double getEMP_1stCondition()const;
 double getEMP_2ndCondition()const;
 
 private:
-int PRF;
+double PRF;
 double meanPower;
 double meanPower_NSHD;
 double singlePulse_NSHD;

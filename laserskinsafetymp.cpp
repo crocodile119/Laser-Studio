@@ -4,7 +4,7 @@
 
 using namespace std;
 
-LaserSkinSafetyMP::LaserSkinSafetyMP(int _PRF, double _exposureTime, double _beamDiameter, double _powerErg,  double _divergence, double _wavelength,
+LaserSkinSafetyMP::LaserSkinSafetyMP(double _PRF, double _exposureTime, double _beamDiameter, double _powerErg,  double _divergence, double _wavelength,
                         double _pulseWidth, double _alpha):LaserSkinSafety(_beamDiameter, _powerErg, _divergence, _wavelength,
                         _pulseWidth, _alpha)
 {
@@ -38,6 +38,28 @@ void LaserSkinSafetyMP::setPulseWidth(const double& _pulseWidth)
     pulseWidth=_pulseWidth;
 }
 
+void LaserSkinSafetyMP::setWavelength(const double& _wavelength)
+{
+    myMeanPower_SkinLaser.setWavelength(_wavelength);
+
+    if(_wavelength==wavelength)
+        return;
+
+    mySkinLaser.setWavelength(_wavelength);
+    wavelength=_wavelength;
+}
+
+void LaserSkinSafetyMP::setAlpha(const double& _alpha)
+{
+    myMeanPower_SkinLaser.setAlpha(_alpha);
+
+    if(_alpha==alpha)
+        return;
+
+    mySkinLaser.setAlpha(_alpha);
+    alpha=_alpha;
+}
+
  void LaserSkinSafetyMP::computeMeanPower()
 {
     meanPower=powerErg*PRF;
@@ -58,9 +80,9 @@ void LaserSkinSafetyMP::computeMeanPowerEMP()
         if(PRF!=0)
         {
             if(powerFormulaSort=="H")
-                meanPow_EMP_Result=powerSkinEMP/(exposureTime*PRF);// calcola l'H medio come il rapporo dell'H in Te con N.
+                meanPow_EMP_Result=powerSkinEMP/ceil(exposureTime*PRF);// calcola l'H medio come il rapporo dell'H in Te con N.
             else if(powerFormulaSort=="E")
-                meanPow_EMP_Result=powerSkinEMP/(PRF*pulseWidth);//calcola l'E medio come il rapporo dell'H medio con t.
+                meanPow_EMP_Result=powerSkinEMP/ceil(PRF*pulseWidth);//calcola l'E medio come il rapporo dell'H medio con t.
         }
         else
         {
@@ -76,7 +98,7 @@ void LaserSkinSafetyMP::computeMeanPowerIrradiance()
 
 void LaserSkinSafetyMP::computePulseNumber()
 {
-    pulseNumber=PRF*exposureTime;
+    pulseNumber=ceil(PRF*exposureTime);
 }
 
 void LaserSkinSafetyMP::computeSP_EMP()
@@ -233,7 +255,7 @@ void LaserSkinSafetyMP::setPRF(const int _PRF)
 	PRF=_PRF;
 }
 
-int LaserSkinSafetyMP::getPRF() const
+double LaserSkinSafetyMP::getPRF() const
 {
 	return PRF;
 }

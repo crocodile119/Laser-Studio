@@ -105,20 +105,20 @@ void ScientificNotationControl::setValue(const double& _value)
 {
     double value=_value;
     scientNotLabel->setText(QString::number(value, 'e', 2));
-    mantissa=QString::number(value, 'e', 2).left(4).toDouble();
+    mantissa=QString::number(value, 'e', 2).leftRef(4).toDouble();
     qDebug()<< "Mantissa: " << mantissa;
 
     int minimumExponent=getMinimumExponent();
     int maximumExponent=getMaximumExponent();
 
     if(value>=1){
-        exponent=+QString::number(value, 'e', 2).right(2).toInt();   
+        exponent=+QString::number(value, 'e', 2).rightRef(2).toInt();
             if(exponent>maximumExponent){
                 mantissa=mantissa*pow(10, exponent-maximumExponent);
                 exponent=maximumExponent;}
     }
         else{
-        exponent=-(QString::number(value, 'e', 2).right(2).toInt());
+        exponent=-(QString::number(value, 'e', 2).rightRef(2).toInt());
             if(exponent<minimumExponent){
                 mantissa=mantissa*pow(10, exponent-minimumExponent);
                     exponent=minimumExponent;}
@@ -127,7 +127,7 @@ void ScientificNotationControl::setValue(const double& _value)
     dial->setValue((int)(mantissa*100));
     verticalScrollBar->setValue(-exponent);
 
-    scientificNumber=mantissa*powf(10, exponent);
+    scientificNumber=mantissa*std::pow(10, exponent);
 }
 
 double ScientificNotationControl::getScientificNumber()const

@@ -1,6 +1,6 @@
 #include "laserclassmp.h"
 
-LaserClassMP::LaserClassMP(int _prf, double _beamDiameter, double _powerErg,  double _divergence,
+LaserClassMP::LaserClassMP(double _prf, double _beamDiameter, double _powerErg,  double _divergence,
                            double _wavelength, double _pulseWidth, double _alpha)
                            :LaserClassSP(_beamDiameter, _powerErg, _divergence,_wavelength, _pulseWidth, _alpha)
 {
@@ -259,13 +259,13 @@ void LaserClassMP::computePulseNumber()
     if((wavelength>=400)and(wavelength<=1400))
         {
         if(prf> (1/Ti)){
-            pulseNumber=(int)(0.5+(1/Ti)*Te);}//se il conteggio non è regolare il numero di impulsi è pari al rapporto del tempo di esposizione con Te con Ti
+            pulseNumber=ceil((int)(0.5+(1/Ti)*Te));}//se il conteggio non è regolare il numero di impulsi è pari al rapporto del tempo di esposizione con Te con Ti
             else
-            pulseNumber=prf*Te;//altrimenti è pari al prodotto della PRF con il tempo di esposizione Te.
+            pulseNumber=ceil(prf*Te);//altrimenti è pari al prodotto della PRF con il tempo di esposizione Te.
          }
     else
         {
-         pulseNumber=prf*timeBase;
+         pulseNumber=ceil(prf*timeBase);
         }
     /****************************************************************************************************
      *                                              ATTENZIONE                                          *
@@ -345,7 +345,7 @@ void LaserClassMP::setPRF(const double &_prf)
     prf=_prf;
 }
 
-int LaserClassMP::getPRF()const
+double LaserClassMP::getPRF()const
 {
     return prf;
 }
@@ -392,9 +392,9 @@ double* LaserClassMP::computeMeanLEA_Corrected(int* _meanLEA_formulaSort)
     for(int i=0; i<n_lea; i++)
     {
     if(_meanLEA_formulaSort[i]==1)
-        meanLEACorrected[i]=myMeanLEA[i]/(prf*pulseWidth);
+        meanLEACorrected[i]=myMeanLEA[i]/ceil(prf*pulseWidth);
     else if(_meanLEA_formulaSort[i]==2)
-        meanLEACorrected[i]=myMeanLEA[i]/(prf*timeBase);
+        meanLEACorrected[i]=myMeanLEA[i]/ceil(prf*timeBase);
     else if(_meanLEA_formulaSort[i]==3)
         meanLEACorrected[i]=myMeanLEA[i];
     else if(_meanLEA_formulaSort[i]==4)
@@ -406,24 +406,26 @@ double* LaserClassMP::computeMeanLEA_Corrected(int* _meanLEA_formulaSort)
 
 void LaserClassMP::setWavelength(const double& _wavelength)
 {
+    myMeanLaserClass.setWavelength(_wavelength);
+    myTiLaserClass.setWavelength(_wavelength);
+
     if(_wavelength==wavelength)
         return;
 
     myLaserClass.setWavelength(_wavelength);
-    myMeanLaserClass.setWavelength(_wavelength);
-    myTiLaserClass.setWavelength(_wavelength);
     wavelength=_wavelength;
 }
 
 
 void LaserClassMP::setAlpha(const double& _alpha)
 {
+    myMeanLaserClass.setAlpha(_alpha);
+    myTiLaserClass.setAlpha(_alpha);
+
     if(_alpha==alpha)
         return;
 
     myLaserClass.setAlpha(_alpha);
-    myMeanLaserClass.setAlpha(_alpha);
-    myTiLaserClass.setAlpha(_alpha);
     alpha=_alpha;
 }
 

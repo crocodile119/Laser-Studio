@@ -505,7 +505,7 @@ QLabel {border-radius: 8px}
            </item>
            <item>
             <property name="text">
-             <string>impulsi ripetuti</string>
+             <string>impulsi multipli</string>
             </property>
            </item>
           </widget>

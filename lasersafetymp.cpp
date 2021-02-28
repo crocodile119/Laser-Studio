@@ -3,7 +3,7 @@
 
 using namespace std;
 
-LaserSafetyMP::LaserSafetyMP(int _PRF, double _beamDiameter, double _powerErg,  double _divergence, double _wavelength,
+LaserSafetyMP::LaserSafetyMP(double _PRF, double _beamDiameter, double _powerErg,  double _divergence, double _wavelength,
                         double _pulseWidth, double _alpha):LaserSafetyCW(_beamDiameter, _powerErg, _divergence, _wavelength,
                         _pulseWidth, _alpha)
 {
@@ -35,24 +35,26 @@ LaserSafetyMP::LaserSafetyMP(int _PRF, double _beamDiameter, double _powerErg,  
 
 void LaserSafetyMP::setWavelength(const double& _wavelength)
 {
+    myMeanPower_Laser.setWavelength(_wavelength);
+    myTmin_Laser.setWavelength(_wavelength);
+
     if(_wavelength==wavelength)
         return;
 
     myLaser.setWavelength(_wavelength);
-    myMeanPower_Laser.setWavelength(_wavelength);
-    myTmin_Laser.setWavelength(_wavelength);
     wavelength=_wavelength;
 }
 
 
 void LaserSafetyMP::setAlpha(const double& _alpha)
-{
+{   
+    myMeanPower_Laser.setAlpha(_alpha);
+    myTmin_Laser.setAlpha(_alpha);
+
     if(_alpha==alpha)
         return;
 
     myLaser.setAlpha(_alpha);
-    myMeanPower_Laser.setAlpha(_alpha);
-    myTmin_Laser.setAlpha(_alpha);
     alpha=_alpha;
 }
 
@@ -92,9 +94,9 @@ void LaserSafetyMP::setPulseWidth(const double& _pulseWidth)
         if(PRF!=0)
         {
             if(powerFormulaSort=="H")
-                meanPow_EMP_Result=powerEMP/(exposureTime*PRF);// calcola l'H medio come il rapporo dell'H in Te con N.
+                meanPow_EMP_Result=powerEMP/ceil(exposureTime*PRF);// calcola l'H medio come il rapporo dell'H in Te con N.
             else if(powerFormulaSort=="E")
-                meanPow_EMP_Result=powerEMP/(PRF*pulseWidth);//calcola l'E medio come il rapporo dell'H medio con t.
+                meanPow_EMP_Result=powerEMP/ceil(PRF*pulseWidth);//calcola l'E medio come il rapporo dell'H medio con t.
         }
         else
         {
@@ -108,13 +110,13 @@ void LaserSafetyMP::computePulseNumber()
     if((wavelength>=400)and(wavelength<=1.0e+06))
         {
         if(PRF> (1/Tmin))
-            pulseNumber=(int)(0.5+(1/Tmin)*Te);//se il conteggio non è regolare il numero di impulsi è pari al rapporto del tempo di esposizione minimo tra T2 exposureTime con Tmin
+            pulseNumber=ceil((int)(0.5+(1/Tmin)*Te));//se il conteggio non è regolare il numero di impulsi è pari al rapporto del tempo di esposizione minimo tra T2 exposureTime con Tmin
             else
-            pulseNumber=PRF*exposureTime;//altrimenti è pari al prodotto della PRF con exposureTime.
+            pulseNumber=ceil(PRF*exposureTime);//altrimenti è pari al prodotto della PRF con exposureTime.
          }
     else
         {
-         pulseNumber=PRF*exposureTime;
+         pulseNumber=ceil(PRF*exposureTime);
         }
     /****************************************************************************************************
      *                                              ATTENZIONE                                          *
@@ -299,7 +301,7 @@ void LaserSafetyMP::equateMeanPowerEMP()
     /*********************************************************************************************************************************
     * la funzione esprime l'EMP medio del laser relativo al treno di impulsi per la durata di funzionamento con unità di misura      *
     * omogenea all'EMP del singolo impulso.																						     *
-    * La funzione sarà impiegata per confrontare l'EMP riguardante le tre condizioni relative al funzionamento ad impulsi ripetuti   *
+    * La funzione sarà impiegata per confrontare l'EMP riguardante le tre condizioni relative al funzionamento ad impulsi multipli   *
     **********************************************************************************************************************************/
 	//se l'EMP del funzionamento ad impulso è espresso in esposizione radiante
     //MeanPow_EMP_Result è la H o la E media in Te
@@ -687,7 +689,7 @@ void LaserSafetyMP::setPRF(const int& _PRF)
 	PRF=_PRF;
 }
 
-int LaserSafetyMP::getPRF() const
+double LaserSafetyMP::getPRF() const
 {
 	return PRF;
 }

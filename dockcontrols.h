@@ -162,6 +162,7 @@ private:
     int operationCombo;
     double powerErg;
     bool gaussianBeam;
+    bool internalWaist;
     double beamCorrection;
     double alpha;
     double pulseWidth;
@@ -180,7 +181,7 @@ private:
     double NSHD;
     double lambertianMax;
     bool enableTeEditing;
-    double exposureTime;
+    double exposureTimeControl;
     double opticalDensity;
     double dOpticalDensity;
 

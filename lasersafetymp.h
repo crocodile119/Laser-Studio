@@ -7,7 +7,7 @@ using namespace std;
 class LaserSafetyMP : public LaserSafetyCW
 {
 public:
-LaserSafetyMP(int, double, double, double, double, double, double);
+LaserSafetyMP(double, double, double, double, double, double, double);
 
 void setWavelength(const double& _wavelength);
 void setAlpha(const double& _alpha);
@@ -38,7 +38,7 @@ string getEyeDamage_MP() const;
 string getPhotochemicalNote_MP() const;
 double getEMP_MP();
 void setPRF(const int&);
-int getPRF() const;
+double getPRF() const;
 double getMeanPower() const;
 double getMeanIrradiance() const;
 double getThermalEMP() const;
@@ -72,7 +72,7 @@ double getTimeBase()const;
 void setTimeBase();
 
 private:
-int PRF;
+double PRF;
 double Te;
 double timeBase;
 double meanPower;

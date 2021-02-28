@@ -80,7 +80,6 @@ public:
 
     //Getters per il laser
     QPointF getLaserPosition()const;
-    bool getLaserIsSelected()const;
     qreal getLaserZValue()const;
     double getAperture()const;
     int getInstallation()const;
@@ -89,11 +88,8 @@ public:
 
     //Getters per i riflettori
     QVector <QPointF> getPosVect()const;
-    QVector <bool> getIsSelectedVect()const;
     QVector <int> getTypeVect()const;
     QVector <QString> getTextVect()const;
-    QVector <QColor> getTextColorVect()const;
-    QVector <QColor> getBackgroundColorVect()const;
     QVector <QString> getStringPositionVect()const;
     QVector <double> getOpticalDiameterVect()const;
     QVector <double> getDivergenceVect()const;
@@ -155,7 +151,7 @@ private:
 
     //Pararmetri del laser
     QPointF laserPosition;
-    bool laserIsSelected;
+    //bool laserIsSelected;
     qreal laserZValue;
     double aperture;
     int installation;

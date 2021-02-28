@@ -17,8 +17,8 @@ const double LaserGoggle::PLASTIC_EXPONENT=1.2233;
 LaserGoggle::LaserGoggle(int _wavelength, double _pulseWidth, double _powerErg, double _beamDiameter)
 {
     /**************************************************************************************************
-    * Costruttore per istanza della classe relativa al funzionamento ad impulsi ripetuti riguardante  *
-    * gli effetti medi. Questa istanza riguarda solo il funzionamento ad impulsi ripetuti.            *                                                                              *
+    * Costruttore per istanza della classe relativa al funzionamento ad impulsi multipli riguardante  *
+    * gli effetti medi. Questa istanza riguarda solo il funzionamento ad impulsi multipli.            *                                                                              *
     ***************************************************************************************************/
 
     buildScaleNumbers();
@@ -32,7 +32,7 @@ LaserGoggle::LaserGoggle(int _wavelength, double _pulseWidth, double _powerErg, 
      * L'impulso non può avere durata nulla, gli assegno nel caso di durata 0 il valore convenzionale  *
      * di timeBaseLowWavelength se la lunghezza d'onda è compresa tra 180 e 315 nm, gli assegno il     *
      * valore di timeBaseWavelength per lunghezze d'onda maggiori di 315 nm.                           *
-     * Nel caso di laser in continua, oppure nel caso di laser ad impulsi ripetuti per la verifica     *
+     * Nel caso di laser in continua, oppure nel caso di laser ad impulsi multipli per la verifica     *
      * della potenza media è possibile:                                                                *
      *  - inserire 0, in questo modo la classe seleziona direttamente la base dei tempi esatta;        *
      *  - inserire direttamente la base dei tempi pertinente.                                          *
@@ -57,7 +57,7 @@ LaserGoggle::LaserGoggle(int _wavelength, double _pulseWidth, double _powerErg, 
 }
 
 //Overload costruttore
-LaserGoggle::LaserGoggle(int _wavelength, double _pulseWidth, double _powerErg, double _beamDiameter, int _frequency)
+LaserGoggle::LaserGoggle(int _wavelength, double _pulseWidth, double _powerErg, double _beamDiameter, double _frequency)
 {
     buildScaleNumbers();
     n=TABLEROWS;
@@ -228,17 +228,14 @@ double LaserGoggle::pulseTrainCorrectionK()
 {
     double myNymberOfPulse=numberOfPulse();
 
-    if(frequency>1)
+    if(frequency==CONTINUOS_OPERATION)
+       k=1;
+    else
     {
         if((wavelength>=400)and(wavelength<=1.0e+06))
         k= pow(myNymberOfPulse, 0.25);
         else
         k=1;
-    }
-    else
-    {
-       if(frequency==0)
-       k=1;
     }
 
     return k;
@@ -249,7 +246,7 @@ double LaserGoggle::frequencyCorrection()
     /* se la lunghezza d'onda appartiene ad alcun intervallo del prospetto B.2 EN207
      * la correzione non va applicata, ciò equivale a porre il valore di Ti=1/frequency
      * e quello di ni_max=frequency */
-    if(frequency>1)
+    if(frequency!=CONTINUOS_OPERATION)
     {
         if ((wavelength >= 180) && (wavelength<400))
         {

@@ -109,7 +109,12 @@ void DialControl::setEnabled(bool _enabled)
     }
 }
 
+bool DialControl::isEnabled()
+{
+    return dial->isEnabled();
+}
+
 void DialControl::setBackgroundColor(QString htmlColor)
 {
-setStyleSheet("QDial {background-color:"+ htmlColor +";\n}");
+    setStyleSheet("QDial {background-color:"+ htmlColor +";\n}");
 }

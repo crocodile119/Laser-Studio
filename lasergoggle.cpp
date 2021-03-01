@@ -10,7 +10,7 @@ const int LaserGoggle::TIMEBASE = 5;
 const int LaserGoggle::TIMEBASE_LOW_WAVELENGTH =30000;
 const double LaserGoggle::PI=3.141592653589793238462643383;
 const int LaserGoggle::TABLEROWS = 10;
-const double LaserGoggle::CONTINUOS_OPERATION=0.0;
+const int LaserGoggle::CONTINUOS_OPERATION=0;
 const double LaserGoggle::GLASS_EXPONENT=1.1693;
 const double LaserGoggle::PLASTIC_EXPONENT=1.2233;
 
@@ -38,7 +38,7 @@ LaserGoggle::LaserGoggle(int _wavelength, double _pulseWidth, double _powerErg, 
      *  - inserire direttamente la base dei tempi pertinente.                                          *
      ***************************************************************************************************/
 
-    if(_pulseWidth==CONTINUOS_OPERATION)
+    if((int)_pulseWidth==CONTINUOS_OPERATION)
     {
       if((wavelength>=180)&&(wavelength<=315))
           pulseWidth = TIMEBASE_LOW_WAVELENGTH;
@@ -66,7 +66,7 @@ LaserGoggle::LaserGoggle(int _wavelength, double _pulseWidth, double _powerErg, 
 
     materialCorrection=1.0;
 
-    if(_pulseWidth==CONTINUOS_OPERATION )
+    if((int)_pulseWidth==CONTINUOS_OPERATION )
     {
         if((wavelength>=180)&&(wavelength<=315))
             pulseWidth = TIMEBASE_LOW_WAVELENGTH;
@@ -228,7 +228,7 @@ double LaserGoggle::pulseTrainCorrectionK()
 {
     double myNymberOfPulse=numberOfPulse();
 
-    if(frequency==CONTINUOS_OPERATION)
+    if((int)frequency==CONTINUOS_OPERATION)
        k=1;
     else
     {
@@ -246,7 +246,7 @@ double LaserGoggle::frequencyCorrection()
     /* se la lunghezza d'onda appartiene ad alcun intervallo del prospetto B.2 EN207
      * la correzione non va applicata, ciò equivale a porre il valore di Ti=1/frequency
      * e quello di ni_max=frequency */
-    if(frequency!=CONTINUOS_OPERATION)
+    if((int)frequency!=CONTINUOS_OPERATION)
     {
         if ((wavelength >= 180) && (wavelength<400))
         {

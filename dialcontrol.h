@@ -20,6 +20,7 @@ public:
     void setTitle(const QString);
     QString getTitle()const;
     void setEnabled(bool);
+    bool isEnabled();
     void setBackgroundColor(QString);
 
 private slots:

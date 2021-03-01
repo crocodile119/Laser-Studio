@@ -15,7 +15,7 @@ public:
     static const int TIMEBASE_LOW_WAVELENGTH;
     static const int TABLEROWS;
     static const double PI;
-    static const double CONTINUOS_OPERATION; 
+    static const int CONTINUOS_OPERATION;
     static const double GLASS_EXPONENT;
     static const double PLASTIC_EXPONENT;
 

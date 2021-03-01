@@ -54,8 +54,8 @@ public:
     void fetchDDataVector();
     void fetchLaserOutput();
     void fetchDLaserOutput();
-    void dispayScaleNumber();
-    void dispayDScaleNumber();
+    void displayScaleNumber();
+    void displayDScaleNumber();
     void displayLaserOutput();
     void displayDLaserOutput();
     void displayNumberOfPulse();
@@ -95,8 +95,9 @@ public:
     double getDivergence()const;
     double getLambertianMax()const;
     double getExposureTime()const;
-
     bool isTeEdtitingEnabled();
+    void enableTeEdtiting(bool);
+    void enablePulseControl(bool);
 
     MyChartView* getChartView()const;
     MyChartView* getdChartView()const;

@@ -19,7 +19,7 @@
   <property name="minimumSize">
    <size>
     <width>405</width>
-    <height>155</height>
+    <height>100</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -291,8 +291,8 @@ QLabel {margin-right: 10px}</string>
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1177</width>
-         <height>116</height>
+         <width>1208</width>
+         <height>118</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
@@ -607,6 +607,7 @@ QLabel {margin-right: 10px}</string>
            <widget class="QLabel" name="tTimeBase_Label">
             <property name="font">
              <font>
+              <pointsize>8</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>

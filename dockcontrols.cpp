@@ -142,7 +142,7 @@ DockControls::DockControls(QWidget *parent, DockResults *_dockResults, DockEffec
 
       ui->comboBox->setCurrentIndex(1);
       setDialControls();
-      dispayScaleNumber();
+      displayScaleNumber();
       displayLaserOutput();
 
       //in modo da aggiornare il valore di powerErgPeak alla prima variazione dei valore dei parametri
@@ -229,7 +229,7 @@ void DockControls::on_wavelengthScrollBar_valueChanged(int value)
 
     myLaserGoggle->setWavelength(wavelength);
 
-    if(((myLaserGoggle->getWavelength()>315) && (myLaserGoggle->getWavelength()<=1e+06)))//base dei tempi 5 s
+    if(((wavelength>315) && (wavelength<=1e+06)))//base dei tempi 5 s
          {
              myLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE);
           }
@@ -238,7 +238,7 @@ void DockControls::on_wavelengthScrollBar_valueChanged(int value)
               {
                  myLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE_LOW_WAVELENGTH);
               }
-
+    enableTeEditing=ui->teControl->isEnabled();
     /**************************************************************
      * La funzione fetchDataVector() va invocata quando cambia    *
      * la frequenza o la durata dell'impulso.                     *                                 *
@@ -252,14 +252,13 @@ void DockControls::on_wavelengthScrollBar_valueChanged(int value)
     effectivePowerErgPeak();
     modeLockingPeak();
 
-    fetchLaserOutput();
     fetchDataVector();
+    fetchLaserOutput();
 
     /*****************************************************
     * Visualizzazione dati relativi ai protettori ottici *
     ******************************************************/
 
-    dispayScaleNumber();
     displayLaserOutput();
     displayTimeBase();
     displayNumberOfPulse();
@@ -314,7 +313,6 @@ void DockControls::on_wavelengthScrollBar_valueChanged(int value)
     * Visualizzazione dati relativi ai protettori ottici *
     ******************************************************/
 
-    dispayScaleNumber();
     displayLaserOutput();
     displayTimeBase();
     displayNumberOfPulse();
@@ -391,7 +389,6 @@ void DockControls::on_wavelengthScrollBar_valueChanged(int value)
     ******************************************************/
 
     //Oggetto myLaserGoggle
-    dispayScaleNumber();
     displayLaserOutput();
     displayTimeBase();
     displayNumberOfPulse();
@@ -401,7 +398,6 @@ void DockControls::on_wavelengthScrollBar_valueChanged(int value)
 
     //Oggetto myLaserGoggle
     fetchDDataVector();
-    dispayDScaleNumber();
     displayDLaserOutput();
     displayDTimeBase();
     }
@@ -565,7 +561,6 @@ void DockControls::on_peakControl_valueChanged()
         /*************************************************
          * Visualizzazione dati relativi a myLaserGoggle *
          *************************************************/
-        dispayScaleNumber();
         displayLaserOutput();
         displayNumberOfPulse();
         displayCoefficient_k();
@@ -674,7 +669,6 @@ void DockControls::on_powerErgControl_valueChanged()
      * Visualizzazione dati relativi a myDLaserGoggle *
      **************************************************/
 
-        dispayDScaleNumber();
         displayDLaserOutput();
     }
 
@@ -698,7 +692,6 @@ void DockControls::on_powerErgControl_valueChanged()
     /*************************************************
      * Visualizzazione dati relativi a myLaserGoggle *
      *************************************************/
-    dispayScaleNumber();
     displayLaserOutput();
     displayNumberOfPulse();
     displayCoefficient_k();
@@ -869,8 +862,6 @@ void DockControls::on_pulseControl_valueChanged()
              /*****************************************************
              * Visualizzazione dati relativi ai protettori ottici *
              ******************************************************/
-
-                      dispayScaleNumber();
                       displayLaserOutput();
                       displayNumberOfPulse();
                       displayCoefficient_k();
@@ -911,8 +902,6 @@ void DockControls::on_pulseControl_valueChanged()
     /*****************************************************
     * Visualizzazione dati relativi ai protettori ottici *
     ******************************************************/
-
-             dispayScaleNumber();
              displayLaserOutput();
              displayNumberOfPulse();
              displayCoefficient_k();
@@ -941,7 +930,7 @@ void DockControls::on_pulseControl_valueChanged()
         emit modified();//Per salvataggio file
 }
 
-void DockControls::dispayScaleNumber()
+void DockControls::displayScaleNumber()
 {
     computeOpticalDensity();
     if(opticalDensity>0)
@@ -1038,7 +1027,7 @@ void DockControls::display_ni_max()
     dockGoggle->ui->n_maxLabel->setText(ni_maxString);
 }
 
-void DockControls::dispayDScaleNumber()
+void DockControls::displayDScaleNumber()
 {
     dComputeOpticalDensity();
 
@@ -1128,7 +1117,6 @@ void DockControls::on_prfControl_valueChanged()
     /**************************************************
      * Visualizzazione dati relativi a myLaserGoggle *
      **************************************************/
-    dispayScaleNumber();
     displayDLaserOutput();
     displayLaserOutput();
     displayNumberOfPulse();
@@ -1139,7 +1127,6 @@ void DockControls::on_prfControl_valueChanged()
     /**************************************************
      * Visualizzazione dati relativi a myDLaserGoggle *
      **************************************************/
-    dispayDScaleNumber();
     displayDLaserOutput();
 
    /*******************************************
@@ -1239,7 +1226,6 @@ void DockControls::on_beamDiameterControl_valueChanged()
 	******************************************************************************************/
     fetchDLaserOutput();
     fetchDDataVector();
-    dispayDScaleNumber();
     displayDLaserOutput();
     }
 	
@@ -1249,7 +1235,6 @@ void DockControls::on_beamDiameterControl_valueChanged()
 	******************************************************************************************/
     fetchLaserOutput();
     fetchDataVector();
-    dispayScaleNumber();
     displayLaserOutput();
     displayNumberOfPulse();
     displayCoefficient_k();
@@ -1503,6 +1488,7 @@ void DockControls::setWidgets()
         ui->powerErgControl->setTitle("Potenza [W]");
         MyLaserCW_Pr->laserUpdate();
         MyLaserSkinSP_Pr->laserSkinUpdate();
+        displayScaleNumber();
 
             if(MyLaserCW_Pr->getFormulaSort()=="E")
             {
@@ -1665,6 +1651,7 @@ else
         ui->powerErgControl->setTitle("Energia [J]");
         MyLaserSP_Pr->laserUpdate();
         MyLaserSkinSP_Pr->laserSkinUpdate();
+        displayScaleNumber();
 
              if(MyLaserSP_Pr->getFormulaSort()=="E")
              {
@@ -1805,6 +1792,8 @@ if(n_laser==2)
         ui->powerErgControl->setTitle("Energia [J]");
         MyLaserMP_Pr->laserUpdate();
         MyLaserSkinMP_Pr->laserSkinUpdate();
+        displayScaleNumber();
+        displayDScaleNumber();
 
              if(MyLaserMP_Pr->getFormulaSort()=="E")
              {
@@ -2223,7 +2212,7 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     on_prfControl_valueChanged();
     ui->prfControl->setEnabled(false);
     //Non è possibile impostare il valore della prf essendo non definita per l'oggetto MyLaserCW_Pr
-    myLaserGoggle->setFrequency(prf);
+    myLaserGoggle->setFrequency(LaserGoggle::CONTINUOS_OPERATION);
 
     powerErg=1.0e+00;//potenza
     ui->powerErgControl->setValue(powerErg);
@@ -2242,18 +2231,22 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     * il valore corrisposndente altrimenti aggiorno con il tempo di esposizione predefinito *
     *****************************************************************************************/
 
+    ui->pulseControl->setEnabled(false);
+
     MyLaserCW_Pr->setExposureTimeEditable(isTeEdtitingEnabled());
+    exposureTimeControl=ui->teControl->getDialNumber();
 
     if(isTeEdtitingEnabled()){
-        MyLaserCW_Pr->setEditedExposureTime(ui->teControl->getDialNumber());
+        MyLaserCW_Pr->setEditedExposureTime(exposureTimeControl);
         ui->teControl->setEnabled(true);}
     else{
         MyLaserCW_Pr->setExposureTime();
-        ui->pulseControl->setEnabled(false);}
+        ui->teControl->setEnabled(false);
+        }
 
     MyLaserCW_Pr->setPulseWidth(MyLaserCW_Pr->getExposureTime());
 
-    if(((myLaserGoggle->getWavelength()>315) && (myLaserGoggle->getWavelength()<=1e+06)))
+    if(((wavelength>315) && (wavelength<=1e+06)))
          {
              myLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE);
           }
@@ -2262,7 +2255,7 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
               {
                  myLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE_LOW_WAVELENGTH);
               }
-
+    enableTeEditing=ui->teControl->isEnabled();
    /******************************************************************************************	
 	* Invoco le funzioni per il prelievo dei dati e il tracciamento dei grafici per l'oggetto *
 	* myLaserGoggle                                                                          *
@@ -2272,7 +2265,6 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     modeLockingPeak();
     fetchDataVector();
     fetchLaserOutput();
-    dispayScaleNumber();
     displayLaserOutput();
     displayTimeBase();
     displayNumberOfPulse();
@@ -2350,7 +2342,6 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     modeLockingPeak();
     fetchDataVector();
     fetchLaserOutput();
-    dispayScaleNumber();
     displayLaserOutput();
     displayTimeBase();
     displayNumberOfPulse();
@@ -2475,7 +2466,6 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     modeLockingPeak();
     fetchLaserOutput();
     fetchDataVector();
-    dispayScaleNumber();
     displayLaserOutput();
     displayNumberOfPulse();
     displayCoefficient_k();
@@ -2485,7 +2475,6 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
 
     fetchDLaserOutput();
     fetchDDataVector();
-    dispayDScaleNumber();
     displayDLaserOutput();
     displayDTimeBase();
 
@@ -2973,6 +2962,18 @@ bool DockControls::isTeEdtitingEnabled()
     return enableTeEditing;
 }
 
+void DockControls::enableTeEdtiting(bool enabled)
+{
+    ui->teControl->setEnabled(enabled);
+}
+
+
+void DockControls::enablePulseControl(bool enabled)
+{
+    ui->pulseControl->setEnabled(enabled);
+}
+
+
 void DockControls::computeOpticalDensity()
 {
 double CW_EMP;
@@ -2990,7 +2991,7 @@ if(n_laser==0)
     CW_EMP=MyLaserCW_Pr->getEMP();
     formulaSort=QString::fromStdString(MyLaserCW_Pr->getFormulaSort());
     MyLaserCW_Pr->computeBeamArea();
-    timeBase=myLaserGoggle->getPulseWidth();
+    timeBase=MyLaserCW_Pr->getExposureTime();
     beamArea=MyLaserCW_Pr->getBeamArea();
     powerErg=MyLaserCW_Pr->getPowerErg();
     irradiance=powerErg/beamArea;
@@ -3089,10 +3090,7 @@ void DockControls::dComputeOpticalDensity()
         if(formulaSort=='E')
              secondEMP=MyLaserMP_Pr->getEMP_MP();
         else if(formulaSort=='H')
-             secondEMP=MyLaserMP_Pr->getEMP_MP()/myDLaserGoggle->getPulseWidth();
-
-
-        qDebug()<< "base dei tempi occhiali [s]: " << myDLaserGoggle->getPulseWidth();
+             secondEMP=MyLaserMP_Pr->getEMP_MP()/MyLaserMP_Pr->getExposureTime();
 
         opticalDensityRatio=irradiance/secondEMP;
 
@@ -3928,7 +3926,6 @@ void DockControls::setGoggleMaterial(LaserGoggle::material myMaterial)
 
     fetchDataVector();
     fetchLaserOutput();
-    dispayScaleNumber();
     displayLaserOutput();
     displayTimeBase();
     displayNumberOfPulse();
@@ -3939,7 +3936,6 @@ void DockControls::setGoggleMaterial(LaserGoggle::material myMaterial)
     fetchDDataVector();
     fetchDLaserOutput();
 
-    dispayDScaleNumber();
     displayDLaserOutput();
     displayDTimeBase();
 }
@@ -3968,7 +3964,6 @@ fetchDataVector();
 * Visualizzazione dati relativi ai protettori ottici *
 ******************************************************/
 
-dispayScaleNumber();
 displayLaserOutput();
 displayTimeBase();
 displayNumberOfPulse();
@@ -4005,7 +4000,6 @@ fetchDataVector();
 * Visualizzazione dati relativi ai protettori ottici *
 ******************************************************/
 
-dispayScaleNumber();
 displayLaserOutput();
 displayTimeBase();
 displayNumberOfPulse();
@@ -4073,7 +4067,6 @@ if(((wavelength>315) && (wavelength<=1e+06)))//base dei tempi 5 s
     ******************************************************/
 
     //Oggetto myLaserGoggle
-    dispayScaleNumber();
     displayLaserOutput();
     displayTimeBase();
     displayNumberOfPulse();
@@ -4083,7 +4076,6 @@ if(((wavelength>315) && (wavelength<=1e+06)))//base dei tempi 5 s
 
     //Oggetto myLaserGoggle
     fetchDDataVector();
-    dispayDScaleNumber();
     displayDLaserOutput();
     displayDTimeBase();
     }

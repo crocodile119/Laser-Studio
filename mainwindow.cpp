@@ -4438,7 +4438,6 @@ void MainWindow::makeSceneOfSavedItems(){
     laserpoint->setFilterOn(filterOn);
     laserpoint->setTrasmittance(transmittance);
 
-
     //Leggo i vettori riguardanti i riflettori
     posVect=laserWindow->getPosVect();
     TypeVect= laserWindow->getTypeVect();

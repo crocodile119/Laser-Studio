@@ -76,7 +76,7 @@ QLabel {padding: 3px}
 QLabel {margin-right: 10px}</string>
         </property>
         <property name="text">
-         <string>Posizionamento effettivo</string>
+         <string>&amp;psi; &lt;sub&gt;r&lt;/sub&gt; [gradi]</string>
         </property>
        </widget>
       </item>
@@ -96,7 +96,7 @@ QLabel {padding: 3px}
 QLabel {margin-right: 10px}</string>
         </property>
         <property name="text">
-         <string>Coefficiente di riflessione</string>
+         <string>Coefficiente d itrasmissione</string>
         </property>
        </widget>
       </item>
@@ -141,16 +141,16 @@ QLabel {margin-right: 10px}</string>
       <item row="4" column="1">
        <widget class="QSlider" name="positioningSlider">
         <property name="minimum">
-         <number>90</number>
+         <number>-90</number>
         </property>
         <property name="maximum">
-         <number>270</number>
+         <number>90</number>
         </property>
         <property name="singleStep">
          <number>1</number>
         </property>
         <property name="value">
-         <number>180</number>
+         <number>0</number>
         </property>
         <property name="tracking">
          <bool>true</bool>
@@ -242,7 +242,7 @@ QLabel {padding: 3px}
 QLabel {margin-right: 10px}</string>
         </property>
         <property name="text">
-         <string>Posizionamento  [Gradi]</string>
+         <string>&amp;psi; &lt;sub&gt;&lt;/sub&gt; [gradi]</string>
         </property>
        </widget>
       </item>
@@ -267,7 +267,7 @@ QLabel {border-radius: 8px}
 QLabel {padding: 3px}</string>
         </property>
         <property name="text">
-         <string>180</string>
+         <string>0</string>
         </property>
        </widget>
       </item>

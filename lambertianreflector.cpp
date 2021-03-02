@@ -13,26 +13,26 @@ void LambertianReflector::computeTrigonometricReflection()
 {
     reflectionAngleVect.clear();
 
-    for(int i=-180; i<-90; i++)
+    for(int i=0; i<90; i++)
         {
-        myAngle=i;
-        myReflectionAngle=0;
-
-        reflectionAngleVect.push_back(make_pair(myAngle, myReflectionAngle));
-        }
-
-        for(int i=0; i<180; i++)
-        {
-        myAngle=-90.0+i;
+        myAngle=i;    
         myReflectionAngle=cos(myAngle*radDeg);
 
         reflectionAngleVect.push_back(make_pair(myAngle, myReflectionAngle));
         }
 
-        for(int i=90; i<180; i++)
+        for(int i=90; i<270; i++)
         {
         myAngle=i;
         myReflectionAngle=0;
+
+        reflectionAngleVect.push_back(make_pair(myAngle, myReflectionAngle));
+        }
+
+        for(int i=270; i<360; i++)
+        {
+        myAngle=i;
+        myReflectionAngle=cos(myAngle*radDeg);
 
         reflectionAngleVect.push_back(make_pair(myAngle, myReflectionAngle));
         }

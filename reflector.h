@@ -108,8 +108,8 @@ public:
     void setPositioningElement();
     double getPositioningElement();
 
-    double getReflectionCoeff()const;
-    void setReflectionCoeff(const double&);
+    double getMaterialCoeff()const;
+    void setMaterialCoeff(const double&);
 
     void setPositioning(const int&);
     int getPositioning()const;
@@ -171,7 +171,7 @@ private:
     double myPositioningElement;
     double n;
     double lambertianMax;
-    double reflectionCoeff;
+    double materialCoeff;
     QString description;
 
     double constant;

@@ -90,7 +90,7 @@ double FresnelReflector::getMaxElement()
     return myMaxElement;
 }
 
-void FresnelReflector::computeZs(vector< pair <double,double> > myVector, double _dnro, double _objectDistance, double reflectionCoeff)
+void FresnelReflector::computeZs(vector< pair <double,double> > myVector, double _dnro, double _objectDistance, double materialCoeff)
 {
     vector< pair <double, double> >::iterator iterator; // const_iterator
     vector< pair <double, double> >::reverse_iterator reverse_iterator;
@@ -107,7 +107,7 @@ void FresnelReflector::computeZs(vector< pair <double,double> > myVector, double
          iterator != myVector.end(); ++iterator )
       {
         myRho_s=iterator->second;
-        myRho_s *=reflectionCoeff;
+        myRho_s *=materialCoeff;
                 sqrt_myRho_s=pow(myRho_s, 0.5);
                         myZsVector_second=sqrt_myRho_s*_dnro-_objectDistance;
                                  myZsAngle=i;
@@ -121,7 +121,7 @@ void FresnelReflector::computeZs(vector< pair <double,double> > myVector, double
          reverse_iterator != myVector.rend(); ++reverse_iterator )
       {
         myRho_s=reverse_iterator->second;
-        myRho_s *=reflectionCoeff;
+        myRho_s*=materialCoeff;
                 sqrt_myRho_s=pow(myRho_s, 0.5);
                         myZsVector_second=sqrt_myRho_s*_dnro-_objectDistance;
                                  myZsAngle=i;

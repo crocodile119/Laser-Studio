@@ -1,4 +1,5 @@
 #include "fresnelchartview.h"
+#include <QDebug>
 
 const qreal FresnelChartView::angularMin = 0;
 const qreal FresnelChartView::angularMax = 360;
@@ -123,6 +124,11 @@ QtCharts::QLineSeries* FresnelChartView::buildPositioningSeries()
 {
     positioningSeries->clear();
     positioningSeries->append(0.0, 0.0);
+
+    if(correctPositioning<=0)
+        correctPositioning=correctPositioning+360;
+
     positioningSeries->append(correctPositioning, radialMax);
+    qDebug()<<"Posizionamento del riflettore corretto: "<<correctPositioning;
     return positioningSeries;
 }

@@ -2402,7 +2402,7 @@ QString MainWindow::htmlReflectors()
                 "src=\"./"+imageFilename+"\"></div><br><br>\n";
                 myPainter.end();
 
-                htmlImage+="<h3>Coefficienti di riflessione da superficie di vetro</h3>\n";
+                htmlImage+="<h3>Coefficienti di riflessione da superficie bagnata</h3>\n";
                 htmlImage+=printSpecularReflectorCoefficients(reflector->getRho_sVect());
 
                         htmlImage+="<h3>Distanza di sicurezza in funzione dell'angolo di riflessione (valori non nulli)</h3>\n";
@@ -2437,7 +2437,7 @@ QString MainWindow::htmlReflectors()
                 "src=\"./"+imageFilename+"\"></div><br><br>\n";
                 myPainter.end();
 
-                htmlImage+="<h3>Coefficienti di riflessione da superficie bagnata</h3>\n";
+                htmlImage+="<h3>Coefficienti di riflessione da superficie di vetro</h3>\n";
                 htmlImage+=printSpecularReflectorCoefficients(reflector->getRho_sVect());
 
                 htmlImage+="<h3>Distanza di sicurezza in funzione dell'angolo di riflessione (valori non nulli)</h3>\n";
@@ -2867,7 +2867,7 @@ void MainWindow::reflectorsPageReport()
         reflectors.append("Tipo di riflettore: " + reflector->getReflectorKindString());
         reflectors.append("Divergenza laser [mrad]: " + QString::number(reflector->getDivergence()));
         reflectors.append("Distanza del riflettore [m]: " + QString::number(reflector->getReflectorDistance(),'f',1));
-        reflectors.append("Coefficiente di riflessione: " + QString::number(reflector->getReflectionCoeff()));
+        reflectors.append("Coefficiente di riflessione: " + QString::number(reflector->getMaterialCoeff()));
         reflectors.append("Posizionamento [gradi]: " + QString::number(reflector->getPositioning()));
         reflectors.append("Distanza di sicurezza ottica dal riflettore [m]: "+ QString::number(reflector->getPositioningElement(),'f',1));
 
@@ -4507,7 +4507,7 @@ void MainWindow::makeSceneOfSavedItems(){
          reflector->setBackgroundColor(QColor(247, 247, 247, 170));
          reflector->setZValue(myZValue);
          reflector->setReflectorKindString();
-         reflector->setReflectionCoeff(myReflectionCoeff);
+         reflector->setMaterialCoeff(myReflectionCoeff);
          reflector->setDescription(myDescription);
 
             if(myReflectorKind==LAMBERTIAN_TARGET)

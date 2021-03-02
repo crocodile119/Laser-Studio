@@ -160,7 +160,7 @@ bool CentralWidget::writeFile(const QString &fileName)
               OpticalDiameter.push_back(reflector->getOpticalDiameter());
               Divergence.push_back(reflector->getDivergence());
               ReflectorDistance.push_back(reflector->getReflectorDistance());
-              ReflectionCoeff.push_back(reflector->getReflectionCoeff());
+              ReflectionCoeff.push_back(reflector->getMaterialCoeff());
               ZValue.push_back(reflector->getReflectorDistance());
               ReflectorKind.push_back(reflector->getReflectorKind());
               ReflectorPositioningVect.push_back(reflector->getPositioning());

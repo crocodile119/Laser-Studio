@@ -127,6 +127,10 @@ QtCharts::QLineSeries* WetChartView::buildPositioningSeries()
 {
     positioningSeries->clear();
     positioningSeries->append(0.0, 0.0);
+
+    if(correctPositioning<=0)
+        correctPositioning=correctPositioning+360;
+
     positioningSeries->append(correctPositioning, radialMax);
     return positioningSeries;
 }

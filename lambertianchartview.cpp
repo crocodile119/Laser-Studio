@@ -104,7 +104,6 @@ LambertianChartView::LambertianChartView(QWidget *parent, std::vector<std::pair<
   void LambertianChartView::setTableSeries(std::vector<std::pair<double, double>> myVector)
   {
       dataVector=myVector;
-
   }
 
   void LambertianChartView::setRadialMax(const double _maxElement)
@@ -127,6 +126,10 @@ QtCharts::QLineSeries* LambertianChartView::buildPositioningSeries()
 {
     positioningSeries->clear();
     positioningSeries->append(0.0, 0.0);
+
+    if(correctPositioning<=0)
+        correctPositioning=correctPositioning+360;
+
     positioningSeries->append(correctPositioning, radialMax);
     return positioningSeries;
 }

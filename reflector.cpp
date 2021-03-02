@@ -35,13 +35,13 @@ Reflector::Reflector(double _opticalDiameter, double _divergence, double _reflec
     laserEMP=_laserEMP;
     laserPowerErg=_laserPowerErg;
     lambertianMax=_lambertianMax;
-    positioning=180;
-    correctPositioning=180;
+    positioning=0;
+    correctPositioning=0;
     scale=1.0;
     laserPhase=0.0;
 
     myTarget=_myTarget;
-    reflectionCoeff= 0.9;
+    materialCoeff= 0.9;
 
         if(myTarget==WET_TARGET)
             n=1.33;
@@ -251,12 +251,12 @@ void Reflector::paint(QPainter *painter,
     QRectF lineRect=reflectorPix.rect();
     painter->setPen(beamPen);
     QPoint p1= QPoint(0,0);
-    QPoint p2=QPoint(-1.6*lineRect.height()*sin(radDeg*double(180+positioning)),
-                     1.6*lineRect.height()*cos(radDeg*double(180+positioning)));
+    QPoint p2=QPoint(-1.6*lineRect.height()*sin(radDeg*double(positioning)),
+                     1.6*lineRect.height()*cos(radDeg*double(positioning)));
     QLine positioningLine(p1, p2);
 
-    positioningLine.translate(1.6*lineRect.height()*sin(radDeg*double(180+positioning))/2,
-                              -1.6*lineRect.height()*cos(radDeg*double(180+positioning))/2);
+    positioningLine.translate(1.6*lineRect.height()*sin(radDeg*double(positioning))/2,
+                              -1.6*lineRect.height()*cos(radDeg*double(positioning))/2);
     painter->drawLine(positioningLine);
 
     QPen textPen(myBeamColor);
@@ -295,8 +295,8 @@ QVariant Reflector::itemChange(GraphicsItemChange change,
         {
             reflectorDistance=link->linkLenght();
             link->trackNodes();
-            laserPhase=link->LinkPhase();
-            correctPositioning=positioning-laserPhase;
+            laserPhase=-link->LinkPhase();
+            correctPositioning=2*(positioning-laserPhase);
             reflectorOperation();
             setStringDetails();
             setTextLabel();
@@ -316,8 +316,8 @@ void Reflector::laserParametersChanged()
   {
       reflectorDistance=link->linkLenght();
       link->trackNodes();    
-      laserPhase=link->LinkPhase();
-      correctPositioning=positioning-laserPhase;
+      laserPhase=-link->LinkPhase();
+      correctPositioning=2*(positioning-laserPhase);
       reflectorOperation();
       setStringDetails();
   }
@@ -425,7 +425,7 @@ void Reflector::setStringDetails()
     myMaxElementString=QString::number(myMaxElement,'f',2);
     myPositioningElementString=QString::number(myPositioningElement,'f',2);
     nString=QString::number(n, 'f',2);
-    myReflectionCoeffString=QString::number(reflectionCoeff, 'f',2);;
+    myReflectionCoeffString=QString::number(materialCoeff, 'f',2);;
 
     switch(myTarget)
     {
@@ -440,7 +440,7 @@ void Reflector::setStringDetails()
                                         .arg(myReflectionCoeffString);
         break;
         case(GLASS_TARGET):
-        refrectorDetailsString=reflectionKindString + QString(" (%1,%2) \ndist[m]: %3, DROr[m]: %4, DROr max [m]: %5 \nn=%6 ρ=%7")
+        refrectorDetailsString=reflectionKindString + QString(" (%1,%2) \ndist[m]: %3, DROr[m]: %4, DROr max [m]: %5 \nn=%6 τ=%7")
                                         .arg(xString)
                                         .arg(yString)
                                         .arg(reflectorDistanceString)
@@ -554,7 +554,7 @@ void Reflector::reflectorOperation()
             {
             MyWetReflector_ptr=MyReflector;
             MyWetReflector_ptr->computeTrigonometricReflection();
-            MyWetReflector_ptr->computeZs(MyWetReflector_ptr->getRho_sVect(),opticalDiameter, reflectorDistance, divergence, reflectionCoeff);
+            MyWetReflector_ptr->computeZs(MyWetReflector_ptr->getRho_sVect(),opticalDiameter, reflectorDistance, divergence, materialCoeff);
             rho_sVect=MyWetReflector_ptr->getRho_sVect();
             myZsVector=MyWetReflector_ptr->getZsVect();
             setPositioningElement();
@@ -566,7 +566,7 @@ void Reflector::reflectorOperation()
             {
             MyFresnelReflector_ptr=MyReflector;
             MyFresnelReflector_ptr->computeTrigonometricReflection();
-            MyFresnelReflector_ptr->computeZs(MyFresnelReflector_ptr->getRho_sVect(),opticalDiameter, reflectorDistance, reflectionCoeff);
+            MyFresnelReflector_ptr->computeZs(MyFresnelReflector_ptr->getRho_sVect(),opticalDiameter, reflectorDistance, materialCoeff);
             rho_sVect=MyFresnelReflector_ptr->getRho_sVect();
             myZsVector=MyFresnelReflector_ptr->getZsVect();
             setPositioningElement();
@@ -577,7 +577,7 @@ void Reflector::reflectorOperation()
     case(target::MIRROR_TARGET):
             {
             if(getOpticalDiameter()-getReflectorDistance()>0)
-                myPositioningElement= (getOpticalDiameter()-getReflectorDistance())*reflectionCoeff;
+                myPositioningElement= (getOpticalDiameter()-getReflectorDistance())*materialCoeff;
             else
                 myPositioningElement=0;
             }
@@ -627,7 +627,7 @@ void Reflector::reflectorOperation()
                      exendedDiffusion=false;
                      reflectionKindString="Lambertiana Puntiforme";
                      MyLambertianReflector_ptr->computeTrigonometricReflection();
-                     MyLambertianReflector_ptr->computeZs(lambertianMax, reflectionCoeff);
+                     MyLambertianReflector_ptr->computeZs(lambertianMax, materialCoeff);
                      myZsVector=MyLambertianReflector_ptr->getZsVect();
                      setMaxElement();
                      setPositioningElement();
@@ -637,7 +637,7 @@ void Reflector::reflectorOperation()
              {
                  reflectionKindString="Lambertiana Puntiforme";
                  MyLambertianReflector_ptr->computeTrigonometricReflection();
-                 MyLambertianReflector_ptr->computeZs(0.0, reflectionCoeff);
+                 MyLambertianReflector_ptr->computeZs(0.0, materialCoeff);
                  myZsVector=MyLambertianReflector_ptr->getZsVect();
                  setMaxElement();
                  setPositioningElement();
@@ -653,8 +653,13 @@ void Reflector::reflectorOperation()
 
 void Reflector::setMaxElement()
 {
-  int myZsVectorHalSize=myZsVector.size()/2;
-   myMaxElement=myZsVector.at(myZsVectorHalSize).second;
+    if(myTarget==LAMBERTIAN_TARGET)
+    myMaxElement=myZsVector.at(0).second;
+    else{
+    int myZsVectorHalSize=myZsVector.size()/2;
+    myMaxElement=myZsVector.at(myZsVectorHalSize).second;
+    }
+
    qDebug()<< "L'elemento massimo: " << myMaxElement;
 
 }
@@ -667,7 +672,7 @@ double Reflector::getMaxElement()
 void Reflector::setPositioningElement()
 {
    int myZsVectorRow;
-   myZsVectorRow=correctPositioning;
+   myZsVectorRow=abs(correctPositioning);
 
    myPositioningElement=myZsVector.at(myZsVectorRow).second;
 
@@ -729,15 +734,15 @@ double Reflector::getReflectorHazardDistance()
     return reflectorHazardDistance;
 }
 
-double Reflector::getReflectionCoeff()const
+double Reflector::getMaterialCoeff()const
 {
-    return reflectionCoeff;
+    return materialCoeff;
 }
 
-void Reflector::setReflectionCoeff(const double& _reflectionCoeff)
+void Reflector::setMaterialCoeff(const double& _materialCoeff)
 {
     prepareGeometryChange();
-    reflectionCoeff=_reflectionCoeff;
+    materialCoeff=_materialCoeff;
     reflectorOperation();
     update();
 }

@@ -296,7 +296,12 @@ QVariant Reflector::itemChange(GraphicsItemChange change,
             reflectorDistance=link->linkLenght();
             link->trackNodes();
             laserPhase=-link->LinkPhase();
+
+            if(myTarget==LAMBERTIAN_TARGET)
+            correctPositioning=positioning+laserPhase;
+                else
             correctPositioning=2*(positioning+laserPhase);
+
             reflectorOperation();
             setStringDetails();
             setTextLabel();
@@ -317,7 +322,12 @@ void Reflector::laserParametersChanged()
       reflectorDistance=link->linkLenght();
       link->trackNodes();    
       laserPhase=-link->LinkPhase();
+
+      if(myTarget==LAMBERTIAN_TARGET)
+      correctPositioning=positioning+laserPhase;
+          else
       correctPositioning=2*(positioning+laserPhase);
+
       reflectorOperation();
       setStringDetails();
   }
@@ -635,7 +645,7 @@ void Reflector::reflectorOperation()
                }
              else
              {
-                 reflectionKindString="Lambertiana Puntiforme";
+                 reflectionKindString="Lambertiana";
                  MyLambertianReflector_ptr->computeTrigonometricReflection();
                  MyLambertianReflector_ptr->computeZs(0.0, materialCoeff);
                  myZsVector=MyLambertianReflector_ptr->getZsVect();
@@ -714,10 +724,11 @@ void Reflector::setReflectorKindString()
         reflectionKindString="Specchio";
         break;
         case(target::LAMBERTIAN_TARGET):
-            if(exendedDiffusion)
-                reflectionKindString="Lambertiana Estesa";
-                else
-                reflectionKindString="Lambertiana Puntiforme";
+        if(exendedDiffusion)
+           reflectionKindString="Lambertiana Estesa";
+        else
+           reflectionKindString="Lambertiana Puntiforme";
+
         break;
         default:
             qDebug()<< "Problems ;-)";

@@ -22,8 +22,8 @@ LaserGoggle::LaserGoggle(int _wavelength, double _pulseWidth, double _powerErg, 
     ***************************************************************************************************/
 
     buildScaleNumbers();
-    n=TABLEROWS;
-    expositionData = new double[n];
+
+    expositionData = new double[TABLEROWS];
     wavelength = _wavelength;
 
     materialCorrection=1.0;
@@ -60,8 +60,7 @@ LaserGoggle::LaserGoggle(int _wavelength, double _pulseWidth, double _powerErg, 
 LaserGoggle::LaserGoggle(int _wavelength, double _pulseWidth, double _powerErg, double _beamDiameter, double _frequency)
 {
     buildScaleNumbers();
-    n=TABLEROWS;
-    expositionData = new double[n];
+    expositionData = new double[TABLEROWS];
     wavelength = _wavelength;
 
     materialCorrection=1.0;
@@ -109,14 +108,14 @@ double* LaserGoggle::selectData(const double &wavelength, const double &applicab
         if(applicableTime>=3.0e+04)
         {
             double D180_315_Values[] = {0.01, 0.1, 1.0, 10.0, 1.0e+02, 1.0e+03, 1.0e+04, 1.0e+05, 1.0e+06, 1.0e+07};
-            for (int i=0; i<n; i++)
+            for (int i=0; i<TABLEROWS; i++)
             expositionData[i]=D180_315_Values[i];
             pulseCode="D";
         }
         if((applicableTime>=1.0e-09)&&(applicableTime<3.0e+04))
         {
             double IR180_315_Values[] = {3.0e+02, 3.0e+03, 3.0e+04, 3.0e+05,  3.0e+06, 3.0e+07, 3.0e+08, 3.0e+09, 3.0e+10,3.0e+11};
-            for (int i=0; i<n; i++)
+            for (int i=0; i<TABLEROWS; i++)
             expositionData[i]=IR180_315_Values[i];
             if (applicableTime<1.0e-06)
                 pulseCode="R";
@@ -126,7 +125,7 @@ double* LaserGoggle::selectData(const double &wavelength, const double &applicab
         if(applicableTime<1.0e-09)
         {
             double M180_315_Values[] = {3.0e+11, 3.0e+12, 3.0e+13, 3.0e+14, 3.0e+15, 3.0e+16, 3.0e+17, 3.0e+18, 3.0e+19, 3.0e+20};
-            for (int i=0; i<n; i++)
+            for (int i=0; i<TABLEROWS; i++)
             expositionData[i]=M180_315_Values[i];
             pulseCode="M";
         }
@@ -137,14 +136,14 @@ double* LaserGoggle::selectData(const double &wavelength, const double &applicab
         if(applicableTime>=5.0e-04)
         {
             double D315_1400_Values[] = { 1.0e+02, 1.0e+03, 1.0e+04, 1.0e+05, 1.0e+06, 1.0e+07, 1.0e+08, 1.0e+09, 1.0e+10, 1.0e+11};
-            for (int i=0; i<n; i++)
+            for (int i=0; i<TABLEROWS; i++)
             expositionData[i]=D315_1400_Values[i];
             pulseCode="D";
         }
         if((applicableTime>=1.0e-09)&&(applicableTime<5.0e-04))
         {
             double IR315_1400_Values[] = {0.05, 0.5 , 5, 50, 5.0e+02, 5.0e+03, 5.0e+04, 5.0e+05, 5.0e+06, 5.0e+07};
-            for (int i=0; i<n; i++)
+            for (int i=0; i<TABLEROWS; i++)
             expositionData[i]=IR315_1400_Values[i];
             if (applicableTime<1.0e-06)
                 pulseCode="R";
@@ -154,7 +153,7 @@ double* LaserGoggle::selectData(const double &wavelength, const double &applicab
         if(applicableTime<1.0e-09)
         {
             double M315_1400_Values[] = {1.5e-03, 1.5e-02, 0.15, 1.5, 15, 1.5e+02, 1.5e+03, 1.5e+04, 1.5e+05, 1.5e+06};
-            for (int i=0; i<n; i++)
+            for (int i=0; i<TABLEROWS; i++)
             expositionData[i]=M315_1400_Values[i];
             pulseCode="M";
         }
@@ -166,14 +165,14 @@ double* LaserGoggle::selectData(const double &wavelength, const double &applicab
         if(applicableTime>=1.0e-01)
         {
             double D1400_1mm_Values[] = {1.0e+04, 1.0e+05, 1.0e+06, 1.0e+07, 1.0e+08, 1.0e+09, 1.0e+10, 1.0e+11, 1.0e+12, 1.0e+13};
-            for (int i=0; i<n; i++)
+            for (int i=0; i<TABLEROWS; i++)
             expositionData[i]=D1400_1mm_Values[i];
             pulseCode="D";
         }
         if((applicableTime>=1.0e-09)&&(applicableTime<1.0e-01))
         {
             double IR1400_1mm_Values[] = { 1.0e+03, 1.0e+04, 1.0e+05, 1.0e+06, 1.0e+07, 1.0e+08, 1.0e+09, 1.0e+10, 1.0e+11, 1.0e+12};
-            for (int i=0; i<n; i++)
+            for (int i=0; i<TABLEROWS; i++)
             expositionData[i]=IR1400_1mm_Values[i];
             if (applicableTime<1.0e-06)
                 pulseCode="R";
@@ -183,7 +182,7 @@ double* LaserGoggle::selectData(const double &wavelength, const double &applicab
         if(applicableTime<1.0e-09)
         {
             double M1400_1mm_Values[] = {1.0e+12,  1.0e+13, 1.0e+14, 1.0e+15, 1.0e+16, 1.0e+17, 1.0e+18, 1.0e+19, 1.0e+20, 1.0e+21};
-            for (int i=0; i<n; i++)
+            for (int i=0; i<TABLEROWS; i++)
             expositionData[i]=M1400_1mm_Values[i];
             pulseCode="M";
         }
@@ -196,7 +195,7 @@ vector< pair <int,double> > LaserGoggle::buildDataVector(const double exposition
 {
     vector< pair <int,double> > dataVector;
     // Entering values in vector of pairs
-    for (int i=0; i<n; i++)
+    for (int i=0; i<TABLEROWS; i++)
     dataVector.push_back( make_pair(LB_Scale[i],expositionData[i]) );
 
     return dataVector;
@@ -213,10 +212,10 @@ int LaserGoggle::scaleNumber(vector< pair <int,double> > _dataVector,double myEx
 {
     int i=0;
 
-    while((_dataVector[i].second<myExpositionValue)&& (i<n-1))
+    while((_dataVector[i].second<myExpositionValue)&& (i<=TABLEROWS-1))
     i++;
 
-    if(i==n)
+    if(i==TABLEROWS)
     myScaleNumber=0;
     else
     myScaleNumber= _dataVector[i].first;
@@ -371,7 +370,7 @@ string LaserGoggle::printGoggleCode()
     myGoggleCode= wavelength_str + " " + pulseCode + " LB" + myScaleNumber_str;
     }
     else
-    myGoggleCode= "Eccede i valori specificati dalla EN207, non applicabile.";
+    myGoggleCode= "Eccede i limiti EN207";
 
     return myGoggleCode;
 }
@@ -554,7 +553,7 @@ string LaserGoggle::outputSort()
 
   void LaserGoggle::printData()
   {
-      for(int i=0; i<n; i++)
+      for(int i=0; i<TABLEROWS; i++)
           {
              cout<< "Valori EN207 selezionati: "<< expositionData[i] <<endl;
           }
@@ -563,7 +562,7 @@ string LaserGoggle::outputSort()
   void LaserGoggle::printScaleNumbers(int myLB[])
   {
    cout << "I numeri di scala sono i seguenti: \n";
-      for(int i=0; i<n; ++i)
+      for(int i=0; i<TABLEROWS; ++i)
           {
              cout<< myLB[i] <<", ";
           }

@@ -52,5 +52,9 @@ void ReflectorPropertiesDialog::on_buttonBox_accepted()
 void ReflectorPropertiesDialog::on_positioningSlider_valueChanged(int value)
 {
      positioningLabel->setText(QString::number(value));
+
+     if(reflector->getReflectorKind()==LAMBERTIAN_TARGET)
+     actualPositioningLabel->setText(QString::number(value+reflector->getLaserPhase(), 'f', 0));
+     else
      actualPositioningLabel->setText(QString::number(2*(value+reflector->getLaserPhase()), 'f', 0));
 }

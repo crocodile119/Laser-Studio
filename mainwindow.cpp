@@ -361,6 +361,10 @@ void MainWindow::newFile()
         font.setPointSize(7);
         setFont(font);
 
+        environmentModel->setState(false);
+        setPolygon();
+        setPolygonAct->setChecked(true);
+
         setupLaserProspective();
         laserSettingsAction->setChecked(true);
 
@@ -373,7 +377,7 @@ void MainWindow::newFile()
         connect(laserWindow->graphicsView->scene, SIGNAL(deselected()), this, SLOT(listDeselectionFromGraphics()));
         connect(laserWindow->graphicsView->scene, SIGNAL(footprintRelease()), this, SLOT(shadowZoneForLaser()));
         connect(laserWindow->graphicsView->scene, SIGNAL(changed(const QList<QRectF> &)),this, SLOT(setViewportRect()));
-     }
+    }
 }
 
 void MainWindow::setControls()

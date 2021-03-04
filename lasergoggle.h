@@ -72,7 +72,6 @@ private:
     double *expositionData;
     vector<pair<int, double>> dataVector;
     double myExpositionValue;
-    int n;
     double thermicExpositionValue;
     bool pulseTrain;
     double powerErg;

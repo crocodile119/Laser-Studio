@@ -296,7 +296,7 @@ QVariant Reflector::itemChange(GraphicsItemChange change,
             reflectorDistance=link->linkLenght();
             link->trackNodes();
             laserPhase=-link->LinkPhase();
-            correctPositioning=2*(positioning-laserPhase);
+            correctPositioning=2*(positioning+laserPhase);
             reflectorOperation();
             setStringDetails();
             setTextLabel();
@@ -317,7 +317,7 @@ void Reflector::laserParametersChanged()
       reflectorDistance=link->linkLenght();
       link->trackNodes();    
       laserPhase=-link->LinkPhase();
-      correctPositioning=2*(positioning-laserPhase);
+      correctPositioning=2*(positioning+laserPhase);
       reflectorOperation();
       setStringDetails();
   }

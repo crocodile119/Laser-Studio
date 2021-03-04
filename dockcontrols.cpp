@@ -2749,6 +2749,7 @@ void DockControls::setLambertianMax()
        return;
 
      lambertianMax=_lambertianMax;
+     qDebug()<<"Massimo valore della riflessione su superficie lambertiana: "<<lambertianMax;
      emit lambertianMaxChanged();
 }
 

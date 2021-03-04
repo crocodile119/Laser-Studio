@@ -518,9 +518,9 @@ void LaserSafetyMP::computeMeanPowerLambertianMax()
     powerFormulaSort= getMeanPowerFormulaSort();//Ricavo l'unità di misura dell'EMP relativo alla potenza media
 
     if(powerFormulaSort=="E")
-        forLambertianMax=powerErg/pulseWidth;// se l'EMP è espresso in irradianza si considera la potenza media
+        forLambertianMax=powerErg*PRF;// se l'EMP è espresso in irradianza si considera la potenza di picco
             else
-        forLambertianMax=meanPower*exposureTime;// altrimenti si ricava l'irradianza
+        forLambertianMax=powerErg;// altrimenti si ricava l'esposizione radiante per la durata dell'impulso medio
 
         double underroot;
     //si applica la formula pe il calcolo della NOHD

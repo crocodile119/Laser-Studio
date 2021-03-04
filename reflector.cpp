@@ -724,10 +724,15 @@ void Reflector::setReflectorKindString()
         reflectionKindString="Specchio";
         break;
         case(target::LAMBERTIAN_TARGET):
+        if(opticalDiameter==0.0)
+            reflectionKindString="Lambertiana";
+        else
+        {
         if(exendedDiffusion)
            reflectionKindString="Lambertiana Estesa";
         else
            reflectionKindString="Lambertiana Puntiforme";
+        }
 
         break;
         default:

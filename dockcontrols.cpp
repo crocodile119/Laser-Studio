@@ -2745,8 +2745,8 @@ void DockControls::setLambertianMax()
                     {
                     _lambertianMax=MyLaserMP_Pr->getLambertianMax();
                     }
-    if(_lambertianMax==lambertianMax)
-       return;
+    //if(_lambertianMax==lambertianMax)
+    //   return;
 
      lambertianMax=_lambertianMax;
      qDebug()<<"Massimo valore della riflessione su superficie lambertiana: "<<lambertianMax;

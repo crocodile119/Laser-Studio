@@ -598,7 +598,7 @@ void Reflector::reflectorOperation()
             {
 
              MyLambertianReflector_ptr=MyReflector;
-
+             //MyLambertianReflector_ptr->setLambertianMax(lambertianMax);
              MyLambertianReflector_ptr->setLaserBeamDiameter(laserBeamDiameter);
              MyLambertianReflector_ptr->setLaserDivergence(divergence);
              MyLambertianReflector_ptr->setLaserEMP(laserEMP);

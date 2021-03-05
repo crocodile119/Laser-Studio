@@ -351,6 +351,7 @@ void MainWindow::newFile()
         laserModel->addDescriptor(*laserpoint);
         laserSelectionModel->select(laserModel->index(0, 0), QItemSelectionModel::Select);
         setControls();
+        laserWindow->myDockControls->setVIS();
 
         setCurrentFile("");
 
@@ -595,6 +596,7 @@ void MainWindow::propertyFromList()
     dialog.exec();
     if(dialog.result()==QDialog::Accepted)
      {
+        setLambertianMaxForReflector();
         setDNRO_ForLaserpoint();
         setDNRC_ForLaserpoint();
         setDNRO_ForReflector();
@@ -620,6 +622,7 @@ void MainWindow::setCondMeteo()
     dialog.exec();
     if(dialog.result()==QDialog::Accepted)
     {
+    setLambertianMaxForReflector();
     setDNRO_ForLaserpoint();
     setDNRC_ForLaserpoint();
     setDNRO_ForReflector();
@@ -632,6 +635,7 @@ void MainWindow::atmosphericEffects()
     bool atmEffects= addAtmosphericEffectsAct->isChecked();
     atmosphericEffectsOn(atmEffects);
 
+    setLambertianMaxForReflector();
     setDNRO_ForLaserpoint();
     setDNRC_ForLaserpoint();
     setDNRO_ForReflector();
@@ -659,6 +663,7 @@ void MainWindow::scintillation()
     bool scintillation= addScintillationAct->isChecked();
     scintillationOn(scintillation);
 
+    setLambertianMaxForReflector();
     setDNRO_ForLaserpoint();
     setDNRC_ForLaserpoint();
     setDNRO_ForReflector();
@@ -693,7 +698,8 @@ void MainWindow::properties()
         LaserPropertiesDialog dialog(laserpoint, this);
         dialog.exec();
             if(dialog.result()==QDialog::Accepted)
-             {
+             {             
+                setLambertianMaxForReflector();
                 setDNRO_ForLaserpoint();
                 setDNRC_ForLaserpoint();
                 setDNRO_ForReflector();
@@ -4073,6 +4079,7 @@ void MainWindow::setLambertianMaxForReflector()
     if(reflector==0)
         return;
 
+    double myLambertianMax=attenuatedDistance(laserWindow->myDockControls->getLambertianMax());
     QList<pair<Reflector*, int>>::iterator myIterator; // iterator
     myIterator = myReflectors.begin();
     while (myIterator != myReflectors.end() )
@@ -4080,10 +4087,7 @@ void MainWindow::setLambertianMaxForReflector()
         reflector=myIterator->first;
         if(reflector->getReflectorKind()==LAMBERTIAN_TARGET)
             {
-            double myLambertianMax;
-            myLambertianMax=laserWindow->myDockControls->getLambertianMax();
             reflector->setLambertianMax(myLambertianMax);
-            qDebug()<< "Lambertian max: " << laserWindow->myDockControls->getLambertianMax();
             reflector->reflectorOperation();
             }
         ++myIterator;

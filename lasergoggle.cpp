@@ -204,7 +204,7 @@ vector< pair <int,double> > LaserGoggle::buildDataVector(const double exposition
 
 double LaserGoggle::laserIrrRadCorrected(double _laserOutput)
 {
-    myExpositionValue=pulseTrainCorrectionK()*pulseTrainCorrectionKi()*laserIrrRad(_laserOutput);
+    myExpositionValue=pulseTrainCorrectionK()*get_Ki()*laserIrrRad(_laserOutput);
     return myExpositionValue;
 }
 
@@ -448,7 +448,7 @@ string LaserGoggle::outputSort()
   }
 
 
-  double LaserGoggle::pulseTrainCorrectionKi()
+  double LaserGoggle::get_Ki()
   {
       /* Restituisce il valore di ki*/
       return ki;

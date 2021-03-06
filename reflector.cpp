@@ -808,6 +808,7 @@ void Reflector::setLambertianMax(const double _lambertianMax)
         return;
 
     lambertianMax=_lambertianMax;
+    laserParametersChanged();
 }
 
 bool Reflector::isExendedDiffusion()

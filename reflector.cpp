@@ -296,7 +296,12 @@ QVariant Reflector::itemChange(GraphicsItemChange change,
             reflectorDistance=link->linkLenght();
             link->trackNodes();
             laserPhase=-link->LinkPhase();
+
+            if(myTarget==LAMBERTIAN_TARGET)
+            correctPositioning=positioning+laserPhase;
+                else
             correctPositioning=2*(positioning+laserPhase);
+
             reflectorOperation();
             setStringDetails();
             setTextLabel();
@@ -317,7 +322,12 @@ void Reflector::laserParametersChanged()
       reflectorDistance=link->linkLenght();
       link->trackNodes();    
       laserPhase=-link->LinkPhase();
+
+      if(myTarget==LAMBERTIAN_TARGET)
+      correctPositioning=positioning+laserPhase;
+          else
       correctPositioning=2*(positioning+laserPhase);
+
       reflectorOperation();
       setStringDetails();
   }
@@ -588,7 +598,7 @@ void Reflector::reflectorOperation()
             {
 
              MyLambertianReflector_ptr=MyReflector;
-
+             //MyLambertianReflector_ptr->setLambertianMax(lambertianMax);
              MyLambertianReflector_ptr->setLaserBeamDiameter(laserBeamDiameter);
              MyLambertianReflector_ptr->setLaserDivergence(divergence);
              MyLambertianReflector_ptr->setLaserEMP(laserEMP);
@@ -635,7 +645,7 @@ void Reflector::reflectorOperation()
                }
              else
              {
-                 reflectionKindString="Lambertiana Puntiforme";
+                 reflectionKindString="Lambertiana";
                  MyLambertianReflector_ptr->computeTrigonometricReflection();
                  MyLambertianReflector_ptr->computeZs(0.0, materialCoeff);
                  myZsVector=MyLambertianReflector_ptr->getZsVect();
@@ -714,10 +724,16 @@ void Reflector::setReflectorKindString()
         reflectionKindString="Specchio";
         break;
         case(target::LAMBERTIAN_TARGET):
-            if(exendedDiffusion)
-                reflectionKindString="Lambertiana Estesa";
-                else
-                reflectionKindString="Lambertiana Puntiforme";
+        if(opticalDiameter==0.0)
+            reflectionKindString="Lambertiana";
+        else
+        {
+        if(exendedDiffusion)
+           reflectionKindString="Lambertiana Estesa";
+        else
+           reflectionKindString="Lambertiana Puntiforme";
+        }
+
         break;
         default:
             qDebug()<< "Problems ;-)";
@@ -752,6 +768,7 @@ void Reflector::setLaserEMP(const double& _laserEMP)
     if(_laserEMP==laserEMP)
         return;
 
+    laserParametersChanged();
     laserEMP=_laserEMP;
 }
 
@@ -766,6 +783,7 @@ void Reflector::setLaserBeamDiameter(const double& _laserBeamDiameter)
         return;
 
     laserBeamDiameter=_laserBeamDiameter;
+    laserParametersChanged();
 }
 
 double Reflector::getLaserBeamDiameter()const
@@ -779,6 +797,7 @@ void Reflector::setLaserPowerErg(const double& _laserPowerErg)
         return;
 
     laserPowerErg=_laserPowerErg;
+    laserParametersChanged();
 }
 
 double Reflector::getLaserPowerErg()const
@@ -792,6 +811,7 @@ void Reflector::setLambertianMax(const double _lambertianMax)
         return;
 
     lambertianMax=_lambertianMax;
+    laserParametersChanged();
 }
 
 bool Reflector::isExendedDiffusion()

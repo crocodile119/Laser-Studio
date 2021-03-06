@@ -70,7 +70,6 @@ DockControls::DockControls(QWidget *parent, DockResults *_dockResults, DockEffec
 
     ui->pulseControl->setEnabled(false);
     ui->prfControl->setEnabled(false);
-    ui->peakControl->setEnabled(false);
 
     /************************************************************************************************
      * Imposto la base dei tempi nel funzionamento Continuos Wave all'avvio. La base dei tempi è    *
@@ -247,10 +246,7 @@ void DockControls::on_wavelengthScrollBar_valueChanged(int value)
      * Memorizza il vettore corrispondente in dataVector ed       *
      * aggiorna il grafico                                        *
      **************************************************************/
-
-    enablePeakControl();
-    effectivePowerErgPeak();
-    modeLockingPeak();
+    modeLockedPeak();
 
     fetchDataVector();
     fetchLaserOutput();
@@ -293,9 +289,7 @@ void DockControls::on_wavelengthScrollBar_valueChanged(int value)
     myLaserGoggle->setWavelength(wavelength);
     myLaserGoggle->setPulseWidth(pulseWidth);
 
-    enablePeakControl();
-    effectivePowerErgPeak();
-    modeLockingPeak();
+    modeLockedPeak();
 
     fetchLaserOutput();
 
@@ -376,10 +370,7 @@ void DockControls::on_wavelengthScrollBar_valueChanged(int value)
      * Memorizza il vettore corrispondente in dataVector ed       *
      * aggiorna il grafico                                        *
      **************************************************************/
-
-    enablePeakControl();
-    effectivePowerErgPeak();
-    modeLockingPeak();
+    modeLockedPeak();
 
     fetchLaserOutput();
     fetchDataVector();
@@ -530,49 +521,6 @@ void DockControls::on_T_SkinControl_valueChanged()
     emit modified();//Per salvataggio file
 }
 
-void DockControls::on_peakControl_valueChanged()
-{
-    int exponent=ui->peakControl->getExponent();
-    qDebug()<< "Esponente di peakControl: "<<exponent;
-    double mantissa=ui->peakControl->getMantissa();
-    powerErgPeak=mantissa*powf(10, exponent);
-
-    enablePeakControl();
-    effectivePowerErgPeak();
-    modeLockingPeak();
-
-    fetchDataVector();
-    fetchLaserOutput();
-
-        /**************************************************************
-         * Prelevo i dati relativi al laser per tracciare il grafico  *
-         * relativo ai protettori ottici per l'oggetto myLaserGoggle *                          *
-         **************************************************************/
-
-        /**************************************************************
-         * La funzione fetchDataVector() va invocata quando cambia    *
-         * la frequenza o la durata dell'impulso.                     *                                 *
-         * Seleziona il campo corrispondente della Tabella B.2 EN207  *
-         * per l'oggetto myLaserGoggle.                               *
-         * Memorizza il vettore corrispondente in dataVector ed       *
-         * aggiorna il grafico                                        *
-         **************************************************************/
-
-        /*************************************************
-         * Visualizzazione dati relativi a myLaserGoggle *
-         *************************************************/
-        displayLaserOutput();
-        displayNumberOfPulse();
-        displayCoefficient_k();
-        displayCoefficient_ki();
-        display_ni_max();
-
-        /******************
-         * Emetto segnali *
-         ******************/
-        emit modified();//Per salvataggio file
-}
-
 void DockControls::on_powerErgControl_valueChanged()
 {
    /********************************************
@@ -603,9 +551,7 @@ void DockControls::on_powerErgControl_valueChanged()
 
     MyLaserClassCW_Pr->setPowerErg(powerErg);
 
-    enablePeakControl();
-    effectivePowerErgPeak();
-    modeLockingPeak();
+    modeLockedPeak();
     }
     else
 
@@ -622,9 +568,7 @@ void DockControls::on_powerErgControl_valueChanged()
 
     MyLaserClassSP_Pr->setPowerErg(powerErg);
 
-    enablePeakControl();
-    effectivePowerErgPeak();
-    modeLockingPeak();
+    modeLockedPeak();
     }
     else
 
@@ -641,9 +585,7 @@ void DockControls::on_powerErgControl_valueChanged()
         MyLaserSkinMP_Pr->setPowerErg(powerErg);
         MyLaserClassMP_Pr->setPowerErg(powerErg);
 
-        enablePeakControl();
-        effectivePowerErgPeak();
-        modeLockingPeak();
+        modeLockedPeak();
 
     /********************************************************************
     * Imposto il valore della potenza media nell'oggetto myDLaserGoggle *
@@ -709,8 +651,8 @@ void DockControls::on_powerErgControl_valueChanged()
     ********************************************************/
     setOpticalDistance();
     setSkinDistances();
-    setLambertianMax();
     setPowerErgForEMP();
+    setLambertianMax();
 
     /******************
      * Emetto segnali *
@@ -845,9 +787,7 @@ void DockControls::on_pulseControl_valueChanged()
 
              MyLaserClassSP_Pr->setPulseWidth(pulseWidth);
 
-             enablePeakControl();
-             effectivePowerErgPeak();
-             modeLockingPeak();
+             modeLockedPeak();
 
              /**************************************************************
               * La funzione fetchDataVector() va invocata quando cambia    *
@@ -885,9 +825,7 @@ void DockControls::on_pulseControl_valueChanged()
 
 			 QString scaleNumberString = QString::fromStdString(myLaserGoggle->goggleMark());
 
-             enablePeakControl();
-             effectivePowerErgPeak();
-             modeLockingPeak();
+             modeLockedPeak();
 
 	/**************************************************************
      * La funzione fetchDataVector() va invocata quando cambia    *
@@ -1083,9 +1021,7 @@ void DockControls::on_prfControl_valueChanged()
 
     myDLaserGoggle->setPowerErg(myLaserGoggle->getPowerErg()*prf);
 
-    enablePeakControl();
-    effectivePowerErgPeak();
-    modeLockingPeak();
+    modeLockedPeak();
 
     /*************************************************************
      * Seleziono il campo corrispondente della Tabella B.2 EN207 *
@@ -1178,9 +1114,7 @@ void DockControls::on_beamDiameterControl_valueChanged()
     MyLaserClassCW_Pr->setBeamDiameter(beamDiameter);
 	myLaserGoggle->setBeamDiameter(beamDiameter);
 
-    enablePeakControl();
-    effectivePowerErgPeak();
-    modeLockingPeak();
+    modeLockedPeak();
     }
     else
 		
@@ -1197,9 +1131,7 @@ void DockControls::on_beamDiameterControl_valueChanged()
     MyLaserClassSP_Pr->setBeamDiameter(beamDiameter);
 	myLaserGoggle->setBeamDiameter(beamDiameter);
 
-    enablePeakControl();
-    effectivePowerErgPeak();
-    modeLockingPeak();
+    modeLockedPeak();
 	}
 		
     /*******************
@@ -1216,9 +1148,7 @@ void DockControls::on_beamDiameterControl_valueChanged()
 	myLaserGoggle->setBeamDiameter(beamDiameter);
     myDLaserGoggle->setBeamDiameter(beamDiameter);
 
-    enablePeakControl();
-    effectivePowerErgPeak();
-    modeLockingPeak();
+    modeLockedPeak();
 	
     /******************************************************************************************	
 	* Invoco le funzioni per il prelievo dei dati e il tracciamento dei grafici per l'oggetto *
@@ -2260,9 +2190,7 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
 	* Invoco le funzioni per il prelievo dei dati e il tracciamento dei grafici per l'oggetto *
 	* myLaserGoggle                                                                          *
 	******************************************************************************************/
-    enablePeakControl();
-    effectivePowerErgPeak();
-    modeLockingPeak();
+    modeLockedPeak();
     fetchDataVector();
     fetchLaserOutput();
     displayLaserOutput();
@@ -2337,9 +2265,7 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
 	* Invoco le funzioni per il prelievo dei dati e il tracciamento dei grafici per l'oggetto *
 	* myLaserGoggle                                                                          *
 	******************************************************************************************/
-    enablePeakControl();
-    effectivePowerErgPeak();
-    modeLockingPeak();
+    modeLockedPeak();
     fetchDataVector();
     fetchLaserOutput();
     displayLaserOutput();
@@ -2461,9 +2387,7 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
 	* Invoco le funzioni per il prelievo dei dati e il tracciamento dei grafici per l'oggetto *
 	* myLaserGoggle                                                                          *
 	******************************************************************************************/
-    enablePeakControl();
-    effectivePowerErgPeak();
-    modeLockingPeak();
+    modeLockedPeak();
     fetchLaserOutput();
     fetchDataVector();
     displayLaserOutput();
@@ -2850,11 +2774,6 @@ void DockControls::setDialControls()
 
     ui->checkGaussianBeam->setChecked(true);
 
-    ui->peakControl->setTitle(tr("P<sub>picco</sub> [W]"));
-    ui->peakControl->setMinimumExponent(1);
-    ui->peakControl->setMaximumExponent(15);
-    ui->peakControl->setValue(8.0e+00);
-
     ui->internalWaist_checkBox->setChecked(false);
 }
 
@@ -3112,7 +3031,7 @@ double DockControls::getDOpticalDensity()
     return dOpticalDensity;
 }
 
-bool DockControls::isModeLocking()
+bool DockControls::isModeLocked()
 {
     bool modeLocking=false;
 
@@ -3128,23 +3047,11 @@ bool DockControls::isModeLocking()
     return modeLocking;
 }
 
-void DockControls::effectivePowerErgPeak()
-{
-    if(isModeLocking())
-    {
-        double peak=ui->peakControl->getScientificNumber();
 
-        if((wavelength>315)and(wavelength<400))
-                powerErgPeak=peak*pulseWidth;
-            else
-                powerErgPeak=peak;
-    }
-}
-
-void DockControls::modeLockingPeak()
+void DockControls::modeLockedPeak()
 {
-    if(isModeLocking()){
-           effectivePowerErg=powerErgPeak;
+    if(isModeLocked()){
+           effectivePowerErg=powerErg/pulseWidth;
            }
        else
            {
@@ -3152,10 +3059,6 @@ void DockControls::modeLockingPeak()
            }
 }
 
-void DockControls::enablePeakControl()
-{
-    ui->peakControl->setEnabled(isModeLocking());
-}
 
 void DockControls::on_checkGaussianBeam_clicked(bool checked)
 {
@@ -3166,6 +3069,7 @@ void DockControls::on_checkGaussianBeam_clicked(bool checked)
         beamCorrection=2.5;
 
     on_powerErgControl_valueChanged();
+
 }
 
 void DockControls::set_LEA_Widgets()
@@ -4055,10 +3959,7 @@ if(((wavelength>315) && (wavelength<=1e+06)))//base dei tempi 5 s
      * Memorizza il vettore corrispondente in dataVector ed       *
      * aggiorna il grafico                                        *
      **************************************************************/
-
-    enablePeakControl();
-    effectivePowerErgPeak();
-    modeLockingPeak();
+    modeLockedPeak();
 
     fetchLaserOutput();
     fetchDataVector();

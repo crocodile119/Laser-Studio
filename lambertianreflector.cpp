@@ -67,7 +67,7 @@ void LambertianReflector::computeZs(double _lambertianMax, double reflectionCoef
         myZsAngle=i;
         myRho_s=iterator->second;
                 sqrt_myRho_s=sqrt(myRho_s);
-                        myZsVector_second=sqrt_myRho_s*_lambertianMax*reflectionCoeff;
+                myZsVector_second=sqrt_myRho_s*_lambertianMax*pow(reflectionCoeff,0.5);
             myZsVector.push_back(make_pair(myZsAngle, myZsVector_second));
          i++;
       }

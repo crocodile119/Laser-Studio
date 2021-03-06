@@ -30,13 +30,12 @@ public:
     vector< pair <int,double> > getDataVector();
     int scaleNumber(vector< pair <int,double> > dataVector, double);
     double pulseTrainCorrectionK();
-    double pulseTrainCorrectionKi();
+    double get_Ki();
     double frequencyCorrection();
     double laserIrrRad(double powerErg);
     double meanPower();
     int numberOfPulse();
     int* buildScaleNumbers();
-    LaserGoggle* getLaserGoggleForD();
     double laserIrrRadCorrected(double);
     void prepareGoggleMark();
     string goggleMark(int, double, double, double, double);
@@ -60,7 +59,6 @@ public:
     double getCoefficient_ki()const;
     double getCoefficient_k()const;
     double get_ni_max()const;
-    string getKindOfGoggle();
     string getCodeUnit();
     string outputSort();
     void printData();
@@ -72,7 +70,6 @@ private:
     double *expositionData;
     vector<pair<int, double>> dataVector;
     double myExpositionValue;
-    int n;
     double thermicExpositionValue;
     bool pulseTrain;
     double powerErg;

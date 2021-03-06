@@ -107,10 +107,8 @@ public:
     double getOpticalDensity();
     double getDOpticalDensity();
     int get_n_laser()const;
-    bool isModeLocking();
-    void effectivePowerErgPeak();
-    void modeLockingPeak();
-    void enablePeakControl();
+    bool isModeLocked();
+    void modeLockedPeak();
 	
 	//funzioni membro lea
     void set_LEA_Widgets();
@@ -134,7 +132,6 @@ private slots:
     void on_T_SkinControl_valueChanged();
     void on_teControl_valueChanged();
     void on_wavelengthScrollBar_valueChanged(int value);
-    void on_peakControl_valueChanged();
     void setBeamDiameter();
     void setEMP();
     void setPowerErgForEMP();

@@ -4088,7 +4088,6 @@ void MainWindow::setLambertianMaxForReflector()
         if(reflector->getReflectorKind()==LAMBERTIAN_TARGET)
             {
             reflector->setLambertianMax(myLambertianMax);
-            reflector->reflectorOperation();
             }
         ++myIterator;
         }
@@ -4257,7 +4256,6 @@ void MainWindow::setReflectorEMP_ForDiffusion()
         if(reflector->getReflectorKind()==LAMBERTIAN_TARGET)
             {
             reflector->setLaserEMP(myEMP);
-            reflector->reflectorOperation();
             }
         ++myIterator;
         }
@@ -4279,7 +4277,6 @@ void MainWindow::setReflectorPowerErgForDiffusion()
         if(reflector->getReflectorKind()==LAMBERTIAN_TARGET)
             {
             reflector->setLaserPowerErg(laserWindow->myDockControls->getPowerErgForEMP());
-            reflector->reflectorOperation();
             }
         ++myIterator;
         }
@@ -4300,7 +4297,6 @@ void MainWindow::setReflectorBeamDiameterForDiffusion()
         if(reflector->getReflectorKind()==LAMBERTIAN_TARGET)
             {
             reflector->setLaserBeamDiameter(beamDiameter);
-            reflector->reflectorOperation();
             }
         ++myIterator;
         }

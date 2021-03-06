@@ -768,6 +768,7 @@ void Reflector::setLaserEMP(const double& _laserEMP)
     if(_laserEMP==laserEMP)
         return;
 
+    laserParametersChanged();
     laserEMP=_laserEMP;
 }
 
@@ -782,6 +783,7 @@ void Reflector::setLaserBeamDiameter(const double& _laserBeamDiameter)
         return;
 
     laserBeamDiameter=_laserBeamDiameter;
+    laserParametersChanged();
 }
 
 double Reflector::getLaserBeamDiameter()const
@@ -795,6 +797,7 @@ void Reflector::setLaserPowerErg(const double& _laserPowerErg)
         return;
 
     laserPowerErg=_laserPowerErg;
+    laserParametersChanged();
 }
 
 double Reflector::getLaserPowerErg()const

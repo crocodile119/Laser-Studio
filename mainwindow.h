@@ -178,6 +178,7 @@ private slots:
     void updateLabList();
     void updateLaserList();
     void updateBinocularList();
+    void updateForCondMeteo();
     void selectFromList();
     void selectBinocularFromList();
     void propertyFromList();
@@ -186,6 +187,7 @@ private slots:
     void setLaserpointShapePathForBinoculars();
     void setDistanceForFootprint();
     void shadowZoneForLaser();
+    void meteoWidgets(bool, bool, bool);
 
     //scene
 

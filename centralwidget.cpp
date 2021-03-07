@@ -24,6 +24,7 @@
 #include "footprintobject.h"
 
     const double CentralWidget::SCINTILLATION_CONST= 2.662;
+    const int CentralWidget::GOOD_VISIBILITY_DISTANCE= 23000;
     const double CentralWidget::NEPERO_N=2.7182818284590452353602874713527;
 
 CentralWidget::CentralWidget(QWidget *parent) :

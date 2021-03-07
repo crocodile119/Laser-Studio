@@ -355,6 +355,8 @@ void MainWindow::newFile()
 
         setCurrentFile("");
 
+        laserWindow->setMeteoRange(CentralWidget::GOOD_VISIBILITY_DISTANCE);
+        meteoWidgets(true, false, false);
         laserpoint->setSelected(true);
         laserWindow->graphicsView->centerOn(laserpoint->pos());
 
@@ -595,14 +597,7 @@ void MainWindow::propertyFromList()
     LaserPropertiesDialog dialog(laserpoint, this);
     dialog.exec();
     if(dialog.result()==QDialog::Accepted)
-     {
-        setLambertianMaxForReflector();
-        setDNRO_ForLaserpoint();
-        setDNRC_ForLaserpoint();
-        setDNRO_ForReflector();
-        setDNRO_ForBinocular();
-        setDNRO_ForFootprint();
-     }
+        updateForCondMeteo();
 }
 
 void MainWindow::environmentFromList()
@@ -621,26 +616,24 @@ void MainWindow::setCondMeteo()
     AtmosphericEffectsDialog dialog(laserWindow, laserWindow->myDockControls->getWavelength());
     dialog.exec();
     if(dialog.result()==QDialog::Accepted)
-    {
-    setLambertianMaxForReflector();
-    setDNRO_ForLaserpoint();
-    setDNRC_ForLaserpoint();
-    setDNRO_ForReflector();
-    setDNRO_ForBinocular();
-    }
+        updateForCondMeteo();
 }
 
-void MainWindow::atmosphericEffects()
+void MainWindow::updateForCondMeteo()
 {
-    bool atmEffects= addAtmosphericEffectsAct->isChecked();
-    atmosphericEffectsOn(atmEffects);
-
     setLambertianMaxForReflector();
     setDNRO_ForLaserpoint();
     setDNRC_ForLaserpoint();
     setDNRO_ForReflector();
     setDNRO_ForBinocular();
     setDNRO_ForFootprint();
+}
+
+void MainWindow::atmosphericEffects()
+{
+    bool atmEffects= addAtmosphericEffectsAct->isChecked();
+    atmosphericEffectsOn(atmEffects);
+    updateForCondMeteo();
 
     if(footprint!=nullptr)
       {
@@ -662,13 +655,7 @@ void MainWindow::scintillation()
 {
     bool scintillation= addScintillationAct->isChecked();
     scintillationOn(scintillation);
-
-    setLambertianMaxForReflector();
-    setDNRO_ForLaserpoint();
-    setDNRC_ForLaserpoint();
-    setDNRO_ForReflector();
-    setDNRO_ForBinocular();
-    setDNRO_ForFootprint();
+    updateForCondMeteo();
 
     if(footprint!=nullptr)
       {
@@ -697,15 +684,8 @@ void MainWindow::properties()
     if (laserpoint) {
         LaserPropertiesDialog dialog(laserpoint, this);
         dialog.exec();
-            if(dialog.result()==QDialog::Accepted)
-             {             
-                setLambertianMaxForReflector();
-                setDNRO_ForLaserpoint();
-                setDNRC_ForLaserpoint();
-                setDNRO_ForReflector();
-                setDNRO_ForBinocular();
-                setDNRO_ForFootprint();
-             }
+        if(dialog.result()==QDialog::Accepted)
+          updateForCondMeteo();
         }
         else
         if(reflector)
@@ -3864,33 +3844,32 @@ void MainWindow::createToolBars()
 
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 {
-        Q_UNUSED(*watched);
-        if (event->type() == QEvent::MouseMove) {
+    Q_UNUSED(*watched);
+    if (event->type() == QEvent::MouseMove) {
 
-        double xCoordinate;
-        double yCoordinate;
+    double xCoordinate;
+    double yCoordinate;
 
-        xCoordinate=laserWindow->graphicsView->getMousePosition().x();
-        yCoordinate=laserWindow->graphicsView->getMousePosition().y();
+    xCoordinate=laserWindow->graphicsView->getMousePosition().x();
+    yCoordinate=laserWindow->graphicsView->getMousePosition().y();
 
-        if(scale>=15)
-        {
-
-        QString xCoordinateString=QString::number(xCoordinate, 'f', 2);
-        QString yCoordinateString=QString::number(yCoordinate, 'f', 2);
-        laserWindow->label->setText(QString("Coordinate del punto (%1,%2)")
-                                        .arg(xCoordinateString)
-                                        .arg(yCoordinateString));
-        }
-        else
-        {
-            QString xCoordinateString=QString::number(xCoordinate, 'f', 0);
-            QString yCoordinateString=QString::number(yCoordinate, 'f', 0);
-            laserWindow->label->setText(QString("Coordinate del punto (%1,%2)")
-                                            .arg(xCoordinateString)
-                                            .arg(yCoordinateString));
-        }
+    if(scale>=15)
+    {
+    QString xCoordinateString=QString::number(xCoordinate, 'f', 2);
+    QString yCoordinateString=QString::number(yCoordinate, 'f', 2);
+    laserWindow->label->setText(QString("Coordinate del punto (%1,%2)")
+                                     .arg(xCoordinateString)
+                                     .arg(yCoordinateString));
     }
+    else
+    {
+    QString xCoordinateString=QString::number(xCoordinate, 'f', 0);
+    QString yCoordinateString=QString::number(yCoordinate, 'f', 0);
+    laserWindow->label->setText(QString("Coordinate del punto (%1,%2)")
+                                     .arg(xCoordinateString)
+                                     .arg(yCoordinateString));
+    }
+  }
     return false;
 }
 
@@ -4647,6 +4626,7 @@ void MainWindow::makeSceneOfSavedItems(){
 
      if(laserWindow->isLabRoomInserted())
      {
+        bool meteoWidgetsON=false;
         myLabRoom=new LabRoom(labRoomRect);
         myLabRoom->setPos(labRoomPos);
         laserWindow->graphicsView->scene->addItem(myLabRoom);
@@ -4655,10 +4635,27 @@ void MainWindow::makeSceneOfSavedItems(){
         environmentModel->addDescriptor(*myLabRoom);
         environmentModel->setState(true);
 
+        meteoWidgets(meteoWidgetsON, meteoWidgetsON, meteoWidgetsON);
+        updateForCondMeteo();
+
+        addScintillationAct->setEnabled(false);
+        addScintillationAct->setChecked(false);
+        addAtmosphericEffectsAct->setEnabled(false);
+        addAtmosphericEffectsAct->setChecked(false);
+        changeMeteoAct->setEnabled(false);
+
         addLabAct->setChecked(true);
      }
      else
      {
+
+       bool isAtmEffects=laserWindow->getAtmEffectsBool();
+       bool isScintillation=laserWindow->getScintillationBool();
+
+       meteoWidgets(true, isAtmEffects, isScintillation);
+
+       atmosphericEffectsOn(isAtmEffects);
+       scintillationOn(isScintillation);
        environmentModel->setState(false);
        setPolygonAct->setChecked(true);
      }
@@ -4732,6 +4729,17 @@ void MainWindow::addBinocularList()
 void MainWindow::addLabList()
 {
     environmentModel->addDescriptor(*myLabRoom);
+}
+
+void MainWindow::meteoWidgets(bool meteoEnabled, bool isAtmEffects, bool isScintillation)
+{
+    atmosphericEffectsOn(isAtmEffects);
+    scintillationOn(isScintillation);
+    addScintillationAct->setEnabled(meteoEnabled);
+    addScintillationAct->setChecked(isScintillation);
+    addAtmosphericEffectsAct->setEnabled(meteoEnabled);
+    addAtmosphericEffectsAct->setChecked(isAtmEffects);
+    changeMeteoAct->setEnabled(meteoEnabled);
 }
 
 void MainWindow::goToSelectedReflector()
@@ -5026,11 +5034,9 @@ void MainWindow::addRoom()
     laserWindow->graphicsView->scene->addItem(myLabRoom);
     labroomList.append(myLabRoom);
 
-    addScintillationAct->setEnabled(false);
-    addScintillationAct->setChecked(false);
-    addAtmosphericEffectsAct->setEnabled(false);
-    addAtmosphericEffectsAct->setChecked(false);
-    changeMeteoAct->setEnabled(false);
+    bool meteoWidgetsON=false;
+    meteoWidgets(meteoWidgetsON, meteoWidgetsON, meteoWidgetsON);
+    updateForCondMeteo();
 
     connect(myLabRoom, SIGNAL(xChanged()), this, SLOT(updateLabList()));
     connect(myLabRoom, SIGNAL(xChanged()), this, SLOT(updateLabList()));

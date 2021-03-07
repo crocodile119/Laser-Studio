@@ -49,6 +49,7 @@ public:
 
     static const int DOCKGOGGLEMINIMUN;
     static const int DOCKGOGGLEMAXIMUN;
+    static const double MODELOCKED_LIMIT;
 
     void fetchDataVector();
     void fetchDDataVector();

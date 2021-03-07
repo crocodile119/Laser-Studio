@@ -12,6 +12,7 @@
 
 const int DockControls::DOCKGOGGLEMINIMUN=405;
 const int DockControls::DOCKGOGGLEMAXIMUN=550;
+const double DockControls::MODELOCKED_LIMIT=pow(10,-9);
 
 DockControls::DockControls(QWidget *parent, DockResults *_dockResults, DockEffects *_dockEffects,
                            DockSkin *_dockSkin, DockGoggle *_dockGoggle, DockLea* _dockLea) : QDockWidget(parent), ui(new Ui::DockControls)
@@ -2952,7 +2953,7 @@ else
 else
    if(n_laser==2)
    {
-   double energyExposure;
+   double exposure;
    double timeForPulse;
 
    MyLaserMP_Pr->computeEMP_ForOD();
@@ -2975,12 +2976,21 @@ else
 
    MyLaserMP_Pr->computeBeamArea();
    beamArea=MyLaserMP_Pr->getBeamArea();
-   energyExposure=powerErg/beamArea;
+
+   /****************************************************************************
+    * L'EMP da considerare nel caso di laser MODELOCKED è riferito             *
+    * alla potenza di picco pertanto nel caso in cui la lunghezza d'onda sia   *
+    * > 1400 e < 400 nm e che t< 10^9 l'uscita del laser va calcolata come Q/t *
+    ****************************************************************************/
+  if((wavelength<=1400)and(wavelength>=400)and (pulseWidth>=MODELOCKED_LIMIT))
+  exposure=powerErg/beamArea;
+  else
+  exposure=powerErg/(beamArea*timeForPulse);
 
     if(formulaSort=="E")
-        opticalDensityRatio=energyExposure/(firstAndThirdEMP*timeForPulse);
+        opticalDensityRatio=exposure/(firstAndThirdEMP*timeForPulse);
     else if(formulaSort=="H")
-        opticalDensityRatio=energyExposure/firstAndThirdEMP;
+        opticalDensityRatio=exposure/firstAndThirdEMP;
 
     opticalDensity=std::log10(opticalDensityRatio);
     }

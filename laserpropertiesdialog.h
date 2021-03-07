@@ -15,7 +15,7 @@ public:
 private slots:
     void on_buttonBox_accepted();
     void on_filterCheckBox_stateChanged(int arg1);
-
+    double computePillowAreas(const int &);
     void on_installationComboBox_currentIndexChanged(int index);
 
 private:

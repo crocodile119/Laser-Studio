@@ -32,9 +32,9 @@ void LaserPropertiesDialog::on_buttonBox_accepted()
     laserpoint->setPos(xSpinBox->value(), ySpinBox->value());
     laserpoint->setInstallationIndex(installationComboBox->currentIndex());
     laserpoint->setAperture(areaSpinBox->value());
+    laserpoint->computePillowAreas();
     laserpoint->setFilterOn(filterCheckBox->checkState());
     laserpoint->setTrasmittance(transmittanceSpinBox->value());
-    laserpoint->computePillowAreas();
     laserpoint->update();
 
     QDialog::accept();
@@ -47,7 +47,29 @@ void LaserPropertiesDialog::on_filterCheckBox_stateChanged(int arg1)
 
 void LaserPropertiesDialog::on_installationComboBox_currentIndexChanged(int index)
 {
-    laserpoint->setInstallationIndex(index);
-    laserpoint->computePillowAreas();
-    pillowLabel->setText(QString::number(laserpoint->getPillow()));
+    pillowLabel->setText(QString::number(computePillowAreas(index)));
+}
+
+double LaserPropertiesDialog::computePillowAreas(const int & index)
+{
+    double pillow;
+    switch(index)
+    {
+       case 0 :
+       pillow= 0.11465;
+       break;
+
+       case 1 :
+       pillow= 0.286624;
+       break;
+
+       case 2 :
+       pillow= 0.573248;
+       break;
+
+       case 3 :
+       pillow= 1.714795;
+       break;
+    }
+    return pillow;
 }

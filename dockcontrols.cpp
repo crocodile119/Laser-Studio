@@ -906,6 +906,7 @@ void DockControls::displayTimeBase()
             dockGoggle->ui->timeBaseLabel->setText(QString::number(LaserGoggle::TIMEBASE));
         }
     }
+    dockGoggle->ui->kindOfLaserLabel->setText(QString::fromStdString(myLaserGoggle->getLaserPulseOperation()));
 }
 
 void DockControls::displayDTimeBase()

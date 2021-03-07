@@ -1861,8 +1861,11 @@ QString kindOfLaser;
         QString title = fields[0];
         QString body = fields[1];
 
+    if(body==" ")
+            html +="<tr>\n<td colspan=\"2\"><i>" + title + "</i></td>\n</tr>\n";
+    else{
         html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b>\n</td>\n"
-               "<td>" + body + "</td>\n</tr>";
+               "<td>" + body + "</td>\n</tr>";}
     }
     html +="\n</tbody>\n</table><br>\n";
 
@@ -2639,6 +2642,7 @@ if(laserWindow->myDockControls->ui->operationCombo->currentIndex()==0)
      skin.append(laserWindow->myDockSkin->ui->tEMP_SkinLabel->text()+"$"+laserWindow->myDockSkin->ui->EMP_SkinLabel->text());
      skin.append(laserWindow->myDockSkin->ui->tNSHDLabel->text()+"$"+laserWindow->myDockSkin->ui->NSHDLabel->text());   
 
+     goggle.append(laserWindow->myDockGoggle->ui->kindOfLaserLabel->text()+": ");
      goggle.append(laserWindow->myDockGoggle->ui->tLaserOutputLabel->text()+":"+laserWindow->myDockGoggle->ui->laserOutputLabel->text());
      goggle.append("Numero di scala: " + laserWindow->myDockGoggle->ui->scaleNumberLabel->text());
 
@@ -2671,6 +2675,7 @@ if(laserWindow->myDockControls->ui->operationCombo->currentIndex()==0)
      skin.append(laserWindow->myDockSkin->ui->tEMP_SkinLabel->text()+"$"+laserWindow->myDockSkin->ui->EMP_SkinLabel->text());
      skin.append(laserWindow->myDockSkin->ui->tNSHDLabel->text()+"$"+laserWindow->myDockSkin->ui->NSHDLabel->text());
 
+     goggle.append(laserWindow->myDockGoggle->ui->kindOfLaserLabel->text()+": ");
      goggle.append("Output: "+laserWindow->myDockGoggle->ui->laserOutputLabel->text());
      goggle.append("Numero di scala: " + laserWindow->myDockGoggle->ui->scaleNumberLabel->text());
 }
@@ -2749,6 +2754,7 @@ if(laserWindow->myDockControls->ui->operationCombo->currentIndex()==0)
     skin.append(laserWindow->myDockSkin->ui->tminEMP_SkinLabel->text()+"$"+laserWindow->myDockSkin->ui->minEMP_SkinLabel->text());
     skin.append(laserWindow->myDockSkin->ui->tNSHDLabel->text()+"$"+laserWindow->myDockSkin->ui->tNSHDLabel->text());
 
+    goggle.append(laserWindow->myDockGoggle->ui->kindOfLaserLabel->text()+": ");
     goggle.append(laserWindow->myDockGoggle->ui->tLaserOutputLabel->text()+":"+laserWindow->myDockGoggle->ui->laserOutputLabel->text());
     goggle.append("Numero di scala:" + laserWindow->myDockGoggle->ui->scaleNumberLabel->text());
     goggle.append(laserWindow->myDockGoggle->ui->tn_maxLabel->text()+":"+laserWindow->myDockGoggle->ui->n_maxLabel->text());
@@ -2774,6 +2780,10 @@ void MainWindow::firstPageReport()
 
     QString aperturaStr ="Apertura zona di sgombero: " +
             QString::number(laserpoint->getAperture())+"&deg;";
+
+    QString laserPillowZone= QString(tr("Ampiezza zona cuscinetto [gradi] : %1")
+                                      .arg(laserpoint->getPillow()));
+
     int installation=laserpoint->getInstallationIndex();
             QString installationStr="Tipo installazione: ";
 
@@ -2831,12 +2841,13 @@ QString scintillationString;
 
     laser.append(laserPositionStr);
     laser.append(aperturaStr);
-    laser.append(filterStr);
 
     if(laserpoint->isFilterOn())
       laser.append(transmittanceStr);
 
-    laser.append(installationStr);
+    laser.append(installationStr);    
+    laser.append(laserPillowZone);
+    laser.append(filterStr);
     laser.append(armAttenuationString);
     laser.append(scintillationString);
 

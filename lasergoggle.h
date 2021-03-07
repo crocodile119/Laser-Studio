@@ -20,7 +20,8 @@ public:
     static const double PLASTIC_EXPONENT;
 
     enum material{ONLY_REFLECTOR, GLASS, PLASTIC};
-    enum laserOperation{CONTINUOSWAVE, IMPULSATO, IMPULSIMULTIPLI};
+    enum laserOperation{CONTINUOS_WAVE, IMPULSATO, IMPULSI_MULTIPLI};
+    enum laserPulseOperation{CONTINUOS_EMISSION, SIMPLE_PULSED, Q_SWITCHED, MODE_LOCKED};
     LaserGoggle(int, double, double, double);
     LaserGoggle(int, double, double, double, double);
     ~LaserGoggle();
@@ -59,6 +60,10 @@ public:
     double getCoefficient_ki()const;
     double getCoefficient_k()const;
     double get_ni_max()const;
+    void setPulseCode();
+    string getLaserPulseOperation();
+    void setLaserOperation();
+    laserOperation getLaserOperation();
     string getCodeUnit();
     string outputSort();
     void printData();
@@ -90,9 +95,12 @@ private:
     double Ti;
     double ni_max;
     string codeUnit;
-    string pulseCode;
+    laserPulseOperation pulseCode;
+    string pulseCodeString;
+    char pulseCodeLetter;
     string laserOutputSort;
     string goggleCode;
+    laserOperation myLaserOperation;
 };
 
 #endif // LASERGOGGLE_H

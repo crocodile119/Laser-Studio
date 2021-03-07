@@ -16,6 +16,8 @@ private slots:
     void on_buttonBox_accepted();
     void on_filterCheckBox_stateChanged(int arg1);
 
+    void on_installationComboBox_currentIndexChanged(int index);
+
 private:
     LaserPoint *laserpoint;
 };

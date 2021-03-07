@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>325</width>
-    <height>343</height>
+    <height>356</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -200,6 +200,26 @@ QLabel {margin-right: 10px}</string>
         </property>
        </widget>
       </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_4">
+        <property name="font">
+         <font>
+          <pointsize>7</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel {background-color: #00c800}
+QLabel {color: #fafafa}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+        </property>
+        <property name="text">
+         <string>Tipo di installazione:</string>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="1">
        <widget class="QComboBox" name="installationComboBox">
         <property name="maximumSize">
@@ -235,13 +255,8 @@ QLabel {margin-right: 10px}</string>
         </item>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_4">
-        <property name="font">
-         <font>
-          <pointsize>7</pointsize>
-         </font>
-        </property>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_6">
         <property name="styleSheet">
          <string notr="true">QLabel {background-color: #00c800}
 QLabel {color: #fafafa}
@@ -251,7 +266,22 @@ QLabel {padding: 3px}
 QLabel {margin-right: 10px}</string>
         </property>
         <property name="text">
-         <string>Tipo di installazione:</string>
+         <string>Cuscinetto [gradi]</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLabel" name="pillowLabel">
+        <property name="styleSheet">
+         <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+        </property>
+        <property name="text">
+         <string>0,11465</string>
         </property>
        </widget>
       </item>

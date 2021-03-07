@@ -416,6 +416,10 @@ void LaserPoint::computePillowAreas()
        case 3 :
        pillow= 1.714795;
        break;
+
+       default:
+       pillow= 1.714795;
+       break;
     }
 }
 

@@ -19,7 +19,7 @@
   <property name="minimumSize">
    <size>
     <width>405</width>
-    <height>100</height>
+    <height>134</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -1226,6 +1226,28 @@ QLabel {margin-right: 10px}</string>
            </widget>
           </item>
           <item>
+           <widget class="QLabel" name="tPulseNumberThLabel">
+            <property name="font">
+             <font>
+              <pointsize>7</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel {background-color: #00c800}
+QLabel {color: #fafafa}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+            </property>
+            <property name="text">
+             <string>TextLabel</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <spacer name="verticalSpacer_12">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
@@ -1291,6 +1313,27 @@ QLabel {margin-right: 10px}</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="PulseNumberThLabel">
+            <property name="font">
+             <font>
+              <family>Verdana</family>
+              <pointsize>7</pointsize>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+            </property>
+            <property name="text">
+             <string>TextLabel</string>
             </property>
            </widget>
           </item>

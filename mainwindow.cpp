@@ -355,7 +355,7 @@ void MainWindow::newFile()
 
         setCurrentFile("");
 
-        laserWindow->setMeteoRange(CentralWidget::GOOD_VISIBILITY_DISTANCE);
+        laserWindow->setMeteoRange(CentralWidget::STANDARD_VISIBILITY_DISTANCE);
         meteoWidgets(true, false, false);
         laserpoint->setSelected(true);
         laserWindow->graphicsView->centerOn(laserpoint->pos());
@@ -365,6 +365,9 @@ void MainWindow::newFile()
         setFont(font);
 
         environmentModel->setState(false);
+        environmentModel->setMeteoVisibility(laserWindow->getMeteoRange());
+        environmentModel->myDataHasChanged();
+
         setPolygon();
         setPolygonAct->setChecked(true);
 
@@ -615,8 +618,12 @@ void MainWindow::setCondMeteo()
 {
     AtmosphericEffectsDialog dialog(laserWindow, laserWindow->myDockControls->getWavelength());
     dialog.exec();
-    if(dialog.result()==QDialog::Accepted)
+    if(dialog.result()==QDialog::Accepted)       
+    {
         updateForCondMeteo();
+        environmentModel->setMeteoVisibility(laserWindow->getMeteoRange());
+        environmentModel->myDataHasChanged();
+    }
 }
 
 void MainWindow::updateForCondMeteo()
@@ -2880,7 +2887,6 @@ void MainWindow::reflectorsPageReport()
 void MainWindow::binocularsPageReport()
 {
     double wavelength=laserWindow->myDockControls->getWavelength();
-
     if((wavelength>=400)&&(wavelength<=1400))
     {
         binoculars.append("Posizione [m, m]: " + QString("(%1,%2)")
@@ -2902,6 +2908,7 @@ void MainWindow::binocularsPageReport()
                           .arg(binocular->pos().x())
                           .arg(binocular->pos().y()));
         binoculars.append("Descrizione: " + binocular->getDescription());
+        binoculars.append("Amplificazione ottica M: " + QString::number(binocular->getMagnification()));
         binoculars.append("Distanza di Rischio Ottico Estesa [m]: " + QString::number(binocular->getExendedOpticalDiameter()));
         binoculars.append("Distanza dal punto laser [m]: " + QString::number(binocular->getBinocularDistance()));
         binoculars.append("Amplificazione ottica M: " + QString::number(binocular->getMagnification()));
@@ -4996,7 +5003,8 @@ void MainWindow::setPolygon()
         if ((myLabRoom)&&(environmentModel->getState())) {
             delete myLabRoom;
             i.remove();
-            environmentModel->setState(false);
+            environmentModel->setState(false);        
+            environmentModel->setMeteoVisibility(laserWindow->getMeteoRange());
             environmentModel->addDescriptor(*myFakeRoom);
             environmentModel->myDataHasChanged();
             labroomList.clear();

@@ -1,4 +1,5 @@
 #include "binocularslistmodel.h"
+#include <QTextEdit>
 
 BinocularsListModel::BinocularsListModel(const QList <std::pair<Binocular *, int>>  &_myBinoculars, QObject *parent)
     : QAbstractListModel(parent), myBinoculars(_myBinoculars)

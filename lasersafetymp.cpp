@@ -96,7 +96,7 @@ void LaserSafetyMP::setPulseWidth(const double& _pulseWidth)
             if(powerFormulaSort=="H")
                 meanPow_EMP_Result=powerEMP/ceil(exposureTime*PRF);// calcola l'H medio come il rapporo dell'H in Te con N.
             else if(powerFormulaSort=="E")
-                meanPow_EMP_Result=powerEMP/ceil(PRF*pulseWidth);//calcola l'E medio come il rapporo dell'H medio con t.
+                meanPow_EMP_Result=powerEMP/(PRF*pulseWidth);//calcola l'E medio come il rapporo dell'H medio con t.
         }
         else
         {
@@ -112,7 +112,7 @@ void LaserSafetyMP::computePulseNumber()
         if(PRF> (1/Tmin))
             pulseNumber=ceil((int)(0.5+(1/Tmin)*Te));//se il conteggio non è regolare il numero di impulsi è pari al rapporto del tempo di esposizione minimo tra T2 exposureTime con Tmin
             else
-            pulseNumber=ceil(PRF*exposureTime);//altrimenti è pari al prodotto della PRF con exposureTime.
+            pulseNumber=ceil(PRF*Te);//altrimenti è pari al prodotto della PRF con exposureTime.
          }
     else
         {
@@ -149,34 +149,12 @@ void LaserSafetyMP::setTe()
            else
         T2=myLaser.getT2();
 
-    setTimeBase();
-    Te=std::min(timeBase, T2);
+    Te=std::min(exposureTime, T2);
 }
 
 double LaserSafetyMP::getTe()const
 {
     return Te;
-}
-
-void LaserSafetyMP::setTimeBase()
-{
-        if ((wavelength>=400) and (wavelength<=700))
-            {
-            timeBase=0.25;
-            }
-            else if((wavelength>=180)and (wavelength<400))
-                {
-                timeBase=30000;
-                }
-                    else
-                    {
-                    timeBase=100;
-                    }
-}
-
-double LaserSafetyMP::getTimeBase()const
-{
-    return timeBase;
 }
 
 void LaserSafetyMP::computeTmin()

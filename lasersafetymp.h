@@ -68,8 +68,6 @@ string valutateCounting();
 double getMeanPower_EMP_Equate() const;
 void setTe();
 double getTe()const;
-double getTimeBase()const;
-void setTimeBase();
 
 private:
 double PRF;

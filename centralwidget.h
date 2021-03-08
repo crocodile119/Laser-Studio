@@ -25,7 +25,7 @@ public:
 
     const static double SCINTILLATION_CONST;
     const static double NEPERO_N;
-    const static int GOOD_VISIBILITY_DISTANCE;
+    const static int STANDARD_VISIBILITY_DISTANCE;
 
     void setNewScene();
     void deleteScene();

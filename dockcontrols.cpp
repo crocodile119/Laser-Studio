@@ -326,14 +326,14 @@ void DockControls::on_wavelengthScrollBar_valueChanged(int value)
     /*****************************************
      * Imposto il valore negli oggetti Laser *
      *****************************************/
-
-     MyLaserMP_Pr->setTimeBase();
-     MyLaserMP_Pr->computeTmin();
-
-     MyLaserMP_Pr->computeTmin();
-     MyLaserMP_Pr->setExposureTime();
      MyLaserMP_Pr->setWavelength(wavelength);
+     MyLaserMP_Pr->setExposureTime();
+     MyLaserMP_Pr->setPulseWidth(pulseWidth);
+
      MyLaserSkinMP_Pr->setWavelength(wavelength);
+     MyLaserSkinMP_Pr->setPulseWidth(pulseWidth);
+
+     MyLaserMP_Pr->computeTmin();
 
      MyLaserClassMP_Pr->setTimeBase();
      MyLaserClassMP_Pr->setWavelength(wavelength);
@@ -1462,6 +1462,9 @@ void DockControls::setWidgets()
         dockResults->ui->tPulseNumberLabel->setVisible(false);
         dockResults->ui->PulseNumberLabel->setVisible(false);
 
+        dockResults->ui->tPulseNumberThLabel->setVisible(false);
+        dockResults->ui->PulseNumberThLabel->setVisible(false);
+
         dockResults->ui->tExposureTimeLabel->setVisible(true);
         dockResults->ui->ExposureTimeLabel->setVisible(true);
 
@@ -1622,6 +1625,9 @@ else
 
         dockResults->ui->tPulseNumberLabel->setVisible(false);
         dockResults->ui->PulseNumberLabel->setVisible(false);
+
+        dockResults->ui->tPulseNumberThLabel->setVisible(false);
+        dockResults->ui->PulseNumberThLabel->setVisible(false);
 
         dockResults->ui->tExposureTimeLabel->setVisible(false);
         dockResults->ui->ExposureTimeLabel->setVisible(false);
@@ -1789,6 +1795,9 @@ if(n_laser==2)
         dockResults->ui->tPulseNumberLabel->setVisible(true);
         dockResults->ui->PulseNumberLabel->setVisible(true);
 
+        dockResults->ui->tPulseNumberThLabel->setVisible(true);
+        dockResults->ui->PulseNumberThLabel->setVisible(true);
+
         dockResults->ui->tminEMP_Label->setVisible(true);
         dockResults->ui->minEMP_Label->setVisible(true);
 
@@ -1807,7 +1816,7 @@ if(n_laser==2)
         dockResults->ui->ExposureTimeLabel->setText(QString::number(MyLaserMP_Pr->getExposureTime(),'e', 2));
 
         dockResults->ui->tTimeBase_Label->setText("T<sub>base</sub> [s]");
-        dockResults->ui->timeBase_Label->setText(QString::number(MyLaserMP_Pr->getTimeBase(),'e', 2));
+        dockResults->ui->timeBase_Label->setText(QString::number(MyLaserMP_Pr->getTe(),'e', 2));
 
         dockResults->ui->tPowerErgLabel->setText("Energia [J]");
         dockResults->ui->PowerErgLabel->setText(QString::number(MyLaserMP_Pr->getPowerErg(),'e', 2));
@@ -1844,9 +1853,11 @@ if(n_laser==2)
             else{
             dockResults->ui->CP_Label->setText("Non applicabile");}
 
+        dockResults->ui->tPulseNumberThLabel->setText("N<sub>th</sub>");
+        dockResults->ui->PulseNumberThLabel->setText(QString::number(MyLaserMP_Pr->getPulseNumber()));
 
-        dockResults->ui->tPulseNumberLabel->setText("Numero impulsi");
-        dockResults->ui->PulseNumberLabel->setText(QString::number(MyLaserMP_Pr->getPulseNumber()));
+        dockResults->ui->tPulseNumberLabel->setText("N");
+        dockResults->ui->PulseNumberLabel->setText(QString::number(ceil(MyLaserMP_Pr->getPRF()*MyLaserMP_Pr->getExposureTime())));
 
         dockResults->ui->tminEMP_Label->setText(minEMP);
         dockResults->ui->minEMP_Label->setText(QString::number(MyLaserMP_Pr->returnMultiPulse_EMP(),'e', 2));
@@ -3429,7 +3440,7 @@ void DockControls::setWidgetsForMultiPulse_Operation()
     dockLea->ui->Ti_prf_Label->setText(QString::number(MyLaserClassMP_Pr->getTi()*MyLaserMP_Pr->getPRF()));
 
     QString TimeBase_Label=QString("%1 s")
-                         .arg(QString::number(MyLaserMP_Pr->getTimeBase()));
+                         .arg(QString::number(MyLaserClassMP_Pr->getTimeBase()));
 
 
     LaserClassCW::laserClass myLaserClass=MyLaserClassMP_Pr->getLaserClass();
@@ -3629,7 +3640,7 @@ void DockControls::setWidgetsForThermal()
     dockLea->ui->beamAperture3_Label_3->setText(QString::number(MyLaserClassMP_Pr->getBeamAtStop_Cond_3(), 'e', 2)+" mm");
 
 	    QString TimeBase_Label=QString("%1 s")
-                         .arg(QString::number(MyLaserMP_Pr->getTimeBase()));
+                         .arg(QString::number(MyLaserClassMP_Pr->getTimeBase()));
 
 
     myLaserClass=MyLaserClassMP_Pr->getLaserClass();
@@ -3742,7 +3753,7 @@ void DockControls::setWidgetsForThermalTi()
     dockLea->ui->beamAperture3_Label_3->setText(QString::number(MyLaserClassMP_Pr->getTiBeamAtStop_Cond_3(), 'e', 2)+" m");
 
 	QString TimeBase_Label=QString("%1 s")
-					.arg(QString::number(MyLaserMP_Pr->getTimeBase()));
+                    .arg(QString::number(MyLaserClassMP_Pr->getTimeBase()));
 
     if ((myLaserClass==LaserClassCW::CLASSE_1)or(myLaserClass==LaserClassCW::CLASSE_1M))
     {

@@ -307,7 +307,7 @@ void Binocular::setStringPosition()
 
     if((wavelength>=400)&&(wavelength<=1400))
     {
-    position ="Dispositivo ottico" + QString(" (%1,%2) \ndist[m]: %3, DNROE[m]: %4 \nτ= %5, Db[mm]=%6, D0[mm]=%7, M= %8, K=%9 \n%10, formuala: %11")
+    position ="Dispositivo ottico" + QString(" (%1,%2) \ndist[m]: %3, DNROE[m]: %4 \nτ= %5, Db[mm]=%6, D0[mm]=%7, M= %8, K=%9 \n%10")
                                     .arg(xString)
                                     .arg(yString)           
                                     .arg(binocularDistanceString)
@@ -322,7 +322,7 @@ void Binocular::setStringPosition()
 
     else if(((wavelength>=320)&&(wavelength<400))||((wavelength>1400)&&(wavelength<=4500)))
     {
-        position ="Dispositivo ottico" + QString(" (%1,%2) \ndist[m]: %3, DNROE[m]: %4 \nτ= %5, M= %6, K=%7 \n%8, formula: %9")
+        position ="Dispositivo ottico" + QString(" (%1,%2) \ndist[m]: %3, DNROE[m]: %4 \nτ= %5, M= %6, K=%7 \n%8")
                                         .arg(xString)
                                         .arg(yString)
                                         .arg(binocularDistanceString)

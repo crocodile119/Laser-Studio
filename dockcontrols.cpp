@@ -1410,6 +1410,7 @@ void DockControls::setWidgets()
     QString empSkinUnit;
     QString empUnitMP;
     QString thermalEMP;
+    QString meanEMP;
     QString minEMP;
     QString empSkinUnitMP;
     QString minEMPSkin;  
@@ -1471,10 +1472,10 @@ void DockControls::setWidgets()
         dockResults->ui->tminEMP_Label->setVisible(false);
         dockResults->ui->minEMP_Label->setVisible(false);
 
-        dockResults->ui->tTimeBase_Label->setVisible(false);
-        dockResults->ui->timeBase_Label->setVisible(false);
+        dockResults->ui->tEMP_mean_Label->setVisible(false);
+        dockResults->ui->EMP_mean_Label->setVisible(false);
 
-        dockResults->ui->tEMP_Label->setText((QString)MyLaserCW_Pr->getFormulaSort().c_str() + " " + empUnit);
+        dockResults->ui->tEMP_Label->setText(QString::fromStdString(MyLaserCW_Pr->getFormulaSort()) + " " + empUnit);
         dockResults->ui->EMP_Label->setText(QString::number(MyLaserCW_Pr->getEMP(),'e', 2));
 
         dockResults->ui->tExposureTimeLabel->setText("T<sub>e</sub> [s]");
@@ -1484,7 +1485,7 @@ void DockControls::setWidgets()
         dockResults->ui->PowerErgLabel->setText(QString::number(MyLaserCW_Pr->getPowerErg(),'e', 2));
 
         dockResults->ui->tFormulaLabel->setText((QString)"Formula");
-        dockResults->ui->FormulaLabel->setText(MyLaserCW_Pr->getFormulaEMP().c_str());
+        dockResults->ui->FormulaLabel->setText(QString::fromStdString(MyLaserCW_Pr->getFormulaEMP()));
 
         dockResults->ui->tNOHDLabel->setText((QString)"DNRO [m]");
 
@@ -1501,7 +1502,7 @@ void DockControls::setWidgets()
         dockResults->ui->tEMP_3rd_Label->setVisible(false);
 
         QString EMP_CW_Pulse=QString(" %1 = %2 %3")
-                                        .arg(MyLaserCW_Pr->getFormulaEMP().c_str())
+                                        .arg(QString::fromStdString(MyLaserCW_Pr->getFormulaEMP()))
                                         .arg(QString::number(MyLaserCW_Pr->getEMP(),'e', 2))
                                         .arg(empUnit);
 
@@ -1554,16 +1555,16 @@ void DockControls::setWidgets()
         dockEffects->ui->GammaLabel->setText(QString::number(MyLaserCW_Pr->getGamma(),'e', 2));
 
         dockEffects->ui->tRadiationLabel->setText("Tipo di radiazione");
-        dockEffects->ui->RadiationLabel->setText(MyLaserCW_Pr->getRadiation().c_str());
+        dockEffects->ui->RadiationLabel->setText(QString::fromStdString(MyLaserCW_Pr->getRadiation()));
 
         dockEffects->ui->tSkinDamageLabel->setText("Danno alla cute");
-        dockEffects->ui->SkinDamageLabel->setText(MyLaserCW_Pr->getSkinDamage().c_str());
+        dockEffects->ui->SkinDamageLabel->setText(QString::fromStdString(MyLaserCW_Pr->getSkinDamage()));
 
         dockEffects->ui->tEyeDamageLabel->setText("Danno all'occhio");
-        dockEffects->ui->EyeDamageLabel->setText(MyLaserCW_Pr->getEyeDamage().c_str());
+        dockEffects->ui->EyeDamageLabel->setText(QString::fromStdString(MyLaserCW_Pr->getEyeDamage()));
 
         dockEffects->ui->tNoteLabel->setText("Note");
-        dockEffects->ui->NoteLabel->setText(MyLaserCW_Pr->getPhotochemicalNote().c_str());
+        dockEffects->ui->NoteLabel->setText(QString::fromStdString(MyLaserCW_Pr->getPhotochemicalNote()));
 
         /*******************
          * reset controlli *
@@ -1632,8 +1633,8 @@ else
         dockResults->ui->tExposureTimeLabel->setVisible(false);
         dockResults->ui->ExposureTimeLabel->setVisible(false);
 
-        dockResults->ui->tTimeBase_Label->setVisible(false);
-        dockResults->ui->timeBase_Label->setVisible(false);
+        dockResults->ui->tEMP_mean_Label->setVisible(false);
+        dockResults->ui->EMP_mean_Label->setVisible(false);
 
         dockResults->ui->tminEMP_Label->setVisible(false);
         dockResults->ui->minEMP_Label->setVisible(false);
@@ -1641,7 +1642,7 @@ else
         dockResults->ui->tEMP_MP_Label->setVisible(false);
         dockResults->ui->EMP_MP_Label->setVisible(false);
 
-        dockResults->ui->tEMP_Label->setText((QString)MyLaserSP_Pr->getFormulaSort().c_str() + " " + empUnit);
+        dockResults->ui->tEMP_Label->setText(QString::fromStdString(MyLaserSP_Pr->getFormulaSort()) + " " + empUnit);
         dockResults->ui->EMP_Label->setText(QString::number(MyLaserSP_Pr->getEMP(),'e', 2));
 
         dockResults->ui->tExposureTimeLabel->setText("T<sub>e</sub> [s]");
@@ -1651,7 +1652,7 @@ else
         dockResults->ui->PowerErgLabel->setText(QString::number(MyLaserSP_Pr->getPowerErg(),'e', 2));
 
         dockResults->ui->tFormulaLabel->setText((QString)"Formula");
-        dockResults->ui->FormulaLabel->setText(MyLaserSP_Pr->getFormulaEMP().c_str());
+        dockResults->ui->FormulaLabel->setText(QString::fromStdString(MyLaserSP_Pr->getFormulaEMP()));
 
         dockResults->ui->tNOHDLabel->setText((QString)"DNRO [m]");
 
@@ -1668,7 +1669,7 @@ else
         dockResults->ui->tEMP_3rd_Label->setVisible(false);
 
         QString EMP_ONE_Pulse=QString(" %1 = %2 %3")
-                                        .arg(MyLaserSP_Pr->getFormulaEMP().c_str())
+                                        .arg(QString::fromStdString(MyLaserSP_Pr->getFormulaEMP()))
                                         .arg(QString::number(MyLaserSP_Pr->getEMP(),'e', 2))
                                         .arg(empUnit);
 
@@ -1706,10 +1707,10 @@ else
             else
           dockEffects->ui->GammaLabel->setText(QString::number(MyLaserSP_Pr->getGamma(),'e', 2));
 
-        dockEffects->ui->RadiationLabel->setText(MyLaserSP_Pr->getRadiation().c_str());
-        dockEffects->ui->SkinDamageLabel->setText(MyLaserSP_Pr->getSkinDamage().c_str());
-        dockEffects->ui->EyeDamageLabel->setText(MyLaserSP_Pr->getEyeDamage().c_str());
-        dockEffects->ui->NoteLabel->setText(MyLaserSP_Pr->getPhotochemicalNote().c_str());
+        dockEffects->ui->RadiationLabel->setText(QString::fromStdString(MyLaserSP_Pr->getRadiation()));
+        dockEffects->ui->SkinDamageLabel->setText(QString::fromStdString(MyLaserSP_Pr->getSkinDamage()));
+        dockEffects->ui->EyeDamageLabel->setText(QString::fromStdString(MyLaserSP_Pr->getEyeDamage()));
+        dockEffects->ui->NoteLabel->setText(QString::fromStdString(MyLaserSP_Pr->getPhotochemicalNote()));
 
         //Skin widgets
         setSkinWidgetsSingle();
@@ -1738,7 +1739,8 @@ if(n_laser==2)
                  powerErgUnit="Potenza [W]= ";
                  empUnit="[W/m<sup>2</sup>]";
                  minEMP="E<sub>min</sub> [W/m<sup>2</sup>]";
-                 thermalEMP="Eth [W/m<sup>2</sup>]";
+                 thermalEMP="E<sub>th</sub> [W/m<sup>2</sup>]";
+                 meanEMP="E<sub>mean</sub> [W/m<sup>2</sup>]";
              }
              else
                  if(MyLaserMP_Pr->getFormulaSort()=="H")
@@ -1747,6 +1749,7 @@ if(n_laser==2)
                      empUnit="[J/m<sup>2</sup>]";
                      minEMP="H<sub>min</sub> [J/m<sup>2</sup>]";                   
                      thermalEMP="H<sub>th</sub> [J/m<sup>2</sup>]";
+                     meanEMP="H<sub>mean</sub> [J/m<sup>2</sup>]";
                  }
 
 
@@ -1780,8 +1783,8 @@ if(n_laser==2)
         dockResults->ui->tExposureTimeLabel->setVisible(true);
         dockResults->ui->ExposureTimeLabel->setVisible(true);
 
-        dockResults->ui->tTimeBase_Label->setVisible(true);
-        dockResults->ui->timeBase_Label->setVisible(true);
+        dockResults->ui->tEMP_mean_Label->setVisible(true);
+        dockResults->ui->EMP_mean_Label->setVisible(true);
 
         dockResults->ui->tThermalEMP_Label->setVisible(true);
         dockResults->ui->ThermalEMP_Label->setVisible(true);
@@ -1806,26 +1809,26 @@ if(n_laser==2)
         dockSkin->ui->tPowerErgSkinLabel->setText(skinPowerErgUnit);
         dockSkin->ui->powerErgSkinLabel->setText(QString::number(MyLaserSkinMP_Pr->getPowerErg(),'e', 2));
 
-        dockResults->ui->tEMP_MP_Label->setText((QString)MyLaserMP_Pr->getMeanPowerFormulaSort().c_str() + "<sub>Te</sub> " + empUnitMP);
+        dockResults->ui->tEMP_MP_Label->setText(QString::fromStdString(MyLaserMP_Pr->getMeanPowerFormulaSort()) + "<sub>Te</sub> " + empUnitMP);
         dockResults->ui->EMP_MP_Label->setText(QString::number(MyLaserMP_Pr->getEMP_MP(),'e', 2));
 
-        dockResults->ui->tEMP_Label->setText((QString)MyLaserMP_Pr->getFormulaSort().c_str() + " " + empUnit);
+        dockResults->ui->tEMP_Label->setText(QString::fromStdString(MyLaserMP_Pr->getFormulaSort()) + " " + empUnit);
         dockResults->ui->EMP_Label->setText(QString::number(MyLaserMP_Pr->getEMP(),'e', 2));
 
         dockResults->ui->tExposureTimeLabel->setText("T<sub>e</sub> [s]");
         dockResults->ui->ExposureTimeLabel->setText(QString::number(MyLaserMP_Pr->getExposureTime(),'e', 2));
 
-        dockResults->ui->tTimeBase_Label->setText("T<sub>base</sub> [s]");
-        dockResults->ui->timeBase_Label->setText(QString::number(MyLaserMP_Pr->getTe(),'e', 2));
+        dockResults->ui->tEMP_mean_Label->setText(meanEMP);
+        dockResults->ui->EMP_mean_Label->setText(QString::number(MyLaserMP_Pr->getMeanPower_EMP_Equate(),'e', 2));
 
         dockResults->ui->tPowerErgLabel->setText("Energia [J]");
         dockResults->ui->PowerErgLabel->setText(QString::number(MyLaserMP_Pr->getPowerErg(),'e', 2));
 
         dockResults->ui->tFormulaLabel->setText("Formula");
-        dockResults->ui->FormulaLabel->setText(MyLaserMP_Pr->getFormulaEMP().c_str());
+        dockResults->ui->FormulaLabel->setText(QString::fromStdString(MyLaserMP_Pr->getFormulaEMP()));
 
         dockResults->ui->tFormulaMP_Label->setText("Formula T<sub>e</sub>");
-        dockResults->ui->FormulaMP_Label->setText(MyLaserMP_Pr->getMeanPowerFormulaEMP().c_str());
+        dockResults->ui->FormulaMP_Label->setText(QString::fromStdString(MyLaserMP_Pr->getMeanPowerFormulaEMP()));
 
         dockResults->ui->tMeanPowerLabel->setText("P<sub>m</sub> [W]");
         dockResults->ui->MeanPowerLabel->setText(QString::number(MyLaserMP_Pr->getMeanPower(),'e', 2));
@@ -1844,7 +1847,7 @@ if(n_laser==2)
                 }
 
         dockResults->ui->tCountingLabel->setText("Conteggio");
-        dockResults->ui->CountingLabel->setText(MyLaserMP_Pr->valutateCounting().c_str());
+        dockResults->ui->CountingLabel->setText(QString::fromStdString(MyLaserMP_Pr->valutateCounting()));
 
         dockResults->ui->tCP_Label->setText("C<sub>p</sub>");
 
@@ -1883,7 +1886,7 @@ if(n_laser==2)
         dockResults->ui->tEMP_3rd_Label->setText("3<sup>a</sup>");
 
         QString firstCondition=QString(" %1 = %2 %3")
-                                        .arg(MyLaserMP_Pr->getFormulaEMP().c_str())
+                                        .arg(QString::fromStdString(MyLaserMP_Pr->getFormulaEMP()))
                                         .arg(QString::number(MyLaserMP_Pr->getEMP_1stCondition(),'e', 2))
                                         .arg(empUnit);
 
@@ -1916,7 +1919,7 @@ if(n_laser==2)
                  empUnitTmin="[J/m<sup>2</sup>]";
 
             thirdCondition=QString(" %1 C<sub>p</sub> = %2  %3")
-                                            .arg(MyLaserMP_Pr->getFormula_3rdCondition().c_str())
+                                            .arg(QString::fromStdString(MyLaserMP_Pr->getFormula_3rdCondition()))
                                             .arg(QString::number(MyLaserMP_Pr->getEMP_3rdCondition(),'e', 2))
                                             .arg(empUnitTmin);
         }
@@ -1964,16 +1967,16 @@ if(n_laser==2)
         dockEffects->ui->tTminLabel->setText("T<sub>min</sub> [s]");
         dockEffects->ui->TminLabel->setText(QString::number(MyLaserMP_Pr->getTmin(),'e', 2));
 
-        dockEffects->ui->RadiationLabel->setText(MyLaserMP_Pr->getRadiation_MP().c_str());
-        dockEffects->ui->SkinDamageLabel->setText(MyLaserMP_Pr->getSkinDamage_MP().c_str());
-        dockEffects->ui->EyeDamageLabel->setText(MyLaserMP_Pr->getEyeDamage_MP().c_str());
+        dockEffects->ui->RadiationLabel->setText(QString::fromStdString(MyLaserMP_Pr->getRadiation_MP()));
+        dockEffects->ui->SkinDamageLabel->setText(QString::fromStdString(MyLaserMP_Pr->getSkinDamage_MP()));
+        dockEffects->ui->EyeDamageLabel->setText(QString::fromStdString(MyLaserMP_Pr->getEyeDamage_MP()));
 
         if(MyLaserMP_Pr->getGamma_MP()==0)
           dockEffects->ui->GammaLabel->setText("Non applicabile");
             else
           dockEffects->ui->GammaLabel->setText(QString::number(MyLaserMP_Pr->getGamma_MP(),'e', 2));
 
-        dockEffects->ui->NoteLabel->setText(MyLaserMP_Pr->getPhotochemicalNote_MP().c_str());
+        dockEffects->ui->NoteLabel->setText(QString::fromStdString(MyLaserMP_Pr->getPhotochemicalNote_MP()));
 
 
         /********************************************************************************************
@@ -2030,9 +2033,9 @@ if(n_laser==2)
                      }
 
             dockSkin->ui->tFormulaSkinLabel->setText("Formula");
-            dockSkin->ui->FormulaSkinLabel->setText(MyLaserSkinMP_Pr->getFormulaEMP().c_str());
+            dockSkin->ui->FormulaSkinLabel->setText(QString::fromStdString(MyLaserSkinMP_Pr->getFormulaEMP()));
 
-            dockSkin->ui->tEMP_SkinLabel->setText(MyLaserSkinMP_Pr->getFormulaSort().c_str() + empSkinUnit);
+            dockSkin->ui->tEMP_SkinLabel->setText(QString::fromStdString(MyLaserSkinMP_Pr->getFormulaSort()) + empSkinUnit);
             dockSkin->ui->EMP_SkinLabel->setText(QString::number(MyLaserSkinMP_Pr->getEMP(),'e', 2));
 
             dockSkin->ui->tFormulaSkinMP_Label->setVisible(true);
@@ -2053,11 +2056,11 @@ if(n_laser==2)
             dockSkin->ui->tminEMP_SkinLabel->setVisible(true);
             dockSkin->ui->minEMP_SkinLabel->setVisible(true);
 
-            dockSkin->ui->tEMP_MP_SkinLabel->setText((QString)MyLaserSkinMP_Pr->getMeanPowerFormulaSort().c_str() + "<sub>Te</sub> " + empSkinUnitMP);
+            dockSkin->ui->tEMP_MP_SkinLabel->setText(QString::fromStdString(MyLaserSkinMP_Pr->getMeanPowerFormulaSort()) + "<sub>Te</sub> " + empSkinUnitMP);
             dockSkin->ui->EMP_MP_SkinLabel->setText(QString::number(MyLaserSkinMP_Pr->getEMP_MP(),'e', 2));
 
             dockSkin->ui->tFormulaSkinMP_Label->setText("Formula T<sub>e</sub>");
-            dockSkin->ui->FormulaSkinMP_Label->setText(MyLaserSkinMP_Pr->getMeanPowerFormulaEMP().c_str());
+            dockSkin->ui->FormulaSkinMP_Label->setText(QString::fromStdString(MyLaserSkinMP_Pr->getMeanPowerFormulaEMP()));
 
             dockSkin->ui->tMeanPowerSkinLabel->setText("P<sub>m</sub> [W]");
             dockSkin->ui->MeanPowerSkinLabel->setText(QString::number(MyLaserSkinMP_Pr->getMeanPower(),'e', 2));
@@ -2081,7 +2084,7 @@ if(n_laser==2)
             dockSkin->ui->tEMP_2nd_Label->setText("2<sup>a</sup>");
 
             QString EMP_CWSP_Pulse=QString(" %1 = %2 %3")
-                                            .arg(MyLaserSkinMP_Pr->getFormulaEMP().c_str())
+                                            .arg(QString::fromStdString(MyLaserSkinMP_Pr->getFormulaEMP()))
                                             .arg(QString::number(MyLaserSkinMP_Pr->getEMP_1stCondition(),'e', 2))
                                             .arg(empSkinUnit);
 
@@ -2485,11 +2488,11 @@ void DockControls::setSkinWidgetsSingle()
     dockSkin->ui->tPowerErgSkinLabel->setText(skinPowerErgUnit);
     dockSkin->ui->powerErgSkinLabel->setText(QString::number(MyLaserSkinSP_Pr->getPowerErg(),'e', 2));
 
-    dockSkin->ui->tEMP_SkinLabel->setText(MyLaserSkinSP_Pr->getFormulaSort().c_str() + empSkinUnit);
+    dockSkin->ui->tEMP_SkinLabel->setText(QString::fromStdString(MyLaserSkinSP_Pr->getFormulaSort()) + empSkinUnit);
     dockSkin->ui->EMP_SkinLabel->setText(QString::number(MyLaserSkinSP_Pr->getEMP(),'e', 2));
 
     dockSkin->ui->tFormulaSkinLabel->setText("Formula");
-    dockSkin->ui->FormulaSkinLabel->setText(MyLaserSkinSP_Pr->getFormulaEMP().c_str());
+    dockSkin->ui->FormulaSkinLabel->setText(QString::fromStdString(MyLaserSkinSP_Pr->getFormulaEMP()));
 
     dockSkin->ui->tNSHDLabel->setText((QString)"DNRP [m]");
 
@@ -2523,7 +2526,7 @@ void DockControls::setSkinWidgetsSingle()
     dockSkin->ui->tEMP_2nd_Label->setVisible(false);
 
     QString EMP_CW_Pulse=QString(" %1 = %2 %3")
-                                    .arg(MyLaserSkinSP_Pr->getFormulaEMP().c_str())
+                                    .arg(QString::fromStdString(MyLaserSkinSP_Pr->getFormulaEMP()))
                                     .arg(QString::number(MyLaserSkinSP_Pr->getEMP(),'e', 2))
                                     .arg(empSkinUnit);
 
@@ -3310,6 +3313,9 @@ void DockControls::setWidgetsForCW_Operation()
     dockLea->ui->timeBase_Label->setText(TimeBase_Label);
 
     dockLea->ui->class_Label->setText(getLaserClassString(myLaserClass));
+
+    ui->warning_Label->setVisible(!(myLaserClass==LaserClassCW::CLASSE_1));
+    ui->class_Label->setText(getLaserClassString(myLaserClass));
 }
 
 void DockControls::setWidgetsForSinglePulse_Operation()
@@ -3421,6 +3427,9 @@ void DockControls::setWidgetsForSinglePulse_Operation()
     dockLea->ui->timeBase_Label->setText(TimeBase_Label);
 
     dockLea->ui->class_Label->setText(getLaserClassString(myLaserClass));
+
+    ui->warning_Label->setVisible(!(myLaserClass==LaserClassCW::CLASSE_1));
+    ui->class_Label->setText(getLaserClassString(myLaserClass));
 }
 
 void DockControls::setWidgetsForMultiPulse_Operation()
@@ -3536,6 +3545,8 @@ void DockControls::setWidgetsForMultiPulse_Operation()
 
     dockLea->ui->class_Label->setText(getLaserClassString(myLaserClass));
 
+    ui->warning_Label->setVisible(!(myLaserClass==LaserClassCW::CLASSE_1));
+    ui->class_Label->setText(getLaserClassString(myLaserClass));
 //    dockLea->ui->class_Label->setText(QString::fromStdString(MyLaserClassMP_Pr->getLaserClass()));
 
 
@@ -3596,6 +3607,9 @@ void DockControls::setWidgetsForMultiPulse_Operation()
     dockLea->ui->tCond3LEA_Label_2->setText(tPowerErgCond_3_Label);
 
     dockLea->ui->class_Label->setText(getLaserClassString(myLaserClass));
+
+    ui->warning_Label->setVisible(!(myLaserClass==LaserClassCW::CLASSE_1));
+    ui->class_Label->setText(getLaserClassString(myLaserClass));
 
     dockLea->ui->MeanPowerLabel->setText(QString::number(MyLaserClassMP_Pr->getMeanPower(),'e', 2)+" W");
     dockLea->ui->CountingLabel->setText(QString::fromStdString(MyLaserMP_Pr->valutateCounting()));
@@ -3719,6 +3733,9 @@ void DockControls::setWidgetsForThermal()
     dockLea->ui->tCond3LEA_Label_3->setText(tPowerErgCond_3_Label);
 
     dockLea->ui->class_Label->setText(getLaserClassString(myLaserClass));
+
+    ui->warning_Label->setVisible(!(myLaserClass==LaserClassCW::CLASSE_1));
+    ui->class_Label->setText(getLaserClassString(myLaserClass));
 }
 
 
@@ -3829,6 +3846,9 @@ void DockControls::setWidgetsForThermalTi()
     dockLea->ui->tCond3LEA_Label_3->setText(tPowerErgCond_3_Label_3);;
 
     dockLea->ui->class_Label->setText(getLaserClassString(myLaserClass));
+
+    ui->warning_Label->setVisible(!(myLaserClass==LaserClassCW::CLASSE_1));
+    ui->class_Label->setText(getLaserClassString(myLaserClass));
 }
 
 void DockControls::on_internalWaist_checkBox_toggled(bool checked)

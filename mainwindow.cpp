@@ -1937,6 +1937,7 @@ QString MainWindow::htmlClassifier()
 {
     QString html;
 
+    QString classStr=laserWindow->myDockLea->ui->class_Label->text();
     html=HTML_DEF;
 
         html +="<table width=\"100%\">\n"
@@ -1955,6 +1956,11 @@ QString MainWindow::htmlClassifier()
                    "<td>" + body + "</td>\n</tr>\n";
             }
         }
+        if(classStr!="Classe 1")
+            html +="<tr>\n<td colspan=\"2\"><img style= width: 28px; height: 25px;\"\n"
+        "alt=\"Attenzione\" title=\"Attenzione\"\n"
+        "src=\":/images/laser_warning.png\">&nbsp; &nbsp;  Attenzione, verificare la presenza delle etichette di sicurezza</td>\n</tr>\n";
+
     html += "</table><br>\n";
 
     return html;
@@ -1976,7 +1982,7 @@ void MainWindow::htmlClassifierResults()
     QString LEAstr= laserWindow->myDockLea->ui->tLEA_Label->text() + " :" + laserWindow->myDockLea->ui->LEA_Label->text();
     QString powerErgCond1LEAstr= laserWindow->myDockLea->ui->tCond1LEA_Label->text() + " :" + laserWindow->myDockLea->ui->cond1LEA_Label->text();
     QString powerErgCond3LEAstr= laserWindow->myDockLea->ui->tCond3LEA_Label->text() + " :" + laserWindow->myDockLea->ui->cond3LEA_Label->text();
-    QString classStr= "Classe sistema :" + laserWindow->myDockLea->ui->class_Label->text();
+    QString classStr= "Classe sistema :" + laserWindow->myDockLea->ui->class_Label->text();        
 
     classifierOutput.append(couplingFactor1str);
     classifierOutput.append(couplingFactor3str);
@@ -2723,10 +2729,12 @@ if(laserWindow->myDockControls->ui->operationCombo->currentIndex()==0)
     output.append(laserWindow->myDockResults->ui->tMeanPowerLabel->text()+"$"+laserWindow->myDockResults->ui->MeanPowerLabel->text());
     output.append(laserWindow->myDockResults->ui->tMeanIrradianceLabel->text()+"$"+laserWindow->myDockResults->ui->MeanIrradianceLabel->text());
     output.append(laserWindow->myDockResults->ui->tThermalEMP_Label->text()+"$"+laserWindow->myDockResults->ui->ThermalEMP_Label->text());
+    output.append(laserWindow->myDockResults->ui->tEMP_mean_Label->text()+"$"+laserWindow->myDockResults->ui->tEMP_mean_Label->text());
     output.append(laserWindow->myDockEffects->ui->tTminLabel->text()+"$"+laserWindow->myDockEffects->ui->TminLabel->text());
 
     output.append(laserWindow->myDockResults->ui->tCP_Label->text()+"$"+laserWindow->myDockResults->ui->CP_Label->text());
     output.append(laserWindow->myDockResults->ui->tPulseNumberLabel->text()+"$"+laserWindow->myDockResults->ui->PulseNumberLabel->text());
+    output.append(laserWindow->myDockResults->ui->tPulseNumberThLabel->text()+"$"+laserWindow->myDockResults->ui->PulseNumberLabel->text());
     output.append(laserWindow->myDockResults->ui->tminEMP_Label->text()+"$"+laserWindow->myDockResults->ui->minEMP_Label->text());
     output.append(laserWindow->myDockResults->ui->tNOHDLabel->text()+"$"+laserWindow->myDockResults->ui->NOHDLabel->text());
 

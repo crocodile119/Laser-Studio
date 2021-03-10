@@ -11,13 +11,17 @@ class ScaleNumbersModelView : public QAbstractTableModel
 {
     Q_OBJECT
 public:
+    static const int SCALE_NUMBER;
+    static const int ROW_NUMBERS;
+    static const int COLUMN_NUMBERS;
+
     ScaleNumbersModelView(QObject *parent = nullptr);
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     void setTableList(vector<pair<int, double>>);
     QVariant headerData(int, Qt::Orientation, int) const override;
-    void setScaleNumber(const int);
+    void setScaleNumber(const int &);
     int getScaleNumber()const;
 private:
     int scaleNumber;

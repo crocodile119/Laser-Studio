@@ -121,6 +121,24 @@ public:
     void setWidgetsForThermalTi();    
     QString getLaserClassString(const LaserClassCW::laserClass &);
 
+    vector<pair<int, double>> getGoggleDataVect()const;
+    vector<pair<int, double>> getDGoggleDataVect()const;
+    int getGoggleScaleNumber() const;
+    int getDGoggleScaleNumber() const;
+    std::string getGoggleLimitsUnit()const;
+    std::string getDGoggleLimitsUnit()const;
+
+    void leaExpressions_SP();
+    void leaExpressions_MP();
+    void leaExpressions_CW();
+
+    QString *getLeaExpressions_CW()const;
+    QString *getLeaExpressions_SP()const;
+
+    QString *getLeaExpressions_SP_MultiPulse()const;
+    QString *getLeaExpressions_Mean()const;
+    QString *getLeaExpressions_Thermal()const;
+    QString *getLeaExpressions_Ti()const;
 
 private slots:
     void on_operationCombo_currentIndexChanged(int index);
@@ -222,6 +240,13 @@ private:
     LaserClassMP* MyLaserClassMP_Pr;
 
     LaserGoggle::material goggleMaterial;
+
+    QString* LEA_CW;
+    QString* LEA_SP;
+    QString* LEA_SP_MultiPulse;
+    QString* LEA_Mean;
+    QString* LEA_Thermal;
+    QString* LEA_Ti;
 };
 
 #endif // DOCKCONTROLS_H

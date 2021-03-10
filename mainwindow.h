@@ -188,6 +188,7 @@ private slots:
     void setDistanceForFootprint();
     void shadowZoneForLaser();
     void meteoWidgets(bool, bool, bool);
+    QString printGoggleLimits(const vector< pair <int,double> > &, const int &, const string &);
 
     //scene
 
@@ -243,7 +244,7 @@ private:
     void laserMoved();
     QString printReflectorTable(vector< pair <double,double> >);
     QString printSpecularReflectorCoefficients( vector< pair <double,double> >);
-
+    void htmlClassifierDetails();
 
     QPainterPath laserpointShapePath();
 
@@ -272,6 +273,7 @@ private:
     QStringList laser;
     QStringList skin;
     QStringList classifierOutput;
+    QStringList classifierDetails;
     QLabel *statusLabel;
     CentralWidget *laserWindow;
     QStringList *firstPage;

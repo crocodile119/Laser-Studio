@@ -1,7 +1,7 @@
 #ifndef LASERCLASSCW_H
 #define LASERCLASSCW_H
 #include "computelea.h"
-
+#include <sstream>
 
 using namespace std;
 
@@ -49,6 +49,8 @@ enum laserClass{CLASSE_1, CLASSE_1M, CLASSE_2, CLASSE_2M, CLASSE_3R, CLASSE_3B, 
     string* getLEA_FormulaUnit()const;
     string* getLEA_FormulaTipo()const;
     int *getLEA_FormulaSort()const;
+
+    QString* getLEA_Expressions()const;
 
     void setPowerErg(const double&);
     double getPowerErg() const;

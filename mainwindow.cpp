@@ -1859,7 +1859,8 @@ QString kindOfLaser;
     }
     html +="\n</table><br>\n";
 
-    html+=htmlClassifier();
+    html +="<h2>Valutazione della Classe secondo la procedura semplificata CEI EN 60825-1</h2>\n"+htmlClassifier();
+
     html +="<table width=\"100%\">\n"
             "<tr>\n<th colspan=\"2\">Dispositivi protettori</tr>\n</th>\n";
 
@@ -1874,45 +1875,55 @@ QString kindOfLaser;
         html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b>\n</td>\n"
                "<td>" + body + "</td>\n</tr>";}
     }
-    html +="\n</tbody>\n</table><br>\n";
+    html +="\n</tbody>\n</table><br><br><br><br><br>\n";
 
     if((laserWindow->myDockControls->ui->operationCombo->currentIndex()==0)||(laserWindow->myDockControls->ui->operationCombo->currentIndex()==1))
     {
         html += "<h3> Calcolo grafico del numero di scala</h3>\n"
-                "<br>"
-                "<div style=\"text-align: center;\">\n"
-                "<img style=\"width: 240px; height: 280px;\"\n"
-                "alt=\"diagramma\"\n"
-                "src=\"./tableViewImg.png\">\n"
-                "<img style=\"width: 436px; height: 287px;\"\n"
+                "<br>";
+
+        html+="<div style=\"text-align: center;\"\n>\n"+
+                printGoggleLimits(laserWindow->myDockControls->getGoggleDataVect(),
+                laserWindow->myDockControls->getGoggleScaleNumber(),
+                laserWindow->myDockControls->getGoggleLimitsUnit()) +
+                "</div><br>";
+
+        html+="<div style=\"text-align: center;\">\n"
+              "<img style=\"width: 436px; height: 287px;\"\n"
                 "alt=\"Numeri di scala\"\n"
                 "src=\"./chartViewImg.png\"></div><br><br>\n";
     }
     else
     {
         html += "<h3> Calcolo grafico del numero di scala per l'effetto di ripetizione degli impulsi</h3>\n"
-                "<br>"
+                "<br>";
 
-                "<div style=\"text-align: center;\"\n>\n"
-                "<img style=\"width: 240px; height: 280px;\"\n"
-                "alt=\"diagramma\"\n"
-                "src=\"./tableViewImg.png\">\n"
-                "<img style=\"width: 436px; height: 287px;\"\n"
-                "alt=\"Numeri di scala\"\n"
-                "src=\"./chartViewImg.png\"></div><br><br>\n"
+        html+="<div style=\"text-align: center;\"\n>\n"+
+                printGoggleLimits(laserWindow->myDockControls->getGoggleDataVect(),
+                       laserWindow->myDockControls->getGoggleScaleNumber(),
+                       laserWindow->myDockControls->getGoggleLimitsUnit())+
+              "</div><br>";
 
-                "<h3> Calcolo grafico del numero di scala per l'effetto medio</h3>\n"
-                "<br>"
+        html+="<div style=\"text-align: center;\"\n>\n"
+              "<img style=\"width: 436px; height: 287px;\"\n"
+              "alt=\"Numeri di scala\"\n"
+              "src=\"./chartViewImg.png\"></div><br><br>\n"
 
-                "<div style=\"text-align: center;\">\n"
-                "<img style=\"width: 240px; height: 280px;\"\n"
-                "alt=\"diagramma\"\n"
-                "src=\"./dTableViewImg.png\">\n"
-                "<img style=\"width: 436px; height: 287px;\"\n"
+              "<h3> Calcolo grafico del numero di scala per l'effetto medio</h3>\n"
+              "<br>";
+
+        html+="<div style=\"text-align: center;\"\n>\n"+
+                printGoggleLimits(laserWindow->myDockControls->getDGoggleDataVect(),
+                       laserWindow->myDockControls->getDGoggleScaleNumber(),
+                       laserWindow->myDockControls->getGoggleLimitsUnit()) +
+                "</div><br>";
+
+        html+="<img style=\"width: 436px; height: 287px;\"\n"
                 "alt=\"Numeri di scala\"\n"
                 "src=\"./dChartViewImg.png\">\n"
                 "</div><br><br>\n";
     }
+
     html+=htmlFootprints();
     html+=htmlReflectors();
     html+=htmlBinoculars();
@@ -1940,6 +1951,25 @@ QString MainWindow::htmlClassifier()
     QString classStr=laserWindow->myDockLea->ui->class_Label->text();
     html=HTML_DEF;
 
+    html +="<table width=\"100%\">\n"
+           "<tr><th colspan=\"2\">Livelli di Emissione Accessibili valutati</th>\n";
+
+    foreach (QString entry, classifierDetails) {
+        QStringList fields = entry.split(":");
+        QString title = fields[0];
+        QString body = fields[1];
+
+        if(body==" "){
+            html +="<tr>\n<td colspan=\"2\"><i>" + title + "</i></td>\n</tr>\n";
+        }
+        else{
+        html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b></td>\n"
+               "<td>" + body + "</td>\n</tr>\n";
+        }
+    }
+
+html += "</table><br>\n";
+
         html +="<table width=\"100%\">\n"
                "<tr><th colspan=\"2\">Valutazione della classe secondo il metodo semplificato</th>\n";
 
@@ -1961,9 +1991,68 @@ QString MainWindow::htmlClassifier()
         "alt=\"Attenzione\" title=\"Attenzione\"\n"
         "src=\":/images/laser_warning.png\">&nbsp; &nbsp;  Attenzione, verificare la presenza delle etichette di sicurezza</td>\n</tr>\n";
 
-    html += "</table><br>\n";
-
+         html += "</table><br>\n";
     return html;
+}
+
+void MainWindow::htmlClassifierDetails()
+{
+    classifierDetails.clear();
+
+    if(laserWindow->myDockControls->ui->operationCombo->currentIndex()==0)
+    {
+    laserWindow->myDockControls->leaExpressions_CW();
+
+    QString LEA_Classe1Str= "LEA Classe 1 e 1M  :" + laserWindow->myDockControls->getLeaExpressions_CW()[0];
+    QString LEA_Classe2Str= "LEA Classe 2 e 2M  :" + laserWindow->myDockControls->getLeaExpressions_CW()[1];
+    QString LEA_Classe3RStr= "LEA Classe 3R  :" + laserWindow->myDockControls->getLeaExpressions_CW()[2];
+    QString LEA_Classe3BStr= "LEA Classe 3B  :" + laserWindow->myDockControls->getLeaExpressions_CW()[3];
+
+    classifierDetails.append(LEA_Classe1Str);
+    classifierDetails.append(LEA_Classe2Str);
+    classifierDetails.append(LEA_Classe3RStr);
+    classifierDetails.append(LEA_Classe3BStr);
+
+    }
+    else if(laserWindow->myDockControls->ui->operationCombo->currentIndex()==1)
+    {
+    laserWindow->myDockControls->leaExpressions_SP();
+
+    QString LEA_Classe1Str= "LEA Classe 1 e 1M  :" + laserWindow->myDockControls->getLeaExpressions_SP()[0];
+    QString LEA_Classe2Str= "LEA Classe 2 e 2M  :" + laserWindow->myDockControls->getLeaExpressions_SP()[1];
+    QString LEA_Classe3RStr= "LEA Classe 3R  :" + laserWindow->myDockControls->getLeaExpressions_SP()[2];
+    QString LEA_Classe3BStr= "LEA Classe 3B  :" + laserWindow->myDockControls->getLeaExpressions_SP()[3];
+
+    classifierDetails.append(LEA_Classe1Str);
+    classifierDetails.append(LEA_Classe2Str);
+    classifierDetails.append(LEA_Classe3RStr);
+    classifierDetails.append(LEA_Classe3BStr);
+
+    }
+    else if(laserWindow->myDockControls->ui->operationCombo->currentIndex()==2)
+    {
+    laserWindow->myDockControls->leaExpressions_MP();
+
+    QString LEA_Classe1_SP_MultiPulseStr= "LEA Classe 1 e 1M, impulso singolo :" + laserWindow->myDockControls->getLeaExpressions_SP_MultiPulse()[0];
+    QString LEA_Classe2_SP_MultiPulseStr= "LEA Classe 2 e 2M, impulso singolo :" + laserWindow->myDockControls->getLeaExpressions_SP_MultiPulse()[1];
+    QString LEA_Classe3R_SP_MultiPulseStr= "LEA Classe 3R, impulso singolo :" + laserWindow->myDockControls->getLeaExpressions_SP_MultiPulse()[2];
+    QString LEA_Classe3B_SP_MultiPulseStr= "LEA Classe 3B, impulso singolo :" + laserWindow->myDockControls->getLeaExpressions_SP_MultiPulse()[3];
+
+    QString LEA_Classe1_MeanStr= "LEA Classe 1 e 1M, potenza media :" + laserWindow->myDockControls->getLeaExpressions_Mean()[0];
+    QString LEA_Classe2_MeanStr= "LEA Classe 2 e 2M, potenza media  :" + laserWindow->myDockControls->getLeaExpressions_Mean()[1];
+    QString LEA_Classe3R_MeanStr= "LEA Classe 3R, potenza media  :" + laserWindow->myDockControls->getLeaExpressions_Mean()[2];
+    QString LEA_Classe3B_MeanStr= "LEA Classe 3B, potenza media  :" + laserWindow->myDockControls->getLeaExpressions_Mean()[3];
+
+    classifierDetails.append(LEA_Classe1_SP_MultiPulseStr);
+    classifierDetails.append(LEA_Classe2_SP_MultiPulseStr);
+    classifierDetails.append(LEA_Classe3R_SP_MultiPulseStr);
+    classifierDetails.append(LEA_Classe3B_SP_MultiPulseStr);
+
+    classifierDetails.append(LEA_Classe1_MeanStr);
+    classifierDetails.append(LEA_Classe2_MeanStr);
+    classifierDetails.append(LEA_Classe3R_MeanStr);
+    classifierDetails.append(LEA_Classe3B_MeanStr);
+    }
 }
 
 void MainWindow::htmlClassifierResults()
@@ -2099,6 +2188,7 @@ void MainWindow::printReport(QPrinter *printer)
         firstPageReport();
         htmlResults();
         htmlClassifierResults();
+        htmlClassifierDetails();
 
         QTextDocument textDocument;
         textDocument.setHtml(makeHtml());
@@ -2115,7 +2205,6 @@ void MainWindow::printReport(QPrinter *printer)
         * *************************************************************************/
 
         textDocument.setTextWidth(800);
-
 
         qDebug()<< "TextDocument margin: " << textDocument.documentMargin();
         qDebug()<< "TextDocument size: " << textDocument.size().width();
@@ -2189,42 +2278,6 @@ void MainWindow::printReport(QPrinter *printer)
         myPainter.end();
 
         /**************************************************************************
-         * L'immagine impiegata per la scena non puù essere ridimensionata        *
-         * pertanto ne creo un'altra delle dimensioni delle due tabelle da        *
-         * utilizzare per gli occhiali protettori.                                *
-         **************************************************************************/
-
-        QSize myTableGoggleImageSize(laserWindow->myDockGoggle->ui->tableView->width(),
-                          laserWindow->myDockGoggle->ui->tableView->height());
-
-        QImage myTableGoggleImage = QImage(myTableGoggleImageSize, QImage::Format::Format_RGB32);
-
-        myTableGoggleImage.invertPixels();
-
-        /**************************************************************************
-         * Per impiegare una nuova immagine devo caricarla come dispostivo di     *
-         * output per painter.                                                    *
-         **************************************************************************/
-
-        myPainter.begin(&myTableGoggleImage);
-
-        laserWindow->myDockGoggle->ui->tableView->render(&myPainter);
-        if(myTableGoggleImage.save("tableViewImg.png", "PNG"))
-            qDebug()<<"Imagine salvata";
-
-
-        laserWindow->myDockGoggle->ui->dTableView->render(&myPainter);
-        if(myTableGoggleImage.save("dTableViewImg.png", "PNG"))
-            qDebug()<<"Imagine salvata";
-
-        /**************************************************************************
-        * Effettuo il flush di painter anche se non strettamente necessario per   *
-        * rendere il codice più leggibile                                         *
-        ***************************************************************************/
-
-        myPainter.end();
-
-        /**************************************************************************
          * L'immagine impiegata per le tabelle non puù essere ridimensionata      *
          * pertanto ne creo un'altra delle dimensioni dei due grafici da          *
          * utilizzare per gli occhiali protettori.                                *
@@ -2267,6 +2320,36 @@ void MainWindow::printReport(QPrinter *printer)
 
     #endif
 }
+
+QString MainWindow::printGoggleLimits(const vector< pair <int,double> > & dataVector, const int & scale, const std::string & unit)
+{
+    QString html;
+    html.clear();
+
+    html += "<table width=\"50%\">\n";
+    html +=  "<tr>\n<th>Numero di scala</th>\n"
+             "<th>Valore limite "+ QString::fromStdString(unit)+ "</th>\n</tr>";
+
+
+   vector< pair <int,double> >::const_iterator constIterator; // const_iterator
+   // display vector elements using const_iterator
+
+   for ( constIterator = dataVector.begin();
+   constIterator != dataVector.end(); ++constIterator )
+       {
+       if(constIterator->first==scale)
+       html += "<tr><td><b>LB" + QString::number(constIterator->first) + "</b></td>\n<td><b>"
+            + QString::number(constIterator->second) +"</b></td></tr>\n";
+       else
+       html += "<tr><td>LB" + QString::number(constIterator->first) + "</td>\n<td>"
+            + QString::number(constIterator->second) +"</td></tr>\n";
+       }
+
+   html += "\n</table><br>\n";
+
+   return html;
+}
+
 
 QString MainWindow::printReflectorTable( vector< pair <double,double> > myVector)
 {

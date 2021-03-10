@@ -217,9 +217,9 @@ void DockControls::on_wavelengthScrollBar_valueChanged(int value)
     MyLaserCW_Pr->setExposureTime();
     MyLaserCW_Pr->setPulseWidth(MyLaserCW_Pr->getExposureTime());
     MyLaserSkinSP_Pr->setWavelength(wavelength);
-	
-    MyLaserClassCW_Pr->setTimeBase();
+
     MyLaserClassCW_Pr->setWavelength(wavelength);
+    MyLaserClassCW_Pr->setTimeBase();
 
     /**********************************************************************
      * Imposto il valore nell'oggetto occhiali protettori.                *
@@ -335,8 +335,8 @@ void DockControls::on_wavelengthScrollBar_valueChanged(int value)
 
      MyLaserMP_Pr->computeTmin();
 
-     MyLaserClassMP_Pr->setTimeBase();
      MyLaserClassMP_Pr->setWavelength(wavelength);
+     MyLaserClassMP_Pr->setTimeBase();
 
      /***********************************************************************
       * Imposto il valore negli oggetti occhiali protettori.                *
@@ -924,6 +924,10 @@ void DockControls::displayLaserOutput()
     QString laserOutputString= QString::number(laserOutput,'e',2);
     QString myUnitCodeString = QString::fromStdString(myLaserGoggle->getCodeUnit());
     QString myOutput=QString::fromStdString(myLaserGoggle->outputSort());
+
+    if(n_laser==2)
+        myOutput=myOutput+"<sub>c</sub>";
+
     dockGoggle->ui->tLaserOutputLabel->setText(myOutput+" " + myUnitCodeString);
     dockGoggle->ui->laserOutputLabel->setText(laserOutputString);
 }
@@ -1240,7 +1244,7 @@ void DockControls::showControls(bool _show)
                                         dockGoggle->ui->tabWidget->setTabText(0,"Criterio dell'impulso");
                                         dockGoggle->ui->tabWidget->setTabText(1,"Criterio della potenza media");
 
-                                        dockLea->ui->tabWidget->setTabText(0, "Criterio dell'energia");
+                                        dockLea->ui->tabWidget->setTabText(0, "Criterio dell'impulso");
                                         dockLea->ui->tabWidget->setTabText(1,"Criteri della potenza media e degli effetti termici");
                                      }
                                     else
@@ -1253,8 +1257,8 @@ void DockControls::showControls(bool _show)
                                             dockLea->ui->tabWidget->setTabText(0,"Criterio della potenza");
                                             }
                                         else if(n_laser==1){
-                                            dockGoggle->ui->tabWidget->setTabText(0,"Criterio dell'energia");
-                                            dockLea->ui->tabWidget->setTabText(0,"Criterio dell'energia");
+                                            dockGoggle->ui->tabWidget->setTabText(0,"Criterio dell'impulso");
+                                            dockLea->ui->tabWidget->setTabText(0,"Criterio dell'impulso");
                                             }
                                     }
 }
@@ -2093,7 +2097,7 @@ if(n_laser==2)
             if(MyLaserSkinMP_Pr->getMeanPowerFormulaSort()=="H")
                 formulaSkinEMP=QString::fromStdString(MyLaserSkinMP_Pr->getMeanPowerFormulaEMP()+"/N");
             else
-                formulaSkinEMP=QString::fromStdString(MyLaserSkinMP_Pr->getMeanPowerFormulaEMP()+"/(PRF &sdot; t");
+                formulaSkinEMP=QString::fromStdString(MyLaserSkinMP_Pr->getMeanPowerFormulaEMP()+"/(PRF &sdot; t)");
 
             QString EMP_MP_Pulse=QString(" %1 = %2 %3")
                                             .arg(formulaSkinEMP)
@@ -2202,10 +2206,14 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
                  myLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE_LOW_WAVELENGTH);
               }
     enableTeEditing=ui->teControl->isEnabled();
+
+    MyLaserClassCW_Pr->setTimeBase();
+
    /******************************************************************************************	
 	* Invoco le funzioni per il prelievo dei dati e il tracciamento dei grafici per l'oggetto *
 	* myLaserGoggle                                                                          *
 	******************************************************************************************/
+
     modeLockedPeak();
     fetchDataVector();
     fetchLaserOutput();
@@ -4023,4 +4031,89 @@ if(((wavelength>315) && (wavelength<=1e+06)))//base dei tempi 5 s
     displayDLaserOutput();
     displayDTimeBase();
     }
+}
+
+vector<pair<int, double>> DockControls::getGoggleDataVect()const
+{
+    return myLaserGoggle->getDataVector();
+}
+vector<pair<int, double>> DockControls::getDGoggleDataVect()const
+{
+    return myDLaserGoggle->getDataVector();
+}
+
+int DockControls::getGoggleScaleNumber()const
+{
+    return myLaserGoggle->getScaleNumber();
+}
+
+int DockControls::getDGoggleScaleNumber()const
+{
+    return myDLaserGoggle->getScaleNumber();
+}
+
+std::string DockControls::getGoggleLimitsUnit()const
+{
+    return myLaserGoggle->getCodeUnit();
+}
+
+std::string DockControls::getDGoggleLimitsUnit()const
+{
+    return myDLaserGoggle->getCodeUnit();
+}
+
+void DockControls::leaExpressions_SP()
+{
+    if(n_laser==1)
+        LEA_SP=MyLaserClassSP_Pr->getLEA_Expressions();
+}
+
+void DockControls::leaExpressions_CW()
+{
+        if(n_laser==0)
+        LEA_CW=MyLaserClassCW_Pr->getLEA_Expressions();
+}
+
+void DockControls::leaExpressions_MP()
+{
+        if(n_laser==2){
+        LEA_SP_MultiPulse=MyLaserClassMP_Pr->getLEA_Expressions();
+        LEA_Mean=MyLaserClassMP_Pr->getMeanLEA_Expressions();
+        double PRF=MyLaserClassMP_Pr->getPRF();
+        double Ti=MyLaserClassMP_Pr->getTi();
+
+        if(PRF<(1/Ti))
+            LEA_Thermal=MyLaserClassMP_Pr->getThermalLEA_Expressions();
+        else
+            LEA_Ti=MyLaserClassMP_Pr->getTiLEA_Expressions();
+        }
+}
+
+QString* DockControls::getLeaExpressions_CW()const
+{
+    return LEA_CW;
+}
+QString* DockControls::getLeaExpressions_SP()const
+{
+    return LEA_SP;
+}
+
+QString* DockControls::getLeaExpressions_SP_MultiPulse()const
+{
+    return LEA_SP_MultiPulse;
+}
+
+QString* DockControls::getLeaExpressions_Mean()const
+{
+    return LEA_Mean;
+}
+
+QString* DockControls::getLeaExpressions_Thermal()const
+{
+    return LEA_Ti;
+}
+
+QString *DockControls::getLeaExpressions_Ti()const
+{
+    return LEA_Thermal;
 }

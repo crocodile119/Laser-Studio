@@ -5,6 +5,7 @@
 #include <QGuiApplication>
 #include <QDebug>
 #include <QImage>
+#include <QTextDocumentWriter>
 #include "mainwindow.h"
 #include "centralwidget.h"
 #include "ui_dockcontrols.h"
@@ -53,7 +54,7 @@ const QString MainWindow::HTML_DEF= "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.
                                              "}\n"
                                              "table, th, td {\n"
                                              "font-family: \"Trebuchet MS\", Arial, Helvetica, sans-serif;\n"
-                                             "font-size: large;\n"
+                                             "font-size: medium;\n"
                                              "border-width: 1px;\n"
                                              "border-color: #dddddd;\n"
                                              "border-collapse: collapse;\n"
@@ -68,6 +69,9 @@ const QString MainWindow::HTML_DEF= "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.
                                              "}\n"
                                              "td, th {\n"
                                              "padding: 8px;\n"
+                                             "}\n"
+                                             "p {\n"
+                                            "font-size: medium;"
                                              "}\n"
                                         "</style>\n"
                                      "</head>\n"
@@ -835,6 +839,11 @@ void MainWindow::createActions()
     printPreviewAct->setStatusTip(tr("Anteprima di stampa"));
     connect(printPreviewAct, &QAction::triggered, this, &MainWindow::on_printPreviewAction_triggered);
     fileMenu->addAction(printPreviewAct);
+
+    exportReportAct= new QAction(tr("Esporta report ..."), this);
+    exportReportAct->setStatusTip(tr("Esporta il report in formato odt "));
+    connect(exportReportAct, &QAction::triggered, this, &MainWindow::exportReport);
+    fileMenu->addAction(exportReportAct);
 
     const QIcon printIcon = QIcon::fromTheme("Stampa", QIcon(":/images/print.png"));
     printAct = new QAction(printIcon, tr("Stampa..."), this);
@@ -1696,48 +1705,159 @@ void MainWindow::on_printPreviewAction_triggered()
 #endif
 }
 
-/*
-QString MainWindow::makeHtmlClassifier()
+void MainWindow::exportReport()
+{
+    firstPageReport();
+    htmlResults();
+    htmlClassifierResults();
+    htmlClassifierDetails();
+
+    QTextDocument textDocument;
+    textDocument.setHtml(makeHtml(REPORT));
+    textDocument.setDocumentMargin(10);
+    textDocument.setDocumentMargin(10);
+    textDocument.adjustSize();
+    qDebug()<<"Le dimensioni del documento: " <<textDocument.pageSize();
+
+    QSize mySceneImageSize(786,
+                      533); //rapporto 2/3 solo per resa grafica
+
+    QImage mySceneImage = QImage(mySceneImageSize, QImage::Format::Format_RGB32);
+
+    mySceneImage.fill(0);
+    mySceneImage.invertPixels();
+
+    qDebug()<< "Dot per metri dell'immagine nella direzione X per l'immagine del report esportato: " << mySceneImage.dotsPerMeterX();
+
+    QPainter myPainter;
+
+    qDebug()<<"Larghezza dell'immagine da immagine: " <<mySceneImage.width();
+    myPainter.begin(&mySceneImage);
+    myPainter.setRenderHint(QPainter::Antialiasing);
+
+    /**************************************************************************
+    * è possibile ricavare il numero di dot per metro nell'immagine cioè      *
+    * la risoluzione dello schermo impiegata                                  *
+    * qDebug()<< "Dots per meter dell'immagine: " << myImage.dotsPerMeterX(); *
+    * con questo valore gli 800px corrispondono a circa 17 cm di stampa       *
+    ***************************************************************************/
+
+    /**************************************************************************
+    * Scrivo sul dispositivo di output (myImage con painter) con render per   *
+    * copiare la scena. Con render impostato in questo modo copio esattamente *
+    * quello che vedo. Successivamente vi disegno il bordo.                   *
+    * *************************************************************************/
+
+    QRect rectImage=mySceneImage.rect();
+
+    qDebug()<<"View Rectangle: "<< previewRect;
+    laserWindow->graphicsView->render(&myPainter, rectImage, previewRect);
+
+
+    myPainter.setPen(QPen(Qt::gray, 2, Qt::SolidLine));
+    myPainter.drawRect(rectImage);
+
+    /**************************************************************************
+    * salvo l'immagine (png) e ne verifico il salvataggio (in fase di debug)  *
+    * *************************************************************************/
+
+    if(mySceneImage.save("sceneImg.png", "PNG"))
+        qDebug()<<"Imagine salvata";
+
+    myPainter.end();
+
+    textDocument.addResource(QTextDocument::ImageResource,
+        QUrl("mydata://sceneImg.png"), QVariant(mySceneImage));
+
+    QSize myChartGoggleImageSize(laserWindow->myDockControls->getChartView()->width(),
+                      laserWindow->myDockControls->getChartView()->height());
+
+    QImage myChartGoggleImage = QImage(myChartGoggleImageSize, QImage::Format::Format_RGB32);
+
+    /**************************************************************************
+     * Per impiegare una nuova immagine devo caricarla come dispostivo di     *
+     * output per painter.                                                    *
+     **************************************************************************/
+
+    myPainter.begin(&myChartGoggleImage);
+    myChartGoggleImage.fill(0);
+    myChartGoggleImage.invertPixels();
+
+    laserWindow->myDockControls->getChartView()->scene()->render(&myPainter);
+    if(myChartGoggleImage.save("chartViewImg.png", "PNG"))
+        qDebug()<<"Imagine salvata";
+
+    textDocument.addResource(QTextDocument::ImageResource,
+        QUrl("mydata://chartViewImg.png"), QVariant(myChartGoggleImage));
+
+    laserWindow->myDockControls->getdChartView()->scene()->render(&myPainter);
+    if(myChartGoggleImage.save("dChartViewImg.png", "PNG"))
+        qDebug()<<"Imagine salvata";
+
+    textDocument.addResource(QTextDocument::ImageResource,
+        QUrl("mydata://dChartViewImg.png"), QVariant(myChartGoggleImage));
+
+    /**************************************************************************
+    * Effettuo il flush di painter anche se non strettamente necessario per   *
+    * rendere il codice più leggibile                                         *
+    ***************************************************************************/
+
+    myPainter.end();
+
+    /***************************************************************************
+    * La larghezza del testo di textDocument la imposto ad 800 px.             *
+    * Per l'oggetto istanziato da QTextDocument l'unità di misura dipende      *
+    * dal dispositivo paint impiegato. Quando il dispositivo su cui si disegna *
+    * è lo schermo, come in questo caso, l'unità di misura è il pixel logico,  *
+    * quando il dispositivo è una stampante come avverrà in fase di stampa,    *
+    * l'unità di misura è il punto (1 punto corrisponde ad  1/72 di pollice.   *
+    * In questo caso perciò non si considera l'alta definizione della          *
+    * stampante ma la risoluzione logica dello schermo.                        *
+    * *************************************************************************/
+
+    QString exportName = QFileDialog::getSaveFileName(this, tr("Esporta in formato odt"),
+                               "../senza nome.odt",
+                               tr("Documento (*.odt)"));
+    if (!exportName.isEmpty())
+    {
+        QApplication::setOverrideCursor(Qt::WaitCursor);
+
+        QTextDocumentWriter myodf(exportName);
+        myodf.setFormat("ODF");
+        myodf.setFileName(exportName);
+        myodf.write(&textDocument);
+        statusBar()->showMessage(tr("Esportazione documento terminata"), 2000);
+        QApplication::restoreOverrideCursor();
+    }
+}
+
+QString MainWindow::makeHtml(htmlConfig myHtmlConfig)
 {
     QString html;
+    QString correction;
+    QString adaptSceneImageData;
+    QString adaptChartViewData;
+    QString adaptDChartViewData;
 
     html=HTML_DEF;
 
-    int n_laser=laserWindow->myDockControls->get_n_laser();
-    if(n_laser==0)
+    if(myHtmlConfig==REPORT)
     {
-        if(laserWindow->myDockControls->)
+        correction="\"480\"";
+        adaptSceneImageData="mydata://sceneImg.png";
+        adaptChartViewData="mydata://chartViewImg.png";
+        adaptDChartViewData="mydata://dChartViewImg.png";
+    }
+    else
+    {
+        correction="\"100%\"";
+        adaptSceneImageData="./sceneImg.png";
+        adaptChartViewData="./chartViewImg.png";
+        adaptDChartViewData="./dChartViewImg.png";
     }
 
     html +="<h1>Laser Report</h1>\n"
-    "<table width=\"100%\">\n"
-    "<tr><th colspan=\"2\">Descrizione installazione</th>\n"
-
-    "<tr><td bgcolor=\"#fbfbfb\"><b>Forza Armata</b></td>\n"
-    "<td>"+laserWindow->getForce()+"</td></tr>\n"
-    "<tr><td bgcolor=\"#fbfbfb\"><b>Ente</b></td>\n"
-    "<td>"+laserWindow->getCustomer()+"</td></tr>\n"
-    "<tr><td bgcolor=\"#fbfbfb\"><b>Nominativo UASL</b></td>\n"
-    "<td>"+laserWindow->get_UASL()+"</td></tr>\n"
-    "<tr><td bgcolor=\"#fbfbfb\"><b>Assistenti UASL</b></td>\n"
-    "<td>"+laserWindow->get_UASL_Assistant()+"</td></tr>\n"
-    "<tr><td bgcolor=\"#fbfbfb\"><b>Descrizione apparcchiatura laser</b></td>\n"
-    "<td>"+laserWindow->getLaserDescription()+"</td></tr>\n"
-    "<tr><td bgcolor=\"#fbfbfb\"><b>Descrizione dei luoghi</b></td>\n"
-    "<td>"+laserWindow->getPlaceDescription()+"</td></tr>\n"
-    "</table><br>\n";
-
-    return html;
-}
-*/
-QString MainWindow::makeHtml()
-{
-    QString html;
-
-    html=HTML_DEF;
-
-    html +="<h1>Laser Report</h1>\n"
-           "<table width=\"100%\">\n"
+           "<table width="+correction+">\n"
 
             "<tr><th colspan=\"2\">Descrizione installazione</th>\n"
 
@@ -1755,7 +1875,7 @@ QString MainWindow::makeHtml()
                    "<td>"+laserWindow->getPlaceDescription()+"</td></tr>\n"
             "</table><br>\n";
 
-        html +="<table width=\"100%\">\n"
+        html +="<table width="+correction+">\n"
                "<tr><th colspan=\"2\">Installazione del punto laser</th>\n";
 
         foreach (QString entry, laser) {
@@ -1772,10 +1892,10 @@ QString MainWindow::makeHtml()
                     "<h4>Layout installazione</h4><br>\n"
                     "<img style= width: 786px; height: 533px;\"\n"
                     "alt=\"Scena della zona  di sgombero\" title=\"Scena\"\n"
-                    "src=\"./sceneImg.png\"></div>\n";
+                    "src="+adaptSceneImageData+"></div>\n";
 
             if(!environmentModel->getState())
-                html +=htmlMeteo();
+                html +=htmlMeteo(myHtmlConfig);
 
 QString kindOfLaser;
 
@@ -1792,7 +1912,7 @@ QString kindOfLaser;
               kindOfLaser="Laser ad impulsi multipli";
             }
 
-    html += "<table width=\"100%\">\n"
+    html += "<table width="+correction+">\n"
             "<tr>\n<th colspan=\"2\">Dati di ingresso</th>\n</tr>\n"
             "<tr>\n<td bgcolor=\"#fbfbfb\"><b>Tipo di laser</b></td>\n"
                            "<td>" + kindOfLaser + "</td>\n</tr>";
@@ -1808,7 +1928,7 @@ QString kindOfLaser;
 
     html +="</table><br>\n";
 
-    html += "<table width=\"100%\">\n"
+    html += "<table width="+correction+">\n"
             "<tr>\n<th colspan=\"2\">Valutazione D.Lgs. 81/2008  - Esposizione dell'occhio</th>\n</tr>\n";
 
     foreach (QString entry, output) {
@@ -1827,7 +1947,7 @@ QString kindOfLaser;
 
     html +="\n</table><br>\n";
 
-    html += "<table width=\"100%\">\n"
+    html += "<table width="+correction+">\n"
             "<tr>\n<th colspan=\"2\">Valutazione D.Lgs. 81/2008 - Esposizione della cute</th>\n</tr>\n";
 
     foreach (QString entry, skin) {
@@ -1846,7 +1966,7 @@ QString kindOfLaser;
 
     html +="\n</table><br>\n";
 
-    html +="<table width=\"100%\">\n"
+    html +="<table width="+correction+">\n"
            "<tr>\n<th colspan=\"2\">Effetti</th>\n</tr>\n";
 
     foreach (QString entry, effects) {
@@ -1859,9 +1979,9 @@ QString kindOfLaser;
     }
     html +="\n</table><br>\n";
 
-    html +="<h2>Valutazione della Classe secondo la procedura semplificata CEI EN 60825-1</h2>\n"+htmlClassifier();
+    html +="<h2>Valutazione della Classe secondo la procedura semplificata CEI EN 60825-1</h2>\n"+htmlClassifier(myHtmlConfig);
 
-    html +="<table width=\"100%\">\n"
+    html +="<table width="+correction+">\n"
             "<tr>\n<th colspan=\"2\">Dispositivi protettori</tr>\n</th>\n";
 
     foreach (QString entry, goggle) {
@@ -1885,13 +2005,13 @@ QString kindOfLaser;
         html+="<div style=\"text-align: center;\"\n>\n"+
                 printGoggleLimits(laserWindow->myDockControls->getGoggleDataVect(),
                 laserWindow->myDockControls->getGoggleScaleNumber(),
-                laserWindow->myDockControls->getGoggleLimitsUnit()) +
+                laserWindow->myDockControls->getGoggleLimitsUnit(), myHtmlConfig) +
                 "</div><br>";
 
         html+="<div style=\"text-align: center;\">\n"
               "<img style=\"width: 436px; height: 287px;\"\n"
                 "alt=\"Numeri di scala\"\n"
-                "src=\"./chartViewImg.png\"></div><br><br>\n";
+                "src="+ adaptChartViewData +"></div><br><br>\n";
     }
     else
     {
@@ -1901,13 +2021,13 @@ QString kindOfLaser;
         html+="<div style=\"text-align: center;\"\n>\n"+
                 printGoggleLimits(laserWindow->myDockControls->getGoggleDataVect(),
                        laserWindow->myDockControls->getGoggleScaleNumber(),
-                       laserWindow->myDockControls->getGoggleLimitsUnit())+
+                       laserWindow->myDockControls->getGoggleLimitsUnit(), myHtmlConfig)+
               "</div><br>";
 
         html+="<div style=\"text-align: center;\"\n>\n"
               "<img style=\"width: 436px; height: 287px;\"\n"
               "alt=\"Numeri di scala\"\n"
-              "src=\"./chartViewImg.png\"></div><br><br>\n"
+              "src="+ adaptChartViewData +"></div><br><br>\n"
 
               "<h3> Calcolo grafico del numero di scala per l'effetto medio</h3>\n"
               "<br>";
@@ -1915,18 +2035,18 @@ QString kindOfLaser;
         html+="<div style=\"text-align: center;\"\n>\n"+
                 printGoggleLimits(laserWindow->myDockControls->getDGoggleDataVect(),
                        laserWindow->myDockControls->getDGoggleScaleNumber(),
-                       laserWindow->myDockControls->getGoggleLimitsUnit()) +
+                       laserWindow->myDockControls->getDGoggleLimitsUnit(), myHtmlConfig) +
                 "</div><br>";
 
         html+="<img style=\"width: 436px; height: 287px;\"\n"
                 "alt=\"Numeri di scala\"\n"
-                "src=\"./dChartViewImg.png\">\n"
+                "src="+ adaptDChartViewData +">\n"
                 "</div><br><br>\n";
     }
 
-    html+=htmlFootprints();
-    html+=htmlReflectors();
-    html+=htmlBinoculars();
+    html+=htmlFootprints(myHtmlConfig);
+    html+=htmlReflectors(myHtmlConfig);
+    html+=htmlBinoculars(myHtmlConfig);
     html+="</body>\n"
           "</html>\n";
 
@@ -1944,14 +2064,20 @@ QString kindOfLaser;
     return html;
 }
 
-QString MainWindow::htmlClassifier()
+QString MainWindow::htmlClassifier(htmlConfig myHtmlConfig)
 {
     QString html;
+    QString correction;
+
+    if(myHtmlConfig==REPORT)
+        correction="\"480\"";
+    else
+        correction="\"100%\"";
 
     QString classStr=laserWindow->myDockLea->ui->class_Label->text();
     html=HTML_DEF;
 
-    html +="<table width=\"100%\">\n"
+    html +="<table width="+correction+">\n"
            "<tr><th colspan=\"2\">Livelli di Emissione Accessibili valutati</th>\n";
 
     foreach (QString entry, classifierDetails) {
@@ -1970,8 +2096,8 @@ QString MainWindow::htmlClassifier()
 
 html += "</table><br>\n";
 
-        html +="<table width=\"100%\">\n"
-               "<tr><th colspan=\"2\">Valutazione della classe secondo il metodo semplificato</th>\n";
+        html +="<table width="+correction+">\n"
+               "<tr><th colspan=\"2\">Risultato valutazione</th>\n";
 
         foreach (QString entry, classifierOutput) {
             QStringList fields = entry.split(":");
@@ -1998,6 +2124,15 @@ html += "</table><br>\n";
 void MainWindow::htmlClassifierDetails()
 {
     classifierDetails.clear();
+
+    QString spEffects;
+
+    if(laserWindow->myDockControls->ui->operationCombo->currentIndex()==0)
+        spEffects="Criterio della potenza : ";
+    else
+        spEffects="Criterio dell'impulso : ";
+
+    classifierDetails.append(spEffects);
 
     if(laserWindow->myDockControls->ui->operationCombo->currentIndex()==0)
     {
@@ -2033,27 +2168,51 @@ void MainWindow::htmlClassifierDetails()
     {
     laserWindow->myDockControls->leaExpressions_MP();
 
-    QString LEA_Classe1_SP_MultiPulseStr= "LEA Classe 1 e 1M, impulso singolo :" + laserWindow->myDockControls->getLeaExpressions_SP_MultiPulse()[0];
-    QString LEA_Classe2_SP_MultiPulseStr= "LEA Classe 2 e 2M, impulso singolo :" + laserWindow->myDockControls->getLeaExpressions_SP_MultiPulse()[1];
-    QString LEA_Classe3R_SP_MultiPulseStr= "LEA Classe 3R, impulso singolo :" + laserWindow->myDockControls->getLeaExpressions_SP_MultiPulse()[2];
-    QString LEA_Classe3B_SP_MultiPulseStr= "LEA Classe 3B, impulso singolo :" + laserWindow->myDockControls->getLeaExpressions_SP_MultiPulse()[3];
+    QString LEA_Classe1_SP_MultiPulseStr= "LEA Classe 1 e 1M :" + laserWindow->myDockControls->getLeaExpressions_SP_MultiPulse()[0];
+    QString LEA_Classe2_SP_MultiPulseStr= "LEA Classe 2 e 2M :" + laserWindow->myDockControls->getLeaExpressions_SP_MultiPulse()[1];
+    QString LEA_Classe3R_SP_MultiPulseStr= "LEA Classe 3R :" + laserWindow->myDockControls->getLeaExpressions_SP_MultiPulse()[2];
+    QString LEA_Classe3B_SP_MultiPulseStr= "LEA Classe 3B :" + laserWindow->myDockControls->getLeaExpressions_SP_MultiPulse()[3];
 
-    QString LEA_Classe1_MeanStr= "LEA Classe 1 e 1M, potenza media :" + laserWindow->myDockControls->getLeaExpressions_Mean()[0];
-    QString LEA_Classe2_MeanStr= "LEA Classe 2 e 2M, potenza media  :" + laserWindow->myDockControls->getLeaExpressions_Mean()[1];
-    QString LEA_Classe3R_MeanStr= "LEA Classe 3R, potenza media  :" + laserWindow->myDockControls->getLeaExpressions_Mean()[2];
-    QString LEA_Classe3B_MeanStr= "LEA Classe 3B, potenza media  :" + laserWindow->myDockControls->getLeaExpressions_Mean()[3];
+    QString effects_MeanStr="Criterio della potenza media : ";
+    QString LEA_Classe1_MeanStr= "LEA Classe 1 e 1M :" + laserWindow->myDockControls->getLeaExpressions_Mean()[0];
+    QString LEA_Classe2_MeanStr= "LEA Classe 2 e 2M :" + laserWindow->myDockControls->getLeaExpressions_Mean()[1];
+    QString LEA_Classe3R_MeanStr= "LEA Classe 3R :" + laserWindow->myDockControls->getLeaExpressions_Mean()[2];
+    QString LEA_Classe3B_MeanStr= "LEA Classe 3B :" + laserWindow->myDockControls->getLeaExpressions_Mean()[3];
 
     classifierDetails.append(LEA_Classe1_SP_MultiPulseStr);
     classifierDetails.append(LEA_Classe2_SP_MultiPulseStr);
     classifierDetails.append(LEA_Classe3R_SP_MultiPulseStr);
     classifierDetails.append(LEA_Classe3B_SP_MultiPulseStr);
 
+    classifierDetails.append(effects_MeanStr);
     classifierDetails.append(LEA_Classe1_MeanStr);
     classifierDetails.append(LEA_Classe2_MeanStr);
     classifierDetails.append(LEA_Classe3R_MeanStr);
     classifierDetails.append(LEA_Classe3B_MeanStr);
+
+    if(laserWindow->myDockControls->isThermal_LaserCLass())
+    {
+        QString effects_thermalStr="Criterio dell'impulso termico";
+
+        if(!laserWindow->myDockControls->isHF_LaserCLass())
+            effects_thermalStr+=" : ";
+        else
+            effects_thermalStr+=" ad alta frequenza di ripetizione : ";
+
+        QString LEA_Classe1_ThrmalStr= "LEA Classe 1 e 1M :" + laserWindow->myDockControls->getLeaExpressions_Thermal()[0];
+        QString LEA_Classe2_ThrmalStr= "LEA Classe 2 e 2M :" + laserWindow->myDockControls->getLeaExpressions_Thermal()[1];
+        QString LEA_Classe3R_ThrmalStr= "LEA Classe 3R :" + laserWindow->myDockControls->getLeaExpressions_Thermal()[2];
+        QString LEA_Classe3B_ThrmalStr= "LEA Classe 3B :" + laserWindow->myDockControls->getLeaExpressions_Thermal()[3];
+
+        classifierDetails.append(effects_thermalStr);
+        classifierDetails.append(LEA_Classe1_ThrmalStr);
+        classifierDetails.append(LEA_Classe2_ThrmalStr);
+        classifierDetails.append(LEA_Classe3R_ThrmalStr);
+        classifierDetails.append(LEA_Classe3B_ThrmalStr);
     }
+  }
 }
+
 
 void MainWindow::htmlClassifierResults()
 {
@@ -2133,10 +2292,9 @@ void MainWindow::htmlClassifierResults()
     classifierOutput.append(powerErgCond1LEAstr_2);
     classifierOutput.append(powerErgCond3LEAstr_2);
 
-    double wavelength= laserWindow->myDockControls->getWavelength();
-    if((wavelength>=400)and(wavelength<=1400))
+    if(laserWindow->myDockControls->isThermal_LaserCLass())
     {
-    QString thermalEffects="Effetti termici : ";
+    QString thermalEffects="Criterio dell'impulso effetti termici : ";
     QString couplingFactor1str_3= "Fattore di accoppiamento 1<sup>a</sup> condizione :" +  laserWindow->myDockLea->ui->couplingFactor1_Label_3->text();
     QString couplingFactor3str_3= "Fattore di accoppiamento 3<sup>a</sup> condizione :" +  laserWindow->myDockLea->ui->couplingFactor3_Label_3->text();
     QString apertureDiam1str_3= "Diametro diaframma 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDiam1_Label_3->text();
@@ -2191,7 +2349,7 @@ void MainWindow::printReport(QPrinter *printer)
         htmlClassifierDetails();
 
         QTextDocument textDocument;
-        textDocument.setHtml(makeHtml());
+        textDocument.setHtml(makeHtml(PDF));
 
         /***************************************************************************
         * La larghezza del testo di textDocument la imposto ad 800 px.             *
@@ -2205,7 +2363,6 @@ void MainWindow::printReport(QPrinter *printer)
         * *************************************************************************/
 
         textDocument.setTextWidth(800);
-
         qDebug()<< "TextDocument margin: " << textDocument.documentMargin();
         qDebug()<< "TextDocument size: " << textDocument.size().width();
         qDebug()<< "Print widh: " << printer->width();
@@ -2221,97 +2378,9 @@ void MainWindow::printReport(QPrinter *printer)
         int mySceneImageWidth=(int)(0.77*(textDocument.size().width()-14));
         int mySceneImageHeight=(int)(0.77*(2*textDocument.size().width()/3));
 
-        qDebug() << "mySceneImageWidth: " << mySceneImageWidth;
-        qDebug() << "mySceneImageHeight: "<<mySceneImageHeight;
+        QSize sceneSize(mySceneImageWidth, mySceneImageHeight);
 
-        QSize mySceneImageSize(mySceneImageWidth,
-                          mySceneImageHeight); //rapporto 2/3 solo per resa grafica
-
-        QImage mySceneImage = QImage(mySceneImageSize, QImage::Format::Format_RGB32);
-
-        mySceneImage.fill(0);
-        mySceneImage.invertPixels();
-
-        qDebug()<< "Dot per metri dell'immagine nella direzione X" << mySceneImage.dotsPerMeterX();
-
-        QPainter myPainter;
-
-        qDebug()<<"Larghezza dell'immagine da immagine: " <<mySceneImage.width();
-        myPainter.begin(&mySceneImage);
-        myPainter.setRenderHint(QPainter::Antialiasing);
-
-        /**************************************************************************
-        * è possibile ricavare il numero di dot per metro nell'immagine cioè      *
-        * la risoluzione dello schermo impiegata                                  *
-        * qDebug()<< "Dots per meter dell'immagine: " << myImage.dotsPerMeterX(); *
-        * con questo valore gli 800px corrispondono a circa 17 cm di stampa       *
-        ***************************************************************************/
-
-        /**************************************************************************
-        * Scrivo sul dispositivo di output (myImage con painter) con render per   *
-        * copiare la scena. Con render impostato in questo modo copio esattamente *
-        * quello che vedo. Successivamente vi disegno il bordo.                   *
-        * *************************************************************************/
-
-        QRect rectImage=mySceneImage.rect();
-
-        qDebug()<<"View Rectangle: "<< previewRect;
-        laserWindow->graphicsView->render(&myPainter, rectImage, previewRect);
-
-
-        myPainter.setPen(QPen(Qt::gray, 2, Qt::SolidLine));
-        myPainter.drawRect(rectImage);
-
-        /**************************************************************************
-        * salvo l'immagine (png) e ne verifico il salvataggio (in fase di debug)  *
-        * *************************************************************************/
-
-        if(mySceneImage.save("sceneImg.png", "PNG"))
-            qDebug()<<"Imagine salvata";
-
-
-        /**************************************************************************
-        * Effettuo il flush di painter anche se non strettamente necessario per   *
-        * rendere il codice più leggibile                                         *
-        ***************************************************************************/
-
-        myPainter.end();
-
-        /**************************************************************************
-         * L'immagine impiegata per le tabelle non puù essere ridimensionata      *
-         * pertanto ne creo un'altra delle dimensioni dei due grafici da          *
-         * utilizzare per gli occhiali protettori.                                *
-         **************************************************************************/
-
-        QSize myChartGoggleImageSize(laserWindow->myDockControls->getChartView()->width(),
-                          laserWindow->myDockControls->getChartView()->height());
-
-        QImage myChartGoggleImage = QImage(myChartGoggleImageSize, QImage::Format::Format_RGB32);
-
-        /**************************************************************************
-         * Per impiegare una nuova immagine devo caricarla come dispostivo di     *
-         * output per painter.                                                    *
-         **************************************************************************/
-
-        myPainter.begin(&myChartGoggleImage);
-        myChartGoggleImage.fill(0);
-        myChartGoggleImage.invertPixels();
-
-        laserWindow->myDockControls->getChartView()->scene()->render(&myPainter);
-        if(myChartGoggleImage.save("chartViewImg.png", "PNG"))
-            qDebug()<<"Imagine salvata";
-
-        laserWindow->myDockControls->getdChartView()->scene()->render(&myPainter);
-        if(myChartGoggleImage.save("dChartViewImg.png", "PNG"))
-            qDebug()<<"Imagine salvata";
-
-        /**************************************************************************
-        * Effettuo il flush di painter anche se non strettamente necessario per   *
-        * rendere il codice più leggibile                                         *
-        ***************************************************************************/
-
-        myPainter.end();
-
+        saveReportImages(sceneSize);
         /**************************************************************************
         * Stampo                                                                  *
         * *************************************************************************/
@@ -2321,12 +2390,115 @@ void MainWindow::printReport(QPrinter *printer)
     #endif
 }
 
-QString MainWindow::printGoggleLimits(const vector< pair <int,double> > & dataVector, const int & scale, const std::string & unit)
+void MainWindow::saveReportImages(const QSize & sceneImageSize)
+{
+
+    qDebug() << "mySceneImageWidth: " << sceneImageSize.width();
+    qDebug() << "mySceneImageHeight: "<<sceneImageSize.height();
+
+    QSize mySceneImageSize(sceneImageSize.width(),
+                      sceneImageSize.height()); //rapporto 2/3 solo per resa grafica
+
+    QImage mySceneImage = QImage(mySceneImageSize, QImage::Format::Format_RGB32);
+
+    mySceneImage.fill(0);
+    mySceneImage.invertPixels();
+
+    qDebug()<< "Dot per metri dell'immagine nella direzione X" << mySceneImage.dotsPerMeterX();
+
+    QPainter myPainter;
+
+    qDebug()<<"Larghezza dell'immagine da immagine: " <<mySceneImage.width();
+    myPainter.begin(&mySceneImage);
+    myPainter.setRenderHint(QPainter::Antialiasing);
+
+    /**************************************************************************
+    * è possibile ricavare il numero di dot per metro nell'immagine cioè      *
+    * la risoluzione dello schermo impiegata                                  *
+    * qDebug()<< "Dots per meter dell'immagine: " << myImage.dotsPerMeterX(); *
+    * con questo valore gli 800px corrispondono a circa 17 cm di stampa       *
+    ***************************************************************************/
+
+    /**************************************************************************
+    * Scrivo sul dispositivo di output (myImage con painter) con render per   *
+    * copiare la scena. Con render impostato in questo modo copio esattamente *
+    * quello che vedo. Successivamente vi disegno il bordo.                   *
+    * *************************************************************************/
+
+    QRect rectImage=mySceneImage.rect();
+
+    qDebug()<<"View Rectangle: "<< previewRect;
+    laserWindow->graphicsView->render(&myPainter, rectImage, previewRect);
+
+
+    myPainter.setPen(QPen(Qt::gray, 2, Qt::SolidLine));
+    myPainter.drawRect(rectImage);
+
+    /**************************************************************************
+    * salvo l'immagine (png) e ne verifico il salvataggio (in fase di debug)  *
+    * *************************************************************************/
+
+    if(mySceneImage.save("sceneImg.png", "PNG"))
+        qDebug()<<"Imagine salvata";
+
+
+    /**************************************************************************
+    * Effettuo il flush di painter anche se non strettamente necessario per   *
+    * rendere il codice più leggibile                                         *
+    ***************************************************************************/
+
+    myPainter.end();
+
+    /**************************************************************************
+     * L'immagine impiegata per le tabelle non puù essere ridimensionata      *
+     * pertanto ne creo un'altra delle dimensioni dei due grafici da          *
+     * utilizzare per gli occhiali protettori.                                *
+     **************************************************************************/
+
+    QSize myChartGoggleImageSize(laserWindow->myDockControls->getChartView()->width(),
+                      laserWindow->myDockControls->getChartView()->height());
+
+    QImage myChartGoggleImage = QImage(myChartGoggleImageSize, QImage::Format::Format_RGB32);
+
+    /**************************************************************************
+     * Per impiegare una nuova immagine devo caricarla come dispostivo di     *
+     * output per painter.                                                    *
+     **************************************************************************/
+
+    myPainter.begin(&myChartGoggleImage);
+    myChartGoggleImage.fill(0);
+    myChartGoggleImage.invertPixels();
+
+    laserWindow->myDockControls->getChartView()->scene()->render(&myPainter);
+    if(myChartGoggleImage.save("chartViewImg.png", "PNG"))
+        qDebug()<<"Imagine salvata";
+
+    laserWindow->myDockControls->getdChartView()->scene()->render(&myPainter);
+    if(myChartGoggleImage.save("dChartViewImg.png", "PNG"))
+        qDebug()<<"Imagine salvata";
+
+    /**************************************************************************
+    * Effettuo il flush di painter anche se non strettamente necessario per   *
+    * rendere il codice più leggibile                                         *
+    ***************************************************************************/
+
+    myPainter.end();
+}
+
+QString MainWindow::printGoggleLimits(const vector< pair <int,double> > & dataVector, const int & scale,
+                                      const std::string & unit, htmlConfig myHtmlConfig)
 {
     QString html;
+    QString correction;
+
+    if(myHtmlConfig==REPORT)
+        correction="\"240\"";
+    else
+        correction="\"50%\"";
+
     html.clear();
 
-    html += "<table width=\"50%\">\n";
+    html += "<table width="+correction+">\n";
     html +=  "<tr>\n<th>Numero di scala</th>\n"
              "<th>Valore limite "+ QString::fromStdString(unit)+ "</th>\n</tr>";
 
@@ -2351,12 +2523,19 @@ QString MainWindow::printGoggleLimits(const vector< pair <int,double> > & dataVe
 }
 
 
-QString MainWindow::printReflectorTable( vector< pair <double,double> > myVector)
+QString MainWindow::printReflectorTable( vector< pair <double,double> > myVector, htmlConfig myHtmlConfig)
 {
     QString html;
+    QString correction;
+
+    if(myHtmlConfig==REPORT)
+        correction="\"480\"";
+    else
+        correction="\"100%\"";
+
     html.clear();
 
-    html += "<table width=\"100%\">\n";
+    html += "<table width="+correction+">\n";
     html +=  "<tr>\n<th>Angolo [gradi]</th>\n"
              "<th>Distanza sicurezza [m]</th>\n</tr>";
 
@@ -2396,12 +2575,19 @@ QString MainWindow::printReflectorTable( vector< pair <double,double> > myVector
        return html;
 }
 
-QString MainWindow::printSpecularReflectorCoefficients( vector< pair <double,double> > myVector)
+QString MainWindow::printSpecularReflectorCoefficients( vector< pair <double,double> > myVector, htmlConfig myHtmlConfig)
 {
     QString html;
+    QString correction;
+
+    if(myHtmlConfig==REPORT)
+        correction="\"480\"";
+    else
+        correction="\"100%\"";
+
     html.clear();
 
-    html += "<table width=\"100%\">\n";
+    html += "<table width="+correction+">\n";
     html +=  "<tr>\n<th>Angolo [gradi]</th>\n"
              "<th>Coefficiente di riflessione &rho;<sub>s</sub></th>\n</tr>";
 
@@ -2442,10 +2628,16 @@ QString MainWindow::printSpecularReflectorCoefficients( vector< pair <double,dou
        return html;
 }
 
-QString MainWindow::htmlReflectors()
+QString MainWindow::htmlReflectors(htmlConfig myHtmlConfig)
 {
     QString html;
     QString htmlImage;
+    QString correction;
+
+    if(myHtmlConfig==REPORT)
+        correction="\"480\"";
+    else
+        correction="\"100%\"";
 
     if(!myReflectors.empty())
         html +="<br><h2>Elementi riflettori presenti nell'area di sgombero</h2>";
@@ -2492,10 +2684,10 @@ QString MainWindow::htmlReflectors()
                 myPainter.end();
 
                 htmlImage+="<h3>Coefficienti di riflessione da superficie bagnata</h3>\n";
-                htmlImage+=printSpecularReflectorCoefficients(reflector->getRho_sVect());
+                htmlImage+=printSpecularReflectorCoefficients(reflector->getRho_sVect(), myHtmlConfig);
 
                         htmlImage+="<h3>Distanza di sicurezza in funzione dell'angolo di riflessione (valori non nulli)</h3>\n";
-                        htmlImage+=printReflectorTable(reflector->getZsVect());
+                        htmlImage+=printReflectorTable(reflector->getZsVect(), myHtmlConfig);
                     }
                 }
             else
@@ -2527,10 +2719,10 @@ QString MainWindow::htmlReflectors()
                 myPainter.end();
 
                 htmlImage+="<h3>Coefficienti di riflessione da superficie di vetro</h3>\n";
-                htmlImage+=printSpecularReflectorCoefficients(reflector->getRho_sVect());
+                htmlImage+=printSpecularReflectorCoefficients(reflector->getRho_sVect(), myHtmlConfig);
 
                 htmlImage+="<h3>Distanza di sicurezza in funzione dell'angolo di riflessione (valori non nulli)</h3>\n";
-                htmlImage+=printReflectorTable(reflector->getZsVect());
+                htmlImage+=printReflectorTable(reflector->getZsVect(), myHtmlConfig);
                     }
                 }
             else
@@ -2564,7 +2756,7 @@ QString MainWindow::htmlReflectors()
 
 
                     htmlImage+="<h3>Distanza di sicurezza in funzione dell'angolo di riflessione (valori non nulli)</h3>\n";
-                    htmlImage+=printReflectorTable(reflector->getZsVect());
+                    htmlImage+=printReflectorTable(reflector->getZsVect(), myHtmlConfig);
                 }
                 else
                 {
@@ -2592,7 +2784,7 @@ QString MainWindow::htmlReflectors()
                }
 
             html +=
-            "<table width=\"100%\">\n"
+            "<table width="+correction+">\n"
              "<tr><th colspan=\"2\">Riflettore n. "+ QString::number(i) +"</th></tr>\n";
 
             foreach (QString entry, reflectors) {
@@ -2612,9 +2804,15 @@ QString MainWindow::htmlReflectors()
    return html;
 }
 
-QString MainWindow::htmlFootprints()
+QString MainWindow::htmlFootprints(htmlConfig myHtmlConfig)
 {
     QString html;
+    QString correction;
+
+    if(myHtmlConfig==REPORT)
+        correction="\"480\"";
+    else
+        correction="\"100%\"";
 
     if(!myFootprints.empty())
         html +="<br><h2>Ingombri presenti nell'area</h2>";
@@ -2629,7 +2827,7 @@ QString MainWindow::htmlFootprints()
         footprintsPageReport();
 
         html +=
-        "<table width=\"100%\">\n"
+        "<table width="+correction+">\n"
          "<tr><th colspan=\"2\">Ingombro n. "+ QString::number(i) +"</th></tr>\n";
 
         foreach (QString entry, footprints) {
@@ -2648,9 +2846,15 @@ QString MainWindow::htmlFootprints()
     return html;
 }
 
-QString MainWindow::htmlBinoculars()
+QString MainWindow::htmlBinoculars(htmlConfig myHtmlConfig)
 {
     QString html;
+    QString correction;
+
+    if(myHtmlConfig==REPORT)
+        correction="\"480\"";
+    else
+        correction="\"100%\"";
 
     if(!myBinoculars.empty())
         html +="<br><h2>Dispositivi ottici presenti</h2>";
@@ -2665,7 +2869,7 @@ QString MainWindow::htmlBinoculars()
         binocularsPageReport();
 
         html +=
-        "<table width=\"100%\">\n"
+        "<table width="+correction+">\n"
          "<tr><th colspan=\"2\">Dispositivo ottico n. "+ QString::number(i) +"</th></tr>\n";
 
         foreach (QString entry, binoculars) {
@@ -3025,13 +3229,19 @@ void MainWindow::footprintsPageReport()
                           + QString::number(footprint->getRectangle().rect().height()));
 }
 
-QString MainWindow::htmlMeteo()
+QString MainWindow::htmlMeteo(htmlConfig myHtmlConfig)
 {
     QString htmlMeteo;
+    QString correction;
+
+    if(myHtmlConfig==REPORT)
+        correction="\"480\"";
+    else
+        correction="\"100%\"";
 
             htmlMeteo.clear();
 
-            htmlMeteo += "<table width=\"100%\">\n";
+            htmlMeteo += "<table width="+correction+">\n";
             htmlMeteo += "<tr><th colspan=\"2\" rowspan=\"1\">Condizioni meteo</th></tr>\n";
 
             htmlMeteo += "<tr>"

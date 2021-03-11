@@ -48,6 +48,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+    enum htmlConfig{REPORT, PDF};
     MainWindow();
     bool eventFilter (QObject *watched, QEvent *event)override;
     int seqNumerCount()const;
@@ -85,6 +86,7 @@ private slots:
     void print();   
     void on_printPreviewAction_triggered();
     void printReport(QPrinter* painter);
+    void saveReportImages(const QSize &sceneImageSize);
     void viewCenter();
     void deletedViewCenter();
     void laserModified();
@@ -147,6 +149,7 @@ private slots:
     void installationDescription();
     void backgroundGrid();
     void setPrintPreview();
+    void exportReport();
     void setSelectionRect();
     void goToPoint();
     void setImageRect();
@@ -188,7 +191,7 @@ private slots:
     void setDistanceForFootprint();
     void shadowZoneForLaser();
     void meteoWidgets(bool, bool, bool);
-    QString printGoggleLimits(const vector< pair <int,double> > &, const int &, const string &);
+    QString printGoggleLimits(const vector< pair <int,double> > &, const int &, const string &, htmlConfig);
 
     //scene
 
@@ -227,7 +230,7 @@ private:
     void setControls();   
     void backgroundGridPixmap();
 
-    QString makeHtml();
+    QString makeHtml(htmlConfig);
     //QString makeHtmlClassifier();
     void htmlResults();
     void htmlClassifierResults();
@@ -235,15 +238,15 @@ private:
     void footprintsPageReport();
     void reflectorsPageReport();
     void binocularsPageReport();
-    QString htmlReflectors();
-    QString htmlBinoculars();
-    QString htmlFootprints();
-    QString htmlClassifier();
-    QString htmlMeteo();
+    QString htmlReflectors(htmlConfig);
+    QString htmlBinoculars(htmlConfig);
+    QString htmlFootprints(htmlConfig);
+    QString htmlClassifier(htmlConfig);
+    QString htmlMeteo(htmlConfig);
     void printHtml(const QString&);
     void laserMoved();
-    QString printReflectorTable(vector< pair <double,double> >);
-    QString printSpecularReflectorCoefficients( vector< pair <double,double> >);
+    QString printReflectorTable(vector< pair <double,double> >, htmlConfig);
+    QString printSpecularReflectorCoefficients( vector< pair <double,double> >, htmlConfig);
     void htmlClassifierDetails();
 
     QPainterPath laserpointShapePath();
@@ -320,6 +323,7 @@ private:
     QAction *printAct;
     QAction *setPreviewAct;
     QAction *exportImageAct;
+    QAction *exportReportAct;
     QAction *descriptionAct;
     QAction *exitAction;
     QAction *quitAct;

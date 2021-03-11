@@ -3620,7 +3620,7 @@ void DockControls::setWidgetsForMultiPulse_Operation()
     ui->class_Label->setText(getLaserClassString(myLaserClass));
 
     dockLea->ui->MeanPowerLabel->setText(QString::number(MyLaserClassMP_Pr->getMeanPower(),'e', 2)+" W");
-    dockLea->ui->CountingLabel->setText(QString::fromStdString(MyLaserMP_Pr->valutateCounting()));
+    dockLea->ui->CountingLabel->setText(QString::fromStdString(MyLaserClassMP_Pr->valutateCounting()));
 
             if((wavelength>=400)and(wavelength<=1400)){
                 dockLea->ui->C5_Label->setText(QString::number(MyLaserClassMP_Pr->getC5Coefficient(),'e', 2));}
@@ -4079,14 +4079,15 @@ void DockControls::leaExpressions_MP()
         if(n_laser==2){
         LEA_SP_MultiPulse=MyLaserClassMP_Pr->getLEA_Expressions();
         LEA_Mean=MyLaserClassMP_Pr->getMeanLEA_Expressions();
-        double PRF=MyLaserClassMP_Pr->getPRF();
-        double Ti=MyLaserClassMP_Pr->getTi();
 
-        if(PRF<(1/Ti))
+        if(isThermal_LaserCLass())
+        {
+            if(!isHF_LaserCLass())
             LEA_Thermal=MyLaserClassMP_Pr->getThermalLEA_Expressions();
-        else
-            LEA_Ti=MyLaserClassMP_Pr->getTiLEA_Expressions();
+            else
+            LEA_Thermal=MyLaserClassMP_Pr->getTiLEA_Expressions();
         }
+    }
 }
 
 QString* DockControls::getLeaExpressions_CW()const
@@ -4110,10 +4111,37 @@ QString* DockControls::getLeaExpressions_Mean()const
 
 QString* DockControls::getLeaExpressions_Thermal()const
 {
-    return LEA_Ti;
+    return LEA_Thermal;
 }
 
-QString *DockControls::getLeaExpressions_Ti()const
+bool DockControls::isHF_LaserCLass()
 {
-    return LEA_Thermal;
+    bool highFrequency;
+    highFrequency=false;
+
+    if(n_laser==2)
+    {
+        if((wavelength>=400)and(wavelength<=1400))
+        {
+            double Ti= MyLaserClassMP_Pr->getTi();
+            double PRF=MyLaserClassMP_Pr->getPRF();
+
+            if(Ti>(1/PRF))
+                highFrequency=true;
+        }
+    }
+    return highFrequency;
+}
+
+bool DockControls::isThermal_LaserCLass()
+{
+    bool isThermal;
+    isThermal=false;
+
+    if(n_laser==2)
+    {
+        if((wavelength>=400)and(wavelength<=1400))
+               isThermal=true;
+    }
+    return isThermal;
 }

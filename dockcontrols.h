@@ -138,7 +138,9 @@ public:
     QString *getLeaExpressions_SP_MultiPulse()const;
     QString *getLeaExpressions_Mean()const;
     QString *getLeaExpressions_Thermal()const;
-    QString *getLeaExpressions_Ti()const;
+
+    bool isHF_LaserCLass();
+    bool isThermal_LaserCLass();
 
 private slots:
     void on_operationCombo_currentIndexChanged(int index);

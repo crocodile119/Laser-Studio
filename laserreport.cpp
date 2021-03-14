@@ -853,8 +853,6 @@ QString LaserReport::htmlGoggleAssessment()
 {
     QString html;
 
-    html +="<h2>Valutazione della Classe secondo la procedura semplificata CEI EN 60825-1</h2>\n"+htmlClassifier();
-
     html +="<table width="+correction+">\n"
             "<tr>\n<th colspan=\"2\">Dispositivi protettori</tr>\n</th>\n";
 
@@ -1200,7 +1198,15 @@ QString LaserReport::htmlBinoculars()
 
 QString LaserReport::htmlClassifier()
 {
-    QString html;
+    QString html;   
+
+    html +="<h2>Valutazione della Classe secondo la procedura semplificata CEI EN 60825-1</h2>\n";
+
+    QImage myLaserWarning = QImage("./laser_warning.png");
+    QUrl Uri=QUrl("mydata://laser_warning.png");
+
+    textDocument->addResource(QTextDocument::ImageResource,
+        Uri, QVariant(myLaserWarning));
 
     QString classStr=laserWindow->myDockLea->ui->class_Label->text();
 
@@ -1240,9 +1246,9 @@ html += "</table><br>\n";
             }
         }
         if(classStr!="Classe 1")
-            html +="<tr>\n<td colspan=\"2\"><img style= width: 28px; height: 25px;\"\n"
+            html +="<tr>\n<td colspan=\"2\"><img style= width: 40px; height: 25px;\"\n"
         "alt=\"Attenzione\" title=\"Attenzione\"\n"
-        "src=\":/images/laser_warning.png\">&nbsp; &nbsp;  Attenzione, verificare la presenza delle etichette di sicurezza</td>\n</tr>\n";
+        "src=\"mydata://laser_warning.png\">  Attenzione, verificare la presenza delle etichette di sicurezza</td>\n</tr>\n";
 
          html += "</table><br>\n";
     return html;

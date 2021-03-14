@@ -4145,3 +4145,24 @@ bool DockControls::isThermal_LaserCLass()
     }
     return isThermal;
 }
+
+DockControls::operation DockControls::laserOperation() const
+{
+    operation myLaserOperation;
+    switch(n_laser)
+    {
+    case 0:
+    myLaserOperation=CONTINUOS_WAVE;
+    break;
+    case 1:
+    myLaserOperation=PULSE;
+    break;
+    case 2:
+    myLaserOperation=MULTI_PULSE;
+    break;
+    default:
+    myLaserOperation=NOT_WORKING;
+    }
+
+    return myLaserOperation;
+}

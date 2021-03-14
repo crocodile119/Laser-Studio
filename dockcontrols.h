@@ -30,6 +30,7 @@
 #include "ui_dockskin.h"
 #include "ui_dockgoggle.h"
 #include "ui_docklea.h"
+#include "ui_dockcontrols.h"
 #include "ui_reflectorsqlist.h"
 
 
@@ -41,7 +42,9 @@ class DockControls : public QDockWidget
 {
     Q_OBJECT
 
+
 public:
+    enum operation{CONTINUOS_WAVE, PULSE, MULTI_PULSE, NOT_WORKING};
     explicit DockControls(QWidget *parent, DockResults *dockResults, DockEffects *dockEffects,
                           DockSkin *dockSkin, DockGoggle *dockGoggle, DockLea *dockLea);
     ~DockControls();
@@ -110,6 +113,7 @@ public:
     int get_n_laser()const;
     bool isModeLocked();
     void modeLockedPeak();
+    operation laserOperation()const;
 	
 	//funzioni membro lea
     void set_LEA_Widgets();

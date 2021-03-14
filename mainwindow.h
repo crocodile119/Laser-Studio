@@ -32,6 +32,7 @@
 #include "footprintobject.h"
 #include "objectlink.h"
 #include "gridlines.h"
+#include "laserreport.h"
 
 #if defined(QT_PRINTSUPPORT_LIB)
 #include <QtPrintSupport/qtprintsupportglobal.h>
@@ -54,6 +55,7 @@ public:
     int seqNumerCount()const;
 
     const static QString HTML_DEF;
+    const static QSize mySceneImageSize;
 
     void setEMP();
     void setPowerErg();
@@ -83,10 +85,6 @@ private slots:
     void onLineHelp();
     bool loadFile(const QString &fileName);
 
-    void print();   
-    void on_printPreviewAction_triggered();
-    void printReport(QPrinter* painter);
-    void saveReportImages(const QSize &sceneImageSize);
     void viewCenter();
     void deletedViewCenter();
     void laserModified();
@@ -191,7 +189,6 @@ private slots:
     void setDistanceForFootprint();
     void shadowZoneForLaser();
     void meteoWidgets(bool, bool, bool);
-    QString printGoggleLimits(const vector< pair <int,double> > &, const int &, const string &, htmlConfig);
 
     //scene
 
@@ -230,24 +227,12 @@ private:
     void setControls();   
     void backgroundGridPixmap();
 
-    QString makeHtml(htmlConfig);
-    //QString makeHtmlClassifier();
-    void htmlResults();
-    void htmlClassifierResults();
-    void firstPageReport();
-    void footprintsPageReport();
-    void reflectorsPageReport();
-    void binocularsPageReport();
-    QString htmlReflectors(htmlConfig);
-    QString htmlBinoculars(htmlConfig);
-    QString htmlFootprints(htmlConfig);
-    QString htmlClassifier(htmlConfig);
-    QString htmlMeteo(htmlConfig);
+    void print();
+    void on_printPreviewAction_triggered();
+    void printReport(QPrinter* painter);
+    void saveReportImages();
     void printHtml(const QString&);
-    void laserMoved();
-    QString printReflectorTable(vector< pair <double,double> >, htmlConfig);
-    QString printSpecularReflectorCoefficients( vector< pair <double,double> >, htmlConfig);
-    void htmlClassifierDetails();
+
 
     QPainterPath laserpointShapePath();
 
@@ -266,27 +251,17 @@ private:
     QStringList recentFiles;
     double reflectorDistance;
     QTimer *timer;
-    QStringList effects;
-    QStringList input;
-    QStringList output;
-    QStringList goggle;
-    QStringList reflectors;
-    QStringList binoculars;
-    QStringList footprints;
-    QStringList laser;
-    QStringList skin;
-    QStringList classifierOutput;
-    QStringList classifierDetails;
+    QStringList reflectorsFilenameList;
+    QList <QImage> reflectorsGraphImageList;
     QLabel *statusLabel;
     CentralWidget *laserWindow;
-    QStringList *firstPage;
-    QStringList *entries;
     QRect previewRect;
     QRect previewImage;
     QComboBox *sceneScaleCombo;
     QPainterPath shadowPathZone;
     QPainterPath ehnacedPathZone;
-    QPainterPath hazardZone;
+    QPainterPath hazardZone;    
+    LaserReport *myLaserReport;
 
     int roomNumber;
     double beamDiameter;
@@ -396,7 +371,6 @@ private:
     QAction *glassGoggleAction;
     QAction *plasticGoggleAction;
 
-
     QGraphicsView *view;
     QList <pair<Reflector *, int>> myReflectors;
     QList <pair<Binocular *, int>> myBinoculars;
@@ -405,13 +379,6 @@ private:
     QList <LabRoom*> labroomList;
     QPointF pointPosition;
 
-    int SmallGap;
-    int MediumGap;
-    int LargeGap;
-
-    QFont titleFont;
-    QFont bodyFont;
-    QFont footerFont;
     QFont sceneFont;
     QTransform myTransform;
 };

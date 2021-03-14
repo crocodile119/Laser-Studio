@@ -53,6 +53,7 @@ SOURCES +=\
     laserlistmodel.cpp \
     laserpoint.cpp \
     laserpropertiesdialog.cpp \
+    laserreport.cpp \
     lasersafety.cpp \
     lasersafetycw.cpp \
     lasersafetymp.cpp \
@@ -117,6 +118,7 @@ HEADERS  += mainwindow.h \
     laserlistmodel.h \
     laserpoint.h \
     laserpropertiesdialog.h \
+    laserreport.h \
     lasersafety.h \
     lasersafetycw.h \
     lasersafetymp.h \

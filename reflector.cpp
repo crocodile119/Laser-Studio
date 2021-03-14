@@ -956,8 +956,6 @@ int Reflector::getCorrectPositioning()const
     return correctPositioning;
 }
 
-
-
 void Reflector::setCorrectPositioning()
 {
 

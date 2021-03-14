@@ -1,8 +1,10 @@
 #include "environmentlistmodel.h"
 #include <QStandardItem>
 
+const int EnvironmentListModel::STANDARD_VISIBILITY= 23;
+
 EnvironmentListModel::EnvironmentListModel(const QList<LabRoom*> &_labroomList, bool _state, QObject *parent)
-    : QAbstractListModel(parent), labroomList(_labroomList), state(_state)
+    : QAbstractListModel(parent), labroomList(_labroomList), state(_state), meteoVisibility(STANDARD_VISIBILITY)
 {
 
 }
@@ -25,10 +27,15 @@ QVariant EnvironmentListModel::data(const QModelIndex &index, int role) const
 
     if (role == Qt::DisplayRole)
     {
+        QString meteoVisibilityStr=QString::number(meteoVisibility);
+
         if(state)
         laserDescriptor=labroomList.at(index.row())->getTextLabel();
         else
-         laserDescriptor="Poligono di tiro militare";
+        {
+         laserDescriptor=QString("Poligono di tiro militare. \nVisibilità meteorologica: %1 km")
+            .arg(meteoVisibilityStr);
+        }
 
         return  laserDescriptor;
     }
@@ -97,4 +104,14 @@ void EnvironmentListModel::setState(bool _state)
 bool EnvironmentListModel::getState()
 {
     return state;
+}
+
+void EnvironmentListModel::setMeteoVisibility(const int& _meteoVisibility)
+{
+    int meteoVisibilityInMeters=_meteoVisibility/1000;
+
+    if(meteoVisibilityInMeters==meteoVisibility)
+        return;
+
+    meteoVisibility=meteoVisibilityInMeters;
 }

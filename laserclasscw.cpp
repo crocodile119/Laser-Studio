@@ -13,7 +13,6 @@ LaserClassCW::LaserClassCW(double _beamDiameter, double _powerErg,  double _dive
     setWavelength(_wavelength);
 
     setTimeBase();
-    timeBase=getTimeBase();
 
     powerErgEq=new double[n_lea];
     powerErg_Cond_1=new double[n_lea];
@@ -452,6 +451,20 @@ string* LaserClassCW::getLEA_FormulaUnit()const
 int* LaserClassCW::getLEA_FormulaSort()const
 {
     return myLaserClass.getLEA_FormulaSort();
+}
+
+QString* LaserClassCW::getLEA_Expressions()const
+{
+    QString* leaExpr=new QString[n_lea];
+
+    for(int i=0; i<n_lea; i++)
+    {
+        leaExpr[i]=QString::fromStdString(getLEA_FormulaTipo()[i])+" = "+
+                   QString::fromStdString(getLEA_Formula()[i]) +" = "
+        +          QString::number(getLEA()[i], 'e', 2) +" "+
+                   QString::fromStdString(getLEA_FormulaUnit()[i]);
+    }
+    return leaExpr;
 }
 
 double* LaserClassCW::getPowerErg_Cond_1()const

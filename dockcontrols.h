@@ -30,6 +30,7 @@
 #include "ui_dockskin.h"
 #include "ui_dockgoggle.h"
 #include "ui_docklea.h"
+#include "ui_dockcontrols.h"
 #include "ui_reflectorsqlist.h"
 
 
@@ -41,7 +42,9 @@ class DockControls : public QDockWidget
 {
     Q_OBJECT
 
+
 public:
+    enum operation{CONTINUOS_WAVE, PULSE, MULTI_PULSE, NOT_WORKING};
     explicit DockControls(QWidget *parent, DockResults *dockResults, DockEffects *dockEffects,
                           DockSkin *dockSkin, DockGoggle *dockGoggle, DockLea *dockLea);
     ~DockControls();
@@ -49,6 +52,7 @@ public:
 
     static const int DOCKGOGGLEMINIMUN;
     static const int DOCKGOGGLEMAXIMUN;
+    static const double MODELOCKED_LIMIT;
 
     void fetchDataVector();
     void fetchDDataVector();
@@ -107,10 +111,9 @@ public:
     double getOpticalDensity();
     double getDOpticalDensity();
     int get_n_laser()const;
-    bool isModeLocking();
-    void effectivePowerErgPeak();
-    void modeLockingPeak();
-    void enablePeakControl();
+    bool isModeLocked();
+    void modeLockedPeak();
+    operation laserOperation()const;
 	
 	//funzioni membro lea
     void set_LEA_Widgets();
@@ -122,6 +125,26 @@ public:
     void setWidgetsForThermalTi();    
     QString getLaserClassString(const LaserClassCW::laserClass &);
 
+    vector<pair<int, double>> getGoggleDataVect()const;
+    vector<pair<int, double>> getDGoggleDataVect()const;
+    int getGoggleScaleNumber() const;
+    int getDGoggleScaleNumber() const;
+    std::string getGoggleLimitsUnit()const;
+    std::string getDGoggleLimitsUnit()const;
+
+    void leaExpressions_SP();
+    void leaExpressions_MP();
+    void leaExpressions_CW();
+
+    QString *getLeaExpressions_CW()const;
+    QString *getLeaExpressions_SP()const;
+
+    QString *getLeaExpressions_SP_MultiPulse()const;
+    QString *getLeaExpressions_Mean()const;
+    QString *getLeaExpressions_Thermal()const;
+
+    bool isHF_LaserCLass();
+    bool isThermal_LaserCLass();
 
 private slots:
     void on_operationCombo_currentIndexChanged(int index);
@@ -134,7 +157,6 @@ private slots:
     void on_T_SkinControl_valueChanged();
     void on_teControl_valueChanged();
     void on_wavelengthScrollBar_valueChanged(int value);
-    void on_peakControl_valueChanged();
     void setBeamDiameter();
     void setEMP();
     void setPowerErgForEMP();
@@ -224,6 +246,13 @@ private:
     LaserClassMP* MyLaserClassMP_Pr;
 
     LaserGoggle::material goggleMaterial;
+
+    QString* LEA_CW;
+    QString* LEA_SP;
+    QString* LEA_SP_MultiPulse;
+    QString* LEA_Mean;
+    QString* LEA_Thermal;
+    QString* LEA_Ti;
 };
 
 #endif // DOCKCONTROLS_H

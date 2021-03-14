@@ -23,6 +23,7 @@ public:
     double* powerErgUnit(int*, const double &, const double &);
     double* computeMeanLEA_Corrected(int*);
     double* computeLEA_ThermalCorrection(double*);
+    QString *getThermalLEA_Expressions()const;
 
     void setWavelength(const double&);
     void setPulseWidth(const double&);
@@ -57,6 +58,8 @@ public:
 
     int *getMeanLEA_FormulaSort()const;
 
+    QString *getMeanLEA_Expressions()const;
+
     double* getTiLEA()const;
     string* getTiLEA_Formula()const;
     string* getTiLEA_FormulaUnit()const;
@@ -79,6 +82,7 @@ public:
     double getTe()const;
 
     int *getTiLEA_FormulaSort()const;
+    QString *getTiLEA_Expressions()const;
 
     string getC5LaserClassAssigned()const;
     double *getLEA_Corrected()const;

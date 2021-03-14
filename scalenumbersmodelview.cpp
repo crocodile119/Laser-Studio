@@ -6,21 +6,23 @@
 #include <QFont>
 #include "scalenumbersmodelview.h"
 
+const int ScaleNumbersModelView::SCALE_NUMBER=5;
+const int ScaleNumbersModelView::ROW_NUMBERS=10;
+const int ScaleNumbersModelView::COLUMN_NUMBERS=2;
 
-
-ScaleNumbersModelView::ScaleNumbersModelView(QObject *parent):QAbstractTableModel(parent)
+ScaleNumbersModelView::ScaleNumbersModelView(QObject *parent):QAbstractTableModel(parent),
+    scaleNumber(SCALE_NUMBER)
 {
-scaleNumber=5;
 }
 
 int ScaleNumbersModelView::rowCount(const QModelIndex & /*parent*/) const
 {
-   return 10;
+   return ROW_NUMBERS;
 }
 
 int ScaleNumbersModelView::columnCount(const QModelIndex & /*parent*/) const
 {
-    return 2;
+    return COLUMN_NUMBERS;
 }
 
 QVariant ScaleNumbersModelView::data(const QModelIndex &index, int role) const
@@ -94,7 +96,7 @@ QVariant ScaleNumbersModelView::headerData(int section, Qt::Orientation orientat
     return QVariant();
 }
 
-void ScaleNumbersModelView::setScaleNumber(const int _scaleNumber)
+void ScaleNumbersModelView::setScaleNumber(const int & _scaleNumber)
 {
     beginResetModel();
     scaleNumber=_scaleNumber;

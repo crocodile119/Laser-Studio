@@ -82,7 +82,7 @@ void LaserSkinSafetyMP::computeMeanPowerEMP()
             if(powerFormulaSort=="H")
                 meanPow_EMP_Result=powerSkinEMP/ceil(exposureTime*PRF);// calcola l'H medio come il rapporo dell'H in Te con N.
             else if(powerFormulaSort=="E")
-                meanPow_EMP_Result=powerSkinEMP/ceil(PRF*pulseWidth);//calcola l'E medio come il rapporo dell'H medio con t.
+                meanPow_EMP_Result=powerSkinEMP/(PRF*pulseWidth);//calcola l'E medio come il rapporo dell'H medio con t.
         }
         else
         {

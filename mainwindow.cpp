@@ -5,6 +5,7 @@
 #include <QGuiApplication>
 #include <QDebug>
 #include <QImage>
+#include <QTextDocumentWriter>
 #include "mainwindow.h"
 #include "centralwidget.h"
 #include "ui_dockcontrols.h"
@@ -41,38 +42,7 @@
 #endif
 #endif
 
-const QString MainWindow::HTML_DEF= "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n"
-                                    "<html>\n"
-                                    "<head>\n"
-                                    "<meta content=\"text/html; charset=ISO-8859-1\"\n"
-                                    "http-equiv=\"content-type\">\n"
-                                    "<title>Laser Report</title>\n"
-                                        "<style>"
-                                             "h1, h2, h3, h4 {\n"
-                                             "font-family: \"Trebuchet MS\", Arial, Helvetica, sans-serif;\n"
-                                             "}\n"
-                                             "table, th, td {\n"
-                                             "font-family: \"Trebuchet MS\", Arial, Helvetica, sans-serif;\n"
-                                             "font-size: large;\n"
-                                             "border-width: 1px;\n"
-                                             "border-color: #dddddd;\n"
-                                             "border-collapse: collapse;\n"
-                                             "text-align: left;\n"
-                                             "}\n"
-                                             "th {\n"
-                                             "padding-top: 12px;\n"
-                                             "padding-bottom: 12px;\n"
-                                             "text-align: left;\n"
-                                             "background-color: #00c800;\n"
-                                             "color: #fafafa;\n"
-                                             "}\n"
-                                             "td, th {\n"
-                                             "padding: 8px;\n"
-                                             "}\n"
-                                        "</style>\n"
-                                     "</head>\n"
-                                     "<body>\n"
-                                     "<br>\n";
+const QSize MainWindow::mySceneImageSize(600, 400);
 
 MainWindow::MainWindow()
       : laserWindow(new CentralWidget)
@@ -150,16 +120,6 @@ MainWindow::MainWindow()
     laserWindow->myDockControls->ui->wavelengthScrollBar->setValue(634);
     laserWindow->myDockControls->ui->wavelengthScrollBar->setValue(633);
 
-    titleFont=QFont("Times", 10, QFont::Bold);
-    bodyFont=QFont("Times", 10, QFont::Normal);
-    footerFont=QFont("Times", 8, QFont::Normal);
-    sceneFont=QFont("Times", 2, QFont::Normal);
-    MediumGap=20;
-    LargeGap=25;
-    SmallGap=15;
-
-    entries = new QStringList();
-    firstPage = new QStringList();
     previewRect=laserWindow->graphicsView->viewport()->rect();
     qDebug()<<"Rettangolo anteprima di stampa" << previewRect;
 
@@ -355,6 +315,8 @@ void MainWindow::newFile()
 
         setCurrentFile("");
 
+        laserWindow->setMeteoRange(CentralWidget::STANDARD_VISIBILITY_DISTANCE);
+        meteoWidgets(true, false, false);
         laserpoint->setSelected(true);
         laserWindow->graphicsView->centerOn(laserpoint->pos());
 
@@ -363,6 +325,9 @@ void MainWindow::newFile()
         setFont(font);
 
         environmentModel->setState(false);
+        environmentModel->setMeteoVisibility(laserWindow->getMeteoRange());
+        environmentModel->myDataHasChanged();
+
         setPolygon();
         setPolygonAct->setChecked(true);
 
@@ -595,14 +560,7 @@ void MainWindow::propertyFromList()
     LaserPropertiesDialog dialog(laserpoint, this);
     dialog.exec();
     if(dialog.result()==QDialog::Accepted)
-     {
-        setLambertianMaxForReflector();
-        setDNRO_ForLaserpoint();
-        setDNRC_ForLaserpoint();
-        setDNRO_ForReflector();
-        setDNRO_ForBinocular();
-        setDNRO_ForFootprint();
-     }
+        updateForCondMeteo();
 }
 
 void MainWindow::environmentFromList()
@@ -620,27 +578,29 @@ void MainWindow::setCondMeteo()
 {
     AtmosphericEffectsDialog dialog(laserWindow, laserWindow->myDockControls->getWavelength());
     dialog.exec();
-    if(dialog.result()==QDialog::Accepted)
+    if(dialog.result()==QDialog::Accepted)       
     {
-    setLambertianMaxForReflector();
-    setDNRO_ForLaserpoint();
-    setDNRC_ForLaserpoint();
-    setDNRO_ForReflector();
-    setDNRO_ForBinocular();
+        updateForCondMeteo();
+        environmentModel->setMeteoVisibility(laserWindow->getMeteoRange());
+        environmentModel->myDataHasChanged();
     }
 }
 
-void MainWindow::atmosphericEffects()
+void MainWindow::updateForCondMeteo()
 {
-    bool atmEffects= addAtmosphericEffectsAct->isChecked();
-    atmosphericEffectsOn(atmEffects);
-
     setLambertianMaxForReflector();
     setDNRO_ForLaserpoint();
     setDNRC_ForLaserpoint();
     setDNRO_ForReflector();
     setDNRO_ForBinocular();
     setDNRO_ForFootprint();
+}
+
+void MainWindow::atmosphericEffects()
+{
+    bool atmEffects= addAtmosphericEffectsAct->isChecked();
+    atmosphericEffectsOn(atmEffects);
+    updateForCondMeteo();
 
     if(footprint!=nullptr)
       {
@@ -662,13 +622,7 @@ void MainWindow::scintillation()
 {
     bool scintillation= addScintillationAct->isChecked();
     scintillationOn(scintillation);
-
-    setLambertianMaxForReflector();
-    setDNRO_ForLaserpoint();
-    setDNRC_ForLaserpoint();
-    setDNRO_ForReflector();
-    setDNRO_ForBinocular();
-    setDNRO_ForFootprint();
+    updateForCondMeteo();
 
     if(footprint!=nullptr)
       {
@@ -697,15 +651,8 @@ void MainWindow::properties()
     if (laserpoint) {
         LaserPropertiesDialog dialog(laserpoint, this);
         dialog.exec();
-            if(dialog.result()==QDialog::Accepted)
-             {             
-                setLambertianMaxForReflector();
-                setDNRO_ForLaserpoint();
-                setDNRC_ForLaserpoint();
-                setDNRO_ForReflector();
-                setDNRO_ForBinocular();
-                setDNRO_ForFootprint();
-             }
+        if(dialog.result()==QDialog::Accepted)
+          updateForCondMeteo();
         }
         else
         if(reflector)
@@ -848,6 +795,11 @@ void MainWindow::createActions()
     printPreviewAct->setStatusTip(tr("Anteprima di stampa"));
     connect(printPreviewAct, &QAction::triggered, this, &MainWindow::on_printPreviewAction_triggered);
     fileMenu->addAction(printPreviewAct);
+
+    exportReportAct= new QAction(tr("Esporta report ..."), this);
+    exportReportAct->setStatusTip(tr("Esporta il report in formato odt "));
+    connect(exportReportAct, &QAction::triggered, this, &MainWindow::exportReport);
+    fileMenu->addAction(exportReportAct);
 
     const QIcon printIcon = QIcon::fromTheme("Stampa", QIcon(":/images/print.png"));
     printAct = new QAction(printIcon, tr("Stampa..."), this);
@@ -1709,404 +1661,58 @@ void MainWindow::on_printPreviewAction_triggered()
 #endif
 }
 
-/*
-QString MainWindow::makeHtmlClassifier()
+void MainWindow::exportReport()
 {
-    QString html;
 
-    html=HTML_DEF;
+    myLaserReport=new LaserReport(laserWindow, laserpoint, LaserReport::ODF);
+    myLaserReport->setReflectorsList(myReflectors);
+    myLaserReport->setFootprintsList(myFootprints);
+    myLaserReport->setBinocularsList(myBinoculars);
+    myLaserReport->setIndoor(environmentModel->getState());
 
-    int n_laser=laserWindow->myDockControls->get_n_laser();
-    if(n_laser==0)
+    saveReportImages();
+
+    myLaserReport->setReflectorsFilenameList(reflectorsFilenameList);
+    myLaserReport->setReflectorsGraphImageList(reflectorsGraphImageList);
+
+    QTextDocument *textDocument=myLaserReport->buildReportDocument();
+
+    QString exportName = QFileDialog::getSaveFileName(this, tr("Esporta in formato odt"),
+                               "../senza nome.odt",
+                               tr("Documento (*.odt)"));
+    if (!exportName.isEmpty())
     {
-        if(laserWindow->myDockControls->)
+        QApplication::setOverrideCursor(Qt::WaitCursor);
+
+        QTextDocumentWriter myodf(exportName);
+        myodf.setFormat("ODF");
+        myodf.setFileName(exportName);
+        myodf.write(textDocument);
+        statusBar()->showMessage(tr("Esportazione documento terminata"), 2000);
+        QApplication::restoreOverrideCursor();
     }
 
-    html +="<h1>Laser Report</h1>\n"
-    "<table width=\"100%\">\n"
-    "<tr><th colspan=\"2\">Descrizione installazione</th>\n"
-
-    "<tr><td bgcolor=\"#fbfbfb\"><b>Forza Armata</b></td>\n"
-    "<td>"+laserWindow->getForce()+"</td></tr>\n"
-    "<tr><td bgcolor=\"#fbfbfb\"><b>Ente</b></td>\n"
-    "<td>"+laserWindow->getCustomer()+"</td></tr>\n"
-    "<tr><td bgcolor=\"#fbfbfb\"><b>Nominativo UASL</b></td>\n"
-    "<td>"+laserWindow->get_UASL()+"</td></tr>\n"
-    "<tr><td bgcolor=\"#fbfbfb\"><b>Assistenti UASL</b></td>\n"
-    "<td>"+laserWindow->get_UASL_Assistant()+"</td></tr>\n"
-    "<tr><td bgcolor=\"#fbfbfb\"><b>Descrizione apparcchiatura laser</b></td>\n"
-    "<td>"+laserWindow->getLaserDescription()+"</td></tr>\n"
-    "<tr><td bgcolor=\"#fbfbfb\"><b>Descrizione dei luoghi</b></td>\n"
-    "<td>"+laserWindow->getPlaceDescription()+"</td></tr>\n"
-    "</table><br>\n";
-
-    return html;
+    delete textDocument;
+    delete myLaserReport;
 }
-*/
-QString MainWindow::makeHtml()
-{
-    QString html;
-
-    html=HTML_DEF;
-
-    html +="<h1>Laser Report</h1>\n"
-           "<table width=\"100%\">\n"
-
-            "<tr><th colspan=\"2\">Descrizione installazione</th>\n"
-
-                   "<tr><td bgcolor=\"#fbfbfb\"><b>Forza Armata</b></td>\n"
-                   "<td>"+laserWindow->getForce()+"</td></tr>\n"
-                   "<tr><td bgcolor=\"#fbfbfb\"><b>Ente</b></td>\n"
-                   "<td>"+laserWindow->getCustomer()+"</td></tr>\n"
-                   "<tr><td bgcolor=\"#fbfbfb\"><b>Nominativo UASL</b></td>\n"
-                   "<td>"+laserWindow->get_UASL()+"</td></tr>\n"
-                   "<tr><td bgcolor=\"#fbfbfb\"><b>Assistenti UASL</b></td>\n"
-                   "<td>"+laserWindow->get_UASL_Assistant()+"</td></tr>\n"
-                   "<tr><td bgcolor=\"#fbfbfb\"><b>Descrizione apparcchiatura laser</b></td>\n"
-                   "<td>"+laserWindow->getLaserDescription()+"</td></tr>\n"
-                   "<tr><td bgcolor=\"#fbfbfb\"><b>Descrizione dei luoghi</b></td>\n"
-                   "<td>"+laserWindow->getPlaceDescription()+"</td></tr>\n"
-            "</table><br>\n";
-
-        html +="<table width=\"100%\">\n"
-               "<tr><th colspan=\"2\">Installazione del punto laser</th>\n";
-
-        foreach (QString entry, laser) {
-            QStringList fields = entry.split(":");
-            QString title = fields[0];
-            QString body = fields[1];
-
-            html +="<tr><td bgcolor=\"#fbfbfb\"><b>" + title + "</b></td>\n"
-                   "<td>" + body + "</td></tr>\n";
-        }
-            html += "</table><br>\n";
-
-            html += "<div style=\"text-align: center;\">\n"
-                    "<h4>Layout installazione</h4><br>\n"
-                    "<img style= width: 786px; height: 533px;\"\n"
-                    "alt=\"Scena della zona  di sgombero\" title=\"Scena\"\n"
-                    "src=\"./sceneImg.png\"></div>\n";
-
-            if(!environmentModel->getState())
-                html +=htmlMeteo();
-
-QString kindOfLaser;
-
-    if(laserWindow->myDockControls->ui->operationCombo->currentIndex()==0)
-    {
-        kindOfLaser="Laser Countinuos Wave";
-    }
-        else if(laserWindow->myDockControls->ui->operationCombo->currentIndex()==1)
-        {
-         kindOfLaser="Laser impulsato";
-        }
-            else if(laserWindow->myDockControls->ui->operationCombo->currentIndex()==2)
-            {
-              kindOfLaser="Laser ad impulsi multipli";
-            }
-
-    html += "<table width=\"100%\">\n"
-            "<tr>\n<th colspan=\"2\">Dati di ingresso</th>\n</tr>\n"
-            "<tr>\n<td bgcolor=\"#fbfbfb\"><b>Tipo di laser</b></td>\n"
-                           "<td>" + kindOfLaser + "</td>\n</tr>";
-
-    foreach (QString entry, input) {
-        QStringList fields = entry.split("=");
-        QString title = fields[0];
-        QString body = fields[1];
-
-        html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b></td>\n"
-               "<td>" + body + "</td>\n</tr>";
-    }
-
-    html +="</table><br>\n";
-
-    html += "<table width=\"100%\">\n"
-            "<tr>\n<th colspan=\"2\">Valutazione D.Lgs. 81/2008  - Esposizione dell'occhio</th>\n</tr>\n";
-
-    foreach (QString entry, output) {
-        QStringList fields = entry.split("$");
-        QString title = fields[0];
-        QString body = fields[1];
-
-        if(body==" "){
-            html +="<tr>\n<td colspan=\"2\"><i>" + title + "</i></td>\n</tr>\n";
-        }
-        else{
-        html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b></td>\n"
-               "<td>" + body + "</td>\n</tr>\n";
-        }
-    }
-
-    html +="\n</table><br>\n";
-
-    html += "<table width=\"100%\">\n"
-            "<tr>\n<th colspan=\"2\">Valutazione D.Lgs. 81/2008 - Esposizione della cute</th>\n</tr>\n";
-
-    foreach (QString entry, skin) {
-        QStringList fields = entry.split("$");
-        QString title = fields[0];
-        QString body = fields[1];
-
-        if(body==" "){
-            html +="<tr>\n<td colspan=\"2\"><i>" + title + "</i></td>\n</tr>\n";
-        }
-        else{
-        html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b></td>\n"
-               "<td>" + body + "</td>\n</tr>\n";
-        }
-    }
-
-    html +="\n</table><br>\n";
-
-    html +="<table width=\"100%\">\n"
-           "<tr>\n<th colspan=\"2\">Effetti</th>\n</tr>\n";
-
-    foreach (QString entry, effects) {
-        QStringList fields = entry.split(":");
-        QString title = fields[0].toHtmlEscaped();
-        QString body = fields[1].toHtmlEscaped();
-
-        html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b>\n</td>\n"
-               "<td>" + body + "</td>\n</tr>\n";
-    }
-    html +="\n</table><br>\n";
-
-    html+=htmlClassifier();
-    html +="<table width=\"100%\">\n"
-            "<tr>\n<th colspan=\"2\">Dispositivi protettori</tr>\n</th>\n";
-
-    foreach (QString entry, goggle) {
-        QStringList fields = entry.split(":");
-        QString title = fields[0];
-        QString body = fields[1];
-
-        html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b>\n</td>\n"
-               "<td>" + body + "</td>\n</tr>";
-    }
-    html +="\n</tbody>\n</table><br>\n";
-
-    if((laserWindow->myDockControls->ui->operationCombo->currentIndex()==0)||(laserWindow->myDockControls->ui->operationCombo->currentIndex()==1))
-    {
-        html += "<h3> Calcolo grafico del numero di scala</h3>\n"
-                "<br>"
-                "<div style=\"text-align: center;\">\n"
-                "<img style=\"width: 240px; height: 280px;\"\n"
-                "alt=\"diagramma\"\n"
-                "src=\"./tableViewImg.png\">\n"
-                "<img style=\"width: 436px; height: 287px;\"\n"
-                "alt=\"Numeri di scala\"\n"
-                "src=\"./chartViewImg.png\"></div><br><br>\n";
-    }
-    else
-    {
-        html += "<h3> Calcolo grafico del numero di scala per l'effetto di ripetizione degli impulsi</h3>\n"
-                "<br>"
-
-                "<div style=\"text-align: center;\"\n>\n"
-                "<img style=\"width: 240px; height: 280px;\"\n"
-                "alt=\"diagramma\"\n"
-                "src=\"./tableViewImg.png\">\n"
-                "<img style=\"width: 436px; height: 287px;\"\n"
-                "alt=\"Numeri di scala\"\n"
-                "src=\"./chartViewImg.png\"></div><br><br>\n"
-
-                "<h3> Calcolo grafico del numero di scala per l'effetto medio</h3>\n"
-                "<br>"
-
-                "<div style=\"text-align: center;\">\n"
-                "<img style=\"width: 240px; height: 280px;\"\n"
-                "alt=\"diagramma\"\n"
-                "src=\"./dTableViewImg.png\">\n"
-                "<img style=\"width: 436px; height: 287px;\"\n"
-                "alt=\"Numeri di scala\"\n"
-                "src=\"./dChartViewImg.png\">\n"
-                "</div><br><br>\n";
-    }
-    html+=htmlFootprints();
-    html+=htmlReflectors();
-    html+=htmlBinoculars();
-    html+="</body>\n"
-          "</html>\n";
-
-    ofstream outClientFile( "preview.html", ios::out );
-    // exit program if unable to create file
-    if ( !outClientFile ) // overloaded ! operator
-    {
-    qDebug() << "File could not be opened";
-
-    } // end if
-    string htmleStream=html.toStdString();
-    outClientFile << htmleStream << endl;
-
-
-    return html;
-}
-
-QString MainWindow::htmlClassifier()
-{
-    QString html;
-
-    html=HTML_DEF;
-
-        html +="<table width=\"100%\">\n"
-               "<tr><th colspan=\"2\">Valutazione della classe secondo il metodo semplificato</th>\n";
-
-        foreach (QString entry, classifierOutput) {
-            QStringList fields = entry.split(":");
-            QString title = fields[0];
-            QString body = fields[1];
-
-            if(body==" "){
-                html +="<tr>\n<td colspan=\"2\"><i>" + title + "</i></td>\n</tr>\n";
-            }
-            else{
-            html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b></td>\n"
-                   "<td>" + body + "</td>\n</tr>\n";
-            }
-        }
-    html += "</table><br>\n";
-
-    return html;
-}
-
-void MainWindow::htmlClassifierResults()
-{
-    classifierOutput.clear();
-
-    QString couplingFactor1str= "Fattore di accoppiamento 1<sup>a</sup> condizione :" +  laserWindow->myDockLea->ui->couplingFactor1_Label->text();
-    QString couplingFactor3str= "Fattore di accoppiamento 3<sup>a</sup> condizione :" +  laserWindow->myDockLea->ui->couplingFactor3_Label->text();
-    QString apertureDiam1str= "Diametro diaframma 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDiam1_Label->text();
-    QString apertureDiam3str=  "Diametro diaframma 3<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDiam3_Label->text();
-    QString apertureDist1str=  "Distanza apertura 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDist1_Label->text();
-    QString apertureDist3str=  "Diametro apertura 3<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDist3_Label->text();
-    QString beamAperture1str=  "Dimensione del fascio all'apertura 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->beamAperture1_Label->text();
-    QString beamAperture3str= "Dimensione del fascio all'apertura 3<sup>a</sup> condizione :"+ laserWindow->myDockLea->ui->beamAperture3_Label->text();
-    QString formulaLEAstr= laserWindow->myDockLea->ui->tFormulaLEA_Label->text() + " :" + laserWindow->myDockLea->ui->formulaLEA_Label->text();
-    QString LEAstr= laserWindow->myDockLea->ui->tLEA_Label->text() + " :" + laserWindow->myDockLea->ui->LEA_Label->text();
-    QString powerErgCond1LEAstr= laserWindow->myDockLea->ui->tCond1LEA_Label->text() + " :" + laserWindow->myDockLea->ui->cond1LEA_Label->text();
-    QString powerErgCond3LEAstr= laserWindow->myDockLea->ui->tCond3LEA_Label->text() + " :" + laserWindow->myDockLea->ui->cond3LEA_Label->text();
-    QString classStr= "Classe sistema :" + laserWindow->myDockLea->ui->class_Label->text();
-
-    classifierOutput.append(couplingFactor1str);
-    classifierOutput.append(couplingFactor3str);
-    classifierOutput.append(apertureDiam1str);
-    classifierOutput.append(apertureDiam3str);
-    classifierOutput.append(apertureDist1str);
-    classifierOutput.append(apertureDist3str);
-
-    classifierOutput.append(beamAperture1str);
-    classifierOutput.append(beamAperture3str);
-    classifierOutput.append(formulaLEAstr);
-    classifierOutput.append(LEAstr);
-    classifierOutput.append(powerErgCond1LEAstr);
-    classifierOutput.append(powerErgCond3LEAstr);
-
-    classifierOutput.append(classStr);
-
-    if(laserWindow->myDockControls->ui->operationCombo->currentIndex()==1)
-    {
-    QString timeBaseStr ="Base dei tempi :" + laserWindow->myDockLea->ui->timeBase_Label->text();
-    classifierOutput.append(timeBaseStr);
-    }
-
-    if(laserWindow->myDockControls->ui->operationCombo->currentIndex()==2)
-    {
-
-    QString meanPowerEffects="Criterio della potenza media : ";
-    QString meanPowerLabelStr= laserWindow->myDockLea->ui->tCond3LEA_Label->text() + " :" + laserWindow->myDockLea->ui->MeanPowerLabel->text();
-    QString Te_Str= laserWindow->myDockLea->ui->tTe_Label->text() + " :" + laserWindow->myDockLea->ui->Te_Label->text();
-
-    QString couplingFactor1str_2= "Fattore di accoppiamento 1<sup>a</sup> condizione :" +  laserWindow->myDockLea->ui->couplingFactor1_Label_2->text();
-    QString couplingFactor3str_2= "Fattore di accoppiamento 3<sup>a</sup> condizione :" +  laserWindow->myDockLea->ui->couplingFactor3_Label_2->text();
-    QString apertureDiam1str_2= "Diametro diaframma 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDiam1_Label_2->text();
-    QString apertureDiam3str_2=  "Diametro diaframma 3<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDiam3_Label_2->text();
-    QString apertureDist1str_2=  "Distanza apertura 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDist1_Label_2->text();
-    QString apertureDist3str_2=  "Diametro apertura 3<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDist3_Label_2->text();
-    QString beamAperture1str_2=  "Dimensione del fascio all'apertura 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->beamAperture1_Label_2->text();
-    QString beamAperture3str_2= "Dimensione del fascio all'apertura 3<sup>a</sup> condizione :"+ laserWindow->myDockLea->ui->beamAperture3_Label_2->text();
-    QString formulaLEAstr_2= laserWindow->myDockLea->ui->tFormulaLEA_Label->text() + " :" + laserWindow->myDockLea->ui->FormulaLEA_Label_2->text();
-    QString LEAstr_2= laserWindow->myDockLea->ui->tLEA_Label->text() + " :" + laserWindow->myDockLea->ui->LEA_Label_2->text();
-    QString powerErgCond1LEAstr_2= laserWindow->myDockLea->ui->tCond1LEA_Label->text() + " :" + laserWindow->myDockLea->ui->cond1LEA_Label_2->text();
-    QString powerErgCond3LEAstr_2= laserWindow->myDockLea->ui->tCond3LEA_Label->text() + " :" + laserWindow->myDockLea->ui->cond3LEA_Label_2->text();
-    QString classStr_2= "Classe sistema :" + laserWindow->myDockLea->ui->class_Label->text();
-
-    classifierOutput.append(meanPowerEffects);
-    classifierOutput.append(meanPowerLabelStr);
-    classifierOutput.append(Te_Str);
-    classifierOutput.append(couplingFactor1str_2);
-    classifierOutput.append(couplingFactor3str_2);
-    classifierOutput.append(apertureDiam1str_2);
-    classifierOutput.append(apertureDiam3str_2);
-    classifierOutput.append(apertureDist1str_2);
-    classifierOutput.append(apertureDist3str_2);
-
-    classifierOutput.append(beamAperture1str_2);
-    classifierOutput.append(beamAperture3str_2);
-    classifierOutput.append(formulaLEAstr_2);
-    classifierOutput.append(LEAstr_2);
-    classifierOutput.append(powerErgCond1LEAstr_2);
-    classifierOutput.append(powerErgCond3LEAstr_2);
-
-    double wavelength= laserWindow->myDockControls->getWavelength();
-    if((wavelength>=400)and(wavelength<=1400))
-    {
-    QString thermalEffects="Effetti termici : ";
-    QString couplingFactor1str_3= "Fattore di accoppiamento 1<sup>a</sup> condizione :" +  laserWindow->myDockLea->ui->couplingFactor1_Label_3->text();
-    QString couplingFactor3str_3= "Fattore di accoppiamento 3<sup>a</sup> condizione :" +  laserWindow->myDockLea->ui->couplingFactor3_Label_3->text();
-    QString apertureDiam1str_3= "Diametro diaframma 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDiam1_Label_3->text();
-    QString apertureDiam3str_3=  "Diametro diaframma 3<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDiam3_Label_3->text();
-    QString apertureDist1str_3=  "Distanza apertura 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDist1_Label_3->text();
-    QString apertureDist3str_3=  "Diametro apertura 3<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDist3_Label_3->text();
-    QString beamAperture1str_3=  "Dimensione del fascio all'apertura 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->beamAperture1_Label_3->text();
-    QString beamAperture3str_3= "Dimensione del fascio all'apertura 3<sup>a</sup> condizione :"+ laserWindow->myDockLea->ui->beamAperture3_Label_3->text();
-    QString formulaLEAstr_3= laserWindow->myDockLea->ui->tFormulaLEA_Label->text() + " :" + laserWindow->myDockLea->ui->FormulaLEA_Label_3->text();
-    QString LEAstr_3= laserWindow->myDockLea->ui->tLEA_Label->text() + " :" + laserWindow->myDockLea->ui->LEA_Label_3->text();
-    QString powerErgCond1LEAstr_3= laserWindow->myDockLea->ui->tCond1LEA_Label->text() + " :" + laserWindow->myDockLea->ui->cond1LEA_Label_3->text();
-    QString powerErgCond3LEAstr_3= laserWindow->myDockLea->ui->tCond3LEA_Label->text() + " :" + laserWindow->myDockLea->ui->cond3LEA_Label_3->text();
-
-    QString Ti_Str= laserWindow->myDockLea->ui->tTi_Label->text() + " :" + laserWindow->myDockLea->ui->Ti_Label->text();
-    QString Ti_prf_Str= laserWindow->myDockLea->ui->tTi_prf_Label->text() + " :" + laserWindow->myDockLea->ui->Ti_prf_Label->text();
-    QString C5_Str= laserWindow->myDockLea->ui->tC5_Label->text() + " :" + laserWindow->myDockLea->ui->C5_Label->text();
-    QString pulseNumberLabel_Str= laserWindow->myDockLea->ui->tPulseNumberLabel->text() + " :" + laserWindow->myDockLea->ui->PulseNumberLabel->text();
-    QString countingLabel_Str= laserWindow->myDockLea->ui->tCountingLabel->text() + " :" + laserWindow->myDockLea->ui->CountingLabel->text();
-
-    classifierOutput.append(thermalEffects);
-    classifierOutput.append(Ti_Str);
-    classifierOutput.append(Ti_prf_Str);
-    classifierOutput.append(C5_Str);
-    classifierOutput.append(pulseNumberLabel_Str);
-    classifierOutput.append(countingLabel_Str);
-
-    classifierOutput.append(couplingFactor1str_3);
-    classifierOutput.append(couplingFactor3str_3);
-    classifierOutput.append(apertureDiam1str_3);
-    classifierOutput.append(apertureDiam3str_3);
-    classifierOutput.append(apertureDist1str_3);
-    classifierOutput.append(apertureDist3str_3);
-
-    classifierOutput.append(beamAperture1str_3);
-    classifierOutput.append(beamAperture3str_3);
-    classifierOutput.append(formulaLEAstr_3);
-    classifierOutput.append(LEAstr_3);
-    classifierOutput.append(powerErgCond1LEAstr_3);
-    classifierOutput.append(powerErgCond3LEAstr_3);
-    }
-    }
-}
-
 
 void MainWindow::printReport(QPrinter *printer)
 {
     #if defined(QT_PRINTSUPPORT_LIB) && QT_CONFIG(printdialog)
 
-        firstPageReport();
-        htmlResults();
-        htmlClassifierResults();
+    myLaserReport=new LaserReport(laserWindow, laserpoint, LaserReport::PDF);
+    myLaserReport->setReflectorsList(myReflectors);
+    myLaserReport->setFootprintsList(myFootprints);
+    myLaserReport->setBinocularsList(myBinoculars);
+    myLaserReport->setIndoor(environmentModel->getState());
 
-        QTextDocument textDocument;
-        textDocument.setHtml(makeHtml());
+    saveReportImages();
 
+    myLaserReport->setReflectorsFilenameList(reflectorsFilenameList);
+    myLaserReport->setReflectorsGraphImageList(reflectorsGraphImageList);
+
+    QTextDocument *textDocument=myLaserReport->buildReportDocument();
+    textDocument->adjustSize();
         /***************************************************************************
         * La larghezza del testo di textDocument la imposto ad 800 px.             *
         * Per l'oggetto istanziato da QTextDocument l'unità di misura dipende      *
@@ -2118,270 +1724,107 @@ void MainWindow::printReport(QPrinter *printer)
         * stampante ma la risoluzione logica dello schermo.                        *
         * *************************************************************************/
 
-        textDocument.setTextWidth(800);
-
-
-        qDebug()<< "TextDocument margin: " << textDocument.documentMargin();
-        qDebug()<< "TextDocument size: " << textDocument.size().width();
-        qDebug()<< "Print widh: " << printer->width();
-
-        /**************************************************************************
-        * Risultano in pratica 14 pixel di margine (7 left, 7 right).             *
-        * Alla stampante senza margine corrispondono invece 16 pixel quindi i     *
-        * margini introducono due pixel. Non si riesce a risalire al margine del  *
-        * l'immagine (che per essere allineata deve essere 786 px invece che 800  *
-        * è possibile che dipenda da html che indrodude dei margini di defaut.    *                                                       *
-        ***************************************************************************/
-
-        int mySceneImageWidth=(int)(0.77*(textDocument.size().width()-14));
-        int mySceneImageHeight=(int)(0.77*(2*textDocument.size().width()/3));
-
-        qDebug() << "mySceneImageWidth: " << mySceneImageWidth;
-        qDebug() << "mySceneImageHeight: "<<mySceneImageHeight;
-
-        QSize mySceneImageSize(mySceneImageWidth,
-                          mySceneImageHeight); //rapporto 2/3 solo per resa grafica
-
-        QImage mySceneImage = QImage(mySceneImageSize, QImage::Format::Format_RGB32);
-
-        mySceneImage.fill(0);
-        mySceneImage.invertPixels();
-
-        qDebug()<< "Dot per metri dell'immagine nella direzione X" << mySceneImage.dotsPerMeterX();
-
-        QPainter myPainter;
-
-        qDebug()<<"Larghezza dell'immagine da immagine: " <<mySceneImage.width();
-        myPainter.begin(&mySceneImage);
-        myPainter.setRenderHint(QPainter::Antialiasing);
-
-        /**************************************************************************
-        * è possibile ricavare il numero di dot per metro nell'immagine cioè      *
-        * la risoluzione dello schermo impiegata                                  *
-        * qDebug()<< "Dots per meter dell'immagine: " << myImage.dotsPerMeterX(); *
-        * con questo valore gli 800px corrispondono a circa 17 cm di stampa       *
-        ***************************************************************************/
-
-        /**************************************************************************
-        * Scrivo sul dispositivo di output (myImage con painter) con render per   *
-        * copiare la scena. Con render impostato in questo modo copio esattamente *
-        * quello che vedo. Successivamente vi disegno il bordo.                   *
-        * *************************************************************************/
-
-        QRect rectImage=mySceneImage.rect();
-
-        qDebug()<<"View Rectangle: "<< previewRect;
-        laserWindow->graphicsView->render(&myPainter, rectImage, previewRect);
-
-
-        myPainter.setPen(QPen(Qt::gray, 2, Qt::SolidLine));
-        myPainter.drawRect(rectImage);
-
-        /**************************************************************************
-        * salvo l'immagine (png) e ne verifico il salvataggio (in fase di debug)  *
-        * *************************************************************************/
-
-        if(mySceneImage.save("sceneImg.png", "PNG"))
-            qDebug()<<"Imagine salvata";
-
-
-        /**************************************************************************
-        * Effettuo il flush di painter anche se non strettamente necessario per   *
-        * rendere il codice più leggibile                                         *
-        ***************************************************************************/
-
-        myPainter.end();
-
-        /**************************************************************************
-         * L'immagine impiegata per la scena non puù essere ridimensionata        *
-         * pertanto ne creo un'altra delle dimensioni delle due tabelle da        *
-         * utilizzare per gli occhiali protettori.                                *
-         **************************************************************************/
-
-        QSize myTableGoggleImageSize(laserWindow->myDockGoggle->ui->tableView->width(),
-                          laserWindow->myDockGoggle->ui->tableView->height());
-
-        QImage myTableGoggleImage = QImage(myTableGoggleImageSize, QImage::Format::Format_RGB32);
-
-        myTableGoggleImage.invertPixels();
-
-        /**************************************************************************
-         * Per impiegare una nuova immagine devo caricarla come dispostivo di     *
-         * output per painter.                                                    *
-         **************************************************************************/
-
-        myPainter.begin(&myTableGoggleImage);
-
-        laserWindow->myDockGoggle->ui->tableView->render(&myPainter);
-        if(myTableGoggleImage.save("tableViewImg.png", "PNG"))
-            qDebug()<<"Imagine salvata";
-
-
-        laserWindow->myDockGoggle->ui->dTableView->render(&myPainter);
-        if(myTableGoggleImage.save("dTableViewImg.png", "PNG"))
-            qDebug()<<"Imagine salvata";
-
-        /**************************************************************************
-        * Effettuo il flush di painter anche se non strettamente necessario per   *
-        * rendere il codice più leggibile                                         *
-        ***************************************************************************/
-
-        myPainter.end();
-
-        /**************************************************************************
-         * L'immagine impiegata per le tabelle non puù essere ridimensionata      *
-         * pertanto ne creo un'altra delle dimensioni dei due grafici da          *
-         * utilizzare per gli occhiali protettori.                                *
-         **************************************************************************/
-
-        QSize myChartGoggleImageSize(laserWindow->myDockControls->getChartView()->width(),
-                          laserWindow->myDockControls->getChartView()->height());
-
-        QImage myChartGoggleImage = QImage(myChartGoggleImageSize, QImage::Format::Format_RGB32);
-
-        /**************************************************************************
-         * Per impiegare una nuova immagine devo caricarla come dispostivo di     *
-         * output per painter.                                                    *
-         **************************************************************************/
-
-        myPainter.begin(&myChartGoggleImage);
-        myChartGoggleImage.fill(0);
-        myChartGoggleImage.invertPixels();
-
-        laserWindow->myDockControls->getChartView()->scene()->render(&myPainter);
-        if(myChartGoggleImage.save("chartViewImg.png", "PNG"))
-            qDebug()<<"Imagine salvata";
-
-        laserWindow->myDockControls->getdChartView()->scene()->render(&myPainter);
-        if(myChartGoggleImage.save("dChartViewImg.png", "PNG"))
-            qDebug()<<"Imagine salvata";
-
-        /**************************************************************************
-        * Effettuo il flush di painter anche se non strettamente necessario per   *
-        * rendere il codice più leggibile                                         *
-        ***************************************************************************/
-
-        myPainter.end();
-
         /**************************************************************************
         * Stampo                                                                  *
         * *************************************************************************/
 
-        textDocument.print(printer);
+        textDocument->print(printer);
+
+
+        delete textDocument;
+        delete myLaserReport;
 
     #endif
 }
 
-QString MainWindow::printReflectorTable( vector< pair <double,double> > myVector)
+void MainWindow::saveReportImages()
 {
-    QString html;
-    html.clear();
+    QImage mySceneImage = QImage(mySceneImageSize, QImage::Format::Format_RGB32);
 
-    html += "<table width=\"100%\">\n";
-    html +=  "<tr>\n<th>Angolo [gradi]</th>\n"
-             "<th>Distanza sicurezza [m]</th>\n</tr>";
+    mySceneImage.fill(0);
+    mySceneImage.invertPixels();
 
+    qDebug()<< "Dot per metri dell'immagine nella direzione X" << mySceneImage.dotsPerMeterX();
 
-   vector< pair <double,double> >::const_iterator constIterator; // const_iterator
-   // display vector elements using const_iterator
-   int step=5;
+    QPainter myPainter;
 
-   /*************************************************************************************************
-    * La funzioone sd::advance non riconosce la fine del ciclo for se il numero di elementi non è   *
-    * un multiplo dello step. Per tale motivo verifico la dimensione con il modulo. Se il valore è  *
-    * diverso da zeo elimino tanti elementi dal  vettore (elementi inziali con pop_back) quanto è   *
-    * il valore del modulo tanto la funzione dei coefficienti di riflessione è singolare in 0°      *
-    * e si pone pari a 0.                                                                           *
-    *************************************************************************************************/
+    qDebug()<<"Larghezza dell'immagine da immagine: " <<mySceneImage.width();
+    myPainter.begin(&mySceneImage);
+    myPainter.setRenderHint(QPainter::Antialiasing);
 
-   int vectorCount=myVector.size()%step;
-   if(vectorCount!=0)
-   {
-       for(int i=0; i<vectorCount; i++)
-            myVector.pop_back();
-   }
-   for ( constIterator = myVector.begin();
-        constIterator != myVector.end(); std::advance(constIterator, step ))
-   {
-       if(constIterator->second!=0)
-       {
-       html += "<tr>"
-               "<td>" + QString::number(constIterator->first) + "</td>\n"
-               "<td>" + QString::number(constIterator->second) +"</td>\n"
-               "</tr>";
-       }
-    }
+    QRect rectImage=mySceneImage.rect();
 
-       html += "\n</table><br>\n";
-
-       return html;
-}
-
-QString MainWindow::printSpecularReflectorCoefficients( vector< pair <double,double> > myVector)
-{
-    QString html;
-    html.clear();
-
-    html += "<table width=\"100%\">\n";
-    html +=  "<tr>\n<th>Angolo [gradi]</th>\n"
-             "<th>Coefficiente di riflessione &rho;<sub>s</sub></th>\n</tr>";
+    qDebug()<<"View Rectangle: "<< previewRect;
+    laserWindow->graphicsView->render(&myPainter, rectImage, previewRect);
 
 
-   vector< pair <double,double> >::const_iterator constIterator; // const_iterator
-   // display vector elements using const_iterator
-   int step=10;
+    myPainter.setPen(QPen(Qt::gray, 2, Qt::SolidLine));
+    myPainter.drawRect(rectImage);
 
-   /*************************************************************************************************
-    * La funzioone sd::advance non riconosce la fine del ciclo for se il numero di elementi non è   *
-    * un multiplo dello step. Per tale motivo verifico la dimensione con il modulo. Se il valore è  *
-    * diverso da zeo elimino tanti elementi dal  vettore (elementi inziali con pop_back) quanto è   *
-    * il valore del modulo tanto la funzione dei coefficienti di riflessione è singolare in 0°      *
-    * e si pone pari a 0.                                                                           *
-    *************************************************************************************************/
+    /**************************************************************************
+    * salvo l'immagine (png) e ne verifico il salvataggio (in fase di debug)  *
+    * *************************************************************************/
 
-   int vectorCount=myVector.size()%step;
-   if(vectorCount!=0)
-   {
-       for(int i=0; i<vectorCount; i++)
-            myVector.pop_back();
-   }
+    if(mySceneImage.save("sceneImg.png", "PNG"))
+        qDebug()<<"Imagine salvata";
 
-   for ( constIterator = myVector.begin();
-        constIterator != myVector.end(); std::advance(constIterator, step))
-   {
-       if(constIterator->second!=0)
-       {
-       html += "<tr>"
-               "<td>" + QString::number(constIterator->first) + "</td>\n"
-               "<td>" + QString::number(constIterator->second) +"</td>\n"
-               "</tr>";
-       }
-    }
 
-       html += "\n</table><br>\n";
+    /**************************************************************************
+    * Effettuo il flush di painter anche se non strettamente necessario per   *
+    * rendere il codice più leggibile                                         *
+    ***************************************************************************/
 
-       return html;
-}
+    myPainter.end();
 
-QString MainWindow::htmlReflectors()
-{
-    QString html;
-    QString htmlImage;
+    /**************************************************************************
+     * L'immagine impiegata per le tabelle non puù essere ridimensionata      *
+     * pertanto ne creo un'altra delle dimensioni dei due grafici da          *
+     * utilizzare per gli occhiali protettori.                                *
+     **************************************************************************/
+
+    QSize myChartGoggleImageSize(laserWindow->myDockControls->getChartView()->width(),
+                      laserWindow->myDockControls->getChartView()->height());
+
+    QImage myChartGoggleImage = QImage(myChartGoggleImageSize, QImage::Format::Format_RGB32);
+
+    /**************************************************************************
+     * Per impiegare una nuova immagine devo caricarla come dispostivo di     *
+     * output per painter.                                                    *
+     **************************************************************************/
+
+    myPainter.begin(&myChartGoggleImage);
+    myChartGoggleImage.fill(0);
+    myChartGoggleImage.invertPixels();
+
+    laserWindow->myDockControls->getChartView()->scene()->render(&myPainter);
+    if(myChartGoggleImage.save("chartViewImg.png", "PNG"))
+        qDebug()<<"Imagine salvata";
+
+    laserWindow->myDockControls->getdChartView()->scene()->render(&myPainter);
+    if(myChartGoggleImage.save("dChartViewImg.png", "PNG"))
+        qDebug()<<"Imagine salvata";
+
+    /**************************************************************************
+    * Effettuo il flush di painter anche se non strettamente necessario per   *
+    * rendere il codice più leggibile                                         *
+    ***************************************************************************/
+
+    myPainter.end();
 
     if(!myReflectors.empty())
-        html +="<br><h2>Elementi riflettori presenti nell'area di sgombero</h2>";
+    {
+    QString reflectorFilename;
+    QImage imageChart;
+
+    reflectorsFilenameList.clear();
+    reflectorsGraphImageList.clear();
 
     QList<pair<Reflector*, int>>::iterator myIterator; // iterator
     myIterator = myReflectors.begin();
     int i =1;
-    QPainter myPainter;
     while (myIterator != myReflectors.end() )
         {
         reflector=myIterator->first;
-        reflectors.clear();
-        htmlImage.clear();
-
-        reflectorsPageReport();
 
             if(reflector->getReflectorKind()==WET_TARGET)
                 {
@@ -2392,7 +1835,7 @@ QString MainWindow::htmlReflectors()
                 polarChartView->setRenderHint(QPainter::Antialiasing);
 
                 QSize imageChartSize=polarChartView->size();
-                QImage imageChart=QImage(imageChartSize, QImage::Format::Format_RGB32);
+                imageChart=QImage(imageChartSize, QImage::Format::Format_RGB32);
                 myPainter.begin(&imageChart);
                 imageChart.fill(0);
                 imageChart.invertPixels();
@@ -2401,22 +1844,12 @@ QString MainWindow::htmlReflectors()
                 polarChartView->setAngularAxis();
                 polarChartView->scene()->render(&myPainter);
 
-                QString imageFilename="reflectorChartImg"+QString::number(i)+".png";
+                reflectorFilename="reflectorChartImg"+QString::number(i)+".png";
 
-                if(imageChart.save(imageFilename, "PNG"))
+                if(imageChart.save(reflectorFilename, "PNG"))
                     qDebug()<<"Imagine salvata";
 
-                htmlImage=+"<div style=\"text-align: center;\"\n>"
-                "<img style= width: 786px; height: 533px;\"\n"
-                "alt=\"Riflettore bagnato\" title=\"Riflettore bagnato\"\n"
-                "src=\"./"+imageFilename+"\"></div><br><br>\n";
-                myPainter.end();
-
-                htmlImage+="<h3>Coefficienti di riflessione da superficie bagnata</h3>\n";
-                htmlImage+=printSpecularReflectorCoefficients(reflector->getRho_sVect());
-
-                        htmlImage+="<h3>Distanza di sicurezza in funzione dell'angolo di riflessione (valori non nulli)</h3>\n";
-                        htmlImage+=printReflectorTable(reflector->getZsVect());
+                 myPainter.end();
                     }
                 }
             else
@@ -2430,28 +1863,18 @@ QString MainWindow::htmlReflectors()
                 polarChartView->setRadialAxis();
                 polarChartView->setAngularAxis();
                 QSize imageChartSize=polarChartView->size();
-                QImage imageChart=QImage(imageChartSize, QImage::Format::Format_RGB32);
+                imageChart=QImage(imageChartSize, QImage::Format::Format_RGB32);
                 myPainter.begin(&imageChart);
                 imageChart.fill(0);
                 imageChart.invertPixels();
                 polarChartView->scene()->render(&myPainter);
 
-                QString imageFilename="reflectorChartImg"+QString::number(i)+".png";
+                reflectorFilename="reflectorChartImg"+QString::number(i)+".png";
 
-                if(imageChart.save(imageFilename, "PNG"))
+                if(imageChart.save(reflectorFilename, "PNG"))
                     qDebug()<<"Imagine salvata";
 
-                htmlImage=+"<div style=\"text-align: center;\"\n>"
-                "<img style= width: 786px; height: 533px;\"\n"
-                "alt=\"Riflettore di vetro\" title=\"Riflettore di vetro\"\n"
-                "src=\"./"+imageFilename+"\"></div><br><br>\n";
                 myPainter.end();
-
-                htmlImage+="<h3>Coefficienti di riflessione da superficie di vetro</h3>\n";
-                htmlImage+=printSpecularReflectorCoefficients(reflector->getRho_sVect());
-
-                htmlImage+="<h3>Distanza di sicurezza in funzione dell'angolo di riflessione (valori non nulli)</h3>\n";
-                htmlImage+=printReflectorTable(reflector->getZsVect());
                     }
                 }
             else
@@ -2466,26 +1889,18 @@ QString MainWindow::htmlReflectors()
                     dialog.getLambertianPointChart();
 
                     imageChartSize=dialog.getLambertianPointChart()->size();
-                    QImage imageChart=QImage(imageChartSize, QImage::Format::Format_RGB32);
+                    imageChart=QImage(imageChartSize, QImage::Format::Format_RGB32);
                     myPainter.begin(&imageChart);
                     imageChart.fill(0);
                     imageChart.invertPixels();
 
                     dialog.getLambertianPointChart()->scene()->render(&myPainter);
-                    QString imageFilename="reflectorChartImg"+QString::number(i)+".png";
+                    reflectorFilename="reflectorChartImg"+QString::number(i)+".png";
 
-                    if(imageChart.save(imageFilename, "PNG"))
+                    if(imageChart.save(reflectorFilename, "PNG"))
                         qDebug()<<"Imagine salvata";
 
-                    htmlImage=+"<div style=\"text-align: center;\"\n>"
-                    "<img style= width: 786px; height: 533px;\"\n"
-                    "alt=\"Riflettore lambertiano\" title=\"Riflettore lambertiano\"\n"
-                    "src=\"./"+imageFilename+"\"></div><br><br>\n";
                     myPainter.end();
-
-
-                    htmlImage+="<h3>Distanza di sicurezza in funzione dell'angolo di riflessione (valori non nulli)</h3>\n";
-                    htmlImage+=printReflectorTable(reflector->getZsVect());
                 }
                 else
                 {
@@ -2493,475 +1908,29 @@ QString MainWindow::htmlReflectors()
 
                     imageChartSize=dialog.getLambertianExendedChart()->size();
 
-                    QImage imageChart=QImage(imageChartSize, QImage::Format::Format_RGB32);
+                    imageChart=QImage(imageChartSize, QImage::Format::Format_RGB32);
                     myPainter.begin(&imageChart);
                     imageChart.fill(0);
                     imageChart.invertPixels();
                     dialog.getLambertianExendedChart()->scene()->render(&myPainter);
-                    QString imageFilename="reflectorChartImg"+QString::number(i)+".png";
+                    reflectorFilename="reflectorChartImg"+QString::number(i)+".png";
 
-                    if(imageChart.save(imageFilename, "PNG"))
+                    if(imageChart.save(reflectorFilename, "PNG"))
                         qDebug()<<"Imagine salvata";
-
-                    htmlImage=+"<div style=\"text-align: center;\"\n>"
-                    "<img style= width: 786px; height: 533px;\"\n"
-                    "alt=\"Riflettore lambertiano\" title=\"Riflettore lambertiano\"\n"
-                    "src=\"./"+imageFilename+"\"></div><br><br>\n";
                     myPainter.end();
                  }
                 }
                }
-
-            html +=
-            "<table width=\"100%\">\n"
-             "<tr><th colspan=\"2\">Riflettore n. "+ QString::number(i) +"</th></tr>\n";
-
-            foreach (QString entry, reflectors) {
-            QStringList fields = entry.split(": ");
-            QString title = fields[0].toHtmlEscaped();
-            QString body = fields[1].toHtmlEscaped();
-
-            html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b></td>\n"
-                   "<td>" + body + "</td>\n</tr>\n";
-            }
-
-            html +="\n</table><br>\n";
-            html +=htmlImage+"\n<hr><br><br>\n";
+            else if(reflector->getReflectorKind()==MIRROR_TARGET)
+                {
+                imageChart=QImage();
+                }
+             reflectorsGraphImageList.append(imageChart);
+             reflectorsFilenameList.append(reflectorFilename);
             ++myIterator;
           ++i;
-    }
-   return html;
-}
-
-QString MainWindow::htmlFootprints()
-{
-    QString html;
-
-    if(!myFootprints.empty())
-        html +="<br><h2>Ingombri presenti nell'area</h2>";
-
-    QList<pair<FootprintObject*, int>>::iterator myIterator; // iterator
-    myIterator = myFootprints.begin();
-    int i =1;
-    while (myIterator != myFootprints.end() )
-        {
-        footprint=myIterator->first;
-        footprints.clear();
-        footprintsPageReport();
-
-        html +=
-        "<table width=\"100%\">\n"
-         "<tr><th colspan=\"2\">Ingombro n. "+ QString::number(i) +"</th></tr>\n";
-
-        foreach (QString entry, footprints) {
-        QStringList fields = entry.split(": ");
-        QString title = fields[0].toHtmlEscaped();
-        QString body = fields[1].toHtmlEscaped();
-
-        html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b></td>\n"
-               "<td>" + body + "</td>\n</tr>\n";
         }
-
-        html +="\n</table><br>\n";
-        ++myIterator;
-      ++i;
     }
-    return html;
-}
-
-QString MainWindow::htmlBinoculars()
-{
-    QString html;
-
-    if(!myBinoculars.empty())
-        html +="<br><h2>Dispositivi ottici presenti</h2>";
-
-    QList<pair<Binocular*, int>>::iterator myIterator; // iterator
-    myIterator = myBinoculars.begin();
-    int i =1;
-    while (myIterator != myBinoculars.end() )
-        {
-        binocular=myIterator->first;
-        binoculars.clear();
-        binocularsPageReport();
-
-        html +=
-        "<table width=\"100%\">\n"
-         "<tr><th colspan=\"2\">Dispositivo ottico n. "+ QString::number(i) +"</th></tr>\n";
-
-        foreach (QString entry, binoculars) {
-        QStringList fields = entry.split(": ");
-        QString title = fields[0].toHtmlEscaped();
-        QString body = fields[1].toHtmlEscaped();
-
-        html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b></td>\n"
-               "<td>" + body + "</td>\n</tr>\n";
-        }
-
-        html +="\n</table><br>\n";
-        ++myIterator;
-      ++i;
-    }
-    return html;
-}
-
-void MainWindow::htmlResults()
-{
-input.clear();
-output.clear();
-goggle.clear();
-effects.clear();
-skin.clear();
-
-QString powerErgStr= laserWindow->myDockControls->ui->powerErgControl->getTitle()+ "= " + QString::number(laserWindow->myDockControls->ui->powerErgControl->getScientificNumber(), 'e', 2);
-QString wavelengthStr= "&lambda; [nm]= " + QString::number(laserWindow->myDockControls->ui->wavelengthScrollBar->value());
-QString alphaStr= "&alpha; [mrad]= " + QString::number(laserWindow->myDockControls->ui->alphaControl->getScientificNumber(), 'e', 2);
-QString pulseStr= laserWindow->myDockControls->ui->pulseControl->getTitle()+ "= " + QString::number(laserWindow->myDockControls->ui->pulseControl->getScientificNumber(), 'e', 2);
-QString divergenceStr= "&phi; [mrad]= " +  QString::number(laserWindow->myDockControls->ui->divergenceControl->getScientificNumber(), 'e', 2);
-QString diameterStr= "a [mm]= " + QString::number(laserWindow->myDockControls->ui->beamDiameterControl->getScientificNumber(), 'e', 2);
-QString prfStr= laserWindow->myDockControls->ui->prfControl->getTitle()+ "= " + QString::number(laserWindow->myDockControls->ui->prfControl->getScientificNumber(), 'e', 2);
-QString teSkin="T<sub>cute</sub> [s]= " +QString::number(laserWindow->myDockControls->ui->T_SkinControl->getScientificNumber(),'f', 2);
-
-input.append(powerErgStr);
-input.append(wavelengthStr);
-input.append(alphaStr);
-input.append(pulseStr);
-input.append(divergenceStr);
-input.append(diameterStr);
-
-effects.append(laserWindow->myDockEffects->ui->tRadiationLabel->text()+":"+laserWindow->myDockEffects->ui->RadiationLabel->text());
-effects.append(laserWindow->myDockEffects->ui->tSkinDamageLabel->text()+":"+laserWindow->myDockEffects->ui->SkinDamageLabel->text());
-effects.append(laserWindow->myDockEffects->ui->tEyeDamageLabel->text()+":"+laserWindow->myDockEffects->ui->EyeDamageLabel->text());
-effects.append(laserWindow->myDockEffects->ui->tNoteLabel->text()+":"+laserWindow->myDockEffects->ui->NoteLabel->text());
-
-if(laserWindow->myDockControls->ui->operationCombo->currentIndex()==0)
-    {
-     output.append(laserWindow->myDockResults->ui->conditions_Label->text()+"$"+laserWindow->myDockResults->ui->EMP_1st_Label->text());
-     output.append("Dettaglio risultati:$ ");
-
-     output.append(laserWindow->myDockResults->ui->tFormulaLabel->text()+"$"+laserWindow->myDockResults->ui->FormulaLabel->text());
-     output.append(laserWindow->myDockResults->ui->tEMP_Label->text()+"$"+laserWindow->myDockResults->ui->EMP_Label->text());
-     output.append(laserWindow->myDockResults->ui->tExposureTimeLabel->text()+"$"+laserWindow->myDockResults->ui->ExposureTimeLabel->text());
-
-     output.append(laserWindow->myDockResults->ui->tPowerErgLabel->text()+"$"+laserWindow->myDockResults->ui->PowerErgLabel->text());
-     output.append(laserWindow->myDockEffects->ui->tCA_Label->text()+"$"+laserWindow->myDockEffects->ui->CA_Label->text());
-     output.append(laserWindow->myDockEffects->ui->tCB_Label->text()+"$"+laserWindow->myDockEffects->ui->CB_Label->text());
-     output.append(laserWindow->myDockEffects->ui->tCC_Label->text()+"$"+laserWindow->myDockEffects->ui->CC_Label->text());
-     output.append(laserWindow->myDockEffects->ui->tCE_Label->text()+"$"+laserWindow->myDockEffects->ui->CE_Label->text());
-     output.append(laserWindow->myDockEffects->ui->tT1_Label->text()+"$"+laserWindow->myDockEffects->ui->T1_Label->text());
-     output.append(laserWindow->myDockEffects->ui->tT2_Label->text()+"$"+laserWindow->myDockEffects->ui->T2_Label->text());
-     output.append(laserWindow->myDockResults->ui->tNOHDLabel->text()+"$"+laserWindow->myDockResults->ui->NOHDLabel->text());
-     output.append(laserWindow->myDockResults->ui->tOD_FilterLabel->text()+"$"+laserWindow->myDockResults->ui->tOD_FilterLabel->text());
-
-     skin.append(laserWindow->myDockSkin->ui->conditions_Label->text()+"$"+laserWindow->myDockSkin->ui->EMP_1st_Label->text());
-     skin.append("Dettaglio risultati:$ ");
-     skin.append(laserWindow->myDockSkin->ui->tFormulaSkinLabel->text()+"$"+laserWindow->myDockSkin->ui->FormulaSkinLabel->text());
-     skin.append(laserWindow->myDockSkin->ui->tEMP_SkinLabel->text()+"$"+laserWindow->myDockSkin->ui->EMP_SkinLabel->text());
-     skin.append(laserWindow->myDockSkin->ui->tNSHDLabel->text()+"$"+laserWindow->myDockSkin->ui->NSHDLabel->text());   
-
-     goggle.append(laserWindow->myDockGoggle->ui->tLaserOutputLabel->text()+":"+laserWindow->myDockGoggle->ui->laserOutputLabel->text());
-     goggle.append("Numero di scala: " + laserWindow->myDockGoggle->ui->scaleNumberLabel->text());
-
-     input.append(teSkin);
-    }
-
-    else if(laserWindow->myDockControls->ui->operationCombo->currentIndex()==1)
-{
-     output.append(laserWindow->myDockResults->ui->conditions_Label->text()+"$"+laserWindow->myDockResults->ui->EMP_1st_Label->text());
-     output.append("Dettaglio risultati$ ");
-
-     output.append(laserWindow->myDockResults->ui->tFormulaLabel->text()+"$"+laserWindow->myDockResults->ui->FormulaLabel->text());
-     output.append(laserWindow->myDockResults->ui->tEMP_Label->text()+"$"+laserWindow->myDockResults->ui->EMP_Label->text());
-     output.append(laserWindow->myDockResults->ui->tExposureTimeLabel->text()+"$"+laserWindow->myDockResults->ui->ExposureTimeLabel->text());
-     output.append(laserWindow->myDockResults->ui->tPowerErgLabel->text()+"$"+laserWindow->myDockResults->ui->PowerErgLabel->text());
-     output.append(laserWindow->myDockEffects->ui->tCA_Label->text()+"$"+laserWindow->myDockEffects->ui->CA_Label->text());
-     output.append(laserWindow->myDockEffects->ui->tCB_Label->text()+"$"+laserWindow->myDockEffects->ui->CB_Label->text());
-     output.append(laserWindow->myDockEffects->ui->tCC_Label->text()+"$"+laserWindow->myDockEffects->ui->CC_Label->text());
-     output.append(laserWindow->myDockEffects->ui->tCE_Label->text()+"$"+laserWindow->myDockEffects->ui->CE_Label->text());
-     output.append(laserWindow->myDockEffects->ui->tT1_Label->text()+"$"+laserWindow->myDockEffects->ui->T1_Label->text());
-     output.append(laserWindow->myDockEffects->ui->tT2_Label->text()+"$"+laserWindow->myDockEffects->ui->T2_Label->text());
-     output.append(laserWindow->myDockEffects->ui->tGammaLabel->text()+"$"+laserWindow->myDockEffects->ui->GammaLabel->text());
-     output.append(laserWindow->myDockResults->ui->tNOHDLabel->text()+"$"+laserWindow->myDockResults->ui->NOHDLabel->text());   
-     output.append(laserWindow->myDockResults->ui->tOD_FilterLabel->text()+"$"+laserWindow->myDockResults->ui->tOD_FilterLabel->text());
-
-     skin.append(laserWindow->myDockSkin->ui->conditions_Label->text()+"$"+laserWindow->myDockSkin->ui->EMP_1st_Label->text());
-     skin.append("Dettaglio risultati$ ");
-
-     skin.append(laserWindow->myDockSkin->ui->tFormulaSkinLabel->text()+"$"+laserWindow->myDockSkin->ui->FormulaSkinLabel->text());
-     skin.append(laserWindow->myDockSkin->ui->tEMP_SkinLabel->text()+"$"+laserWindow->myDockSkin->ui->EMP_SkinLabel->text());
-     skin.append(laserWindow->myDockSkin->ui->tNSHDLabel->text()+"$"+laserWindow->myDockSkin->ui->NSHDLabel->text());
-
-     goggle.append("Output: "+laserWindow->myDockGoggle->ui->laserOutputLabel->text());
-     goggle.append("Numero di scala: " + laserWindow->myDockGoggle->ui->scaleNumberLabel->text());
-}
-    else if(laserWindow->myDockControls->ui->operationCombo->currentIndex()==2)
-{
-    output.append(laserWindow->myDockResults->ui->conditions_Label->text()+"$ ");
-
-    QString firstCondition=QString("%1 $ %2")
-    .arg("Prima condizione")
-    .arg(laserWindow->myDockResults->ui->EMP_1st_Label->text());
-    output.append(firstCondition);
-
-    QString secondCondition=QString("%1 $ %2")
-    .arg("Seconda condizione")
-    .arg(laserWindow->myDockResults->ui->EMP_2nd_Label->text());
-    output.append(secondCondition);
-
-    QString thirdCondition=QString("%1 $ %2")
-    .arg("Terza condizione")
-    .arg(laserWindow->myDockResults->ui->EMP_3rd_Label->text());
-    output.append(thirdCondition);
-
-    output.append("Dettaglio risultati $ ");
-    output.append(laserWindow->myDockResults->ui->tFormulaLabel->text()+"$"+laserWindow->myDockResults->ui->FormulaLabel->text());
-    output.append(laserWindow->myDockResults->ui->tEMP_Label->text()+"$"+laserWindow->myDockResults->ui->EMP_Label->text());
-    output.append(laserWindow->myDockResults->ui->tFormulaMP_Label->text()+"$"+laserWindow->myDockResults->ui->FormulaMP_Label->text());
-    output.append(laserWindow->myDockResults->ui->tEMP_MP_Label->text().toLatin1()+"$"+laserWindow->myDockResults->ui->EMP_MP_Label->text().toLatin1());
-    output.append(laserWindow->myDockResults->ui->tExposureTimeLabel->text()+"$"+laserWindow->myDockResults->ui->ExposureTimeLabel->text());
-    output.append(laserWindow->myDockResults->ui->tPowerErgLabel->text()+"$"+laserWindow->myDockResults->ui->PowerErgLabel->text());
-
-    output.append(laserWindow->myDockEffects->ui->tCA_Label->text()+"$"+laserWindow->myDockEffects->ui->CA_Label->text());
-    output.append(laserWindow->myDockEffects->ui->tCB_Label->text()+"$"+laserWindow->myDockEffects->ui->CB_Label->text());
-    output.append(laserWindow->myDockEffects->ui->tCC_Label->text()+"$"+laserWindow->myDockEffects->ui->CC_Label->text());
-    output.append(laserWindow->myDockEffects->ui->tCE_Label->text()+"$"+laserWindow->myDockEffects->ui->CE_Label->text());
-    output.append(laserWindow->myDockEffects->ui->tT1_Label->text()+"$"+laserWindow->myDockEffects->ui->T1_Label->text());
-    output.append(laserWindow->myDockEffects->ui->tT2_Label->text()+"$"+laserWindow->myDockEffects->ui->T2_Label->text());
-
-    output.append(laserWindow->myDockResults->ui->tMeanPowerLabel->text()+"$"+laserWindow->myDockResults->ui->MeanPowerLabel->text());
-    output.append(laserWindow->myDockResults->ui->tMeanIrradianceLabel->text()+"$"+laserWindow->myDockResults->ui->MeanIrradianceLabel->text());
-    output.append(laserWindow->myDockResults->ui->tThermalEMP_Label->text()+"$"+laserWindow->myDockResults->ui->ThermalEMP_Label->text());
-    output.append(laserWindow->myDockEffects->ui->tTminLabel->text()+"$"+laserWindow->myDockEffects->ui->TminLabel->text());
-
-    output.append(laserWindow->myDockResults->ui->tCP_Label->text()+"$"+laserWindow->myDockResults->ui->CP_Label->text());
-    output.append(laserWindow->myDockResults->ui->tPulseNumberLabel->text()+"$"+laserWindow->myDockResults->ui->PulseNumberLabel->text());
-    output.append(laserWindow->myDockResults->ui->tminEMP_Label->text()+"$"+laserWindow->myDockResults->ui->minEMP_Label->text());
-    output.append(laserWindow->myDockResults->ui->tNOHDLabel->text()+"$"+laserWindow->myDockResults->ui->NOHDLabel->text());
-
-    output.append(laserWindow->myDockResults->ui->tOD_FilterLabel->text()+"$"+laserWindow->myDockResults->ui->OD_FilterLabel->text());
-    output.append(laserWindow->myDockResults->ui->tOD_MeanFilterLabel->text()+"$"+laserWindow->myDockResults->ui->OD_MeanFilterLabel->text());
-
-    input.append(prfStr);
-    input.append(teSkin);
-
-    effects.append(laserWindow->myDockResults->ui->tCountingLabel->text()+":"+laserWindow->myDockResults->ui->CountingLabel->text());
-
-    skin.append(laserWindow->myDockSkin->ui->conditions_Label->text()+"$ ");
-    QString skinFirstCondition=QString("%1 $ %2")
-    .arg("Prima condizione")
-    .arg(laserWindow->myDockSkin->ui->EMP_1st_Label->text());
-    skin.append(skinFirstCondition);
-
-    QString skinSecondCondition=QString("%1 $ %2")
-    .arg("Seconda condizione")
-    .arg(laserWindow->myDockSkin->ui->EMP_2nd_Label->text());
-
-    skin.append(skinSecondCondition);
-    skin.append("Dettaglio risultati$ ");
-
-    skin.append(laserWindow->myDockSkin->ui->tFormulaSkinLabel->text()+"$"+laserWindow->myDockSkin->ui->FormulaSkinLabel->text());
-    skin.append(laserWindow->myDockSkin->ui->tEMP_SkinLabel->text()+"$"+laserWindow->myDockSkin->ui->EMP_SkinLabel->text());
-    skin.append(laserWindow->myDockSkin->ui->tFormulaSkinMP_Label->text()+"$"+laserWindow->myDockSkin->ui->FormulaSkinMP_Label->text());
-    skin.append(laserWindow->myDockSkin->ui->tEMP_MP_SkinLabel->text()+"$"+laserWindow->myDockSkin->ui->EMP_MP_SkinLabel->text());
-    skin.append(laserWindow->myDockSkin->ui->tMeanPowerSkinLabel->text()+"$"+laserWindow->myDockSkin->ui->MeanPowerSkinLabel->text());
-    skin.append(laserWindow->myDockSkin->ui->tMeanIrradianceSkinLabel->text()+"$"+laserWindow->myDockSkin->ui->MeanIrradianceSkinLabel->text());
-    skin.append(laserWindow->myDockSkin->ui->tPulseNumberSkinLabel->text()+"$"+laserWindow->myDockSkin->ui->PulseNumberSkinLabel->text());
-    skin.append(laserWindow->myDockSkin->ui->tminEMP_SkinLabel->text()+"$"+laserWindow->myDockSkin->ui->minEMP_SkinLabel->text());
-    skin.append(laserWindow->myDockSkin->ui->tNSHDLabel->text()+"$"+laserWindow->myDockSkin->ui->tNSHDLabel->text());
-
-    goggle.append(laserWindow->myDockGoggle->ui->tLaserOutputLabel->text()+":"+laserWindow->myDockGoggle->ui->laserOutputLabel->text());
-    goggle.append("Numero di scala:" + laserWindow->myDockGoggle->ui->scaleNumberLabel->text());
-    goggle.append(laserWindow->myDockGoggle->ui->tn_maxLabel->text()+":"+laserWindow->myDockGoggle->ui->n_maxLabel->text());
-    goggle.append(laserWindow->myDockGoggle->ui->tMeanPowerLabel->text()+":"+laserWindow->myDockGoggle->ui->meanPowerLabel->text());
-    goggle.append("Numero di scala componente continua: " + laserWindow->myDockGoggle->ui->scaleNumberDLabel->text());
-    goggle.append(laserWindow->myDockGoggle->ui->tCoefficient_kLabel->text()+":"+laserWindow->myDockGoggle->ui->coefficient_kLabel->text());
-    goggle.append(laserWindow->myDockGoggle->ui->tCoefficient_kiLabel->text()+":"+laserWindow->myDockGoggle->ui->coefficient_kiLabel->text());
-    goggle.append(laserWindow->myDockGoggle->ui->tNumberOfPulseLabel->text()+":"+laserWindow->myDockGoggle->ui->numberOfPulseLabel->text());
-    }
-        qDebug() << output;
-}
-
-void MainWindow::firstPageReport()
-{   
-    laser.clear();
-    reflectors.clear();
-
-    //leggo i valori riguradanti laserpoint
-
-    QString laserPositionStr= QString(tr("Posizione [m,m] : (%1,%2)")
-                                      .arg(laserpoint->pos().x())
-                                      .arg(laserpoint->pos().y()));
-
-    QString aperturaStr ="Apertura zona di sgombero: " +
-            QString::number(laserpoint->getAperture())+"&deg;";
-    int installation=laserpoint->getInstallationIndex();
-            QString installationStr="Tipo installazione: ";
-
-    switch(installation)
-    {
-        case (0):
-        installationStr+="Installazione stable";
-        break;
-
-        case (1):
-        installationStr+="Installazione poco stable";
-        break;
-
-        case (2):
-        installationStr+="Installazione mobile";
-        break;
-
-        case (3):
-        installationStr+="Assenza di piattaforma";
-        break;
-    }
-
-QString armAttenuationString;
-QString scintillationString;
-
-    if(!environmentModel->getState())
-    {
-    if(laserWindow->getAtmEffectsBool())
-        armAttenuationString= "Effetti Atmosferici: valutati";
-    else
-        armAttenuationString= "Effetti Atmosferici: non valutati";
-
-
-    if(laserWindow->getScintillationBool())
-        scintillationString= "Scintillazione: valutata";
-    else
-        scintillationString= "Scintillazione: non valutata";
-    }
-    else
-    {
-        armAttenuationString= "Effetti Atmosferici: non applicabile";
-        scintillationString= "Scintillazione: non applicabile";
-    }
-
-    QString filterStr;
-    QString transmittanceStr;
-    if(laserpoint->isFilterOn())
-    {
-        filterStr="Filtro montato su ottica: presente";
-        transmittanceStr="Transmittanza: "+ QString::number(laserpoint->getTransmittance());
-    }
-
-    else
-    filterStr="Filtro montato su ottica: assente";
-
-    laser.append(laserPositionStr);
-    laser.append(aperturaStr);
-    laser.append(filterStr);
-
-    if(laserpoint->isFilterOn())
-      laser.append(transmittanceStr);
-
-    laser.append(installationStr);
-    laser.append(armAttenuationString);
-    laser.append(scintillationString);
-
-    //leggo i valori riguradanti i riflettori
-}
-void MainWindow::reflectorsPageReport()
-{
-    QString inHazardArea;
-    if(reflector->getMaxElement()==0)
-        inHazardArea="No";
-    else
-       inHazardArea="Si";
-
-        reflectors.append("Posizione [m, m]: " + QString("(%1,%2)")
-                          .arg(reflector->pos().x())
-                          .arg(reflector->pos().y()));
-        reflectors.append("Nell'area di rischio: "+ inHazardArea);
-        reflectors.append("Tipo di riflettore: " + reflector->getReflectorKindString());
-        reflectors.append("Divergenza laser [mrad]: " + QString::number(reflector->getDivergence()));
-        reflectors.append("Distanza del riflettore [m]: " + QString::number(reflector->getReflectorDistance(),'f',1));
-        reflectors.append("Coefficiente di riflessione: " + QString::number(reflector->getMaterialCoeff()));
-        reflectors.append("Posizionamento [gradi]: " + QString::number(reflector->getPositioning()));
-        reflectors.append("Distanza di sicurezza ottica dal riflettore [m]: "+ QString::number(reflector->getPositioningElement(),'f',1));
-
-        if(reflector->getReflectorKind()!=MIRROR_TARGET)
-        reflectors.append("Distanza di sicurezza ottica massima dal riflettore [m]: "+ QString::number(reflector->getMaxElement(),'f',1));
-
-}
-
-void MainWindow::binocularsPageReport()
-{
-    double wavelength=laserWindow->myDockControls->getWavelength();
-
-    if((wavelength>=400)&&(wavelength<=1400))
-    {
-        binoculars.append("Posizione [m, m]: " + QString("(%1,%2)")
-                          .arg(binocular->pos().x())
-                          .arg(binocular->pos().y()));
-        binoculars.append("Descrizione: " + binocular->getDescription());
-        binoculars.append("Distanza di Rischio Ottico Estesa [m]: " + QString::number(binocular->getExendedOpticalDiameter()));
-        binoculars.append("Distanza dal punto laser [m]: " + QString::number(binocular->getBinocularDistance()));
-        binoculars.append("Amplificazione ottica M: " + QString::number(binocular->getMagnification()));
-        binoculars.append("Coefficiente di trasmissione ottica τ: " + QString::number(binocular->getTransmissionCoeff(),'f',1));
-        binoculars.append("Diametro della lente D<sub>0</sub> [mm]: " + QString::number(binocular->get_D0()));
-        binoculars.append("Diametro dello spot sulla lente D<sub>b</sub> [mm]: " + QString::number(binocular->get_Db()));
-        binoculars.append("Guadagno ottico K: " + QString::number(binocular->getOpticalGain()));
-        binoculars.append("Effetti nel'impiego: "+ binocular->getBinocularEffects());
-     }
-    else if(((wavelength>=320)&&(wavelength<400))||((wavelength>1400)&&(wavelength<=4500)))
-    {
-        binoculars.append("Posizione [m, m]: " + QString("(%1,%2)")
-                          .arg(binocular->pos().x())
-                          .arg(binocular->pos().y()));
-        binoculars.append("Descrizione: " + binocular->getDescription());
-        binoculars.append("Distanza di Rischio Ottico Estesa [m]: " + QString::number(binocular->getExendedOpticalDiameter()));
-        binoculars.append("Distanza dal punto laser [m]: " + QString::number(binocular->getBinocularDistance()));
-        binoculars.append("Amplificazione ottica M: " + QString::number(binocular->getMagnification()));
-        binoculars.append("Coefficiente di trasmissione ottica τ: " + QString::number(binocular->getTransmissionCoeff(),'f',1));
-        binoculars.append("Diametro dello spot sulla lente D<sub>b</sub> [mm]: " + QString::number(binocular->get_Db()));
-        binoculars.append("Guadagno ottico K: " + QString::number(binocular->getOpticalGain()));
-        binoculars.append("Effetti nel'impiego: "+ binocular->getBinocularEffects());
-    }
-    else
-    {
-        binoculars.append("Descrizione: " + binocular->getDescription());
-        binoculars.append("Distanza di Rischio Ottico Estesa [m]: " + QString::number(binocular->getExendedOpticalDiameter()));
-        binoculars.append("Distanza dal punto laser [m]: " + QString::number(binocular->getBinocularDistance()));
-    }
-}
-
-void MainWindow::footprintsPageReport()
-{
-        footprints.append("Posizione [m, m]: " + QString("(%1,%2)")
-                          .arg(footprint->pos().x())
-                          .arg(footprint->pos().y()));
-        footprints.append("Dimensioni [m X m]: "+ QString::number(footprint->getRectangle().rect().width()) + " X "
-                          + QString::number(footprint->getRectangle().rect().height()));
-}
-
-QString MainWindow::htmlMeteo()
-{
-    QString htmlMeteo;
-
-            htmlMeteo.clear();
-
-            htmlMeteo += "<table width=\"100%\">\n";
-            htmlMeteo += "<tr><th colspan=\"2\" rowspan=\"1\">Condizioni meteo</th></tr>\n";
-
-            htmlMeteo += "<tr>"
-                         "<td bgcolor=\"#fbfbfb\"><b>Visibilità [m]</td>\n"
-                         "<td>" + QString::number(laserWindow->getMeteoRange()) +"</td>\n"
-                         "</tr>"
-                         "<tr>"
-                         "<td bgcolor=\"#fbfbfb\"><b>μ [m<sup>-1</sup>]</td>\n"
-                         "<td>" + QString::number(laserWindow->getAtmoshericEffectsCoefficient())+"</td>\n"
-                         "</tr>"
-                         "<tr>"
-                         "<td bgcolor=\"#fbfbfb\"><b>A</td>\n"
-                         "<td>" + QString::number(laserWindow->getA_Coefficient()) +"</td>\n"
-                         "</tr>";
-
-
-            htmlMeteo += "\n</table><br>\n";
-
-     return htmlMeteo;
 }
 
 void MainWindow::setSceneArea(QRect sceneArea) const
@@ -3864,33 +2833,32 @@ void MainWindow::createToolBars()
 
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 {
-        Q_UNUSED(*watched);
-        if (event->type() == QEvent::MouseMove) {
+    Q_UNUSED(*watched);
+    if (event->type() == QEvent::MouseMove) {
 
-        double xCoordinate;
-        double yCoordinate;
+    double xCoordinate;
+    double yCoordinate;
 
-        xCoordinate=laserWindow->graphicsView->getMousePosition().x();
-        yCoordinate=laserWindow->graphicsView->getMousePosition().y();
+    xCoordinate=laserWindow->graphicsView->getMousePosition().x();
+    yCoordinate=laserWindow->graphicsView->getMousePosition().y();
 
-        if(scale>=15)
-        {
-
-        QString xCoordinateString=QString::number(xCoordinate, 'f', 2);
-        QString yCoordinateString=QString::number(yCoordinate, 'f', 2);
-        laserWindow->label->setText(QString("Coordinate del punto (%1,%2)")
-                                        .arg(xCoordinateString)
-                                        .arg(yCoordinateString));
-        }
-        else
-        {
-            QString xCoordinateString=QString::number(xCoordinate, 'f', 0);
-            QString yCoordinateString=QString::number(yCoordinate, 'f', 0);
-            laserWindow->label->setText(QString("Coordinate del punto (%1,%2)")
-                                            .arg(xCoordinateString)
-                                            .arg(yCoordinateString));
-        }
+    if(scale>=15)
+    {
+    QString xCoordinateString=QString::number(xCoordinate, 'f', 2);
+    QString yCoordinateString=QString::number(yCoordinate, 'f', 2);
+    laserWindow->label->setText(QString("Coordinate del punto (%1,%2)")
+                                     .arg(xCoordinateString)
+                                     .arg(yCoordinateString));
     }
+    else
+    {
+    QString xCoordinateString=QString::number(xCoordinate, 'f', 0);
+    QString yCoordinateString=QString::number(yCoordinate, 'f', 0);
+    laserWindow->label->setText(QString("Coordinate del punto (%1,%2)")
+                                     .arg(xCoordinateString)
+                                     .arg(yCoordinateString));
+    }
+  }
     return false;
 }
 
@@ -4647,6 +3615,7 @@ void MainWindow::makeSceneOfSavedItems(){
 
      if(laserWindow->isLabRoomInserted())
      {
+        bool meteoWidgetsON=false;
         myLabRoom=new LabRoom(labRoomRect);
         myLabRoom->setPos(labRoomPos);
         laserWindow->graphicsView->scene->addItem(myLabRoom);
@@ -4655,10 +3624,27 @@ void MainWindow::makeSceneOfSavedItems(){
         environmentModel->addDescriptor(*myLabRoom);
         environmentModel->setState(true);
 
+        meteoWidgets(meteoWidgetsON, meteoWidgetsON, meteoWidgetsON);
+        updateForCondMeteo();
+
+        addScintillationAct->setEnabled(false);
+        addScintillationAct->setChecked(false);
+        addAtmosphericEffectsAct->setEnabled(false);
+        addAtmosphericEffectsAct->setChecked(false);
+        changeMeteoAct->setEnabled(false);
+
         addLabAct->setChecked(true);
      }
      else
      {
+
+       bool isAtmEffects=laserWindow->getAtmEffectsBool();
+       bool isScintillation=laserWindow->getScintillationBool();
+
+       meteoWidgets(true, isAtmEffects, isScintillation);
+
+       atmosphericEffectsOn(isAtmEffects);
+       scintillationOn(isScintillation);
        environmentModel->setState(false);
        setPolygonAct->setChecked(true);
      }
@@ -4732,6 +3718,17 @@ void MainWindow::addBinocularList()
 void MainWindow::addLabList()
 {
     environmentModel->addDescriptor(*myLabRoom);
+}
+
+void MainWindow::meteoWidgets(bool meteoEnabled, bool isAtmEffects, bool isScintillation)
+{
+    atmosphericEffectsOn(isAtmEffects);
+    scintillationOn(isScintillation);
+    addScintillationAct->setEnabled(meteoEnabled);
+    addScintillationAct->setChecked(isScintillation);
+    addAtmosphericEffectsAct->setEnabled(meteoEnabled);
+    addAtmosphericEffectsAct->setChecked(isAtmEffects);
+    changeMeteoAct->setEnabled(meteoEnabled);
 }
 
 void MainWindow::goToSelectedReflector()
@@ -4977,7 +3974,8 @@ void MainWindow::setPolygon()
         if ((myLabRoom)&&(environmentModel->getState())) {
             delete myLabRoom;
             i.remove();
-            environmentModel->setState(false);
+            environmentModel->setState(false);        
+            environmentModel->setMeteoVisibility(laserWindow->getMeteoRange());
             environmentModel->addDescriptor(*myFakeRoom);
             environmentModel->myDataHasChanged();
             labroomList.clear();
@@ -5026,11 +4024,9 @@ void MainWindow::addRoom()
     laserWindow->graphicsView->scene->addItem(myLabRoom);
     labroomList.append(myLabRoom);
 
-    addScintillationAct->setEnabled(false);
-    addScintillationAct->setChecked(false);
-    addAtmosphericEffectsAct->setEnabled(false);
-    addAtmosphericEffectsAct->setChecked(false);
-    changeMeteoAct->setEnabled(false);
+    bool meteoWidgetsON=false;
+    meteoWidgets(meteoWidgetsON, meteoWidgetsON, meteoWidgetsON);
+    updateForCondMeteo();
 
     connect(myLabRoom, SIGNAL(xChanged()), this, SLOT(updateLabList()));
     connect(myLabRoom, SIGNAL(xChanged()), this, SLOT(updateLabList()));

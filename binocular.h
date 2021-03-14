@@ -38,6 +38,7 @@ public:
     void removeBinocularLink(BinocularLink *binocularlink);
     void setBinSeqNumber(const int&);
     int  getBinSeqNumber() const;
+    QString getOpticalGainFormula()const;
     bool isDangerous();
     void laserPositionChanged();
     void laserParametersChanged();
@@ -121,6 +122,7 @@ private:
     double transmissionCoeff;
 
     QStringList stringList;
+    QString opticalGainFormula;
     QPixmap binocularPix;
     QRectF myTextRect;
     bool dangerous;   

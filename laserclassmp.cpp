@@ -392,7 +392,7 @@ double* LaserClassMP::computeMeanLEA_Corrected(int* _meanLEA_formulaSort)
     for(int i=0; i<n_lea; i++)
     {
     if(_meanLEA_formulaSort[i]==1)
-        meanLEACorrected[i]=myMeanLEA[i]/ceil(prf*pulseWidth);
+        meanLEACorrected[i]=myMeanLEA[i]/(prf*pulseWidth);
     else if(_meanLEA_formulaSort[i]==2)
         meanLEACorrected[i]=myMeanLEA[i]/ceil(prf*timeBase);
     else if(_meanLEA_formulaSort[i]==3)
@@ -576,6 +576,20 @@ double* LaserClassMP::getMeanPowerErgEq()const
     return meanPowerErgEq;
 }
 
+QString* LaserClassMP::getMeanLEA_Expressions()const
+{
+    QString* leaExpr=new QString[n_lea];
+
+    for(int i=0; i<n_lea; i++)
+    {
+        leaExpr[i]=QString::fromStdString(getMeanLEA_FormulaTipo()[i])+" = "+
+                  QString::fromStdString(getMeanLEA_Formula()[i]) + " = "+
+                  QString::number(getMeanLEA()[i],'e', 2) +" "+
+                  QString::fromStdString(getMeanLEA_FormulaUnit()[i]);
+    }
+    return leaExpr;
+}
+
 bool* LaserClassMP::getMeanClassValutation()const
 {
     return meanClassValutation;
@@ -671,6 +685,34 @@ int* LaserClassMP::getTiLEA_FormulaSort()const
     return myTiLaserClass.getLEA_FormulaSort();
 }
 
+QString* LaserClassMP::getTiLEA_Expressions()const
+{
+    QString* leaExpr=new QString[n_lea];
+
+    for(int i=0; i<n_lea; i++)
+    {
+        leaExpr[i]=QString::fromStdString(getTiLEA_FormulaTipo()[i])+" = "+
+                QString::fromStdString(getTiLEA_Formula()[i]) +" = "+
+                QString::number(getTiLEA()[i], 'e', 2) +" "+
+                QString::fromStdString(getTiLEA_FormulaUnit()[i]);
+    }
+    return leaExpr;
+}
+
+QString* LaserClassMP::getThermalLEA_Expressions()const
+{
+    QString* leaExpr=new QString[n_lea];
+
+    for(int i=0; i<n_lea; i++)
+    {
+
+        leaExpr[i]=QString::fromStdString(getLEA_FormulaTipo()[i])+" = "+
+                   QString::fromStdString(getLEA_Formula()[i]) +" C<sub>5</sub> = "+
+                   QString::number(LEA_Corrected[i], 'e', 2) +" "+
+                   QString::fromStdString(getLEA_FormulaUnit()[i]);
+    }
+    return leaExpr;
+}
 double* LaserClassMP::getTiPowerErgEq()const
 {
     return tiPowerErgEq;

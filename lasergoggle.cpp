@@ -38,20 +38,25 @@ LaserGoggle::LaserGoggle(int _wavelength, double _pulseWidth, double _powerErg, 
      *  - inserire direttamente la base dei tempi pertinente.                                          *
      ***************************************************************************************************/
 
-    if((int)_pulseWidth==CONTINUOS_OPERATION)
+    powerErg = _powerErg;
+    myMeanPower=0;
+    beamDiameter = _beamDiameter;
+    frequency=0;
+
+    if(_pulseWidth==CONTINUOS_OPERATION)
     {
       if((wavelength>=180)&&(wavelength<=315))
           pulseWidth = TIMEBASE_LOW_WAVELENGTH;
       else if((wavelength>315)&&(wavelength<=1.0e+06))
           pulseWidth = TIMEBASE;
+
+      myLaserOperation=CONTINUOS_WAVE;
      }
      else
+    {
      pulseWidth = _pulseWidth;
-
-    powerErg = _powerErg;
-    myMeanPower=0;
-    beamDiameter = _beamDiameter;
-    frequency=0;
+     myLaserOperation=IMPULSATO;
+    }
     k=1.0;
     ki=1.0;
 }
@@ -65,25 +70,53 @@ LaserGoggle::LaserGoggle(int _wavelength, double _pulseWidth, double _powerErg, 
 
     materialCorrection=1.0;
 
-    if((int)_pulseWidth==CONTINUOS_OPERATION )
+    powerErg = _powerErg;
+    beamDiameter = _beamDiameter;
+    frequency = _frequency;
+
+    if(_pulseWidth==CONTINUOS_OPERATION)
     {
         if((wavelength>=180)&&(wavelength<=315))
             pulseWidth = TIMEBASE_LOW_WAVELENGTH;
         else if((wavelength>315)&&(wavelength<=1.0e+06))
             pulseWidth = TIMEBASE;
+
+        myLaserOperation=CONTINUOS_WAVE;
     }
         else
-            pulseWidth = _pulseWidth;
+    {
+        pulseWidth = _pulseWidth;
 
-    powerErg = _powerErg;
-    beamDiameter = _beamDiameter;
-    frequency = _frequency;
+        if(round(frequency)==0)
+        myLaserOperation=IMPULSATO;
+        else
+        myLaserOperation=IMPULSI_MULTIPLI;
+    }
+
     frequencyCorrection();
     myMeanPower=_powerErg*frequency;
     k=1.0;
     ki=1.0;
 }
 
+
+void LaserGoggle::setLaserOperation()
+{
+    if(pulseWidth==CONTINUOS_OPERATION )
+    myLaserOperation=CONTINUOS_WAVE;
+    else
+    {
+    if(round(frequency)==0)
+        myLaserOperation=IMPULSATO;
+    else
+        myLaserOperation=IMPULSI_MULTIPLI;
+    }
+}
+
+LaserGoggle::laserOperation LaserGoggle::getLaserOperation()
+{
+    return myLaserOperation;
+}
 
 int* LaserGoggle::buildScaleNumbers()
 {
@@ -110,7 +143,7 @@ double* LaserGoggle::selectData(const double &wavelength, const double &applicab
             double D180_315_Values[] = {0.01, 0.1, 1.0, 10.0, 1.0e+02, 1.0e+03, 1.0e+04, 1.0e+05, 1.0e+06, 1.0e+07};
             for (int i=0; i<TABLEROWS; i++)
             expositionData[i]=D180_315_Values[i];
-            pulseCode="D";
+            pulseCode=CONTINUOS_EMISSION;
         }
         if((applicableTime>=1.0e-09)&&(applicableTime<3.0e+04))
         {
@@ -118,16 +151,16 @@ double* LaserGoggle::selectData(const double &wavelength, const double &applicab
             for (int i=0; i<TABLEROWS; i++)
             expositionData[i]=IR180_315_Values[i];
             if (applicableTime<1.0e-06)
-                pulseCode="R";
+                pulseCode=Q_SWITCHED;
             else
-                pulseCode="I";
+                pulseCode=SIMPLE_PULSED;
         }
         if(applicableTime<1.0e-09)
         {
             double M180_315_Values[] = {3.0e+11, 3.0e+12, 3.0e+13, 3.0e+14, 3.0e+15, 3.0e+16, 3.0e+17, 3.0e+18, 3.0e+19, 3.0e+20};
             for (int i=0; i<TABLEROWS; i++)
             expositionData[i]=M180_315_Values[i];
-            pulseCode="M";
+            pulseCode=MODE_LOCKED;
         }
     }
 
@@ -138,7 +171,7 @@ double* LaserGoggle::selectData(const double &wavelength, const double &applicab
             double D315_1400_Values[] = { 1.0e+02, 1.0e+03, 1.0e+04, 1.0e+05, 1.0e+06, 1.0e+07, 1.0e+08, 1.0e+09, 1.0e+10, 1.0e+11};
             for (int i=0; i<TABLEROWS; i++)
             expositionData[i]=D315_1400_Values[i];
-            pulseCode="D";
+            pulseCode=CONTINUOS_EMISSION;
         }
         if((applicableTime>=1.0e-09)&&(applicableTime<5.0e-04))
         {
@@ -146,16 +179,16 @@ double* LaserGoggle::selectData(const double &wavelength, const double &applicab
             for (int i=0; i<TABLEROWS; i++)
             expositionData[i]=IR315_1400_Values[i];
             if (applicableTime<1.0e-06)
-                pulseCode="R";
+                pulseCode=Q_SWITCHED;
             else
-                pulseCode="I";
+                pulseCode=SIMPLE_PULSED;
         }
         if(applicableTime<1.0e-09)
         {
             double M315_1400_Values[] = {1.5e-03, 1.5e-02, 0.15, 1.5, 15, 1.5e+02, 1.5e+03, 1.5e+04, 1.5e+05, 1.5e+06};
             for (int i=0; i<TABLEROWS; i++)
             expositionData[i]=M315_1400_Values[i];
-            pulseCode="M";
+            pulseCode=MODE_LOCKED;
         }
     }
 
@@ -167,7 +200,7 @@ double* LaserGoggle::selectData(const double &wavelength, const double &applicab
             double D1400_1mm_Values[] = {1.0e+04, 1.0e+05, 1.0e+06, 1.0e+07, 1.0e+08, 1.0e+09, 1.0e+10, 1.0e+11, 1.0e+12, 1.0e+13};
             for (int i=0; i<TABLEROWS; i++)
             expositionData[i]=D1400_1mm_Values[i];
-            pulseCode="D";
+            pulseCode=CONTINUOS_EMISSION;
         }
         if((applicableTime>=1.0e-09)&&(applicableTime<1.0e-01))
         {
@@ -175,20 +208,55 @@ double* LaserGoggle::selectData(const double &wavelength, const double &applicab
             for (int i=0; i<TABLEROWS; i++)
             expositionData[i]=IR1400_1mm_Values[i];
             if (applicableTime<1.0e-06)
-                pulseCode="R";
+                pulseCode=Q_SWITCHED;
             else
-                pulseCode="I";
+                pulseCode=SIMPLE_PULSED;
         }
         if(applicableTime<1.0e-09)
         {
             double M1400_1mm_Values[] = {1.0e+12,  1.0e+13, 1.0e+14, 1.0e+15, 1.0e+16, 1.0e+17, 1.0e+18, 1.0e+19, 1.0e+20, 1.0e+21};
             for (int i=0; i<TABLEROWS; i++)
             expositionData[i]=M1400_1mm_Values[i];
-            pulseCode="M";
+            pulseCode=MODE_LOCKED;
         }
     }
 
     return expositionData;
+}
+
+void LaserGoggle::setPulseCode()
+{
+    setLaserOperation();
+    switch(pulseCode)
+    {
+    case (CONTINUOS_EMISSION):
+    pulseCodeString="Laser ad onda continua";
+    pulseCodeLetter='D';
+    break;
+    case (SIMPLE_PULSED):
+
+    if(myLaserOperation==IMPULSATO)
+        pulseCodeString="Laser ad impulso ";
+    else if(myLaserOperation==IMPULSI_MULTIPLI)
+        pulseCodeString="Laser ad impulsi";
+
+    pulseCodeLetter='I';
+    break;
+    case (Q_SWITCHED):
+
+    if(myLaserOperation==IMPULSATO)
+        pulseCodeString="Laser ad impulso Q Switched";
+    else if(myLaserOperation==IMPULSI_MULTIPLI)
+        pulseCodeString="Laser ad impulsi Q Switched";
+
+    pulseCodeLetter='R';
+    break;
+    case (MODE_LOCKED):
+    pulseCodeString="Laser a modi accoppiati (Mode Locked)";
+    pulseCodeLetter='M';
+    break;
+    }
+
 }
 
 vector< pair <int,double> > LaserGoggle::buildDataVector(const double expositionData[], const int LB_Scale[])
@@ -227,7 +295,7 @@ double LaserGoggle::pulseTrainCorrectionK()
 {
     double myNymberOfPulse=numberOfPulse();
 
-    if((int)frequency==CONTINUOS_OPERATION)
+    if(round(frequency)==CONTINUOS_OPERATION)
        k=1;
     else
     {
@@ -245,7 +313,7 @@ double LaserGoggle::frequencyCorrection()
     /* se la lunghezza d'onda appartiene ad alcun intervallo del prospetto B.2 EN207
      * la correzione non va applicata, ciò equivale a porre il valore di Ti=1/frequency
      * e quello di ni_max=frequency */
-    if((int)frequency!=CONTINUOS_OPERATION)
+    if(round(frequency)!=CONTINUOS_OPERATION)
     {
         if ((wavelength >= 180) && (wavelength<400))
         {
@@ -344,6 +412,11 @@ string LaserGoggle::goggleMark()
     return myGoggleMark;
 }
 
+string LaserGoggle::getLaserPulseOperation()
+{
+    return pulseCodeString;
+}
+
 void LaserGoggle::prepareGoggleMark()
 {
   expositionData=selectData(wavelength, pulseWidth);
@@ -365,9 +438,10 @@ string LaserGoggle::printGoggleCode()
 {
     if(myScaleNumber)
     {
+    setPulseCode();
     std::string wavelength_str = std::to_string(getWavelength());
     std::string myScaleNumber_str = std::to_string(myScaleNumber);
-    myGoggleCode= wavelength_str + " " + pulseCode + " LB" + myScaleNumber_str;
+    myGoggleCode= wavelength_str + " " + pulseCodeLetter + " LB" + myScaleNumber_str;
     }
     else
     myGoggleCode= "Eccede i limiti EN207";
@@ -385,16 +459,16 @@ string LaserGoggle::getCodeUnit()
     string energy="[J/m<sup>2</sup>]";
     string power="[W/m<sup>2</sup>]";
 
-    if(pulseCode=="D")
+    if(pulseCode==CONTINUOS_EMISSION)
         codeUnit=power;
-    else if(pulseCode=="M")
+    else if(pulseCode==MODE_LOCKED)
     {
     if((wavelength>=315.0)and(wavelength<1400.0))
         codeUnit=energy;
     else
         codeUnit=power;
     }
-    else if((pulseCode=="R") || (pulseCode=="I"))
+    else if((pulseCode==Q_SWITCHED) || (pulseCode==SIMPLE_PULSED))
         codeUnit=energy;
 
       return codeUnit;
@@ -431,17 +505,17 @@ void LaserGoggle::setMaterial(material typeOfMaterial)
 
 string LaserGoggle::outputSort()
   {
-      if(pulseCode=="D")
+      if(pulseCode==CONTINUOS_EMISSION)
           laserOutputSort="E";
       else
-          if(pulseCode=="M"){
+          if(pulseCode==MODE_LOCKED){
               if((wavelength>=315.0)and(wavelength<1400.0))
                   laserOutputSort="H<sub>picco</sub>";
               else
                   laserOutputSort="E<sub>picco</sub>";}
 
           else
-              if((pulseCode=="R") || (pulseCode=="I"))
+              if((pulseCode==Q_SWITCHED) || (pulseCode==SIMPLE_PULSED))
                   laserOutputSort="H";
 
       return laserOutputSort;
@@ -491,11 +565,10 @@ string LaserGoggle::outputSort()
   {
       if(_pulseWidth==0)
       {
-          if((wavelength>=180)&&(wavelength<=315))
-              pulseWidth = TIMEBASE_LOW_WAVELENGTH;
-                  else
-                  if((wavelength>315)&&(wavelength<=1.0e+06))
-                      pulseWidth = TIMEBASE;
+        if((wavelength>=180)&&(wavelength<=315))
+            pulseWidth = TIMEBASE_LOW_WAVELENGTH;
+        else if((wavelength>315)&&(wavelength<=1.0e+06))
+               pulseWidth = TIMEBASE;
       }
           else
               pulseWidth = _pulseWidth;

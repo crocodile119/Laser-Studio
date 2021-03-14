@@ -17,7 +17,7 @@
 
 
 const double Binocular::radDeg = 3.1415926535897932384626433832795/180;
-const double Binocular::g= 7;
+const double Binocular::g= 7.0;
 
 Binocular::Binocular(double DNRO, double _binocularDistance, double _wavelength, double _divergence, double _beamDiameter): QGraphicsObject(), binocularPix(":/images/binocularpix.png")
 {
@@ -33,9 +33,8 @@ Binocular::Binocular(double DNRO, double _binocularDistance, double _wavelength,
     divergence=_divergence;
     beamDiameter=_beamDiameter;
     D0=50;
-    computeSpotDiameter();
     computeOpticalGain();
-    exendedOpticalDiameter=2*DNRO*sqrtf(opticalGain);
+    exendedOpticalDiameter=DNRO*sqrtf(opticalGain);
 
     scale=1.0;
 
@@ -189,7 +188,7 @@ QVariant Binocular::itemChange(GraphicsItemChange change,
         {
             binocularDistance=binocularlink->linkBinocularLenght();
             binocularlink->trackNodes();
-            computeSpotDiameter();
+            computeOpticalGain();
             computeExendedOpticalDiameter();
             isDangerous();
             setStringPosition();
@@ -308,7 +307,7 @@ void Binocular::setStringPosition()
 
     if((wavelength>=400)&&(wavelength<=1400))
     {
-    position ="Dispositivo ottico" + QString(" (%1,%2) \ndist[m]: %3, DNROE[m]: %4 \nτ= %5, Db[mm]=%6, D0[mm]=%7, M= %8 K=%9 \n%10")
+    position ="Dispositivo ottico" + QString(" (%1,%2) \ndist[m]: %3, DNROE[m]: %4 \nτ= %5, Db[mm]=%6, D0[mm]=%7, M= %8, K=%9 \n%10")
                                     .arg(xString)
                                     .arg(yString)           
                                     .arg(binocularDistanceString)
@@ -323,7 +322,7 @@ void Binocular::setStringPosition()
 
     else if(((wavelength>=320)&&(wavelength<400))||((wavelength>1400)&&(wavelength<=4500)))
     {
-        position ="Dispositivo ottico" + QString(" (%1,%2) \ndist[m]: %3, DNROE[m]: %4 \nτ= %5, M= %6 K=%7 \n%8")
+        position ="Dispositivo ottico" + QString(" (%1,%2) \ndist[m]: %3, DNROE[m]: %4 \nτ= %5, M= %6, K=%7 \n%8")
                                         .arg(xString)
                                         .arg(yString)
                                         .arg(binocularDistanceString)
@@ -509,32 +508,64 @@ void Binocular::computeOpticalGain()
         double k_evaluation_1;
         double k_evaluation_2;
         double k_evaluation_3;
-        k_evaluation_1=transmissionCoeff*magnification;
-        k_evaluation_2=transmissionCoeff*powf(D0,2)/powf(g,2);
+
+        k_evaluation_1=transmissionCoeff*pow(magnification, 2.0);
+
+        if(k_evaluation_1<1)
+        k_evaluation_1=1.0;
+
+        k_evaluation_2=transmissionCoeff*pow(D0,2.0)/pow(g,2.0);
+        if(k_evaluation_2<1)
+        k_evaluation_2=1.0;
 
         computeSpotDiameter();
-        k_evaluation_3=transmissionCoeff*powf(Db,2)/powf(g,2);
 
-        double min1=std::fmin(k_evaluation_1, k_evaluation_2);
-        opticalGain=std::fmin(min1, k_evaluation_3);
+        k_evaluation_3=transmissionCoeff*pow(Db,2.0)/pow(g,2.0);
+        if(k_evaluation_3<1)
+        k_evaluation_3=1.0;
+
+        if((k_evaluation_1<k_evaluation_2)and(k_evaluation_1<k_evaluation_3))
+        {
+        opticalGain=k_evaluation_1;
+        opticalGainFormula="τ M^2";
+        }
+        else if((k_evaluation_2<k_evaluation_1)and(k_evaluation_2<k_evaluation_3))
+        {
+        opticalGain=k_evaluation_2;
+        opticalGainFormula="τ D0^2 / g^2";
+        }
+        else if((k_evaluation_3<=k_evaluation_2)and(k_evaluation_3<=k_evaluation_1))
+        {
+        opticalGain=k_evaluation_3;
+        opticalGainFormula="τ Db^2 / g^2";
+        }
+
     }
     else if(((wavelength>=320)&&(wavelength<400))||((wavelength>1400)&&(wavelength<=4500)))
         {
         computeSpotDiameter();
         D0=0;
         opticalGain=transmissionCoeff*magnification;
+        opticalGainFormula="τ M<sup>2</sup>";
         }
     else
         {
         computeSpotDiameter();
         D0=0;
         opticalGain=1;
+        opticalGainFormula="1";
         }
 }
 
 double Binocular::get_Db()
 {
     return Db;
+}
+
+
+QString Binocular::getOpticalGainFormula()const
+{
+    return opticalGainFormula;
 }
 
 void Binocular::computeSpotDiameter()

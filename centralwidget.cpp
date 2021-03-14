@@ -24,6 +24,7 @@
 #include "footprintobject.h"
 
     const double CentralWidget::SCINTILLATION_CONST= 2.662;
+    const int CentralWidget::STANDARD_VISIBILITY_DISTANCE= 23000;
     const double CentralWidget::NEPERO_N=2.7182818284590452353602874713527;
 
 CentralWidget::CentralWidget(QWidget *parent) :
@@ -219,7 +220,7 @@ bool CentralWidget::writeFile(const QString &fileName)
         << myDockControls->ui->checkGaussianBeam->isChecked() << myDockControls->ui->comboBox->currentIndex()
         << myDockControls->ui->T_SkinControl->getScientificNumber() << myDockControls->ui->teControl->getDialNumber()
         << myDockControls->ui->enableTeCheckBox->isChecked() << myDockControls->ui->internalWaist_checkBox->isChecked()
-        << myDockControls->ui->peakControl->getScientificNumber() << myDockControls->getLambertianMax() << myDockControls->getEMP()
+        << myDockControls->getLambertianMax() << myDockControls->getEMP()
         << myDockControls->getBeamDiameter() << myDockControls->getPowerErg() << laserPosition << laserZValue
         << aperture << installation << filterOn << transmittance << pos << Type << Text << ReflectorDescriptionVect
         << StringPosition << OpticalDiameter << Divergence << ReflectorDistance << ReflectionCoeff
@@ -273,7 +274,6 @@ bool CentralWidget::readFile(const QString &fileName)
     bool isTeChecked;
     bool isGaussianBeamChecked;
     bool isInternalWaistChecked;
-    qreal peakPowerErgControl;
 
     QList<QGraphicsItem *> items;
 
@@ -282,7 +282,7 @@ bool CentralWidget::readFile(const QString &fileName)
     in  >> myLabRoomInserted >> scintillationBool >> atmEffectsBool >> meteoRange >> a_coefficient >> atmoshericEffectsCoefficient
         >> scaleIndex >> scale >> force >> customer >> uasl >> uaslAssistant >> laserDescription >> placeDescription >> gridState >> goggleMaterial
         >> powerErgControl >> alphaControl >> pulseControl >> divergenceControl >> beamDiameterControl >> prfControl >> wavelengthScrollBar
-        >> operationCombo >> isGaussianBeamChecked >> comboBox >> T_SkinSpinBox >> teControl >> isTeChecked >> isInternalWaistChecked >> peakPowerErgControl
+        >> operationCombo >> isGaussianBeamChecked >> comboBox >> T_SkinSpinBox >> teControl >> isTeChecked >> isInternalWaistChecked
         >> lambertianMax >> laserEMP >> laserBeamDiameter >> laserPowerErg >> laserPosition >> laserZValue >> aperture >> installation
         >> filterOn >> transmittance >> posVect >> TypeVect >> TextVect >> ReflectorDescriptionVect
         >> StringPositionVect >> OpticalDiameterVect >> DivergenceVect >> ReflectorDistanceVect >> ReflectionCoeffVect >> ZValueVect
@@ -309,12 +309,7 @@ bool CentralWidget::readFile(const QString &fileName)
      myDockControls->enableTeEdtiting(isTeChecked);
      myDockControls->setGoggleMaterial(goggleMaterial);
 
-     if(myDockControls->ui->peakControl->isEnabled())
-            myDockControls->ui->peakControl->setValue(peakPowerErgControl);  
-
-
      modified();
-
 
     QApplication::restoreOverrideCursor();
     return true;

@@ -111,7 +111,7 @@ return textDocument;
 void LaserReport::adjustWidth()
 {
     if(myTypeOfReport==PDF)
-    correction="\"800\"";
+    correction="\"650\"";
     else
     if(myTypeOfReport==ODF)
     correction="\480\"";
@@ -316,10 +316,10 @@ void LaserReport::classifierDetails()
     {
     laserWindow->myDockControls->leaExpressions_CW();
 
-    QString LEA_Classe1Str= "LEA Classe 1 e 1M  :" + laserWindow->myDockControls->getLeaExpressions_CW()[0];
-    QString LEA_Classe2Str= "LEA Classe 2 e 2M  :" + laserWindow->myDockControls->getLeaExpressions_CW()[1];
-    QString LEA_Classe3RStr= "LEA Classe 3R  :" + laserWindow->myDockControls->getLeaExpressions_CW()[2];
-    QString LEA_Classe3BStr= "LEA Classe 3B  :" + laserWindow->myDockControls->getLeaExpressions_CW()[3];
+    QString LEA_Classe1Str= "LEA Classe 1 e 1M  :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_CW()[0]);
+    QString LEA_Classe2Str= "LEA Classe 2 e 2M  :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_CW()[1]);
+    QString LEA_Classe3RStr= "LEA Classe 3R  :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_CW()[2]);
+    QString LEA_Classe3BStr= "LEA Classe 3B  :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_CW()[3]);
 
     classifierDetailsOutput.append(LEA_Classe1Str);
     classifierDetailsOutput.append(LEA_Classe2Str);
@@ -331,10 +331,10 @@ void LaserReport::classifierDetails()
     {
     laserWindow->myDockControls->leaExpressions_SP();
 
-    QString LEA_Classe1Str= "LEA Classe 1 e 1M  :" + laserWindow->myDockControls->getLeaExpressions_SP()[0];
-    QString LEA_Classe2Str= "LEA Classe 2 e 2M  :" + laserWindow->myDockControls->getLeaExpressions_SP()[1];
-    QString LEA_Classe3RStr= "LEA Classe 3R  :" + laserWindow->myDockControls->getLeaExpressions_SP()[2];
-    QString LEA_Classe3BStr= "LEA Classe 3B  :" + laserWindow->myDockControls->getLeaExpressions_SP()[3];
+    QString LEA_Classe1Str= "LEA Classe 1 e 1M  :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_SP()[0]);
+    QString LEA_Classe2Str= "LEA Classe 2 e 2M  :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_SP()[1]);
+    QString LEA_Classe3RStr= "LEA Classe 3R  :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_SP()[2]);
+    QString LEA_Classe3BStr= "LEA Classe 3B  :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_SP()[3]);
 
     classifierDetailsOutput.append(LEA_Classe1Str);
     classifierDetailsOutput.append(LEA_Classe2Str);
@@ -346,16 +346,16 @@ void LaserReport::classifierDetails()
     {
     laserWindow->myDockControls->leaExpressions_MP();
 
-    QString LEA_Classe1_SP_MultiPulseStr= "LEA Classe 1 e 1M :" + laserWindow->myDockControls->getLeaExpressions_SP_MultiPulse()[0];
-    QString LEA_Classe2_SP_MultiPulseStr= "LEA Classe 2 e 2M :" + laserWindow->myDockControls->getLeaExpressions_SP_MultiPulse()[1];
-    QString LEA_Classe3R_SP_MultiPulseStr= "LEA Classe 3R :" + laserWindow->myDockControls->getLeaExpressions_SP_MultiPulse()[2];
-    QString LEA_Classe3B_SP_MultiPulseStr= "LEA Classe 3B :" + laserWindow->myDockControls->getLeaExpressions_SP_MultiPulse()[3];
+    QString LEA_Classe1_SP_MultiPulseStr= "LEA Classe 1 e 1M :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_SP_MultiPulse()[0]);
+    QString LEA_Classe2_SP_MultiPulseStr= "LEA Classe 2 e 2M :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_SP_MultiPulse()[1]);
+    QString LEA_Classe3R_SP_MultiPulseStr= "LEA Classe 3R :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_SP_MultiPulse()[2]);
+    QString LEA_Classe3B_SP_MultiPulseStr= "LEA Classe 3B :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_SP_MultiPulse()[3]);
 
     QString effects_MeanStr="Criterio della potenza media : ";
-    QString LEA_Classe1_MeanStr= "LEA Classe 1 e 1M :" + laserWindow->myDockControls->getLeaExpressions_Mean()[0];
-    QString LEA_Classe2_MeanStr= "LEA Classe 2 e 2M :" + laserWindow->myDockControls->getLeaExpressions_Mean()[1];
-    QString LEA_Classe3R_MeanStr= "LEA Classe 3R :" + laserWindow->myDockControls->getLeaExpressions_Mean()[2];
-    QString LEA_Classe3B_MeanStr= "LEA Classe 3B :" + laserWindow->myDockControls->getLeaExpressions_Mean()[3];
+    QString LEA_Classe1_MeanStr= "LEA Classe 1 e 1M :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_Mean()[0]);
+    QString LEA_Classe2_MeanStr= "LEA Classe 2 e 2M :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_Mean()[1]);
+    QString LEA_Classe3R_MeanStr= "LEA Classe 3R :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_Mean()[2]);
+    QString LEA_Classe3B_MeanStr= "LEA Classe 3B :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_Mean()[3]);
 
     classifierDetailsOutput.append(LEA_Classe1_SP_MultiPulseStr);
     classifierDetailsOutput.append(LEA_Classe2_SP_MultiPulseStr);
@@ -377,10 +377,10 @@ void LaserReport::classifierDetails()
         else
             effects_thermalStr+=" ad alta frequenza di ripetizione : ";
 
-        QString LEA_Classe1_ThrmalStr= "LEA Classe 1 e 1M :" + laserWindow->myDockControls->getLeaExpressions_Thermal()[0];
-        QString LEA_Classe2_ThrmalStr= "LEA Classe 2 e 2M :" + laserWindow->myDockControls->getLeaExpressions_Thermal()[1];
-        QString LEA_Classe3R_ThrmalStr= "LEA Classe 3R :" + laserWindow->myDockControls->getLeaExpressions_Thermal()[2];
-        QString LEA_Classe3B_ThrmalStr= "LEA Classe 3B :" + laserWindow->myDockControls->getLeaExpressions_Thermal()[3];
+        QString LEA_Classe1_ThrmalStr= "LEA Classe 1 e 1M :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_Thermal()[0]);
+        QString LEA_Classe2_ThrmalStr= "LEA Classe 2 e 2M :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_Thermal()[1]);
+        QString LEA_Classe3R_ThrmalStr= "LEA Classe 3R :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_Thermal()[2]);
+        QString LEA_Classe3B_ThrmalStr= "LEA Classe 3B :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_Thermal()[3]);
 
         classifierDetailsOutput.append(effects_thermalStr);
         classifierDetailsOutput.append(LEA_Classe1_ThrmalStr);

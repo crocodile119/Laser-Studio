@@ -136,12 +136,12 @@ public:
     void leaExpressions_MP();
     void leaExpressions_CW();
 
-    QString *getLeaExpressions_CW()const;
-    QString *getLeaExpressions_SP()const;
+    string *getLeaExpressions_CW()const;
+    string *getLeaExpressions_SP()const;
 
-    QString *getLeaExpressions_SP_MultiPulse()const;
-    QString *getLeaExpressions_Mean()const;
-    QString *getLeaExpressions_Thermal()const;
+    string *getLeaExpressions_SP_MultiPulse()const;
+    string *getLeaExpressions_Mean()const;
+    string *getLeaExpressions_Thermal()const;
 
     bool isHF_LaserCLass();
     bool isThermal_LaserCLass();
@@ -247,12 +247,12 @@ private:
 
     LaserGoggle::material goggleMaterial;
 
-    QString* LEA_CW;
-    QString* LEA_SP;
-    QString* LEA_SP_MultiPulse;
-    QString* LEA_Mean;
-    QString* LEA_Thermal;
-    QString* LEA_Ti;
+    string* LEA_CW;
+    string* LEA_SP;
+    string* LEA_SP_MultiPulse;
+    string* LEA_Mean;
+    string* LEA_Thermal;
+    string* LEA_Ti;
 };
 
 #endif // DOCKCONTROLS_H

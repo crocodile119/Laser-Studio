@@ -13,6 +13,10 @@ const int LaserGoggle::TABLEROWS = 10;
 const int LaserGoggle::CONTINUOS_OPERATION=0;
 const double LaserGoggle::GLASS_EXPONENT=1.1693;
 const double LaserGoggle::PLASTIC_EXPONENT=1.2233;
+const int LaserGoggle::HE_NE_WAVELENGTH=633;
+const double LaserGoggle::PULSE_WIDTH=1.0e-06;
+const double LaserGoggle::POWER_ENERGY=1.0;
+const double LaserGoggle::BEAM_DIAMETER=7.0;
 
 LaserGoggle::LaserGoggle(int _wavelength, double _pulseWidth, double _powerErg, double _beamDiameter)
 {
@@ -380,10 +384,14 @@ int LaserGoggle::numberOfPulse()
     if((wavelength>=180)&&(wavelength<=315))
       {
         numberOfPulses = fminf(ni_max, frequency)*TIMEBASE_LOW_WAVELENGTH;
+        if(numberOfPulses<1)
+           numberOfPulses=1;
       }
     else if((wavelength>315)&&(wavelength<=1.0e+06))
       {
         numberOfPulses = fminf(ni_max, frequency)*TIMEBASE;
+        if(numberOfPulses<50)
+           numberOfPulses=50;
       }
 
     return numberOfPulses;

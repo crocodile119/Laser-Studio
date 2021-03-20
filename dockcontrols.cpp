@@ -88,8 +88,9 @@ DockControls::DockControls(QWidget *parent, DockResults *_dockResults, DockEffec
      * funzionamento ad impulsi multipli. Valgono e considerazioni fatte in precedenza.             *                                                          *
      ************************************************************************************************/
 
-     myDLaserGoggle=new LaserGoggle(wavelength, myTimeBase, 0, beamDiameter);
-     string myNewDGoggleMark = myDLaserGoggle->goggleMark(wavelength, myTimeBase, 0, beamDiameter, LaserGoggle::CONTINUOS_OPERATION);
+     myDLaserGoggle=new LaserGoggle(LaserGoggle::HE_NE_WAVELENGTH, myTimeBase, 0, LaserGoggle::BEAM_DIAMETER);
+     string myNewDGoggleMark = myDLaserGoggle->goggleMark(LaserGoggle::HE_NE_WAVELENGTH, myTimeBase, 0, LaserGoggle::BEAM_DIAMETER,
+                                                          LaserGoggle::CONTINUOS_OPERATION);
 
      vector<pair<int, double>> frequencyDataVector;
      myDLaserGoggle->printVector(frequencyDataVector);
@@ -3238,35 +3239,35 @@ void DockControls::setWidgetsForCW_Operation()
     QString tLEA_Value_Label;
     QString PowerErgCond_1_Label;
     QString PowerErgCond_3_Label;
-    classData myClassData;
+    ComputeLEA::classData myClassData;
 
     if ((myLaserClass==LaserClassCW::CLASSE_1)or(myLaserClass==LaserClassCW::CLASSE_1M))
     {
-        myClassData=CLASSE_1_1M;
+        myClassData=ComputeLEA::CLASSE_1_1M;
         tFormulaLEA_Label="Formula 1 - 1M";
         tLEA_Value_Label="LEA 1 - 1M";
     }
     else if ((myLaserClass==LaserClassCW::CLASSE_2)or(myLaserClass==LaserClassCW::CLASSE_2M))
     {
-        myClassData=CLASSE_2_2M;
+        myClassData=ComputeLEA::CLASSE_2_2M;
         tFormulaLEA_Label="Formula 2 - 2M";
         tLEA_Value_Label="LEA 2 - 2M";
     }
     else if (myLaserClass==LaserClassCW::CLASSE_3R)
     {
-        myClassData=CLASSE_3R;
+        myClassData=ComputeLEA::CLASSE_3R;
         tFormulaLEA_Label="Formula 3R";
         tLEA_Value_Label="LEA 3R";
     }
     else if ((myLaserClass==LaserClassCW::CLASSE_3B)or(myLaserClass==LaserClassCW::CLASSE_4))
     {
-        myClassData=CLASSE_3B;
+        myClassData=ComputeLEA::CLASSE_3B;
         tFormulaLEA_Label="Formula 3B";
         tLEA_Value_Label="LEA 3B";
     }
     else
     {
-        myClassData=SENZA_CLASSIFICA;        
+        myClassData=ComputeLEA::SENZA_CLASSIFICA;
         tFormulaLEA_Label="NC";
         tLEA_Value_Label="NC";
     }
@@ -3353,35 +3354,35 @@ void DockControls::setWidgetsForSinglePulse_Operation()
     QString tLEA_Value_Label;
     QString PowerErgCond_1_Label;
     QString PowerErgCond_3_Label;
-    classData myClassData;
+    ComputeLEA::classData myClassData;
 
     if ((myLaserClass==LaserClassCW::CLASSE_1)or(myLaserClass==LaserClassCW::CLASSE_1M))
     {
-        myClassData=CLASSE_1_1M;
+        myClassData=ComputeLEA::CLASSE_1_1M;
         tFormulaLEA_Label="Formula 1 - 1M";
         tLEA_Value_Label="LEA 1 - 1M";
     }
     else if ((myLaserClass==LaserClassCW::CLASSE_2)or(myLaserClass==LaserClassCW::CLASSE_2M))
     {
-        myClassData=CLASSE_2_2M;
+        myClassData=ComputeLEA::CLASSE_2_2M;
         tFormulaLEA_Label="Formula 2 - 2M";
         tLEA_Value_Label="LEA 2 - 2M";
     }
     else if (myLaserClass==LaserClassCW::CLASSE_3R)
     {
-        myClassData=CLASSE_3R;
+        myClassData=ComputeLEA::CLASSE_3R;
         tFormulaLEA_Label="Formula 3R";
         tLEA_Value_Label="LEA 3R";
     }
     else if ((myLaserClass==LaserClassCW::CLASSE_3B)or(myLaserClass==LaserClassCW::CLASSE_4))
     {
-        myClassData=CLASSE_3B;
+        myClassData=ComputeLEA::CLASSE_3B;
         tFormulaLEA_Label="Formula 3B";
         tLEA_Value_Label="LEA 3B";
     }
     else
     {
-        myClassData=SENZA_CLASSIFICA;
+        myClassData=ComputeLEA::SENZA_CLASSIFICA;
         tFormulaLEA_Label="NC";
         tLEA_Value_Label="NC";
     }
@@ -3473,35 +3474,35 @@ void DockControls::setWidgetsForMultiPulse_Operation()
     QString tLEA_Value_Label;
     QString PowerErgCond_1_Label;
     QString PowerErgCond_3_Label;
-    classData myClassData;
+    ComputeLEA::classData myClassData;
 
     if ((myLaserClass==LaserClassCW::CLASSE_1)or(myLaserClass==LaserClassCW::CLASSE_1M))
     {
-        myClassData=CLASSE_1_1M;
+        myClassData=ComputeLEA::CLASSE_1_1M;
         tFormulaLEA_Label="Formula 1 - 1M";
         tLEA_Value_Label="LEA 1 - 1M";
     }
     else if ((myLaserClass==LaserClassCW::CLASSE_2)or(myLaserClass==LaserClassCW::CLASSE_2M))
     {
-        myClassData=CLASSE_2_2M;
+        myClassData=ComputeLEA::CLASSE_2_2M;
         tFormulaLEA_Label="Formula 2 - 2M";
         tLEA_Value_Label="LEA 2 - 2M";
     }
     else if (myLaserClass==LaserClassCW::CLASSE_3R)
     {
-        myClassData=CLASSE_3R;
+        myClassData=ComputeLEA::CLASSE_3R;
         tFormulaLEA_Label="Formula 3R";
         tLEA_Value_Label="LEA 3R";
     }
     else if ((myLaserClass==LaserClassCW::CLASSE_3B)or(myLaserClass==LaserClassCW::CLASSE_4))
     {
-        myClassData=CLASSE_3B;
+        myClassData=ComputeLEA::CLASSE_3B;
         tFormulaLEA_Label="Formula 3B";
         tLEA_Value_Label="LEA 3B";
     }
     else
     {
-        myClassData=SENZA_CLASSIFICA;
+        myClassData=ComputeLEA::SENZA_CLASSIFICA;
         tFormulaLEA_Label="NC";
         tLEA_Value_Label="NC";
     }
@@ -3650,7 +3651,7 @@ void DockControls::setWidgetsForThermal()
     QString tLEA_Value_Label;
     QString PowerErgCond_1_Label;
     QString PowerErgCond_3_Label;
-    classData myClassData;
+    ComputeLEA::classData myClassData;
 	
     dockLea->ui->couplingFactor1_Label_3->setText(QString::number(MyLaserClassMP_Pr->getCouplingFactor_Cond_1(), 'e', 2));
     dockLea->ui->couplingFactor3_Label_3->setText(QString::number(MyLaserClassMP_Pr->getCouplingFactor_Cond_3(), 'e', 2));
@@ -3669,31 +3670,31 @@ void DockControls::setWidgetsForThermal()
 
     if ((myLaserClass==LaserClassCW::CLASSE_1)or(myLaserClass==LaserClassCW::CLASSE_1M))
     {
-        myClassData=CLASSE_1_1M;
+        myClassData=ComputeLEA::CLASSE_1_1M;
         tFormulaLEA_Label="Formula 1 - 1M";
         tLEA_Value_Label="LEA 1 - 1M";
     }
     else if ((myLaserClass==LaserClassCW::CLASSE_2)or(myLaserClass==LaserClassCW::CLASSE_2M))
     {
-        myClassData=CLASSE_2_2M;
+        myClassData=ComputeLEA::CLASSE_2_2M;
         tFormulaLEA_Label="Formula 2 - 2M";
         tLEA_Value_Label="LEA 2 - 2M";
     }
     else if (myLaserClass==LaserClassCW::CLASSE_3R)
     {
-        myClassData=CLASSE_3R;
+        myClassData=ComputeLEA::CLASSE_3R;
         tFormulaLEA_Label="Formula 3R";
         tLEA_Value_Label="LEA 3R";
     }
     else if ((myLaserClass==LaserClassCW::CLASSE_3B)or(myLaserClass==LaserClassCW::CLASSE_4))
     {
-        myClassData=CLASSE_3B;
+        myClassData=ComputeLEA::CLASSE_3B;
         tFormulaLEA_Label="Formula 3B";
         tLEA_Value_Label="LEA 3B";
     }
     else
     {
-        myClassData=SENZA_CLASSIFICA;
+        myClassData=ComputeLEA::SENZA_CLASSIFICA;
         tFormulaLEA_Label="NC";
         tLEA_Value_Label="NC";
     }
@@ -3766,7 +3767,7 @@ void DockControls::setWidgetsForThermalTi()
     QString tLEA_Value_Label;
     QString PowerErgCond_1_Label;
     QString PowerErgCond_3_Label;
-    classData myClassData;
+    ComputeLEA::classData myClassData;
 	
     dockLea->ui->couplingFactor1_Label_3->setText(QString::number(MyLaserClassMP_Pr->getTiCouplingFactor_Cond_1(), 'e', 2));
     dockLea->ui->couplingFactor3_Label_3->setText(QString::number(MyLaserClassMP_Pr->getTiCouplingFactor_Cond_3(), 'e', 2));
@@ -3782,31 +3783,31 @@ void DockControls::setWidgetsForThermalTi()
 
     if ((myLaserClass==LaserClassCW::CLASSE_1)or(myLaserClass==LaserClassCW::CLASSE_1M))
     {
-        myClassData=CLASSE_1_1M;
+        myClassData=ComputeLEA::CLASSE_1_1M;
         tFormulaLEA_Label="Formula 1 - 1M";
         tLEA_Value_Label="LEA 1 - 1M";
     }
     else if ((myLaserClass==LaserClassCW::CLASSE_2)or(myLaserClass==LaserClassCW::CLASSE_2M))
     {
-        myClassData=CLASSE_2_2M;
+        myClassData=ComputeLEA::CLASSE_2_2M;
         tFormulaLEA_Label="Formula 2 - 2M";
         tLEA_Value_Label="LEA 2 - 2M";
     }
     else if (myLaserClass==LaserClassCW::CLASSE_3R)
     {
-        myClassData=CLASSE_3R;
+        myClassData=ComputeLEA::CLASSE_3R;
         tFormulaLEA_Label="Formula 3R";
         tLEA_Value_Label="LEA 3R";
     }
     else if ((myLaserClass==LaserClassCW::CLASSE_3B)or(myLaserClass==LaserClassCW::CLASSE_4))
     {
-        myClassData=CLASSE_3B;
+        myClassData=ComputeLEA::CLASSE_3B;
         tFormulaLEA_Label="Formula 3B";
         tLEA_Value_Label="LEA 3B";
     }
     else
     {
-        myClassData=SENZA_CLASSIFICA;
+        myClassData=ComputeLEA::SENZA_CLASSIFICA;
         tFormulaLEA_Label="NC";
         tLEA_Value_Label="NC";
     }
@@ -4090,26 +4091,26 @@ void DockControls::leaExpressions_MP()
     }
 }
 
-QString* DockControls::getLeaExpressions_CW()const
+string* DockControls::getLeaExpressions_CW()const
 {
     return LEA_CW;
 }
-QString* DockControls::getLeaExpressions_SP()const
+string* DockControls::getLeaExpressions_SP()const
 {
     return LEA_SP;
 }
 
-QString* DockControls::getLeaExpressions_SP_MultiPulse()const
+string* DockControls::getLeaExpressions_SP_MultiPulse()const
 {
     return LEA_SP_MultiPulse;
 }
 
-QString* DockControls::getLeaExpressions_Mean()const
+string* DockControls::getLeaExpressions_Mean()const
 {
     return LEA_Mean;
 }
 
-QString* DockControls::getLeaExpressions_Thermal()const
+string* DockControls::getLeaExpressions_Thermal()const
 {
     return LEA_Thermal;
 }

@@ -3,6 +3,8 @@
 
 using namespace std;
 
+const double LaserSafetyMP::PULSE_REPETITION_FREQUENCY=10.0;
+
 LaserSafetyMP::LaserSafetyMP(double _PRF, double _beamDiameter, double _powerErg,  double _divergence, double _wavelength,
                         double _pulseWidth, double _alpha):LaserSafetyCW(_beamDiameter, _powerErg, _divergence, _wavelength,
                         _pulseWidth, _alpha)

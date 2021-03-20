@@ -1,5 +1,7 @@
 #include "laserclassmp.h"
 
+const double LaserClassMP::PULSE_REPETITION_FREQUENCY=10.0;
+
 LaserClassMP::LaserClassMP(double _prf, double _beamDiameter, double _powerErg,  double _divergence,
                            double _wavelength, double _pulseWidth, double _alpha)
                            :LaserClassSP(_beamDiameter, _powerErg, _divergence,_wavelength, _pulseWidth, _alpha)
@@ -444,11 +446,11 @@ void LaserClassMP::setPulseWidth(const double& _pulseWidth)
 
 void LaserClassMP::highFrequencyValuation()
 {
-        myTiLaserClass.setPulseWidth(Ti);
-        myTiLaserClass.calculate();
-        myTiLaserClass.applyLEA_CorrectionFactor(1/(prf*Ti));
-        computeBeamArea();
-        tiClassUpdate(Ti, powerErg);
+    myTiLaserClass.setPulseWidth(Ti);
+    myTiLaserClass.calculate();
+    myTiLaserClass.applyLEA_CorrectionFactor(1/(prf*Ti));
+    computeBeamArea();
+    tiClassUpdate(Ti, powerErg);
 }
 
 double* LaserClassMP::computeLEA_ThermalCorrection(double* _LEA_Value)
@@ -576,16 +578,19 @@ double* LaserClassMP::getMeanPowerErgEq()const
     return meanPowerErgEq;
 }
 
-QString* LaserClassMP::getMeanLEA_Expressions()const
+string* LaserClassMP::getMeanLEA_Expressions()const
 {
-    QString* leaExpr=new QString[n_lea];
+    string* leaExpr=new string[n_lea];
+
+    std::string leaValue;
 
     for(int i=0; i<n_lea; i++)
     {
-        leaExpr[i]=QString::fromStdString(getMeanLEA_FormulaTipo()[i])+" = "+
-                  QString::fromStdString(getMeanLEA_Formula()[i]) + " = "+
-                  QString::number(getMeanLEA()[i],'e', 2) +" "+
-                  QString::fromStdString(getMeanLEA_FormulaUnit()[i]);
+     leaValue=getLEA_Formula()[i].c_str();
+     leaExpr[i]=getMeanLEA_FormulaTipo()[i]+" = "+
+                   getMeanLEA_Formula()[i] + " = "+
+                   leaValue+" "+
+                   getMeanLEA_FormulaUnit()[i];
     }
     return leaExpr;
 }
@@ -685,34 +690,41 @@ int* LaserClassMP::getTiLEA_FormulaSort()const
     return myTiLaserClass.getLEA_FormulaSort();
 }
 
-QString* LaserClassMP::getTiLEA_Expressions()const
+string* LaserClassMP::getTiLEA_Expressions()const
 {
-    QString* leaExpr=new QString[n_lea];
+    string* leaExpr=new string[n_lea];
+
+    string leaValue;
 
     for(int i=0; i<n_lea; i++)
     {
-        leaExpr[i]=QString::fromStdString(getTiLEA_FormulaTipo()[i])+" = "+
-                QString::fromStdString(getTiLEA_Formula()[i]) +" = "+
-                QString::number(getTiLEA()[i], 'e', 2) +" "+
-                QString::fromStdString(getTiLEA_FormulaUnit()[i]);
+        leaValue=getTiLEA()[i];
+
+        leaExpr[i]=getTiLEA_FormulaTipo()[i]+" = "+
+                getTiLEA_Formula()[i] +" = "+
+                leaValue +" "+
+                getTiLEA_FormulaUnit()[i];
     }
     return leaExpr;
 }
 
-QString* LaserClassMP::getThermalLEA_Expressions()const
+string* LaserClassMP::getThermalLEA_Expressions()const
 {
-    QString* leaExpr=new QString[n_lea];
+    string* leaExpr=new string[n_lea];
+
+    string leaValue;
 
     for(int i=0; i<n_lea; i++)
     {
 
-        leaExpr[i]=QString::fromStdString(getLEA_FormulaTipo()[i])+" = "+
-                   QString::fromStdString(getLEA_Formula()[i]) +" C<sub>5</sub> = "+
-                   QString::number(LEA_Corrected[i], 'e', 2) +" "+
-                   QString::fromStdString(getLEA_FormulaUnit()[i]);
+        leaExpr[i]=getLEA_FormulaTipo()[i]+" = "+
+                   getLEA_Formula()[i] +" C5 = "+
+                   leaValue +" "+
+                   getLEA_FormulaUnit()[i];
     }
     return leaExpr;
 }
+
 double* LaserClassMP::getTiPowerErgEq()const
 {
     return tiPowerErgEq;

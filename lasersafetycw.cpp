@@ -2,8 +2,9 @@
 #include <string>
 #include "lasersafetycw.h"
 
-
 using namespace std;
+
+const double LaserSafetyCW::POWER=1.0;
 
 LaserSafetyCW::LaserSafetyCW(double _beamDiameter, double _powerErg,  double _divergence, double _wavelength,
                         double _exposureTime, double _alpha):LaserSafety(_beamDiameter, _powerErg, _divergence,

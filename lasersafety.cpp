@@ -6,7 +6,11 @@
 using namespace std;
 
 const double LaserSafety::PI = 3.141592653589793;
-		
+const double LaserSafety::PULSE_ENERGY=1.0e-03;
+const double LaserSafety::BEAM_DIAMETER=7.0;
+const double LaserSafety::DIVERGENCE=1.5;
+const double LaserSafety::PULSE_WIDTH=1.0e-06;
+
 LaserSafety::LaserSafety(double _beamDiameter, double _powerErg,  double _divergence, double _wavelength,
                         double _pulseWidth, double _alpha):myLaser(_wavelength, _pulseWidth, _alpha)
 {   

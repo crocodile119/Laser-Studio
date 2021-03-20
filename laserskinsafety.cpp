@@ -2,10 +2,13 @@
 #include <string>
 #include "laserskinsafety.h"
 
-
 using namespace std;
 
 const double LaserSkinSafety::PI = 3.141592653589793;
+const double LaserSkinSafety::BEAM_DIAMETER=7.0;
+const double LaserSkinSafety::POWER_ENERGY=1.0e-01;
+const double LaserSkinSafety::DIVERGENCE=1.5;
+const double LaserSkinSafety::EXPOSURE_TIME=5;
 		
 LaserSkinSafety::LaserSkinSafety(double _beamDiameter, double _powerErg,  double _divergence, double _wavelength,
                         double _pulseWidth, double _alpha):mySkinLaser(_wavelength, _pulseWidth, _alpha)

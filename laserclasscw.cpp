@@ -3,6 +3,11 @@
 #include "laserclasscw.h"
 
 const double LaserClassCW::PI = 3.141592653589793;
+const double LaserClassCW::BEAM_DIAMETER=7.0;
+const double LaserClassCW::POWER=1.0;
+const double LaserClassCW::DIVERGENCE=1.5;
+const double LaserClassCW::TIME_BASE=0.25;
+const double LaserClassCW::ALPHA=1.5;
 
 LaserClassCW::LaserClassCW(double _beamDiameter, double _powerErg,  double _divergence, double _wavelength,
                            double _pulseWidth, double _alpha):myLaserClass( _wavelength,_pulseWidth, _alpha)
@@ -453,16 +458,20 @@ int* LaserClassCW::getLEA_FormulaSort()const
     return myLaserClass.getLEA_FormulaSort();
 }
 
-QString* LaserClassCW::getLEA_Expressions()const
+string* LaserClassCW::getLEA_Expressions()const
 {
-    QString* leaExpr=new QString[n_lea];
+    string* leaExpr=new string[n_lea];
+
+    std::string leaValue;
 
     for(int i=0; i<n_lea; i++)
     {
-        leaExpr[i]=QString::fromStdString(getLEA_FormulaTipo()[i])+" = "+
-                   QString::fromStdString(getLEA_Formula()[i]) +" = "
-        +          QString::number(getLEA()[i], 'e', 2) +" "+
-                   QString::fromStdString(getLEA_FormulaUnit()[i]);
+        leaValue=getLEA_Formula()[i].c_str();
+
+        leaExpr[i]=getLEA_FormulaTipo()[i]+" = "+
+                   getLEA_Formula()[i]+" = "+
+                   leaValue+" = "+
+                   getLEA_FormulaUnit()[i];
     }
     return leaExpr;
 }

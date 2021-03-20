@@ -1,8 +1,10 @@
 #include <cmath>
 #include "laserskinsafetymp.h"
 
-
 using namespace std;
+
+const double LaserSkinSafetyMP::PULSE_REPETITION_FREQEUNCY=10.0;
+const double LaserSkinSafetyMP::PULSE_WIDTH=1.0e-06;
 
 LaserSkinSafetyMP::LaserSkinSafetyMP(double _PRF, double _exposureTime, double _beamDiameter, double _powerErg,  double _divergence, double _wavelength,
                         double _pulseWidth, double _alpha):LaserSkinSafety(_beamDiameter, _powerErg, _divergence, _wavelength,

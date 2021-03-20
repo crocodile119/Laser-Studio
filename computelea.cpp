@@ -789,9 +789,9 @@ switch (myLeaData_1M.effects)
     }
 }
 
-QString ComputeLEA::typeOfSkinDamage(const int &_effects)
+string ComputeLEA::typeOfSkinDamage(const int &_effects)
 {
-    QString mySkinDamage;
+    string mySkinDamage;
     switch (_effects)
         {
         case 1:
@@ -830,9 +830,9 @@ QString ComputeLEA::typeOfSkinDamage(const int &_effects)
     return mySkinDamage;
 }
 
-QString ComputeLEA::typeOfEyeDamage(const int &_effects)
+string ComputeLEA::typeOfEyeDamage(const int &_effects)
 {
-    QString myEyeDamage;
+    string myEyeDamage;
         switch (_effects)
         {
         case 1:
@@ -870,9 +870,9 @@ QString ComputeLEA::typeOfEyeDamage(const int &_effects)
     return myEyeDamage;
 }
 
-QString ComputeLEA::typeOfRadiation(const int & _effects)
+string ComputeLEA::typeOfRadiation(const int & _effects)
 {
-    QString myRadiation;
+    string myRadiation;
         switch (_effects)
         {
         case 1:

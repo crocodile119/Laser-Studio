@@ -43,11 +43,12 @@ La classe prevede inoltre un costruttore di default con i seguenti parametri:
 </ul>
  */
 
-const static double BEAM_DIAMETER;/*!< Parametro di default del diametro del fascio in mm. */
-const static double POWER;/*!< Parametro di default della potenza ottica del dispositivo in Watt. */
-const static double DIVERGENCE;/*!< Parametro di default della divergenza del fascio in mrad. */
-const static double TIME_BASE;/*!< Parametro di default della base dei tempi in secondi. */
-const static double ALPHA;/*!< Parametro di default dell'angolo sotteso dalla sorgente apparente in mrad. */
+static const size_t N_CLASS{7};
+static const double BEAM_DIAMETER;/*!< Parametro di default del diametro del fascio in mm. */
+static const double POWER;/*!< Parametro di default della potenza ottica del dispositivo in Watt. */
+static const double DIVERGENCE;/*!< Parametro di default della divergenza del fascio in mrad. */
+static const double TIME_BASE;/*!< Parametro di default della base dei tempi in secondi. */
+static const double ALPHA;/*!< Parametro di default dell'angolo sotteso dalla sorgente apparente in mrad. */
 
 enum laserOperation{CW,
     /**< Funzionamento ad onda continua. */
@@ -117,20 +118,20 @@ void computeBeamArea(); /*!< Calcola l'area del fascio laser in m<sup>2</sup> co
     string getSkinDamage() const;/*!< Restituisce il tipo dei possibili danni alla pelle. */
     string getEyeDamage() const;/*!< Restituisce il tipo dei possibili danni all'apparato visivo. */
 
-    double* getLEA()const;/*!< Restituisce i valori dei LEA delle Classi previste corrispondente ai valori impostati di <b>&lambda;</b> e t. */
-    string* getLEA_Formula()const;/*!< Restituisce l'espressione della formula dei LEA delle Classi previste corrispondente ai valori impostati di <b>&lambda;</b> e t. */
-    string* getLEA_FormulaUnit()const;/*!< Restituisce l'unità di misura dei LEA delle Classi previste corrispondente ai valori impostati di <b>&lambda;</b> e <b>t</b>. */
-    string* getLEA_FormulaTipo()const;/*!< Restituisce le grandezze fisiche dei LEA delle Classi previste corrispondente ai valori impostati di <b>&lambda;</b> e <b>t</b>. */
-    int *getLEA_FormulaSort()const;/*!< Restituisce il tipo di LEA delle Classi previste corrispondente ai valori impostati di <b>&lambda;</b> e <b>t</b>. */
+    array <double, ComputeLEA::N_LEA> getLEA()const;/*!< Restituisce i valori dei LEA delle Classi previste corrispondente ai valori impostati di <b>&lambda;</b> e t. */
+    array <string, ComputeLEA::N_LEA> getLEA_Formula()const;/*!< Restituisce l'espressione della formula dei LEA delle Classi previste corrispondente ai valori impostati di <b>&lambda;</b> e t. */
+    array <string, ComputeLEA::N_LEA> getLEA_FormulaUnit()const;/*!< Restituisce l'unità di misura dei LEA delle Classi previste corrispondente ai valori impostati di <b>&lambda;</b> e <b>t</b>. */
+    array <string, ComputeLEA::N_LEA> getLEA_FormulaTipo()const;/*!< Restituisce le grandezze fisiche dei LEA delle Classi previste corrispondente ai valori impostati di <b>&lambda;</b> e <b>t</b>. */
+    array <int, ComputeLEA::N_LEA> getLEA_FormulaSort()const;/*!< Restituisce il tipo di LEA delle Classi previste corrispondente ai valori impostati di <b>&lambda;</b> e <b>t</b>. */
 
-    string* getLEA_Expressions()const;
+    array <string, ComputeLEA::N_LEA> getLEA_Expressions()const;
     void setPowerErg(const double&);/*!< Imposta il valore di powerErg se diverso da quello già impostato. */
     double getPowerErg() const;/*!< Restituisce il valore di powerErg in Watt. */
-    double valuateBeamDiameterAtStop(double&, double&);/*!< Calcola il diametro del fascio in mm alla distanza del diaframma impostata secondo
+    double valuateBeamDiameterAtStop(const double&, const double&);/*!< Calcola il diametro del fascio in mm alla distanza del diaframma impostata secondo
     * la relazione approssimata:
     * \f[a_B = a + \varphi \cdot d\f]
     */
-    double valuateCouplingFactor(double&, double&);/*!< Calcola il valore del fattore di accoppiamento assegnati il diametro del diaframma
+    double valuateCouplingFactor(const double&, const double&);/*!< Calcola il valore del fattore di accoppiamento assegnati il diametro del diaframma
     * ed il diametro del fascio per la distanza prevista.
     * Nel caso in cui 302,5 < <b>&lambda;</b> < 4000 nm si imipega la formula, valida per fasci gaussiani: \f[\eta= 1-e^{-\left(\frac{d_a}{db}\right)^2}\f]
     * in caso contrario il valore restitutito è pari a 1 (accoppiamento perfettto). */
@@ -140,7 +141,7 @@ void computeBeamArea(); /*!< Calcola l'area del fascio laser in m<sup>2</sup> co
     * la distanza per la 3 <sup>a</sup> condizione va impostata a 0. Per fare ciò prima dell'aggiornamento sarà necessario impostare la variabile internalWaist
     * al valore vero usando la funzione membro setInternalWaist(bool) (a tale proposito si consulti anche getDistCond_3()).*/
 
-    double* leaPowerErgUnit(laserOperation myLaserOperation, int*, const double & time, const double& _powerErg);/*!< E' la prima chiamata della funzione membro
+    array <double, ComputeLEA::N_LEA> leaPowerErgUnit(laserOperation myLaserOperation, array <int, ComputeLEA::N_LEA>, const double & time, const double& _powerErg);/*!< E' la prima chiamata della funzione membro
     * classUpdate e restituisce un puntatore ad un array di double lungo 4 nel quale sono memorizzati i valori dell'uscita del dispositivo espressi
     * nell'unità di misura omogenee al LEA corrispondente. Il parametro time è la base dei tempi in secondi.
     *     Unità di Misura LEA  | Uscita
@@ -152,7 +153,7 @@ void computeBeamArea(); /*!< Calcola l'area del fascio laser in m<sup>2</sup> co
     * L'array ricavato con questa logica consente di confrontare l'uscita del dispositivo con i LEA.
     * La funzione membro è ad accesso protetto e non è necessario impiegarla, ma è necessaria all'implementazione dell classi derivate.
     */
-    bool* valuateLEA_forClass(double*, double*, double*);/*!< Opera il confronto di ciascun LEA con le uscite corrette per la 1<sup>a</sup>
+    array<bool, N_CLASS> valuateLEA_forClass(array <double, ComputeLEA::N_LEA>, array <double, ComputeLEA::N_LEA>, array <double, ComputeLEA::N_LEA>);/*!< Opera il confronto di ciascun LEA con le uscite corrette per la 1<sup>a</sup>
     * e la 3<sup>a</sup> condizione e fornisce un array di tipo booleano i cui elementi risultano veri se le condizioni per la classificazione
     * sono verificate.
     * Il significato dell'array fornito è specificato dalla tabella seguente.
@@ -168,16 +169,16 @@ void computeBeamArea(); /*!< Calcola l'area del fascio laser in m<sup>2</sup> co
     *  [6]      |false   |false    |false   |false    |false    |false    |true
     */
 
-    laserClass valuateClass(bool*);/*!< Restituisce il risultato della classificazione come enumerale LaserClassCW::laserClass.
+    laserClass valuateClass(array <bool, N_CLASS>);/*!< Restituisce il risultato della classificazione come enumerale LaserClassCW::laserClass.
     * Se il formato non è quello precisato in valuateLEA_forClass(double*, double*, double*) restituisce LaserClassCW::NON_CLASSIFICATO. */
 
-    double* computePowerErgCond_1(double*, const double &); /*!< Calcola il valore dell'uscita del laser corretta con il fattore di accoppiamento.
+    array <double, ComputeLEA::N_LEA> computePowerErgCond_1(array <double, ComputeLEA::N_LEA> , const double &); /*!< Calcola il valore dell'uscita del laser corretta con il fattore di accoppiamento.
     * Ad esempio nel caso in cui il LEA è espresso in Watt fornisce: \f[P_{ACC 1} = \eta_1 \cdot P\f] */
-    double* computePowerErgCond_3(double*, const double &);/*!< Calcola il valore dell'uscita del laser corretta con il fattore di accoppiamento.
+    array <double, ComputeLEA::N_LEA> computePowerErgCond_3(array <double, ComputeLEA::N_LEA> , const double &);/*!< Calcola il valore dell'uscita del laser corretta con il fattore di accoppiamento.
     * Ad esempio nel caso in cui il LEA è espresso in Watt fornisce: \f[P_{ACC 3} = \eta_3 \cdot P\f] */
 
-    double* getPowerErg_Cond_1()const;/*!< Restituisce l'uscita del dispositivo corretta con il fattore di accoppiamento della 1<sup>a</sup> condizione. */
-    double* getPowerErg_Cond_3()const;/*!< Restituisce l'uscita del dispositivo corretta con il fattore di accoppiamento della 3<sup>a</sup> condizione. */
+    array <double, ComputeLEA::N_LEA> getPowerErg_Cond_1()const;/*!< Restituisce l'uscita del dispositivo corretta con il fattore di accoppiamento della 1<sup>a</sup> condizione. */
+    array <double, ComputeLEA::N_LEA> getPowerErg_Cond_3()const;/*!< Restituisce l'uscita del dispositivo corretta con il fattore di accoppiamento della 3<sup>a</sup> condizione. */
 
     double getCouplingFactor_Cond_1()const;/*!< Restituisce il fattore di accoppiamento della 1<sup>a</sup> condizione. L'impiego della funzione
     * presupppone che in precedenza sia stata invocata la funzione membro protetta classUpdate(laserOperation, const double&, const double &). */
@@ -221,8 +222,6 @@ void computeBeamArea(); /*!< Calcola l'area del fascio laser in m<sup>2</sup> co
     * aggiorna la valutazionde la classe. */
 
 protected:
-    int n_lea=4;
-    int n_class=7;
     double wavelength;
     ComputeLEA myLaserClass;
     double alpha;
@@ -232,13 +231,13 @@ protected:
     double beamArea;
     bool internalWaist;
 
-    double* LEA_Value;
-    string* LEA_formula;
-    string* LEA_formulaTipo;
-    string* LEA_formulaUnit;
-    int* LEA_formulaSort;
-    double* powerErgEq;
-    bool* classValutation;
+    array<double, ComputeLEA::N_LEA> LEA_Value;
+    array<string, ComputeLEA::N_LEA> LEA_formula;
+    array<string, ComputeLEA::N_LEA> LEA_formulaTipo;
+    array<string, ComputeLEA::N_LEA> LEA_formulaUnit;
+    array<int, ComputeLEA::N_LEA> LEA_formulaSort;
+    array<double, ComputeLEA::N_LEA>powerErgEq;
+    array<bool, N_CLASS>classValutation;
 
     double distanceCond_1;
     double distanceCond_3;
@@ -257,8 +256,8 @@ protected:
     double apCond_1;
     double apCond_3;
 
-    double *powerErg_Cond_1;
-    double *powerErg_Cond_3;
+    array<double, ComputeLEA::N_LEA> powerErg_Cond_1;
+    array<double, ComputeLEA::N_LEA> powerErg_Cond_3;
 
     laserClass laserClassAssigned;
 

@@ -16,8 +16,8 @@ using namespace std;
     const double ComputeLEA::ALPHA_MIN= 1.5;
 
 ComputeLEA::ComputeLEA(double _wavelength, double _pulseWidth, double _alpha):leaStructValues_1M{}, leaStructValues_3R{}, leaStructValues_3B{},
-    LEA_Formula(nullptr), LEA_FormulaSort(nullptr), LEA_FormulaTipo(nullptr),
-    LEA_FormulaUnit(nullptr), myLeaData_1M{}, myLeaData_3R{}, myLeaData_3B{}
+    LEA_Formula{}, LEA_FormulaSort{}, LEA_FormulaTipo{},
+    LEA_FormulaUnit{}, myLeaData_1M{}, myLeaData_3R{}, myLeaData_3B{}
 {
     wavelength = _wavelength;
     pulseWidth = _pulseWidth;
@@ -32,22 +32,16 @@ ComputeLEA::ComputeLEA(double _wavelength, double _pulseWidth, double _alpha):le
     leaStructValues_3R=TablesController::getInstance()->writeLeaInStructValues_3R();
     leaStructValues_3B=TablesController::getInstance()->writeLeaInStructValues_3B();
 
-    LEA_Result=new double[n_lea];
-    LEA_Formula=new string[n_lea];
-    LEA_FormulaSort=new int[n_lea];
-    LEA_FormulaTipo=new string[n_lea];
-    LEA_FormulaUnit=new string[n_lea];
-
     calculate();
 }
 
-void ComputeLEA::writeLeaInStructValues(classData myClassData)
+void ComputeLEA::writeLeaInStructValues(ClassData myClassData)
 {
-    if(myClassData==CLASSE_1_1M)
+    if(myClassData==ClassData::CLASSE_1_1M)
         leaStructValues_1M=TablesController::getInstance()->writeLeaInStructValues_1_1M();
-    if(myClassData==CLASSE_3R)
+    if(myClassData==ClassData::CLASSE_3R)
         leaStructValues_3R=TablesController::getInstance()->writeLeaInStructValues_3R();
-    if(myClassData==CLASSE_3B)
+    if(myClassData==ClassData::CLASSE_3B)
         leaStructValues_3B=TablesController::getInstance()->writeLeaInStructValues_3B();
 }
 
@@ -260,7 +254,7 @@ double ComputeLEA::valuate_LEA_2M_Value()
     if((wavelength<=700)and(wavelength>=400))
     {
         if(pulseWidth<0.25)
-            leaValue=LEA_Result[int(CLASSE_1_1M)];
+            leaValue=LEA_Result[static_cast<int>(ClassData::CLASSE_1_1M)];
     else
             leaValue=C6*1.0e-003;
     }
@@ -277,7 +271,7 @@ string ComputeLEA::valuate_LEA_2M_Formula()
     if((wavelength<=700)and(wavelength>=400))
     {
         if(pulseWidth<0.25)
-            leaFormula=LEA_Formula[int(CLASSE_1_1M)];
+            leaFormula=LEA_Formula[int(static_cast<int>(ClassData::CLASSE_1_1M))];
     else
             leaFormula="C6 10<sup>-3</sup>";
     }
@@ -294,7 +288,7 @@ string ComputeLEA::valuate_LEA_2M_FormulaTipo()
     if((wavelength<=700)and(wavelength>=400))
     {
         if(pulseWidth<0.25)
-            leaFormulaTipo=LEA_FormulaTipo[int(CLASSE_1_1M)];
+            leaFormulaTipo=LEA_FormulaTipo[static_cast<int>(ClassData::CLASSE_1_1M)];
     else
             leaFormulaTipo="P";
     }
@@ -311,7 +305,7 @@ string ComputeLEA::valuate_LEA_2M_FormulaUnit()
     if((wavelength<=700)and(wavelength>=400))
     {
         if(pulseWidth<0.25)
-            leaFormulaUnit=LEA_FormulaUnit[int(CLASSE_1_1M)];
+            leaFormulaUnit=LEA_FormulaUnit[static_cast<int>(ClassData::CLASSE_1_1M)];
     else
             leaFormulaUnit="W";
     }
@@ -670,27 +664,27 @@ double ComputeLEA::compute_t(leadata &myLeaData)
 }
 
 
-double* ComputeLEA::getLEA() const
+array<double, ComputeLEA::N_LEA> ComputeLEA::getLEA() const
 {
     return LEA_Result;
 }
 
-string* ComputeLEA::getLEA_Formula()const
+array <string, ComputeLEA::N_LEA> ComputeLEA::getLEA_Formula()const
 {
     return LEA_Formula;
 }
 
-string* ComputeLEA::getLEA_FormulaTipo() const
+array <string, ComputeLEA::N_LEA> ComputeLEA::getLEA_FormulaTipo() const
 {
     return LEA_FormulaTipo;
 }
 
-string* ComputeLEA::getLEA_FormulaUnit() const
+array <string, ComputeLEA::N_LEA> ComputeLEA::getLEA_FormulaUnit() const
 {
     return LEA_FormulaUnit;
 }
 
-int* ComputeLEA::getLEA_FormulaSort() const
+array <int, ComputeLEA::N_LEA> ComputeLEA::getLEA_FormulaSort() const
 {
     return LEA_FormulaSort;
 }
@@ -1005,7 +999,7 @@ double ComputeLEA::getApertureThirdCondition()const
 
 void ComputeLEA::applyLEA_CorrectionFactor(const double& correction)
 {
-    for(int i=0; i<n_lea; i++)
+    for(size_t i=0; i<ComputeLEA::N_LEA; i++)
     {
         LEA_Result[i]=LEA_Result[i]*correction;
     }

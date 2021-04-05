@@ -16,20 +16,6 @@ LaserClassMP::LaserClassMP(double _prf, double _beamDiameter, double _powerErg, 
     setPulseWidth(_pulseWidth);
     setPRF(_prf);
 
-    meanPowerErgEq=new double[n_lea];
-    meanPowerErg_Cond_1=new double[n_lea];
-    meanPowerErg_Cond_3=new double[n_lea];
-    meanClassValutation=new bool[n_class];
-    meanLEA_Corrected=new double[n_lea];
-    meanLEA_formulaSort=new int[n_lea];
-
-    tiPowerErgEq=new double[n_lea];
-    tiPowerErg_Cond_1=new double[n_lea];
-    tiPowerErg_Cond_3=new double[n_lea];
-    tiClassValutation=new bool[n_class];
-    tiLEA_Value=new double[n_lea];
-    tiLEA_Corrected=new double[n_lea];
-
     updateAll();
 }
 
@@ -236,7 +222,7 @@ void LaserClassMP::computeTi()
         Ti=0.001;
         else
     if((wavelength>2600) and (wavelength<=1.0e+06))
-        Ti=1.0e-07;;
+        Ti=1.0e-07;
 }
 
 void LaserClassMP::computeMeanPower()
@@ -370,10 +356,10 @@ void LaserClassMP::setTimeBase()
 }
 
 
-double* LaserClassMP::powerErgUnit(int* _meanLEA_formulaSort, const double &_powerErg, const double &time)
+array<double, ComputeLEA::N_LEA> LaserClassMP::powerErgUnit(array<int, ComputeLEA::N_LEA> _meanLEA_formulaSort, const double &_powerErg, const double &time)
 {
-    double* myPowerErgEq=new double[n_lea];
-    for(int i=0; i<n_lea; i++)
+    array<double, ComputeLEA::N_LEA> myPowerErgEq;
+    for(size_t i=0; i<ComputeLEA::N_LEA; i++)
     {
     if(_meanLEA_formulaSort[i]==1)
         myPowerErgEq[i]=_powerErg/beamArea;
@@ -387,11 +373,11 @@ double* LaserClassMP::powerErgUnit(int* _meanLEA_formulaSort, const double &_pow
     return myPowerErgEq;
 }
 
-double* LaserClassMP::computeMeanLEA_Corrected(int* _meanLEA_formulaSort)
+array<double, ComputeLEA::N_LEA> LaserClassMP::computeMeanLEA_Corrected(array<int, ComputeLEA::N_LEA> _meanLEA_formulaSort)
 {
-    double* meanLEACorrected=new double[n_lea];
-    double*  myMeanLEA=getMeanLEA();
-    for(int i=0; i<n_lea; i++)
+    array<double, ComputeLEA::N_LEA> meanLEACorrected;
+    array<double, ComputeLEA::N_LEA>myMeanLEA=getMeanLEA();
+    for(size_t i=0; i<ComputeLEA::N_LEA; i++)
     {
     if(_meanLEA_formulaSort[i]==1)
         meanLEACorrected[i]=myMeanLEA[i]/(prf*pulseWidth);
@@ -453,10 +439,10 @@ void LaserClassMP::highFrequencyValuation()
     tiClassUpdate(Ti, powerErg);
 }
 
-double* LaserClassMP::computeLEA_ThermalCorrection(double* _LEA_Value)
+array<double, ComputeLEA::N_LEA> LaserClassMP::computeLEA_ThermalCorrection(array<double, ComputeLEA::N_LEA> _LEA_Value)
 {
-    double* _LEA_ThermalCorrected=new double[n_lea];
-    for(int i=0; i<n_lea; i++)
+    array<double, ComputeLEA::N_LEA> _LEA_ThermalCorrected;
+    for(size_t i=0; i<ComputeLEA::N_LEA; i++)
     {
         _LEA_ThermalCorrected[i]=C5*_LEA_Value[i];
     }
@@ -493,8 +479,9 @@ void LaserClassMP::updateAll()
             systemClassValutation=valuateSystemClass(classValutation, meanClassValutation, tiClassValutation);
         }
     }
-    else
-    systemClassValutation=valuateSystemClass(classValutation, meanClassValutation);
+    else{
+    array<bool, LaserClassCW::N_CLASS> noTiClassValuation={false, false, false, false, false, false, false};
+    systemClassValutation=valuateSystemClass(classValutation, meanClassValutation, noTiClassValuation);}
 
     systemLaserClassAssigned=valuateClass(systemClassValutation);
 }
@@ -515,26 +502,28 @@ void LaserClassMP::setAlpha_max(const double &pulse)
                 alpha_max=100;
 }
 
-bool* LaserClassMP::valuateSystemClass(bool* myClassValuation, bool* myMeanClassValuation, bool* myC5ClassValuation)
+array<bool, LaserClassCW::N_CLASS> LaserClassMP::valuateSystemClass(array<bool, LaserClassCW::N_CLASS> myClassValuation,
+                                                                    array <bool, LaserClassCW::N_CLASS> myMeanClassValuation,
+                                                                    array<bool, LaserClassCW::N_CLASS> myC5ClassValuation)
 {
-    bool* systemClass=new bool[n_class];
-    for(int i=0; i<n_class; i++)
+    array<bool, LaserClassCW::N_CLASS> systemClass;
+    for(size_t i=0; i<LaserClassCW::N_CLASS; i++)
     {systemClass[i]=false;}
 
     if((wavelength>=400)and(wavelength<=1400)){
-    for(int i=0; i<n_class; i++){
-        if(myClassValuation[n_class-i-1] or myMeanClassValuation[n_class-i-1] or myC5ClassValuation[n_class-i-1])
+    for(size_t i=0; i<LaserClassCW::N_CLASS; i++){
+        if(myClassValuation[LaserClassCW::N_CLASS-i-1] or myMeanClassValuation[LaserClassCW::N_CLASS-i-1] or myC5ClassValuation[LaserClassCW::N_CLASS-i-1])
             {
-            systemClass[n_class-i-1]=true;
+            systemClass[LaserClassCW::N_CLASS-i-1]=true;
             break;
             }
         }
     }
     else{
-    for(int i=0; i<n_class; i++){
-        if(myClassValuation[n_class-i-1] or myMeanClassValuation[n_class-i-1])
+    for(size_t i=0; i<LaserClassCW::N_CLASS; i++){
+        if(myClassValuation[LaserClassCW::N_CLASS-i-1] or myMeanClassValuation[LaserClassCW::N_CLASS-i-1])
             {
-            systemClass[n_class-i-1]=true;
+            systemClass[LaserClassCW::N_CLASS-i-1]=true;
             break;
             }
         }
@@ -542,49 +531,49 @@ bool* LaserClassMP::valuateSystemClass(bool* myClassValuation, bool* myMeanClass
     return systemClass;
 }
 
-double *LaserClassMP::getLEA_Corrected()const
+array<double, ComputeLEA::N_LEA> LaserClassMP::getLEA_Corrected()const
 {
     return LEA_Corrected;
 }
 
 
-double* LaserClassMP::getMeanLEA()const
+array<double, ComputeLEA::N_LEA> LaserClassMP::getMeanLEA()const
 {
     return myMeanLaserClass.getLEA();
 }
 
-string* LaserClassMP::getMeanLEA_Formula()const
+array<string, ComputeLEA::N_LEA> LaserClassMP::getMeanLEA_Formula()const
 {
     return myMeanLaserClass.getLEA_Formula();
 }
 
-string* LaserClassMP::getMeanLEA_FormulaTipo()const
+array<string, ComputeLEA::N_LEA> LaserClassMP::getMeanLEA_FormulaTipo()const
 {
     return myMeanLaserClass.getLEA_FormulaTipo();
 }
 
-string* LaserClassMP::getMeanLEA_FormulaUnit()const
+array<string, ComputeLEA::N_LEA> LaserClassMP::getMeanLEA_FormulaUnit()const
 {
     return myMeanLaserClass.getLEA_FormulaUnit();
 }
 
-int* LaserClassMP::getMeanLEA_FormulaSort()const
+array<int, ComputeLEA::N_LEA> LaserClassMP::getMeanLEA_FormulaSort()const
 {
     return myMeanLaserClass.getLEA_FormulaSort();
 }
 
-double* LaserClassMP::getMeanPowerErgEq()const
+array<double, ComputeLEA::N_LEA> LaserClassMP::getMeanPowerErgEq()const
 {
     return meanPowerErgEq;
 }
 
-string* LaserClassMP::getMeanLEA_Expressions()const
+array<string, ComputeLEA::N_LEA> LaserClassMP::getMeanLEA_Expressions()const
 {
-    string* leaExpr=new string[n_lea];
+    array<string, ComputeLEA::N_LEA> leaExpr;
 
     std::string leaValue;
 
-    for(int i=0; i<n_lea; i++)
+    for(size_t i=0; i<ComputeLEA::N_LEA; i++)
     {
      leaValue=getLEA_Formula()[i].c_str();
      leaExpr[i]=getMeanLEA_FormulaTipo()[i]+" = "+
@@ -595,7 +584,7 @@ string* LaserClassMP::getMeanLEA_Expressions()const
     return leaExpr;
 }
 
-bool* LaserClassMP::getMeanClassValutation()const
+array<bool, LaserClassCW::N_CLASS> LaserClassMP::getMeanClassValutation()const
 {
     return meanClassValutation;
 }
@@ -640,12 +629,12 @@ double LaserClassMP::getMeanCouplingFactor_Cond_3()const
     return meanCouplingFactor_Cond_3;
 }
 
-double* LaserClassMP::getMeanPowerErg_Cond_1()const
+array<double, ComputeLEA::N_LEA> LaserClassMP::getMeanPowerErg_Cond_1()const
 {
     return meanPowerErg_Cond_1;
 }
 
-double* LaserClassMP::getMeanPowerErg_Cond_3()const
+array<double, ComputeLEA::N_LEA> LaserClassMP::getMeanPowerErg_Cond_3()const
 {
     return meanPowerErg_Cond_3;
 }
@@ -655,7 +644,7 @@ string LaserClassMP::getMeanLaserClassAssigned()const
     return meanLaserClassAssigned;
 }
 
-double *LaserClassMP::getMeanLEA_Corrected()const
+array<double, ComputeLEA::N_LEA> LaserClassMP::getMeanLEA_Corrected()const
 {
     return meanLEA_Corrected;
 }
@@ -665,38 +654,38 @@ string LaserClassMP::getC5LaserClassAssigned()const
     return c5LaserClassAssigned;
 }
 
-double* LaserClassMP::getTiLEA()const
+array<double, ComputeLEA::N_LEA> LaserClassMP::getTiLEA()const
 {
     return myTiLaserClass.getLEA();
 }
 
-string* LaserClassMP::getTiLEA_Formula()const
+array<string, ComputeLEA::N_LEA> LaserClassMP::getTiLEA_Formula()const
 {
     return myTiLaserClass.getLEA_Formula();
 }
 
-string* LaserClassMP::getTiLEA_FormulaTipo()const
+array<string, ComputeLEA::N_LEA> LaserClassMP::getTiLEA_FormulaTipo()const
 {
     return myTiLaserClass.getLEA_FormulaTipo();
 }
 
-string* LaserClassMP::getTiLEA_FormulaUnit()const
+array<string, ComputeLEA::N_LEA> LaserClassMP::getTiLEA_FormulaUnit()const
 {
     return myTiLaserClass.getLEA_FormulaUnit();
 }
 
-int* LaserClassMP::getTiLEA_FormulaSort()const
+array<int, ComputeLEA::N_LEA> LaserClassMP::getTiLEA_FormulaSort()const
 {
     return myTiLaserClass.getLEA_FormulaSort();
 }
 
-string* LaserClassMP::getTiLEA_Expressions()const
+array<string, ComputeLEA::N_LEA> LaserClassMP::getTiLEA_Expressions()const
 {
-    string* leaExpr=new string[n_lea];
+    array<string, ComputeLEA::N_LEA> leaExpr;
 
     string leaValue;
 
-    for(int i=0; i<n_lea; i++)
+    for(size_t i=0; i<ComputeLEA::N_LEA; i++)
     {
         leaValue=getTiLEA()[i];
 
@@ -708,13 +697,13 @@ string* LaserClassMP::getTiLEA_Expressions()const
     return leaExpr;
 }
 
-string* LaserClassMP::getThermalLEA_Expressions()const
+array<string, ComputeLEA::N_LEA> LaserClassMP::getThermalLEA_Expressions()const
 {
-    string* leaExpr=new string[n_lea];
+    array<string, ComputeLEA::N_LEA> leaExpr;
 
     string leaValue;
 
-    for(int i=0; i<n_lea; i++)
+    for(size_t i=0; i<ComputeLEA::N_LEA; i++)
     {
 
         leaExpr[i]=getLEA_FormulaTipo()[i]+" = "+
@@ -725,12 +714,12 @@ string* LaserClassMP::getThermalLEA_Expressions()const
     return leaExpr;
 }
 
-double* LaserClassMP::getTiPowerErgEq()const
+array<double, ComputeLEA::N_LEA> LaserClassMP::getTiPowerErgEq()const
 {
     return tiPowerErgEq;
 }
 
-bool* LaserClassMP::getTiClassValutation()const
+array<bool, LaserClassCW::N_CLASS> LaserClassMP::getTiClassValutation()const
 {
     return tiClassValutation;
 }
@@ -775,12 +764,12 @@ double LaserClassMP::getTiCouplingFactor_Cond_3()const
     return tiCouplingFactor_Cond_3;
 }
 
-double* LaserClassMP::getTiPowerErg_Cond_1()const
+array<double, ComputeLEA::N_LEA> LaserClassMP::getTiPowerErg_Cond_1()const
 {
     return tiPowerErg_Cond_1;
 }
 
-double* LaserClassMP::getTiPowerErg_Cond_3()const
+array<double, ComputeLEA::N_LEA> LaserClassMP::getTiPowerErg_Cond_3()const
 {
     return tiPowerErg_Cond_3;
 }
@@ -789,7 +778,7 @@ string LaserClassMP::getTiLaserClassAssigned()const
 {
     return tiLaserClassAssigned;
 }
-double *LaserClassMP::getTiLEA_Corrected()const
+array<double, ComputeLEA::N_LEA>LaserClassMP::getTiLEA_Corrected()const
 {
     return tiLEA_Corrected;
 }

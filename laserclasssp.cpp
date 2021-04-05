@@ -7,11 +7,6 @@ LaserClassSP::LaserClassSP(double _beamDiameter, double _powerErg,  double _dive
                            double _wavelength, double _pulseWidth, double _alpha):LaserClassCW(_beamDiameter, _powerErg, _divergence,
                                                                         _wavelength, _pulseWidth, _alpha)
 {
-    powerErgEq=new double[n_lea];
-    powerErg_Cond_1=new double[n_lea];
-    powerErg_Cond_3=new double[n_lea];
-    classValutation=new bool[n_class];
-
     updateAll();
 }
 

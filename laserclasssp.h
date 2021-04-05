@@ -40,7 +40,7 @@ const static double PULSE_WIDTH; /*!< Parametro di default della dura dell'impul
 void setPulseWidth(const double);/*!< Imposta il valore della durata dell'impulso <b>t</b> in secondi. */
 double getPulseWidth() const;/*!< Restituisce il valore della durata dell'impulso <b>t</b> in secondi. */
 
-double* leaPowerErgUnit(int*, const double &, const double &);/*!< Versione overloaded della funzione membro per la determinazione dell'uscita del dispositivo.
+array <double, ComputeLEA::N_LEA> leaPowerErgUnit(array<int, ComputeLEA::N_LEA>, const double &, const double &);/*!< Versione overloaded della funzione membro per la determinazione dell'uscita del dispositivo.
 In questo caso il parametro time è la durata dell'impulso in secondi.	*/
 
 void updateAll();  /*!< Versione overloaded della funzione membro LaserClassCW::updateAll() per il calcolo e l'aggiornamento della Classe. L'overload in questo caso

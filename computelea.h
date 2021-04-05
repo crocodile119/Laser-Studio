@@ -3,6 +3,8 @@
 #include "leadata.h"
 #include "empleatables.h"
 #include <string>
+#include <cstddef>
+#include <array>
 #include <QtGui>
 
 using namespace std;
@@ -24,9 +26,10 @@ class ComputeLEA
 public:
     ComputeLEA(double=EmpLeaTables::HE_NE_WAVELENGTH, double=EmpLeaTables::NATURAL_AVERSION_TIME, double=EmpLeaTables::ALPHA_MIN);
 
-    const static double ALPHA_MIN;
+    static const double ALPHA_MIN;
+    static const size_t N_LEA{4};
 
-    enum classData {CLASSE_1_1M,
+    enum class ClassData {CLASSE_1_1M,
     /**< Dati corrispondenti al LEA di Classe 1 e 1M. */
     CLASSE_2_2M,
     /**< Dati corrispondenti al LEA di Classe 2 e 2M. */
@@ -68,7 +71,7 @@ public:
     double getT1() const;/*!< Restituisce il valore del parametro T<sub>1</sub>. */
     double getT2() const;/*!< Restituisce il valore del parametro T<sub>2</sub>. */
 
-    int *getLEA_FormulaSort()const;/*!< Restituisce un array di tipo int con di valori da 1 a 4. L'intero è associato al tipo di unità di misura
+    array <int, N_LEA> getLEA_FormulaSort()const;/*!< Restituisce un array di tipo int con di valori da 1 a 4. L'intero è associato al tipo di unità di misura
     * secondo lo schema riportato di seguito:
 
      Valore  | Unità di misura
@@ -84,10 +87,10 @@ public:
     double getGamma() const;/*!< Restituisce il valore dell'angolo &gamma; in mrad. L'angolo &gamma; ha significato solo per esposizioni
     * con effetti fotochimici. */
 
-    double *getLEA()const;/*!< Restituisce un array di tipo double con i valori dei lea calcolati */
-    string *getLEA_Formula()const;/*!< Restituisce un array di tipo string con le formule dei lea calcolati */
-    string *getLEA_FormulaTipo()const;/*!< Restituisce un array di tipo string con il tipo formule dei lea calcolati */
-    string *getLEA_FormulaUnit()const;/*!< Restituisce un array di tipo string con l'unità di misura dei lea calcolati */
+    array <double, N_LEA> getLEA()const;/*!< Restituisce un array di tipo double con i valori dei lea calcolati */
+    array <string, N_LEA> getLEA_Formula()const;/*!< Restituisce un array di tipo string con le formule dei lea calcolati */
+    array <string, N_LEA> getLEA_FormulaTipo()const;/*!< Restituisce un array di tipo string con il tipo formule dei lea calcolati */
+    array <string, N_LEA> getLEA_FormulaUnit()const;/*!< Restituisce un array di tipo string con l'unità di misura dei lea calcolati */
 
 
     double getApertureThirdCondition()const;/*!< Restituisce il diametro del diaframma calcolato da valuateApertureCondition_3().*/
@@ -110,7 +113,7 @@ protected:
     void selectLea_3B_Row(const std::array<leadata, EmpLeaTables::TABLEROW_3B> &);/*!< Seleziona la riga del LEA di Classe 3B
     * corrispondente ai parametri di ingresso impostati.*/
 
-    void writeLeaInStructValues(classData);/*!< Scrive le tabelle LEA in strutture dati del tipo empleatables.h. La funzione invoca un metodo statico
+    void writeLeaInStructValues(ClassData);/*!< Scrive le tabelle LEA in strutture dati del tipo empleatables.h. La funzione invoca un metodo statico
     * della classe TablesController perchè le tabelle siano scritte in un'unica struttura dati (singleton).*/
 
 
@@ -165,7 +168,6 @@ private:
     double pulseWidth;
     double alpha;
     double alpha_max;
-    int n_lea=4;
 
     std::array<leadata, EmpLeaTables::TABLEROW_1_1M> leaStructValues_1M;
     std::array<leadata, EmpLeaTables::TABLEROW_3R>leaStructValues_3R;
@@ -173,11 +175,12 @@ private:
 
     leadata myLeaData;
 
-    double *LEA_Result;
-    string *LEA_Formula;
-    int *LEA_FormulaSort;
-    string *LEA_FormulaTipo;
-    string *LEA_FormulaUnit;
+    array <double, N_LEA> LEA_Result;
+
+    array <string, N_LEA> LEA_Formula;
+    array <int, N_LEA> LEA_FormulaSort;
+    array <string, N_LEA> LEA_FormulaTipo;
+    array <string, N_LEA> LEA_FormulaUnit;
 
     leadata myLeaData_1M;
     leadata myLeaData_3R;

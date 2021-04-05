@@ -184,7 +184,7 @@ void LaserSafetyMP::computeTmin()
 		Tmin=0.001;
 		else
     if((wavelength>2600) and (wavelength<=1.0e+06))
-        Tmin=1.0e-07;;
+        Tmin=1.0e-07;
 }
 
 string LaserSafetyMP::valutateCounting()
@@ -477,7 +477,7 @@ if((wavelength>=400)and(wavelength<=1.0e+06))
     }
     else
     {
-        NOHD=fmax(meanPower_NOHD, singlePulse_NOHD);;
+        NOHD=fmax(meanPower_NOHD, singlePulse_NOHD);
     }
 }
 
@@ -530,10 +530,13 @@ void LaserSafetyMP::computeSinglePulseLambertianMax()
 }
 
 void LaserSafetyMP::computePulseTrainLambertianMax()
+{
+    if((wavelength>=400)&&(wavelength<=1.0e+06))
+    {
    /*--------------------------------------------------------------------------------------------------------
     |Calcolo dell'NOHD che deriverebbe dal solo dell'impulso singolo considerando gli effetti termici       |
    ----------------------------------------------------------------------------------------------------------*/
-{
+
     double ForLambertianMax;
     formulaSort=getFormulaSort();
 
@@ -546,6 +549,9 @@ void LaserSafetyMP::computePulseTrainLambertianMax()
     //si applica la formula pe il calcolo della NOHD
         underroot=(ForLambertianMax)/(PI*CP_EMP_Result);//si impiega l'EMP per gli effetti termici
         pulseTrainLambertianMax=(sqrt(underroot));
+    }
+    else
+    pulseTrainLambertianMax=0;
 }
 
 void LaserSafetyMP::computeLambertianMax()
@@ -664,7 +670,7 @@ double LaserSafetyMP::getEMP_MP()
     return myMeanPower_Laser.getEMP();
 }
 
-void LaserSafetyMP::setPRF(const int& _PRF)
+void LaserSafetyMP::setPRF(const double& _PRF)
 {
 	PRF=_PRF;
 }

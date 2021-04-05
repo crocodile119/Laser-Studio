@@ -64,7 +64,7 @@ private:
     QColor myTextColor;
     QColor myBackgroundColor;
     QColor myOutlineColor;
-    QString textLabel;;
+    QString textLabel;
     double scale; 
     QRectF myTextRect;
     QRectF labRect;

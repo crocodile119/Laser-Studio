@@ -1,16 +1,10 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2018-03-14T18:07:25
-#
-#-------------------------------------------------
-
 QT += widgets
 QT += charts
 QT += printsupport
 
 qtHaveModule(printsupport): QT += printsupport
 RC_ICONS = LaserStudioIcon.ico
-CONFIG += c++11
+CONFIG += c++14
 
 SOURCES +=\
     atmosphericeffectsdialog.cpp \

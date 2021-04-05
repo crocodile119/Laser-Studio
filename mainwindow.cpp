@@ -1227,7 +1227,7 @@ void MainWindow::backgroundGrid()
         viewportRect.translate(-center);
 
         gridlines = new GridLines();
-        gridlines->setPos(QPointF(0.0, 0.0));;
+        gridlines->setPos(QPointF(0.0, 0.0));
         gridlines->setSceneRect(viewportRect);
         laserWindow->graphicsView->scene->addItem(gridlines);
         --minZ;
@@ -1457,7 +1457,7 @@ void MainWindow::setupGoggleProspective()
     laserWindow->myDockResults->hide();
 
     showDockWidgetEffects->setChecked(false);
-    laserWindow->myDockEffects->hide();;
+    laserWindow->myDockEffects->hide();
 
     showDockWidgetSkin->setChecked(false);
     laserWindow->myDockSkin->hide();
@@ -1481,7 +1481,7 @@ void MainWindow::setupClassifierProspective()
     laserWindow->myDockResults->hide();
 
     showDockWidgetEffects->setChecked(false);
-    laserWindow->myDockEffects->hide();;
+    laserWindow->myDockEffects->hide();
 
     showDockWidgetSkin->setChecked(false);
     laserWindow->myDockSkin->hide();

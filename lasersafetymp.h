@@ -183,7 +183,7 @@ string getSkinDamage_MP() const;/*!< Restituisce il tipo di danno che il disposi
 string getEyeDamage_MP() const;/*!< Restituisce il tipo di danno che il dispositivo può produrre all'occhio riferito al criterio della potenza.*/
 string getPhotochemicalNote_MP() const;/*!< Fornisce commenti nel caso di valutazione sia fotochimica che termica ed è riferito al criterio della potenza.*/
 double getEMP_MP();/*!< Restituisce il valore numerico dell'<b>EMP</b> del dispositivo utile per l'applicazione del criterio della potenza. */
-void setPRF(const int&);/*!< Restituisce il valore della Pulse Repetition Frquency <b>PRF</b> impostata misurata in Hz.*/
+void setPRF(const double &);/*!< Restituisce il valore della Pulse Repetition Frquency <b>PRF</b> impostata misurata in Hz.*/
 double getPRF() const;/*!< Imposta il valore della Pulse Repetition Frquency <b>PRF</b> in Hz.*/
 double getMeanPower() const;/*!< Restituisce il valore della Potenza media <b>P</b> impostata misurata in Watt.*/
 double getMeanIrradiance() const;/*!< Restituisce il valore dell'irradianza della potenza ottica media del dispositivo impostata

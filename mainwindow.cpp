@@ -3202,9 +3202,7 @@ double MainWindow::getPowerErg()
 
 double MainWindow::getBeamDiameter()
 {
-    double _beamDiameterDial;
-    _beamDiameterDial=(double)laserWindow->myDockControls->getBeamDiameter();
-    return _beamDiameterDial;
+    return laserWindow->myDockControls->getBeamDiameter();
 }
 
 /**********************************************************************************************

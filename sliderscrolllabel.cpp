@@ -117,7 +117,7 @@ void SliderScrollLabel::setValue(const double& _value)
     scientNotLabel->setText(QString::number(value, 'e', 2));
     mantissa=QString::number(value, 'e', 2).left(4).toDouble();
     qDebug()<< "Mantissa: " << mantissa;
-    slider->setValue((int)(mantissa*100));
+    slider->setValue(static_cast<int>(mantissa*100));
 
     if(value>=1)
         exponent=+QString::number(value, 'e', 2).right(2).toInt();
@@ -191,7 +191,7 @@ void SliderScrollLabel::setExponent(const int _exponent)
 
 void SliderScrollLabel::setMantissa(const double _mantissa)
 {
-    slider->setValue((int)(_mantissa*100));
+    slider->setValue(static_cast<int>(_mantissa*100));
     mantissa=_mantissa;
 }
 

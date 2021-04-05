@@ -124,7 +124,7 @@ void ScientificNotationControl::setValue(const double& _value)
                     exponent=minimumExponent;}
     }
 
-    dial->setValue((int)(mantissa*100));
+    dial->setValue(static_cast<int>(mantissa*100));
     verticalScrollBar->setValue(-exponent);
 
     scientificNumber=mantissa*std::pow(10, exponent);
@@ -192,7 +192,7 @@ void ScientificNotationControl::setExponent(const int _exponent)
 
 void ScientificNotationControl::setMantissa(const double _mantissa)
 {
-    dial->setValue((int)(_mantissa*100));
+    dial->setValue(static_cast<int>(_mantissa*100));
     mantissa=_mantissa;
 }
 

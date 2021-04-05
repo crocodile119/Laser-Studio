@@ -435,7 +435,7 @@ void Reflector::setStringDetails()
     myMaxElementString=QString::number(myMaxElement,'f',2);
     myPositioningElementString=QString::number(myPositioningElement,'f',2);
     nString=QString::number(n, 'f',2);
-    myReflectionCoeffString=QString::number(materialCoeff, 'f',2);;
+    myReflectionCoeffString=QString::number(materialCoeff, 'f',2);
 
     switch(myTarget)
     {

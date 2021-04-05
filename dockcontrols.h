@@ -157,7 +157,6 @@ private slots:
     void on_T_SkinControl_valueChanged();
     void on_teControl_valueChanged();
     void on_wavelengthScrollBar_valueChanged(int value);
-    void setBeamDiameter();
     void setEMP();
     void setPowerErgForEMP();
     void on_comboBox_currentIndexChanged(const QString &arg1);

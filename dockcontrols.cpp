@@ -153,7 +153,6 @@ DockControls::DockControls(QWidget *parent, DockResults *_dockResults, DockEffec
 
       connect(this, SIGNAL(EMP_Changed()), this, SLOT(setEMP()));
       connect(this, SIGNAL(powerErgForEMPChanged()), this, SLOT(setPowerErgForEMP()));
-      connect(this, SIGNAL(beamDiameterChanged()), this, SLOT(setBeamDiameter()));
       connect(dockGoggle->ui->pushButton, SIGNAL(toggled(bool)), this, SLOT(on_pushButton_toggled(bool)));
 }
 
@@ -196,7 +195,7 @@ void DockControls::on_wavelengthScrollBar_valueChanged(int value)
     * casting della variabile value. *
     **********************************/
 
-    wavelength=(double)value;
+    wavelength=static_cast<double>(value);
 
     /*******************************************************************************
      * Imposto il valore per la visualizzazione nella label associata al controllo *
@@ -2601,16 +2600,6 @@ void DockControls::setEMP()
     myEMP=_myEMP;
 }
 
-void DockControls::setBeamDiameter()
-{
-    double _beamDiameter=ui->beamDiameterControl->getScientificNumber();
-
-        if(_beamDiameter==beamDiameter)
-        return;
-
-    beamDiameter=_beamDiameter;
-}
-
 double DockControls::getPowerErg()const
 {
     return powerErg;
@@ -2642,17 +2631,6 @@ double DockControls::getBeamDiameter()const
  * Salvattagio degli argomenti delle slot dei controlli necessari                              *
  * *********************************************************************************************/
 
-/*
-void DockControls::setPowerErgDial(const int _powerErgDial)
-{
-    powerErgDial=_powerErgDial;
-}
-
-void DockControls::setBeamDiameterDial(const int _beamDiameterDial)
-{
-    beamDiameterDial=_beamDiameterDial;
-}
-*/
 void DockControls::setOpticalDistance()
 {
     double _NOHD;

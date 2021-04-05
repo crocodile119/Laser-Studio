@@ -30,12 +30,12 @@ void GoToPointDialog::setViewCenter(const QPointF _center)
 
 void GoToPointDialog::on_xSpinBox_valueChanged(int arg1)
 {
-    xPosition=(double)arg1;
+    xPosition=static_cast<double>(arg1);
 }
 
 void GoToPointDialog::on_ySpinBox_valueChanged(int arg1)
 {
-    yPosition=(double)arg1;
+    yPosition=static_cast<double>(arg1);
 }
 
 void GoToPointDialog::on_buttonBox_accepted()

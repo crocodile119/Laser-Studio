@@ -112,7 +112,7 @@ void LaserSafetyMP::computePulseNumber()
     if((wavelength>=400)and(wavelength<=1.0e+06))
         {
         if(PRF> (1/Tmin))
-            pulseNumber=ceil((int)(0.5+(1/Tmin)*Te));//se il conteggio non è regolare il numero di impulsi è pari al rapporto del tempo di esposizione minimo tra T2 exposureTime con Tmin
+            pulseNumber=ceil(static_cast<int>(0.5+(1/Tmin)*Te));//se il conteggio non è regolare il numero di impulsi è pari al rapporto del tempo di esposizione minimo tra T2 exposureTime con Tmin
             else
             pulseNumber=ceil(PRF*Te);//altrimenti è pari al prodotto della PRF con exposureTime.
          }

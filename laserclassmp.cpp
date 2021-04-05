@@ -247,7 +247,7 @@ void LaserClassMP::computePulseNumber()
     if((wavelength>=400)and(wavelength<=1400))
         {
         if(prf> (1/Ti)){
-            pulseNumber=ceil((int)(0.5+(1/Ti)*Te));}//se il conteggio non è regolare il numero di impulsi è pari al rapporto del tempo di esposizione con Te con Ti
+            pulseNumber=ceil(static_cast<int>(0.5+(1/Ti)*Te));}//se il conteggio non è regolare il numero di impulsi è pari al rapporto del tempo di esposizione con Te con Ti
             else
             pulseNumber=ceil(prf*Te);//altrimenti è pari al prodotto della PRF con il tempo di esposizione Te.
          }
@@ -255,10 +255,11 @@ void LaserClassMP::computePulseNumber()
         {
          pulseNumber=ceil(prf*timeBase);
         }
-    /****************************************************************************************************
-     *                                              ATTENZIONE                                          *
-     * PulseNumber è un intero quindi risulta nullo se il prodotto di PRF*ExposureTime è minore di 1    *
-     * **************************************************************************************************/
+    /*************************************************************************
+     *                          ATTENZIONE                                   *
+     * PulseNumber è un intero quindi risulta pari a q anche nel caso in cui *
+     * il prodotto di PRF*ExposureTime sia minore di 1                       *
+     * ***********************************************************************/
 }
 
 void LaserClassMP::computeC5()

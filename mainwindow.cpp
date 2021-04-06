@@ -725,9 +725,8 @@ void MainWindow::properties()
             }
         }
 
-    else
-            if(!showGridAction->isChecked())
-                QMessageBox::information(this, "Zona di sgombero", "Puoi visualizzare una griglia dal menù visualizza");
+        else
+            installationDescription();
 }
 
 void MainWindow::installationDescription()

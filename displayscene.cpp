@@ -65,17 +65,11 @@ DisplayScene::~DisplayScene()
 
 void DisplayScene::setNewScene()
 {
-    QGraphicsScene *sceneToDelete;
-    sceneToDelete=new QGraphicsScene();
-    /*Così sono certo che la vecchia scena graphica venga distrutta
-     anche se è probabile che lo facia da sè*/
-    sceneToDelete=scene;
+    deleteScene();
     scene= new GraphicsScene();
     scene->installEventFilter(this);
 
     setScene(scene);
-
-    delete sceneToDelete;
 }
 
 void DisplayScene::deleteScene()

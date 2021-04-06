@@ -87,7 +87,6 @@ MainWindow::MainWindow()
     createContextMenu();
     updateActions();
 
-    readSettings();
     setCurrentFile("");
 
     setMouseTracking(true);
@@ -153,6 +152,7 @@ MainWindow::MainWindow()
     laserSelectionModel=laserWindow->myDockReflectorsList->ui->laserListView->selectionModel();
     setupLaserProspective();
 
+    readSettings();
 
     connect(laserWindow->myDockControls, SIGNAL(NOHD_Changed()), this, SLOT(setDNRO_ForLaserpoint()));
     connect(laserWindow->myDockControls, SIGNAL(NOHD_Changed()), this, SLOT(setDNRO_ForReflector()));
@@ -353,13 +353,24 @@ void MainWindow::setControls()
     laserWindow->myDockControls->setDialControls();
 }
 
+void MainWindow::setCurrentDirectory()
+{
+    QFileInfo filenameInfo;
+    if(!recentFiles.empty()){
+        filenameInfo=recentFiles.first();
+        curDirectoryFile=filenameInfo.absolutePath();
+    }
+}
 void MainWindow::open()
 {
     if (okToContinue()) {
-        QString fileName = QFileDialog::getOpenFileName(this,
-                                   tr("Apri progetto"), ".",
+
+    setCurrentDirectory();
+
+    QString fileName = QFileDialog::getOpenFileName(this,
+                                   tr("Apri progetto"), curDirectoryFile,
                                    tr("File Laser Studio (*.srk)"));
-        if (!fileName.isEmpty())
+    if (!fileName.isEmpty())
         {
         loadFile(fileName);
         makeSceneOfSavedItems();
@@ -410,8 +421,17 @@ bool MainWindow::save()
 
 bool MainWindow::saveAs()
 {
-    QString fileName = QFileDialog::getSaveFileName(this,
-                               tr("Salva progetto"),curFile,
+  setCurrentDirectory();
+  QString saveFilename;
+
+  if(curFile.isEmpty())
+      saveFilename=curDirectoryFile;
+  else
+      saveFilename=curFile;
+
+
+  QString fileName = QFileDialog::getSaveFileName(this,
+                               tr("Salva progetto"), saveFilename,
                                tr("File Laser Studio (*.srk)"));
     if (fileName.isEmpty())
         return false;
@@ -1558,19 +1578,19 @@ bool MainWindow::loadFile(const QString &fileName)
 
 void MainWindow::readSettings()
 {
-    QSettings settings("CISAM.", "Laser Studio");
+    QSettings settings("Carmine Giordano", "Laser Studio");
 
     settings.beginGroup("mainWindow");
-    //resize(settings.value("size").toSize());
-    restoreGeometry(settings.value("myWidget/geometry").toByteArray());
-    restoreState(settings.value("myWidget/windowState").toByteArray());
+    resize(settings.value("size").toSize());
+    restoreGeometry(settings.value("geometry").toByteArray());
+    restoreState(settings.value("windowState").toByteArray());
 
     /*****************************************************************
      * Application output segnala che non funziona quindi l'ho tolto *
      * restoreState(settings.value("state").toByteArray());          *
      *****************************************************************/
 
-    recentFiles = settings.value("File recenti").toStringList();
+    recentFiles = settings.value("recentFiles").toStringList();
     updateRecentFileActions();
     settings.endGroup();
 }
@@ -1580,7 +1600,7 @@ void MainWindow::writeSettings()
     QSettings settings("Carmine Giordano", "Laser Studio");
 
     settings.beginGroup("mainWindow");
-    //settings.setValue("size", size());
+    settings.setValue("size", size());
     settings.setValue("geometry", saveGeometry());
     settings.setValue("windowState", saveState());
 

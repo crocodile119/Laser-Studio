@@ -79,6 +79,7 @@ private slots:
     bool save();
     bool saveAs();
     void open();
+    void setCurrentDirectory();
     void newFile();
     void openRecentFile();
     void about();
@@ -247,6 +248,7 @@ private:
 
     QString curFile;
     QString FILENAME;
+    QString curDirectoryFile;
     bool externalFile;
     QStringList recentFiles;
     double reflectorDistance;

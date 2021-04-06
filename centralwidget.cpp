@@ -37,18 +37,18 @@ CentralWidget::CentralWidget(QWidget *parent) :
                      "QGraphicsView {background-color:#f0f0f0;}"
                      ));
 
-    myDockResults= new DockResults();
-    myDockEffects =new DockEffects();
-    myDockSkin = new DockSkin();
-    myDockGoggle = new DockGoggle();
-    myDockLea= new DockLea();
-    myDockReflectorsList=new ReflectorsQList();
+    myDockResults= new DockResults(this);
+    myDockEffects =new DockEffects(this);
+    myDockSkin = new DockSkin(this);
+    myDockGoggle = new DockGoggle(this);
+    myDockLea= new DockLea(this);
+    myDockReflectorsList=new ReflectorsQList(this);
 
     clearInstallationDesription();
     scale=1;
     scaleIndex=4;
     myLabRoomInserted=false;
-    myDockControls= new DockControls(nullptr, myDockResults, myDockEffects, myDockSkin, myDockGoggle, myDockLea);
+    myDockControls= new DockControls(this, myDockResults, myDockEffects, myDockSkin, myDockGoggle, myDockLea);
 
     gridLayout = new QGridLayout(this);
     graphicsView =new DisplayScene();
@@ -74,11 +74,6 @@ CentralWidget::CentralWidget(QWidget *parent) :
     a_coefficient=0.06*powf(meteoRange, 0.33);
 
     atmoshericEffectsCoefficient=3.91/(meteoRange)*powf(550.0/(632.0), a_coefficient);
-
-}
-
-CentralWidget::~CentralWidget()
-{
 
 }
 
@@ -637,4 +632,9 @@ QVector <QRectF> CentralWidget::getFootprintRectVect()
 QVector <QString> CentralWidget::getFootprintDescriptionVect()
 {
     return footprintDescriptionVect;
+}
+
+CentralWidget::~CentralWidget()
+{
+
 }

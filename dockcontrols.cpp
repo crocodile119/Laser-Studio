@@ -2544,13 +2544,6 @@ void DockControls::setSkinWidgetsSingle()
     dockSkin->ui->EMP_2nd_Label->setVisible(false);
 }
 
-DockControls::~DockControls()
-{
-    delete ui;
-}
-
-
-
 /************************************************************************************************
  * Parametri necessari per il calcolo dell'energia diffusa estesa di un riflettore lambertiano. *
  * I segnali vengono impiegati in queste funzioni e non nelle slot dei controllj per evitare di *
@@ -4144,4 +4137,14 @@ DockControls::operation DockControls::laserOperation() const
     }
 
     return myLaserOperation;
+}
+
+DockControls::~DockControls()
+{
+    delete ui;
+    delete myDLaserGoggle;
+    delete myLaserGoggle;
+    delete MyLaserSafetyMP;
+    delete MyLaserSkinSafetyMP;
+    delete MyLaserClassMP;
 }

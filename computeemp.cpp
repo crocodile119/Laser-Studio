@@ -336,7 +336,7 @@ void ComputeEMP::ComputeParameters()
 
         if (wavelength<450)
 					{
-						T1=1;
+                        T1=10;
                     } else if ((wavelength>=450) and (wavelength<=500))
 						{
                             T1=10*pow(10,0.02*(wavelength-450));

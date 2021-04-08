@@ -154,16 +154,16 @@ void ComputeEMP::valutateFormula()
       tabCE=" C<sub>E</sub>";
 
   if (myEmpData.t==1)
-      tabt=" t<sup>0,75</sup>";
+      tabt=" t<sup>0.75</sup>";
   else if (myEmpData.t==2)
-      tabt=" t<sup>0,25</sup>";
+      tabt=" t<sup>0.25</sup>";
   else
      tabt="";
  
  // Double to string conversion, the C++03 way:
 	ostringstream sstream;
     sstream << myEmpData.formula;
-	coeffValue = sstream.str();
+    coeffValue = sstream.str();
 
     formula = Tipo + " = " + coeffValue + tabt + tabCA + tabCB + tabCC + tabCE;
     formulaSort=Tipo;
@@ -351,7 +351,7 @@ void ComputeEMP::ComputeParameters()
 						T2=10;
                     } else if ((alpha>=ALPHA_MIN) and (alpha<=ALPHA_MAX))
 						{
-                            T2=10*pow(10,0.02*((alpha-ALPHA_MIN)/98.5));
+                            T2=10*pow(10,(alpha-ALPHA_MIN)/98.5);
 						}
                             else if (alpha>ALPHA_MAX)
 							{
@@ -431,7 +431,7 @@ void ComputeEMP::ThermoEffects()
 					 {
                         _ThermoEMP=18*CE*pow(pulseWidth,0.75);
 						_ThermoFormulaSort="H";
-                        _ThermoFormula="H = 18 C<sub>E</sub> t<sup>0,75</sup>";
+                        _ThermoFormula="H = 18 C<sub>E</sub> t<sup>0.75</sup>";
 						_ThermoEMPH=_ThermoEMP;
 					 }
 						 else
@@ -463,12 +463,16 @@ void ComputeEMP::ThermoEffects()
                 _ThermoEMP=18*CA*CC*CE*pow(pulseWidth,0.75);
 				_ThermoEMPH=_ThermoEMP;
 				_ThermoFormulaSort="H";
-                _ThermoFormula="H = 18 C<sub>A</sub> C<sub>C</sub> C<sub>E</sub> t<sup>0,75</sup>";
+                _ThermoFormula="H = 18 C<sub>A</sub> C<sub>C</sub> C<sub>E</sub> t<sup>0.75</sup>";
 				} 
 				else 
                     if (pulseWidth>T2)
 					{
 					_ThermoEMP=18*CA*CC*CE*pow(T2,(-0.25));
+
+                    if(_ThermoEMP>=1000)
+                        _ThermoEMP=1000;
+
 					_ThermoFormulaSort="E";
                     _ThermoEMPH=_ThermoEMP*pulseWidth;
                     _ThermoFormula="E = 18 C<sub>A</sub> C<sub>C</sub> C<sub>E</sub> T<sub>2</sub><sup>(-0.25)</sup>";
@@ -616,7 +620,7 @@ void ComputeEMP::adaptForSkinEMP()
        if((pulseWidth>=1.0e-07) && (pulseWidth<10))
            {
            EMP_Result=1.1*1.0e+04*CA*pow(pulseWidth,0.25);
-           formula="H = 1,1 10<sup>4</sup> C<sub>A</sub> t<sup>0,25</sup>";
+           formula="H = 1.1 10<sup>4</sup> C<sub>A</sub> t<sup>0.25</sup>";
            formulaSort="H";
            }
        if((pulseWidth>=1.0e+01) && (pulseWidth<3.0e+04))

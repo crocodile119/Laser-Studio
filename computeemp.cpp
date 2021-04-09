@@ -397,7 +397,7 @@ void ComputeEMP::PhotoEffects()
 	_PhotoFormulaSort="E";
     _PhotoFormula="E = 1 C<sub>B</sub>";
     _PhotoEMPH=pulseWidth*_PhotoEMP;
-    _PhotoGamma =11*pow(pulseWidth,0.5);
+    _PhotoGamma =1.1*pow(pulseWidth,0.5);
 	}
 	else
     if (((wavelength>=400) and (wavelength<=600)) and ((pulseWidth>=10000) and (pulseWidth<=30000)))
@@ -564,6 +564,8 @@ switch ((EmpLeaTables::typeOfOutput)myEmpData.effects)
 
 void ComputeEMP::adaptForSkinEMP()
 {
+    _PhotoGamma=0;
+
     if(pulseWidth<1.0e-09)
         {
         if((wavelength >= 180) && (wavelength < 400))

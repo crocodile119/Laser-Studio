@@ -4,9 +4,6 @@
 #include <cstdlib>
 #include <sstream>
 #include <cmath>
-#include <QTextStream>
-#include <QFile>
-#include <QDataStream>
 #include <iostream>
 #include <cmath>
 #include "tablescontroller.h"
@@ -15,14 +12,11 @@ using namespace std;
 
     const double ComputeLEA::ALPHA_MIN= 1.5;
 
-ComputeLEA::ComputeLEA(double _wavelength, double _pulseWidth, double _alpha):leaStructValues_1M{}, leaStructValues_3R{}, leaStructValues_3B{},
-    LEA_Formula{}, LEA_FormulaSort{}, LEA_FormulaTipo{},
-    LEA_FormulaUnit{}, myLeaData_1M{}, myLeaData_3R{}, myLeaData_3B{}
+ComputeLEA::ComputeLEA(double _wavelength, double _pulseWidth, double _alpha): wavelength(_wavelength),
+                        pulseWidth(_pulseWidth), alpha(_alpha), leaStructValues_1M{},
+                        leaStructValues_3R{}, leaStructValues_3B{}, LEA_Formula{}, LEA_FormulaSort{},
+                        LEA_FormulaTipo{}, LEA_FormulaUnit{}, myLeaData_1M{}, myLeaData_3R{}, myLeaData_3B{}
 {
-    wavelength = _wavelength;
-    pulseWidth = _pulseWidth;
-    alpha=_alpha;
-
     /*********************************************************************************
     * Con il singleton sono certo che vi sarà un'unica istanza della classe LeaTable *
     * anche instanziando più oggetti di tipo ComputeLEA                              *
@@ -93,7 +87,7 @@ void ComputeLEA::selectLea_1M_Row(const std::array<leadata, EmpLeaTables::TABLER
         time2=myLeaStructValues.at(index).time2;
 
 
-        if(((wavelength>wavelenght1)and(wavelength<=wavelenght2))and((pulseWidth>time1)and(pulseWidth<=time2 )))
+        if(((wavelength>wavelenght1)and(wavelength<=wavelenght2))and((pulseWidth>=time1)and(pulseWidth<time2 )))
          {
             myLeaData_1M=myLeaStructValues.at(index);
             break;
@@ -118,12 +112,11 @@ void ComputeLEA::selectLea_3R_Row(const std::array<leadata, EmpLeaTables::TABLER
         time1=myLeaStructValues.at(index).time1;
         time2=myLeaStructValues.at(index).time2;
 
-
-        if(((wavelength>wavelenght1)and(wavelength<=wavelenght2))and((pulseWidth>time1)and(pulseWidth<=time2 )))
-         {
-            myLeaData_3R=myLeaStructValues.at(index);
+        if(((wavelength>wavelenght1)and(wavelength<=wavelenght2))and((pulseWidth>=time1)and(pulseWidth<time2 )))
+        {
+			myLeaData_3R=myLeaStructValues.at(index);
             break;
-         }
+        }
     }
 }
 
@@ -144,12 +137,11 @@ void ComputeLEA::selectLea_3B_Row(const std::array<leadata, EmpLeaTables::TABLER
         time1=myLeaStructValues.at(index).time1;
         time2=myLeaStructValues.at(index).time2;
 
-
-        if(((wavelength>wavelenght1)and(wavelength<=wavelenght2))and((pulseWidth>time1)and(pulseWidth<=time2 )))
-         {
-            myLeaData_3B=myLeaStructValues.at(index);
-            break;
-         }
+        if(((wavelength>wavelenght1)and(wavelength<=wavelenght2))and((pulseWidth>=time1)and(pulseWidth<time2 )))
+		{
+			myLeaData_3B=myLeaStructValues.at(index);
+			break;
+        }
     }
 }
 
@@ -161,7 +153,7 @@ void ComputeLEA::LEA()
 
     //Correggo le formule nel caso in cui siano previsti due pssibili valori
 
-    if(((wavelength>302.5)and(wavelength<=315))and((pulseWidth>1.0e-009)and(pulseWidth<=10 )))
+    if(((wavelength>302.5)and(wavelength<=315))and((pulseWidth>=1.0e-009)and(pulseWidth<10 )))
     {
         if(pulseWidth>T1)
         {
@@ -170,17 +162,17 @@ void ComputeLEA::LEA()
         }
     }
 
-    if(((wavelength>450)and(wavelength<=500))and((pulseWidth>1.0e+001)and(pulseWidth<=1.0e+002 )))
+    if(((wavelength>450)and(wavelength<=500))and((pulseWidth>=1.0e+001)and(pulseWidth<1.0e+002 )))
     {
-        if(3.9e-003*C3>3.9e-003*pulseWidth)
+        if(3.9e-003*C3>3.9e-004*pulseWidth)
         {
-            myLeaData_1M.formula=3.9e-003;
+            myLeaData_1M.formula=3.9e-004;
             myLeaData_1M.C3=0;
             myLeaData_1M.sort=3;
         }
     }
 
-    if(((wavelength>302.5)and(wavelength<=315))and((pulseWidth>1.0e-009)and(pulseWidth<=10 )))
+    if(((wavelength>302.5)and(wavelength<=315))and((pulseWidth>=1.0e-009)and(pulseWidth<10 )))
     {
         if(pulseWidth>T1)
         {
@@ -189,7 +181,7 @@ void ComputeLEA::LEA()
         }
     }
 
-    if(((wavelength>400)and(wavelength<=700))and((pulseWidth>5.0e-006)and(pulseWidth<=0.35 )))
+    if(((wavelength>400)and(wavelength<=700))and((pulseWidth>=5.0e-006)and(pulseWidth<0.35 )))
     {
         if(pulseWidth>=0.25)
         {
@@ -199,7 +191,7 @@ void ComputeLEA::LEA()
         }
     }
 
-    if(((wavelength>400)and(wavelength<=700))and((pulseWidth>1.0e-009)and(pulseWidth<=0.25 )))
+    if(((wavelength>400)and(wavelength<=700))and((pulseWidth>=1.0e-009)and(pulseWidth<0.25 )))
     {
         if(pulseWidth>=0.06)
         {
@@ -208,7 +200,7 @@ void ComputeLEA::LEA()
         }
     }
 
-    if(((wavelength>700)and(wavelength<=1050))and((pulseWidth>1.0e-009)and(pulseWidth<=0.25 )))
+    if(((wavelength>700)and(wavelength<=1050))and((pulseWidth>=1.0e-009)and(pulseWidth<0.25 )))
     {
         if(pulseWidth>=0.06*C4)
         {
@@ -255,14 +247,15 @@ double ComputeLEA::valuate_LEA_2M_Value()
     {
         if(pulseWidth<0.25)
             leaValue=LEA_Result[static_cast<int>(ClassData::CLASSE_1_1M)];
-    else
+		else
             leaValue=C6*1.0e-003;
     }
     else
     {
         leaValue=std::nan("N.A.");
     }
-        return leaValue;
+	
+    return leaValue;
 }
 
 string ComputeLEA::valuate_LEA_2M_Formula()
@@ -272,8 +265,8 @@ string ComputeLEA::valuate_LEA_2M_Formula()
     {
         if(pulseWidth<0.25)
             leaFormula=LEA_Formula[int(static_cast<int>(ClassData::CLASSE_1_1M))];
-    else
-            leaFormula="C6 10<sup>-3</sup>";
+		else
+            leaFormula="C<sub>6</sub> 10<sup>-3</sup>";
     }
     else
     {
@@ -289,13 +282,14 @@ string ComputeLEA::valuate_LEA_2M_FormulaTipo()
     {
         if(pulseWidth<0.25)
             leaFormulaTipo=LEA_FormulaTipo[static_cast<int>(ClassData::CLASSE_1_1M)];
-    else
+		else
             leaFormulaTipo="P";
     }
     else
     {
         leaFormulaTipo="";
     }
+	
     return leaFormulaTipo;
 }
 
@@ -306,7 +300,7 @@ string ComputeLEA::valuate_LEA_2M_FormulaUnit()
     {
         if(pulseWidth<0.25)
             leaFormulaUnit=LEA_FormulaUnit[static_cast<int>(ClassData::CLASSE_1_1M)];
-    else
+		else
             leaFormulaUnit="W";
     }
     else
@@ -330,48 +324,48 @@ string ComputeLEA::valuateFormula(leadata &myLeaData)
     string coeffValue;
 
     if (myLeaData.C1==0)
-     tabC1 = "";
-  else
+		tabC1 = "";
+	else
       tabC1 = " C<sub>1</sub>";
 
-  if (myLeaData.C2==0)
-     tabC2="";
-  else
-      tabC2=" C<sub>2</sub>";
+	if (myLeaData.C2==0)
+		tabC2="";
+	else
+        tabC2=" C<sub>2</sub>";
 
-  if (myLeaData.C3==0)
-     tabC3="";
-  else
-      tabC3=" C<sub>3</sub>";
+	if (myLeaData.C3==0)
+		tabC3="";
+	else
+        tabC3=" C<sub>3</sub>";
 
-  if (myLeaData.C4==0)
-     tabC4="";
-  else
-      tabC4=" C<sub>4</sub>";
+	if (myLeaData.C4==0)
+		tabC4="";
+	else
+        tabC4=" C<sub>4</sub>";
   
-    if (myLeaData.C5==0)
-     tabC5="";
-  else
-      tabC5=" C<sub>5</sub>";
+	if (myLeaData.C5==0)
+		tabC5="";
+	else
+        tabC5=" C<sub>5</sub>";
   
-    if (myLeaData.C6==0)
-     tabC6="";
-  else
-      tabC6=" C<sub>6</sub>";
+	if (myLeaData.C6==0)
+		tabC6="";
+	else
+        tabC6=" C<sub>6</sub>";
   
-    if (myLeaData.C7==0)
-     tabC7="";
-  else
-      tabC7=" C<sub>7</sub>";
+	if (myLeaData.C7==0)
+		tabC7="";
+	else
+        tabC7=" C<sub>7</sub>";
 
-  if (myLeaData.t==0)
-    tabt="";
-  else if (myLeaData.t==1)
-    tabt=" t<sup>0,75</sup>";
-  else if (myLeaData.t==2)
-    tabt=" t<sup>0,25</sup>";
-  else
-    tabt=" t";
+	if (myLeaData.t==0)
+		tabt="";
+	else if (myLeaData.t==1)
+        tabt=" t<sup>0.75</sup>";
+	else if (myLeaData.t==2)
+        tabt=" t<sup>0.25</sup>";
+	else
+		tabt=" t";
  
  // Double to string conversion, the C++03 way:
 	ostringstream sstream;
@@ -389,12 +383,12 @@ string ComputeLEA::valuateFormulaTipo(leadata &myLeaData)
 
     if (myLeaData.sort==1)
          Tipo="E";
-      else if (myLeaData.sort==2)
-                  Tipo="H";
-            else if (myLeaData.sort==3)
-                        Tipo="P";
-                else
-                            Tipo="Q";
+	else if (myLeaData.sort==2)
+		Tipo="H";
+	else if (myLeaData.sort==3)
+		Tipo="P";
+	else
+		Tipo="Q";
 
     return Tipo;
 }
@@ -405,13 +399,13 @@ string ComputeLEA::valuateFormulaUnit(leadata &myLeaData)
     string FormulaUnit;
 
     if (myLeaData.sort==1)
-         FormulaUnit="W/m<sup>2</sup>";
-      else if (myLeaData.sort==2)
-                  FormulaUnit="J/m<sup>2</sup>";
-            else if (myLeaData.sort==3)
-                        FormulaUnit="W";
-                    else
-                            FormulaUnit="J";
+        FormulaUnit="W/m<sup>2</sup>";
+	else if (myLeaData.sort==2)
+        FormulaUnit="J/m<sup>2</sup>";
+	else if (myLeaData.sort==3)
+		FormulaUnit="W";
+	else
+		FormulaUnit="J";
 
     return FormulaUnit;
 }
@@ -480,11 +474,12 @@ double ComputeLEA::LEA_Value(leadata &myLeaData)
 double t_exp =compute_t(myLeaData);
 
     if (myLeaData.t==0)
-			_t_exp_EMP=1;
-		else
-			_t_exp_EMP=t_exp;
+		_t_exp_EMP=1;
+	else
+		_t_exp_EMP=t_exp;
 				
 double LEA_Result=myLeaData.formula*_C1_LEA*_C2_LEA*_C3_LEA*_C4_LEA*_C5_LEA*_C6_LEA*_C7_LEA*_t_exp_EMP;
+
 return LEA_Result;
 }
 
@@ -542,110 +537,115 @@ void ComputeLEA::computeParameters()
 {
     computeAlpha_max();
     if (wavelength<700)
-				{					
-					C4=1;
-                }
-        else if ((wavelength>=700) and (wavelength<=1050))
-					{         
-                        C4=pow(10,0.002*(wavelength-700));
-					}
-                        else if((wavelength>1050) and (wavelength<1400))
-						{
-							C4=5;
-						}
-							else
-							{								
-								C4=1;		
-							}		
+	{					
+		C4=1;
+	}
+	else if ((wavelength>=700) and (wavelength<=1050))
+	{         
+		C4=pow(10,0.002*(wavelength-700));
+	}
+	else if((wavelength>1050) and (wavelength<1400))
+	{
+		C4=5;
+	}
+	else
+	{								
+		C4=1;		
+	}		
 				
-        if ((wavelength>=400) and (wavelength<450))
-				{
-					C3=1;
-                } else if ((wavelength>=450) and (wavelength<=700))
-					{
-                        C3=pow(10,0.02*(wavelength-450));
-					}
-						else
-						{						
-							C3=1;		
-						}	
+	if ((wavelength>=400) and (wavelength<450))
+	{
+		C3=1;
+	} 
+	else if ((wavelength>=450) and (wavelength<=600))
+	{
+		C3=pow(10,0.02*(wavelength-450));
+	}
+	else
+	{						
+		C3=1;		
+	}	
 
+	if ((wavelength>=700) and (wavelength<1150))
+	{
+		C7=1;
+	} 
+	else if ((wavelength>=1150) and (wavelength<1200))
+	{	
+		C7=pow(10,0.018*(wavelength-1150));
+	}
+	else if ((wavelength>=1200) and (wavelength<=1400))
+	{
+		C7=8+pow(10,0.04*(wavelength-1250));
+	}
+	else
+	{
+		C7=1;		
+	}	
 
-        if ((wavelength>=700) and (wavelength<1150))
-				{
-					C7=1;
-                } else if ((wavelength>=1150) and (wavelength<1200))
-					{	
-                        C7=pow(10,0.018*(wavelength-1150));
-					}
-                    else if ((wavelength>=1200) and (wavelength<=1400))
-					{
-                        C7=8+pow(10,0.04*(wavelength-1250));
-					}
-						else
-							{
-							C7=1;		
-							}	
+	if ((wavelength>=180) and (wavelength<302.5))
+	{
+		C2=30;
+	}
+	else if ((wavelength>=302.5) and (wavelength<315))
+	{
+		C2=pow(10, 0.2*(wavelength-295));
+	}
+	else
+		C2=1;
 
-        if ((wavelength>=180) and (wavelength<302.5))
-				{
-					C2=30;
-                } else if ((wavelength>=302.5) and (wavelength<315))
-						{
-                        C2=pow(10, 0.2*(wavelength-295));
-						}
-						else
-							C2=1;
+    if ((wavelength>=180) and (wavelength<400))
+	{
+		C1=5.6*pow(10,3)*pow(pulseWidth, 0.25);
+	}
+	else
+	{
+		C1=1;		
+	}		
+	C5=1;		
 
-        if ((wavelength>=180) and (wavelength<400))
-				{
-                    C1=5.6*pow(10,3)*pow(pulseWidth, 0.25);
-				} else
-						{
-						C1=1;		
-						}	
-		
-		C5=1;		
-
-        if ((wavelength>=400) and (wavelength<1400))
-			{
-            if (alpha<ALPHA_MIN)
-					{
-						C6=1.0;
-                    } else if ((alpha>=ALPHA_MIN) and (alpha<=alpha_max))
-						{
-                            C6= alpha/ALPHA_MIN;
-						}
-                        else if (alpha>alpha_max)
-							{
-                            C6=pow(alpha,2)/(ALPHA_MIN*alpha_max);
-							}
-			}
-			else{
-						C6=1;
-					}
+	if ((wavelength>=400) and (wavelength<1400))
+	{
+		if (alpha<ALPHA_MIN)
+		{
+			C6=1.0;
+		}
+		else if ((alpha>=ALPHA_MIN) and (alpha<=alpha_max))
+		{
+			C6= alpha/ALPHA_MIN;
+		}
+		else if (alpha>alpha_max)
+		{
+			C6=pow(alpha,2)/(ALPHA_MIN*alpha_max);
+		}
+	}
+	else
+	{
+		C6=1;
+	}
 					
-        if ((wavelength>=302.5) and (wavelength<=315))
-					{
-                        T1=10*pow(10,0.8*(wavelength-295))*1.0e-015;
-					} else
-                        T1=std::nan("Nessun valore");
+    if ((wavelength>=302.5) and (wavelength<=315))
+	{
+		T1=pow(10,0.8*(wavelength-295))*1.0e-015;
+	}
+	else
+		T1=std::nan("Nessun valore");
 
 					
-        if (alpha<ALPHA_MIN)
-					{
-						T2=10;
-                    } else if ((alpha>=ALPHA_MIN) and (alpha<=alpha_max))
-						{
-                            T2=10*pow(10,0.02*((alpha-ALPHA_MIN)/98.5));
-						}
-                            else if (alpha>alpha_max)
-							{
-							T2=100;
-							}
+	if (alpha<ALPHA_MIN)
+	{
+		T2=10;
+	}
+	else if ((alpha>=ALPHA_MIN) and (alpha<=alpha_max))
+	{
+		T2=10*pow(10,0.02*((alpha-ALPHA_MIN)/98.5));
+	}
+	else if (alpha>alpha_max)
+	{
+		T2=100;
+	}
 
-        computePhotoGamma();
-
+    computePhotoGamma();
 }
 
 double ComputeLEA::compute_t(leadata &myLeaData)
@@ -692,94 +692,76 @@ array <int, ComputeLEA::N_LEA> ComputeLEA::getLEA_FormulaSort() const
 void ComputeLEA::computePhotoGamma()
 {
     if (((wavelength>=400) and (wavelength<=600)) and ((pulseWidth>10) and (pulseWidth<100)))
-        photoGamma =11;
-        else if (((wavelength>=400) and (wavelength<=600)) and ((pulseWidth>=100) and (pulseWidth<10000)))
-            photoGamma =11*pow(pulseWidth,0.5);
-            else
-                if (((wavelength>=400) and (wavelength<=600)) and ((pulseWidth>=10000) and (pulseWidth<=30000)))
-                photoGamma =110;
-                    else
-                        photoGamma=std::nan("N.A.");
-
+		photoGamma =11;
+	else if (((wavelength>=400) and (wavelength<=600)) and ((pulseWidth>=100) and (pulseWidth<10000)))
+		photoGamma =11*pow(pulseWidth,0.5);
+	else if (((wavelength>=400) and (wavelength<=600)) and ((pulseWidth>=10000) and (pulseWidth<=30000)))
+		photoGamma =110;
+	else
+		photoGamma=std::nan("N.A.");
 }
 
 void ComputeLEA::computeAlpha_max()
 {
-if(pulseWidth<6.25e-004)
-    alpha_max=5;
-    else if((pulseWidth>=6.25e-004)and(pulseWidth<0.25))
-        alpha_max=200*pow(pulseWidth, 0.5);
-            else if(pulseWidth>=0.25)
-            alpha_max=100;
+	if(pulseWidth<6.25e-004)
+		alpha_max=5;
+	else if((pulseWidth>=6.25e-004)and(pulseWidth<0.25))
+		alpha_max=200*pow(pulseWidth, 0.5);
+    else if(pulseWidth>=0.25)
+		alpha_max=100;
 }
 
 void ComputeLEA::bioEffects()
 {
-switch (myLeaData_1M.effects)
+	switch (myLeaData_1M.effects)
     {
-	case 1:
+		case 1:
+		radiation="UV";
+		eyeDamage="danno fotochimico e danno termico;";
+		skinDamage="eritema;";
+		break;
 
-    radiation="UV";
-    eyeDamage="danno fotochimico e danno termico;";
-    skinDamage="eritema;";
+		case 2:
+		radiation="Visibile";
+		eyeDamage="retina";
+		skinDamage="danno termico";
+		break;
 
-	break;
+		case 3:
+	    radiation="IRA";
+		eyeDamage="retina";
+		skinDamage="danno termico";
+		break;
 
-	case 2:
+		case 4:
+		radiation="IRB";
+		eyeDamage="danno termico";
+		skinDamage="danno termico";
+		break;
 
-    radiation="Visibile";
-    eyeDamage="retina";
-    skinDamage="danno termico";
+		case 5:
+		radiation="visibile";
+		eyeDamage="retina, danno forochimico e danno termico";
+		skinDamage="danno termico";
+		break;
 	
-	break;
-
-	case 3:
+		case 6:
+		radiation="visibile";
+		eyeDamage="retina";
+		skinDamage="danno termico";
+		break;
+		
+		case 7:
+	    radiation="IRB, IRC";
+		eyeDamage="danno termico";
+		skinDamage="danno termico";
+		break;
 	
-    radiation="IRA";
-    eyeDamage="retina";
-    skinDamage="danno termico";
-
-	break;
-
-	case 4:
-
-    radiation="IRB";
-    eyeDamage="danno termico";
-    skinDamage="danno termico";
-
-	break;
-
-	case 5:
-
-    radiation="visibile";
-    eyeDamage="retina, danno forochimico e danno termico";
-    skinDamage="danno termico";
-
-	break;
-
-	case 6:
-
-    radiation="visibile";
-    eyeDamage="retina";
-    skinDamage="danno termico";
-
-	break;
-
-	case 7:
-	
-    radiation="IRB, IRC";
-    eyeDamage="danno termico";
-    skinDamage="danno termico";
-
-	break;
-	
-	default:
-
-    radiation="c'è qualcosa che non va";
-    eyeDamage="c'è qualcosa che non va";
-    skinDamage="c'è qualcosa che non va";
-
-	break;
+		default:
+		radiation="c'è qualcosa che non va";
+		eyeDamage="c'è qualcosa che non va";
+		skinDamage="c'è qualcosa che non va";
+		break;
     }
 }
 
@@ -794,7 +776,6 @@ string ComputeLEA::typeOfSkinDamage(const int &_effects)
 
         case 2:
         mySkinDamage="danno termico";
-
         break;
 
         case 3:
@@ -908,68 +889,68 @@ void ComputeLEA::valuateCondition_1()
 {
 if((wavelength>=302.5)and(wavelength<400))
     {
-    apertureStopCond_1=7;
-    distanceCond_1=2000;
+		apertureStopCond_1=7;
+		distanceCond_1=2000;
     }
     else if((wavelength>=400)and(wavelength<1400))
-        {
-        apertureStopCond_1=50;
-        distanceCond_1=2000;
-        }
-        else if((wavelength>=1400)and(wavelength<4000))
-            {
-            apertureStopCond_1=7*apertureThirdCondition;
-            distanceCond_1=2000;
-            }
-            else
-            {
-            apertureStopCond_1=std::nan("N.A.");
-            distanceCond_1=std::nan("N.A.");
+	{
+		apertureStopCond_1=50;
+		distanceCond_1=2000;
+	}
+	else if((wavelength>=1400)and(wavelength<4000))
+	{
+		apertureStopCond_1=7*apertureThirdCondition;
+		distanceCond_1=2000;
     }
+    else
+	{
+		apertureStopCond_1=std::nan("N.A.");
+		distanceCond_1=std::nan("N.A.");
+	}
 }
 
 void ComputeLEA::valuateCondition_3()
 {
-if(wavelength<302.5)
+	if(wavelength<302.5)
     {
-    apertureStopCond_3=1;
-    distanceCond_3=0;
+		apertureStopCond_3=1;
+		distanceCond_3=0;
     }
     else if((wavelength>=302.5)and(wavelength<400))
-        {
-        apertureStopCond_3=1;
-        distanceCond_3=100;
-        }
-        else if((wavelength>=400)and(wavelength<1400))
-            {
-            apertureStopCond_3=7;
-            distanceCond_3=100;
-            }
-            else if((wavelength>=1400)and(wavelength<4000))
-                {
-                apertureStopCond_3=apertureThirdCondition;
-                distanceCond_3=100;
-                }
-                else if((wavelength>=4000)and(wavelength<1e+005))
-                    {
-                    apertureStopCond_3=apertureThirdCondition;
-                    distanceCond_3=0;
-                    }
-                        else if((wavelength>=1e+005)and(wavelength<1e+006))
-                        {
-                        apertureStopCond_3=11;
-                        distanceCond_3=0;
-                        }
+	{
+		apertureStopCond_3=1;
+		distanceCond_3=100;
+    }
+	else if((wavelength>=400)and(wavelength<1400))
+	{
+		apertureStopCond_3=7;
+		distanceCond_3=100;
+	}
+	else if((wavelength>=1400)and(wavelength<4000))
+	{
+		apertureStopCond_3=apertureThirdCondition;
+		distanceCond_3=100;
+	}
+	else if((wavelength>=4000)and(wavelength<1e+005))
+	{
+		apertureStopCond_3=apertureThirdCondition;
+		distanceCond_3=0;
+	}
+	else if((wavelength>=1e+005)and(wavelength<1e+006))
+	{
+		apertureStopCond_3=11;
+		distanceCond_3=0;
+	}
 }
 
 void ComputeLEA::valuateApertureCondition_3()
 {
-if(pulseWidth<=0.35)
-    apertureThirdCondition=1;
-        else if((pulseWidth>0.35)and(pulseWidth<10))
-            apertureThirdCondition=powf(pulseWidth, 3/8);
-            else
-                apertureThirdCondition=3.5;
+	if(pulseWidth<=0.35)
+		apertureThirdCondition=1;
+	else if((pulseWidth>0.35)and(pulseWidth<10))
+		apertureThirdCondition=powf(pulseWidth, 3/8);
+	else
+		apertureThirdCondition=3.5;
 }
 
 double ComputeLEA::getApertureStopCond_1()const
@@ -1013,4 +994,19 @@ void ComputeLEA::calculate()
     valuateApertureCondition_3();
     valuateCondition_3();
     valuateCondition_1();
+}
+
+std::array<leadata, EmpLeaTables::TABLEROW_1_1M> ComputeLEA::getLEA_1_1M_Table()const
+{
+    return leaStructValues_1M;
+}
+
+std::array<leadata, EmpLeaTables::TABLEROW_3R> ComputeLEA::getLEA_3R_Table()const
+{
+    return leaStructValues_3R;
+}
+
+std::array<leadata, EmpLeaTables::TABLEROW_3B> ComputeLEA::getLEA_3B_Table()const
+{
+    return leaStructValues_3B;
 }

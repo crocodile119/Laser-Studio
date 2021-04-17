@@ -15,37 +15,100 @@ const int DockControls::DOCKGOGGLEMAXIMUN=550;
 const double DockControls::MODELOCKED_LIMIT=pow(10,-9);
 
 DockControls::DockControls(QWidget *parent, DockResults *_dockResults, DockEffects *_dockEffects,
-                           DockSkin *_dockSkin, DockGoggle *_dockGoggle, DockLea* _dockLea) : QDockWidget(parent), ui(new Ui::DockControls)
+                           DockSkin *_dockSkin, DockGoggle *_dockGoggle, DockLea* _dockLea)
+                           : QDockWidget(parent), ui(new Ui::DockControls),
+                             powerErg(LaserSafetyCW::POWER), wavelength(EmpLeaTables::HE_NE_WAVELENGTH), pulseWidth(EmpLeaTables::NATURAL_AVERSION_TIME),
+                             alpha(EmpLeaTables::ALPHA_MIN),  divergence(LaserSafety::DIVERGENCE), beamDiameter(LaserSafety::PUPIL_DIAMETER),
+                             prf(LaserSafetyMP::PULSE_REPETITION_FREQUENCY), dockResults(_dockResults), dockEffects(_dockEffects),
+                             dockSkin(_dockSkin), dockGoggle(_dockGoggle), dockLea(_dockLea), MyLaserSafetyMP(new LaserSafetyMP),
+                             MyLaserSkinSafetyMP(new LaserSkinSafetyMP), MyLaserClassMP(new LaserClassMP)
 {
     ui->setupUi(this);
+    n_laser=operation::CONTINUOS_WAVE;
 
-    dockResults=_dockResults;
-    dockEffects=_dockEffects;
-    dockSkin= _dockSkin;
-    dockGoggle= _dockGoggle;
-    dockLea= _dockLea;
+    setUpGoggle();
+    showControls(false);
+    dockGoggle->setFixedWidth(DOCKGOGGLEMINIMUN);
+    exposureTimeControl=10;
+    gaussianBeam=true;
+    beamCorrection=1.0;
+    internalWaist=false;
 
+    MyLaserCW_Pr=nullptr;
+    MyLaserSP_Pr=nullptr;
+    MyLaserMP_Pr=nullptr;
+    MyLaserCW_Pr=MyLaserSafetyMP;
 
-    wavelength=633;
-    prf=1;
-    beamDiameter=7;
-    powerErg=1;
-    divergence=1.5;
-    pulseWidth=0.25;
-    alpha=1.5;
+    MyLaserSkinSP_Pr=nullptr;
+    MyLaserSkinMP_Pr=nullptr;
+    MyLaserSkinSP_Pr=MyLaserSkinSafetyMP;
 
-     /**********************************************************************************************
-     * LaserGoggle ha due costruttori quello a 4 parametri che prevede il funzionamento            *
-     * a frequenza nulla e il secondo con cinque parametri per il quale è specificata la           *
-     * frequenza di ripetizione dgli impulsi.                                                      *
-     * Inizializzo laser con un valore di frequenza nulla per uso in funzionamento CW o impulsato. *
-     ***********************************************************************************************/
+    /************************************************************************************************
+    * Imposto i valori dei controlli con le relative variabili membro.                             *
+    ************************************************************************************************/
+    MyLaserClassCW_Pr=nullptr;
+    MyLaserClassSP_Pr=nullptr;
+    MyLaserClassMP_Pr=nullptr;
+    MyLaserClassCW_Pr=MyLaserClassMP;
+
+    ui->comboBoxBands->setCurrentIndex(1);
+    setDialControls();
+    displayScaleNumber();
+    displayLaserOutput();
+
+    //in modo da aggiornare il valore di powerErgPeak alla prima variazione dei valore dei parametri
+    powerErgPeak=0;
+    enableTeEditing=false;
+
+    connect(this, SIGNAL(EMP_Changed()), this, SLOT(setEMP()));
+    connect(this, SIGNAL(powerErgForEMPChanged()), this, SLOT(setPowerErgForEMP()));
+    connect(dockGoggle->ui->pushButton, SIGNAL(toggled(bool)), this, SLOT(on_pushButton_toggled(bool)));
+}
+
+void DockControls::on_pushButton_toggled(bool checked)
+{
+    double width;
+
+    showControls(n_laser==operation::MULTI_PULSE);
+
+    if(checked)
+    {
+        if(n_laser==operation::MULTI_PULSE)
+            dChartView->show();
+
+        chartView->show();
+        width=DOCKGOGGLEMINIMUN+450;
+
+        dockGoggle->setFixedWidth(width);
+        dockGoggle->ui->pushButton->setText("<<");
+    }
+
+    else
+    {
+        if(n_laser==operation::MULTI_PULSE)
+            dChartView->hide();
+
+        chartView->hide();
+        dockGoggle->setFixedWidth(DOCKGOGGLEMINIMUN);
+        dockGoggle->ui->pushButton->setText(">>");
+    }
+}
+
+void DockControls::setUpGoggle()
+{
+
+    /**********************************************************************************************
+    * LaserGoggle ha due costruttori quello a 4 parametri che prevede il funzionamento            *
+    * a frequenza nulla e il secondo con cinque parametri per il quale è specificata la           *
+    * frequenza di ripetizione dgli impulsi.                                                      *
+    * Inizializzo laser con un valore di frequenza nulla per uso in funzionamento CW o impulsato. *
+    ***********************************************************************************************/
 
 
     //Impiego il costruttore con cinque parmetri wavelength, pulseWidth, powerErg, beamDiameter, frequenza
 
     myLaserGoggle=new LaserGoggle(wavelength, LaserGoggle::CONTINUOS_OPERATION, powerErg, beamDiameter, LaserGoggle::CONTINUOS_OPERATION);
-    string myNewGoggleMark = myLaserGoggle->goggleMark(wavelength, 0, powerErg, beamDiameter, 0);
+    string myNewGoggleMark = myLaserGoggle->goggleMark(wavelength, LaserGoggle::CONTINUOS_OPERATION, powerErg, beamDiameter, LaserGoggle::CONTINUOS_OPERATION);
 
     //Ricavo il calori riguardanti la tabella EN 207 corrispondente alla lunghezza d'onda e alla base dei tempi
     //necassaria sia per costruire la il Widget della tabella dei numeri di scala e il grafico.
@@ -63,7 +126,7 @@ DockControls::DockControls(QWidget *parent, DockResults *_dockResults, DockEffec
     chartView->setRenderHint(QPainter::Antialiasing);
     dockGoggle->ui->gridLayout_5->addWidget(chartView, 1, 0, Qt::AlignCenter);
 
-   /************************************************************************************************
+    /************************************************************************************************
     * Essendo il funzionamento all'avvio di tipo Continuos Wave disabilito sia il controllo        *
     * dell'impulso che della frequenza di ripetizione degli impulsi che il valore di picco della   *
     * corrente (riguarda il funzionamento del tipo mode locking).                                  *
@@ -73,123 +136,45 @@ DockControls::DockControls(QWidget *parent, DockResults *_dockResults, DockEffec
     ui->prfControl->setEnabled(false);
 
     /************************************************************************************************
-     * Imposto la base dei tempi nel funzionamento Continuos Wave all'avvio. La base dei tempi è    *
-     * quella preveista dala norma EN207 e non ha relazione con la base dei tempi impiegata per il  *
-     * calcolo dell'EMP dell'impulso che della frequenza di ripetizione degli impulsi.              *                *
-     ************************************************************************************************/
-
+    * Imposto la base dei tempi nel funzionamento Continuos Wave all'avvio. La base dei tempi è    *
+    * quella preveista dala norma EN207 e non ha relazione con la base dei tempi impiegata per il  *
+    * calcolo dell'EMP dell'impulso che della frequenza di ripetizione degli impulsi.              *                *
+    ************************************************************************************************/
+    double myGoggleTimeBase;
     if((wavelength>=180)&&(wavelength<=315))
-        myTimeBase=LaserGoggle::TIMEBASE;
-    else if((wavelength>315)&&(wavelength<=1.0e+06))
-        myTimeBase=LaserGoggle::TIMEBASE_LOW_WAVELENGTH;
+        myGoggleTimeBase=LaserGoggle::TIMEBASE;
+    else
+        myGoggleTimeBase=LaserGoggle::TIMEBASE_LOW_WAVELENGTH;
 
-    /************************************************************************************************
-     * Inizializzo laser frequenza nulla per uso calcolare gli effetti medi nel caso di             *
-     * funzionamento ad impulsi multipli. Valgono e considerazioni fatte in precedenza.             *                                                          *
-     ************************************************************************************************/
+    /***********************************************************************************************
+    * Inizializzo laser frequenza nulla per uso calcolare gli effetti medi nel caso di             *
+    * funzionamento ad impulsi multipli. Valgono e considerazioni fatte in precedenza.             *                                                          *
+    ************************************************************************************************/
 
-     myDLaserGoggle=new LaserGoggle(LaserGoggle::HE_NE_WAVELENGTH, myTimeBase, 0, LaserGoggle::BEAM_DIAMETER);
-     string myNewDGoggleMark = myDLaserGoggle->goggleMark(LaserGoggle::HE_NE_WAVELENGTH, myTimeBase, 0, LaserGoggle::BEAM_DIAMETER,
-                                                          LaserGoggle::CONTINUOS_OPERATION);
+    const double ZERO_POWER_ERG=0;
+    myDLaserGoggle=new LaserGoggle(LaserGoggle::HE_NE_WAVELENGTH, myGoggleTimeBase, ZERO_POWER_ERG, LaserGoggle::PUPIL_DIAMETER);
+    string myNewDGoggleMark = myDLaserGoggle->goggleMark(LaserGoggle::HE_NE_WAVELENGTH, myGoggleTimeBase, 0, LaserGoggle::PUPIL_DIAMETER,
+                                                         LaserGoggle::CONTINUOS_OPERATION);
 
-     vector<pair<int, double>> frequencyDataVector;
-     myDLaserGoggle->printVector(frequencyDataVector);
-     frequencyDataVector=myDLaserGoggle->getDataVector();
-     dLaserOutput=myDLaserGoggle->laserIrrRadCorrected(0);
-     myDModel=new ScaleNumbersModelView(this);
-     myDModel->setTableList(frequencyDataVector);
-     dockGoggle->ui->dTableView->setModel(myDModel);
 
-     dChartView = new MyChartView(0, frequencyDataVector, dLaserOutput);
-     dChartView->setRenderHint(QPainter::Antialiasing);
-     dockGoggle->ui->dGridLayout->addWidget(dChartView, 1, 0, Qt::AlignCenter);
+    frequencyDataVector=myDLaserGoggle->getDataVector();
+    dLaserOutput=myDLaserGoggle->laserIrrRadCorrected(ZERO_POWER_ERG);
+    myDModel=new ScaleNumbersModelView(this);
+    myDModel->setTableList(frequencyDataVector);
+    dockGoggle->ui->dTableView->setModel(myDModel);
 
-     //inizializzo il laser per il calcolo dei livelli di emissione e la NOHD occhi
-     n_laser=0;
+    dChartView = new MyChartView(0, frequencyDataVector, dLaserOutput);
+    dChartView->setRenderHint(QPainter::Antialiasing);
+    dockGoggle->ui->dGridLayout->addWidget(dChartView, 1, 0, Qt::AlignCenter);
 
-     showControls(false);
+    //inizializzo il laser per il calcolo dei livelli di emissione e la NOHD occhi
 
-     dockGoggle->setFixedWidth(DOCKGOGGLEMINIMUN);
-
-     MyLaserCW_Pr=nullptr;
-     MyLaserSP_Pr=nullptr;
-     MyLaserMP_Pr=nullptr;
-     exposureTimeControl=0.25;
-     gaussianBeam=true;
-     beamCorrection=1.0;
-     internalWaist=false;
-     //Nel costruttore: PRF, BeamDiameter, PowerErg, Divergence, Wavelength, PulseWidth, Alpha
-     MyLaserSafetyMP=new LaserSafetyMP(1.0, 7, 1, 1.5, 632, 0.25, 1.5);
-     MyLaserCW_Pr=MyLaserSafetyMP;
-
-     MyLaserSkinSP_Pr=nullptr;
-     MyLaserSkinMP_Pr=nullptr;
-
-     //Nel costruttore: PRF, ExposureTime, BeamDiameter, PowerErg, Divergence, Wavelength, PulseWidth, Alpha
-     MyLaserSkinSafetyMP=new LaserSkinSafetyMP(1.0, 5.0, 7, 1, 1.5, 632, 10, 1.5);
-
-     MyLaserSkinSP_Pr=MyLaserSkinSafetyMP;
-
-     /************************************************************************************************
-      * Imposto i valori dei controlli con le relative variabili membro.                             *
-      ************************************************************************************************/
-      MyLaserClassCW_Pr=nullptr;
-      MyLaserClassSP_Pr=nullptr;
-      MyLaserClassMP_Pr=nullptr;
-
-      //Nel costruttore: prf, beamDiameter, powerErg, divergence, wavelength, pulseWidth, alpha
-      MyLaserClassMP=new LaserClassMP(prf, beamDiameter, powerErg, divergence, wavelength, pulseWidth, alpha);
-      MyLaserClassCW_Pr=MyLaserClassMP;
-
-      ui->comboBox->setCurrentIndex(1);
-      setDialControls();
-      displayScaleNumber();
-      displayLaserOutput();
-
-      //in modo da aggiornare il valore di powerErgPeak alla prima variazione dei valore dei parametri
-      powerErgPeak=0;
-
-      enableTeEditing=false;
-
-      connect(this, SIGNAL(EMP_Changed()), this, SLOT(setEMP()));
-      connect(this, SIGNAL(powerErgForEMPChanged()), this, SLOT(setPowerErgForEMP()));
-      connect(dockGoggle->ui->pushButton, SIGNAL(toggled(bool)), this, SLOT(on_pushButton_toggled(bool)));
 }
-
-void DockControls::on_pushButton_toggled(bool checked)
-{
-    double width;
-
-    showControls(n_laser==2);
-
-    if(checked){
-        if(n_laser==2)
-            dChartView->show();
-
-        chartView->show();
-        width=DOCKGOGGLEMINIMUN+450;
-
-        dockGoggle->setFixedWidth(width);
-
-        dockGoggle->ui->pushButton->setText("<<");
-    }
-
-    else{
-        if(n_laser==2)
-            dChartView->hide();
-
-        chartView->hide();
-        dockGoggle->setFixedWidth(DOCKGOGGLEMINIMUN);
-
-        dockGoggle->ui->pushButton->setText(">>");
-    }
-}
-
 void DockControls::on_wavelengthScrollBar_valueChanged(int value)
 {
-    /*******************************************************************
-     * Assegno il valore associato al controllo alla variabile membro  *
-     *******************************************************************/
+    /******************************************************************
+    * Assegno il valore associato al controllo alla variabile membro  *
+    *******************************************************************/
 
     /*********************************
     * casting della variabile value. *
@@ -197,21 +182,21 @@ void DockControls::on_wavelengthScrollBar_valueChanged(int value)
 
     wavelength=static_cast<double>(value);
 
-    /*******************************************************************************
-     * Imposto il valore per la visualizzazione nella label associata al controllo *
-     *******************************************************************************/
+    /******************************************************************************
+    * Imposto il valore per la visualizzazione nella label associata al controllo *
+    *******************************************************************************/
 
     ui->wavelengthLabel->setText(QString::number(wavelength));
 
     /*****************
     * CONTINUOS WAVE *
-    * ****************/
+    ******************/
 					
-    if(n_laser==0)
+    if(n_laser==operation::CONTINUOS_WAVE)
     {
-    /*****************************************
-     * Imposto il valore negli oggetti Laser *
-     *****************************************/
+    /****************************************
+    * Imposto il valore negli oggetti Laser *
+    *****************************************/
 
     MyLaserCW_Pr->setWavelength(wavelength);
     MyLaserCW_Pr->setExposureTime();
@@ -221,71 +206,55 @@ void DockControls::on_wavelengthScrollBar_valueChanged(int value)
     MyLaserClassCW_Pr->setWavelength(wavelength);
     MyLaserClassCW_Pr->setTimeBase();
 
-    /**********************************************************************
-     * Imposto il valore nell'oggetto occhiali protettori.                *
-     * Il valore della base dei tempi dipende dalla lunghezza d'onda e va *
-     * pertanto impostato in funzione di questa (EN 207 B.4).             *
-     **********************************************************************/
+    /*********************************************************************
+    * Imposto il valore nell'oggetto occhiali protettori.                *
+    * Il valore della base dei tempi dipende dalla lunghezza d'onda e va *
+    * pertanto impostato in funzione di questa (EN 207 B.4).             *
+    **********************************************************************/
 
     myLaserGoggle->setWavelength(wavelength);
 
     if(((wavelength>315) && (wavelength<=1e+06)))//base dei tempi 5 s
-         {
-             myLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE);
-          }
-        else
-            if(((myLaserGoggle->getWavelength()>=180) && (myLaserGoggle->getWavelength()<=315)))//base dei tempi 30000 s
-              {
-                 myLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE_LOW_WAVELENGTH);
-              }
-    enableTeEditing=ui->teControl->isEnabled();
-    /**************************************************************
-     * La funzione fetchDataVector() va invocata quando cambia    *
-     * la frequenza o la durata dell'impulso.                     *                                 *
-     * Seleziona il campo corrispondente della Tabella B.2 EN207  *
-     * per l'oggetto myLaserGoggle.                               *
-     * Memorizza il vettore corrispondente in dataVector ed       *
-     * aggiorna il grafico                                        *
-     **************************************************************/
-    modeLockedPeak();
+        myLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE);
+    else
+    if(((myLaserGoggle->getWavelength()>=180) && (myLaserGoggle->getWavelength()<=315)))//base dei tempi 30000 s
+        myLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE_LOW_WAVELENGTH);
 
+    enableTeEditing=ui->teControl->isEnabled();
+    /*************************************************************
+    * La funzione fetchDataVector() va invocata quando cambia    *
+    * la frequenza o la durata dell'impulso.                     *                                 *
+    * Seleziona il campo corrispondente della Tabella B.2 EN207  *
+    * per l'oggetto myLaserGoggle.                               *
+    * Memorizza il vettore corrispondente in dataVector ed       *
+    * aggiorna il grafico                                        *
+    **************************************************************/
+
+    modeLockedPeak();
     fetchDataVector();
     fetchLaserOutput();
 
-    /*****************************************************
-    * Visualizzazione dati relativi ai protettori ottici *
-    ******************************************************/
-
-    displayLaserOutput();
-    displayTimeBase();
-    displayNumberOfPulse();
-    displayCoefficient_k();
-    displayCoefficient_ki();
-    display_ni_max();
+    /************
+    * IMPULSATO *
+    *************/
     }
-
-    /*************
-     * IMPULSATO *
-     * ***********/
-
-    if(n_laser==1)
+    else if(n_laser==operation::PULSE)
     {
 
-   /*****************************************
+    /****************************************
     * Imposto il valore negli oggetti Laser *
     *****************************************/
 
     MyLaserSP_Pr->setWavelength(wavelength);
     MyLaserSkinSP_Pr->setWavelength(wavelength);
-	
     MyLaserClassSP_Pr->setWavelength(wavelength);
 				
-    /**********************************************************************
-     * Imposto il valore nell'oggetto occhiali protettori.                *
-     * Il valore della base dei tempi dipende dalla lunghezza d'onda e va *
-     * pertanto impostato in funzione di questa (EN 207 B.4).             *
-     * In questo caso si assume come tempo base la durata dell'impulso.   *
-     **********************************************************************/
+    /*********************************************************************
+    * Imposto il valore nell'oggetto occhiali protettori.                *
+    * Il valore della base dei tempi dipende dalla lunghezza d'onda e va *
+    * pertanto impostato in funzione di questa (EN 207 B.4).             *
+    * In questo caso si assume come tempo base la durata dell'impulso.   *
+    **********************************************************************/
 
     myLaserGoggle->setWavelength(wavelength);
     myLaserGoggle->setPulseWidth(pulseWidth);
@@ -294,111 +263,89 @@ void DockControls::on_wavelengthScrollBar_valueChanged(int value)
 
     fetchLaserOutput();
 
-    /**************************************************************
-     * La funzione fetchDataVector() va invocata quando cambia    *
-     * la frequenza o la durata dell'impulso.                     *                                 *
-     * Seleziona il campo corrispondente della Tabella B.2 EN207  *
-     * per l'oggetto myLaserGoggle.                               *
-     * Memorizza il vettore corrispondente in dataVector ed       *
-     * aggiorna il grafico                                        *
-     **************************************************************/
+    /*************************************************************
+    * La funzione fetchDataVector() va invocata quando cambia    *
+    * la frequenza o la durata dell'impulso.                     *                                 *
+    * Seleziona il campo corrispondente della Tabella B.2 EN207  *
+    * per l'oggetto myLaserGoggle.                               *
+    * Memorizza il vettore corrispondente in dataVector ed       *
+    * aggiorna il grafico                                        *
+    **************************************************************/
     fetchDataVector();
 
     /*****************************************************
     * Visualizzazione dati relativi ai protettori ottici *
     ******************************************************/
-
-    displayLaserOutput();
-    displayTimeBase();
-    displayNumberOfPulse();
-    displayCoefficient_k();
-    displayCoefficient_ki();
-    display_ni_max();
     }
 
-    /********************
-     * IMPULSI MULTIPLI *
-     ********************/
+    /*******************
+    * IMPULSI MULTIPLI *
+    ********************/
 
-    if(n_laser==2)
+    else if(n_laser==operation::MULTI_PULSE)
     {
 
-    /*****************************************
-     * Imposto il valore negli oggetti Laser *
-     *****************************************/
-     MyLaserMP_Pr->setWavelength(wavelength);
-     MyLaserMP_Pr->setExposureTime();
-     MyLaserMP_Pr->setPulseWidth(pulseWidth);
+    /****************************************
+    * Imposto il valore negli oggetti Laser *
+    *****************************************/
+    MyLaserMP_Pr->setWavelength(wavelength);
+    MyLaserMP_Pr->setExposureTime();
+    MyLaserMP_Pr->setPulseWidth(pulseWidth);
 
-     MyLaserSkinMP_Pr->setWavelength(wavelength);
-     MyLaserSkinMP_Pr->setPulseWidth(pulseWidth);
+    MyLaserSkinMP_Pr->setWavelength(wavelength);
+    MyLaserSkinMP_Pr->setPulseWidth(pulseWidth);
 
-     MyLaserMP_Pr->computeTmin();
+    MyLaserMP_Pr->computeTmin();
 
-     MyLaserClassMP_Pr->setWavelength(wavelength);
-     MyLaserClassMP_Pr->setTimeBase();
+    MyLaserClassMP_Pr->setWavelength(wavelength);
+    MyLaserClassMP_Pr->setTimeBase();
 
-     /***********************************************************************
-      * Imposto il valore negli oggetti occhiali protettori.                *
-      * Il valore della base dei tempi dipende dalla lunghezza d'onda e va  *
-      * pertanto impostato in funzione di questa (EN 207 B.4).              *
-      * Per l'oggetto myLaserGoggle si procede impostando il valore della   *
-      * durata dell'impulso.                                                *
-      * Per l'oggetto myDLaserGoggle il valore della base dei tempi dipende *
-      * dalla lunghezza d'onda. Imposto in modo esplicito la base dei tempi *
-      **********************************************************************/
+    /**********************************************************************
+    * Imposto il valore negli oggetti occhiali protettori.                *
+    * Il valore della base dei tempi dipende dalla lunghezza d'onda e va  *
+    * pertanto impostato in funzione di questa (EN 207 B.4).              *
+    * Per l'oggetto myLaserGoggle si procede impostando il valore della   *
+    * durata dell'impulso.                                                *
+    * Per l'oggetto myDLaserGoggle il valore della base dei tempi dipende *
+    * dalla lunghezza d'onda. Imposto in modo esplicito la base dei tempi *
+    **********************************************************************/
 
-     myLaserGoggle->setWavelength(wavelength);
-     myDLaserGoggle->setWavelength(wavelength);
-
-     myLaserGoggle->setPulseWidth(pulseWidth);
+    myLaserGoggle->setWavelength(wavelength);
+    myDLaserGoggle->setWavelength(wavelength);
+    myLaserGoggle->setPulseWidth(pulseWidth);
 
     if(((myDLaserGoggle->getWavelength()>315) && (myDLaserGoggle->getWavelength()<=1e+06)))//base dei tempi 5 s
-         {
-             myDLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE);
-          }
-        else{
-            if(((myDLaserGoggle->getWavelength()>=180) && (myDLaserGoggle->getWavelength()<=315)))//base dei tempi 30000 5
-              {
-                 myDLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE_LOW_WAVELENGTH);
-              }
-            }
-    /**************************************************************
-     * La funzione fetchDataVector() va invocata quando cambia    *
-     * la frequenza o la durata dell'impulso.                     *
-     * Seleziona il campo corrispondente della Tabella B.2 EN207  *
-     * per entrambi gli oggetti relativi ai protettori ottici.    *
-     * Memorizza il vettore corrispondente in dataVector ed       *
-     * aggiorna il grafico                                        *
-     **************************************************************/
-    modeLockedPeak();
+        myDLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE);
+    else
+    {
+        if(((myDLaserGoggle->getWavelength()>=180) && (myDLaserGoggle->getWavelength()<=315)))//base dei tempi 30000 5
+            myDLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE_LOW_WAVELENGTH);
+    }
+        /*************************************************************
+        * La funzione fetchDataVector() va invocata quando cambia    *
+        * la frequenza o la durata dell'impulso.                     *
+        * Seleziona il campo corrispondente della Tabella B.2 EN207  *
+        * per entrambi gli oggetti relativi ai protettori ottici.    *
+        * Memorizza il vettore corrispondente in dataVector ed       *
+        * aggiorna il grafico                                        *
+        **************************************************************/
+        modeLockedPeak();
+        fetchLaserOutput();
+        fetchDataVector();
 
-    fetchLaserOutput();
-    fetchDataVector();
-
-    /*****************************************************
-    * Visualizzazione dati relativi ai protettori ottici *
-    ******************************************************/
-
-    //Oggetto myLaserGoggle
-    displayLaserOutput();
-    displayTimeBase();
-    displayNumberOfPulse();
-    displayCoefficient_k();
-    displayCoefficient_ki();
-    display_ni_max();
-
-    //Oggetto myLaserGoggle
-    fetchDDataVector();
-    displayDLaserOutput();
-    displayDTimeBase();
+        /*****************************************************
+        * Visualizzazione dati relativi ai protettori ottici *
+        ******************************************************/
+        //Oggetto myLaserGoggle
+        fetchDDataVector();
     }
 
-    /*******************************************
-     * Imposto i widget per la visualizzazione *
-     *******************************************/
+    /******************************************
+    * Imposto i widget per la visualizzazione *
+    *******************************************/
     setWidgets();
     set_LEA_Widgets();
+    setLaserGoggleWidgets();
 
     /*******************************************************
     * Imposto altri valori necessarie per la parte grafica *
@@ -420,91 +367,91 @@ void DockControls::on_teControl_valueChanged()
         exposureTimeControl=ui->teControl->getDialNumber();
         /*****************
         * CONTINUOS WAVE *
-        * ****************/
+        ******************/
 
-          if(n_laser==0)
-            {
-            /********************************************************
-             * Imposto il valore del tempo di esposizione impostato *
-             ********************************************************/
-             MyLaserCW_Pr->setExposureTimeEditable(true);
-             MyLaserCW_Pr->setEditedExposureTime(exposureTimeControl);
-             MyLaserCW_Pr->setPulseWidth(exposureTimeControl);
-             }
-          else
-          if(n_laser==2)
-        /********************
-         * IMPULSI MULTIPLI *
-         ********************/
-            {
-            /********************************************************
-             * Imposto il valore del tempo di esposizione impostato *
-             ********************************************************/
-             MyLaserMP_Pr->setExposureTimeEditable(true);
-             MyLaserMP_Pr->setEditedExposureTime(exposureTimeControl);
-             MyLaserMP_Pr->setPulseWidth(pulseWidth);
-            }
-    setWidgets();
-    emit EMP_Changed();//Cambia l'EMP
-    emit modified();//Per salvataggio file
+        if(n_laser==operation::CONTINUOS_WAVE)
+    {
+        /********************************************************
+        * Imposto il valore del tempo di esposizione impostato *
+        ********************************************************/
+        MyLaserCW_Pr->setExposureTimeEditable(true);
+        MyLaserCW_Pr->setEditedExposureTime(exposureTimeControl);
+        MyLaserCW_Pr->setPulseWidth(exposureTimeControl);
+    }
+    else
+    if(n_laser==operation::MULTI_PULSE)
+        /*******************
+        * IMPULSI MULTIPLI *
+        ********************/
+        {
+        /*******************************************************
+        * Imposto il valore del tempo di esposizione impostato *
+        ********************************************************/
+        MyLaserMP_Pr->setExposureTimeEditable(true);
+        MyLaserMP_Pr->setEditedExposureTime(exposureTimeControl);
+        MyLaserMP_Pr->setPulseWidth(pulseWidth);
+        }
+        setWidgets();
+        emit EMP_Changed();//Cambia l'EMP
+        emit modified();//Per salvataggio file
     }
 }
 
 void DockControls::on_T_SkinControl_valueChanged()
 {
-    /********************************************
-     * Ricavo il valore impostato dal controllo *
-     ********************************************/
+    /*******************************************
+    * Ricavo il valore impostato dal controllo *
+    ********************************************/
 
-     int exponent=ui->T_SkinControl->getExponent();
-     qDebug()<< "Esponente di T_SkinControl: "<<exponent;
-     double mantissa=ui->T_SkinControl->getMantissa();
+    int exponent=ui->T_SkinControl->getExponent();
+    qDebug()<< "Esponente di T_SkinControl: "<<exponent;
+    double mantissa=ui->T_SkinControl->getMantissa();
 
-    /********************************************************************************+****
-     * Memorizzo il valore impostato dal controllo nella variabile membro corrispondente *
-     *************************************************************************************/
+    /*******************************************************************************+****
+    * Memorizzo il valore impostato dal controllo nella variabile membro corrispondente *
+    *************************************************************************************/
 
-     T_Skin=mantissa*powf(10, exponent);
+    T_Skin=mantissa*powf(10, exponent);
 
     /*****************
     * CONTINUOS WAVE *
     * ****************/
-    if(n_laser==0){
+    if(n_laser==operation::CONTINUOS_WAVE){
 
-   /*****************************************
-    * Imposto il valore negli oggetti Laser *
-    *****************************************/
-    MyLaserSkinSP_Pr->setPulseWidth(T_Skin);
+        /****************************************
+        * Imposto il valore negli oggetti Laser *
+        *****************************************/
+        MyLaserSkinSP_Pr->setPulseWidth(T_Skin);
     }
     else
 
-    /*************
-     * IMPULSATO *
-     *************/
-     if(n_laser==1){
-		 
-   /*****************************************
-    * Imposto il valore negli oggetti Laser *
-    *****************************************/
-     MyLaserSkinSP_Pr->setPulseWidth(pulseWidth);
-     }
-     else
+    /************
+    * IMPULSATO *
+    *************/
+    if(n_laser==operation::PULSE)
+    {
+        /****************************************
+        * Imposto il valore negli oggetti Laser *
+        *****************************************/
+        MyLaserSkinSP_Pr->setPulseWidth(pulseWidth);
+    }
+    else
 
-   /********************
+    /*******************
     * IMPULSI MULTIPLI *
     ********************/
-    if (n_laser==2){
+    if (n_laser==operation::MULTI_PULSE){
 
-   /*****************************************
-    * Imposto il valore negli oggetti Laser *
-    *****************************************/
-    MyLaserSkinSP_Pr->setPulseWidth(pulseWidth);
-    MyLaserSkinMP_Pr->setExposureTime(T_Skin);
+        /****************************************
+        * Imposto il valore negli oggetti Laser *
+        *****************************************/
+        MyLaserSkinSP_Pr->setPulseWidth(pulseWidth);
+        MyLaserSkinMP_Pr->setExposureTime(T_Skin);
     }
 
-    /*******************************************
-     * Imposto i widget per la visualizzazione *
-     *******************************************/
+    /******************************************
+    * Imposto i widget per la visualizzazione *
+    *******************************************/
 
     qDebug()<<"Tempo esposizione pelle: " << T_Skin;
     setWidgets();
@@ -516,15 +463,15 @@ void DockControls::on_T_SkinControl_valueChanged()
     setSkinDistances();
 
     /******************
-     * Emetto segnali *
-     ******************/
+    * Emetto segnali *
+    ******************/
     emit EMP_Changed();//Cambia l'EMP
     emit modified();//Per salvataggio file
 }
 
 void DockControls::on_powerErgControl_valueChanged()
 {
-   /********************************************
+    /*******************************************
     * Ricavo il valore impostato dal controllo *
     ********************************************/
 
@@ -532,121 +479,105 @@ void DockControls::on_powerErgControl_valueChanged()
     qDebug()<< "Esponente di powerErgControl: "<<exponent;
     double mantissa=ui->powerErgControl->getMantissa();
 
-   /********************************************************************************+****
+    /*******************************************************************************+****
     * Memorizzo il valore impostato dal controllo nella variabile membro corrispondente *
     *************************************************************************************/
 
     powerErg=mantissa*powf(10, exponent);
 
-   /******************
+    /*****************
     * CONTINUOS WAVE *
     * ****************/
-    if(n_laser==0){
+    if(n_laser==operation::CONTINUOS_WAVE){
 
-   /*****************************************
-    * Imposto il valore negli oggetti Laser *
-    *****************************************/
+       /*****************************************
+        * Imposto il valore negli oggetti Laser *
+        *****************************************/
 
-    MyLaserCW_Pr->setPowerErg(powerErg*beamCorrection);
-    MyLaserSkinSP_Pr->setPowerErg(powerErg);
+        MyLaserCW_Pr->setPowerErg(powerErg*beamCorrection);
+        MyLaserSkinSP_Pr->setPowerErg(powerErg);
+        MyLaserClassCW_Pr->setPowerErg(powerErg);
 
-    MyLaserClassCW_Pr->setPowerErg(powerErg);
-
-    modeLockedPeak();
+        modeLockedPeak();
     }
     else
 
     /************
     * IMPULSATO *
     * ***********/
-    if (n_laser==1){
+    if (n_laser==operation::PULSE){
 
-   /*****************************************
-    * Imposto il valore negli oggetti Laser *
-    *****************************************/
-    MyLaserSP_Pr->setPowerErg(powerErg*beamCorrection);
-    MyLaserSkinSP_Pr->setPowerErg(powerErg);
+       /*****************************************
+        * Imposto il valore negli oggetti Laser *
+        *****************************************/
+        MyLaserSP_Pr->setPowerErg(powerErg*beamCorrection);
+        MyLaserSkinSP_Pr->setPowerErg(powerErg);
 
-    MyLaserClassSP_Pr->setPowerErg(powerErg);
+        MyLaserClassSP_Pr->setPowerErg(powerErg);
 
-    modeLockedPeak();
+        modeLockedPeak();
     }
     else
 
     /*******************
     * IMPULSI MULTIPLI *
     * ******************/
-    if (n_laser==2){
-		
-   /*****************************************
-    * Imposto il valore negli oggetti Laser *
-    *****************************************/
-	
+    if (n_laser==operation::MULTI_PULSE){
+
+        /*****************************************
+        * Imposto il valore negli oggetti Laser *
+        *****************************************/
+
         MyLaserMP_Pr->setPowerErg(beamCorrection*powerErg);
         MyLaserSkinMP_Pr->setPowerErg(powerErg);
         MyLaserClassMP_Pr->setPowerErg(powerErg);
 
         modeLockedPeak();
 
-    /********************************************************************
-    * Imposto il valore della potenza media nell'oggetto myDLaserGoggle *
-    * data dal prodotto dell'energia dell'impulso per la frequenza      *
-    *********************************************************************/
+        /********************************************************************
+        * Imposto il valore della potenza media nell'oggetto myDLaserGoggle *
+        * data dal prodotto dell'energia dell'impulso per la frequenza      *
+        *********************************************************************/
 
         myDLaserGoggle->setPowerErg(powerErg*myLaserGoggle->getFrequency());
 
-    /*************************************************************
-     * Seleziono il campo corrispondente della Tabella B.2 EN207 *
-     * Memorizzo il vettore corrispondente in dataVector per     *
-     * per l'oggetto myDLaserGoggle                              *
-     *************************************************************/
+        /************************************************************
+        * Seleziono il campo corrispondente della Tabella B.2 EN207 *
+        * Memorizzo il vettore corrispondente in dataVector per     *
+        * per l'oggetto myDLaserGoggle                              *
+        *************************************************************/
         fetchDLaserOutput();
 
-    /**************************************************************
-     * Prelevo i dati relativi al laser per tracciare il grafico  *
-     * relativo ai protettori ottici per l'oggetto myDLaserGoggle *                          *
-     **************************************************************/
+        /**************************************************************
+        * Prelevo i dati rlativi al laser per tracciare il grafico  *
+        * relativo ai protettori ottici per l'oggetto myDLaserGoggle *                          *
+        **************************************************************/
         fetchDDataVector();
-
-    /**************************************************
-     * Visualizzazione dati relativi a myDLaserGoggle *
-     **************************************************/
-
-        displayDLaserOutput();
     }
 
-    /**************************************************************
-     * Prelevo i dati relativi al laser per tracciare il grafico  *
-     * relativo ai protettori ottici per l'oggetto myDLaserGoggle *                          *
-     **************************************************************/
+    /*************************************************************
+    * Prelevo i dati relativi al laser per tracciare il grafico  *
+    * relativo ai protettori ottici per l'oggetto myDLaserGoggle *                          *
+    **************************************************************/
 
     fetchDataVector();
     fetchLaserOutput();
 
     /**************************************************************
-     * La funzione fetchDataVector() va invocata quando cambia    *
-     * la frequenza o la durata dell'impulso.                     *                                 *
-     * Seleziona il campo corrispondente della Tabella B.2 EN207  *
-     * per l'oggetto myLaserGoggle.                               *
-     * Memorizza il vettore corrispondente in dataVector ed       *
-     * aggiorna il grafico                                        *
-     **************************************************************/
-
-    /*************************************************
-     * Visualizzazione dati relativi a myLaserGoggle *
-     *************************************************/
-    displayLaserOutput();
-    displayNumberOfPulse();
-    displayCoefficient_k();
-    displayCoefficient_ki();
-    display_ni_max();
+    * La funzione fetchDataVector() va invocata quando cambia    *
+    * la frequenza o la durata dell'impulso.                     *                                 *
+    * Seleziona il campo corrispondente della Tabella B.2 EN207  *
+    * per l'oggetto myLaserGoggle.                               *
+    * Memorizza il vettore corrispondente in dataVector ed       *
+    * aggiorna il grafico                                        *
+    **************************************************************/
 
    /*******************************************
     * Imposto i widget per la visualizzazione *
     *******************************************/
     setWidgets();
     set_LEA_Widgets();
-
+    setLaserGoggleWidgets();
     /*******************************************************
     * Imposto altri valori necessarie per la parte grafica *
     ********************************************************/
@@ -665,14 +596,14 @@ void DockControls::on_powerErgControl_valueChanged()
 
 void DockControls::fetchDataVector()
 {
-    /**************************************************************
-     * La funzione fetchDataVector() va invocata quando cambia    *
-     * la frequenza o la durata dell'impulso.                     *                                 *
-     * Seleziona il campo corrispondente della Tabella B.2 EN207  *
-     * per l'oggetto myLaserGoggle.                               *
-     * Memorizza il vettore corrispondente in dataVector ed       *
-     * aggiorna il grafico                                        *
-     **************************************************************/
+    /*************************************************************
+    * La funzione fetchDataVector() va invocata quando cambia    *
+    * la frequenza o la durata dell'impulso.                     *                                 *
+    * Seleziona il campo corrispondente della Tabella B.2 EN207  *
+    * per l'oggetto myLaserGoggle.                               *
+    * Memorizza il vettore corrispondente in dataVector ed       *
+    * aggiorna il grafico                                        *
+    **************************************************************/
     myLaserGoggle->setPowerErg(effectivePowerErg);
     //calcolo laserIrrRadCorrected solo per visualizzare
     laserOutput=myLaserGoggle->laserIrrRadCorrected(effectivePowerErg);
@@ -690,14 +621,14 @@ void DockControls::fetchDataVector()
 
 void DockControls::fetchDDataVector()
 {
-    /**************************************************************
-     * La funzione fetchDataVector() va invocata quando cambia    *
-     * la frequenza o la durata dell'impulso.                     *                                 *
-     * Seleziona il campo corrispondente della Tabella B.2 EN207  *
-     * per l'oggetto myLaserGoggle.                               *
-     * Memorizza il vettore corrispondente in dataVector ed       *
-     * aggiorna il grafico                                        *
-     **************************************************************/
+    /*************************************************************
+    * La funzione fetchDataVector() va invocata quando cambia    *
+    * la frequenza o la durata dell'impulso.                     *                                 *
+    * Seleziona il campo corrispondente della Tabella B.2 EN207  *
+    * per l'oggetto myLaserGoggle.                               *
+    * Memorizza il vettore corrispondente in dataVector ed       *
+    * aggiorna il grafico                                        *
+    **************************************************************/
 
     dLaserOutput=myDLaserGoggle->laserIrrRadCorrected(myLaserGoggle->getPowerErg()*myLaserGoggle->getFrequency());
     //Calcola e restituisce la marcatura memorizzandola in myNewGoggleMark
@@ -712,10 +643,10 @@ void DockControls::fetchDDataVector()
 }
 void DockControls::fetchLaserOutput()
 {
-   /**************************************************************
+    /*************************************************************
     * La funzione fetchLaserOutput() va invocata quando cambia   *
-    * l'uscita dal laser (potenza/energia impulso, alpha,        *
-    * frequenza, diametro del fascio, divergenza).               *
+    * l'uscita dal laser (potenza/energia impulso,frequenza,     *
+    * diametro del fascio.                                       *
     * Memorizza il vettore corrispondente in dataVector ed       *
     * aggiorna il grafico per myLaserGoggle.                     *
     * IMPORTANTE: Non aggiorna il modello per la visualizzazione *
@@ -734,15 +665,15 @@ void DockControls::fetchLaserOutput()
 
 void DockControls::fetchDLaserOutput()
 {
-    /**************************************************************
-     * La funzione fetchLaserOutput() va invocata quando cambia   *
-     * l'uscita dal laser (potenza/energia impulso, alpha,        *
-     * frequenza, diametro del fascio, divergenza).               *
-     * Memorizza il vettore corrispondente in dataVector ed       *
-     * aggiorna il grafico per myDLaserGoggle.                     *
-     * IMPORTANTE: Non aggiorna il modello per la visualizzazione *
-     * dei numeri scala ma solo il grafico                        *
-     **************************************************************/
+    /*************************************************************
+    * La funzione fetchLaserOutput() va invocata quando cambia   *
+    * l'uscita dal laser (potenza/energia impulso,frequenza,     *
+    * diametro del fascio.                                       *
+    * Memorizza il vettore corrispondente in dataVector ed       *
+    * aggiorna il grafico per myLaserGoggle.                     *
+    * IMPORTANTE: Non aggiorna il modello per la visualizzazione *
+    * dei numeri scala ma solo il grafico                        *
+    **************************************************************/
     QString meanPowerString = QString::number(myLaserGoggle->getPowerErg()*myLaserGoggle->getFrequency(), 'e', 2);
     dockGoggle->ui->tMeanPowerLabel->setText("Pm [W]");
     dockGoggle->ui->meanPowerLabel->setText(meanPowerString);
@@ -756,16 +687,21 @@ void DockControls::fetchDLaserOutput()
 void DockControls::on_pulseControl_valueChanged()
 {
     /********************************************
-     * Ricavo il valore impostato dal controllo *
-     ********************************************/
-     int exponent=ui->pulseControl->getExponent();
-     qDebug()<< "Esponente di pulseControl: "<<exponent;
-     double mantissa=ui->pulseControl->getMantissa();
+    * Ricavo il valore impostato dal controllo *
+    ********************************************/
+    int exponent=ui->pulseControl->getExponent();
+    qDebug()<< "Esponente di pulseControl: "<<exponent;
+    double mantissa=ui->pulseControl->getMantissa();
 
-    /********************************************************************************+****
-     * Memorizzo il valore impostato dal controllo nella variabile membro corrispondente *
-     *************************************************************************************/
-     pulseWidth=mantissa*powf(10, exponent);
+    /*******************************************************************************+****
+    * Memorizzo il valore impostato dal controllo nella variabile membro corrispondente *
+    *************************************************************************************/
+    pulseWidth=mantissa*powf(10, exponent);
+    if(pulseWidth>=30000)
+    {
+        pulseWidth=29999;
+        ui->pulseControl->setValue(pulseWidth);
+    }
 
 	/**************************************************************************************
     * La modalità di funzionamento CONTINUOS WAVE è indipendente dalla durata dell'impuso *
@@ -774,126 +710,126 @@ void DockControls::on_pulseControl_valueChanged()
 	/************
     * IMPULSATO *
     * ***********/
-	//
-      if(n_laser==1)
-        {
-	
-	/*****************************************
-     * Imposto il valore negli oggetti Laser *
-     *****************************************/
-         
-			 MyLaserSP_Pr->setPulseWidth(pulseWidth);
-			 MyLaserSkinSP_Pr->setPulseWidth(pulseWidth);
-			 myLaserGoggle->setPulseWidth(pulseWidth);
 
-             MyLaserClassSP_Pr->setPulseWidth(pulseWidth);
+    if(n_laser==operation::PULSE)
+    {
 
-             modeLockedPeak();
+        /*****************************************
+         * Imposto il valore negli oggetti Laser *
+         *****************************************/
 
-             /**************************************************************
-              * La funzione fetchDataVector() va invocata quando cambia    *
-              * la frequenza o la durata dell'impulso.                     *
-              * Seleziona il campo corrispondente della Tabella B.2 EN207  *
-              * per entrambi gli oggetti relativi ai protettori ottici.    *
-              * Memorizza il vettore corrispondente in dataVector ed       *
-              * aggiorna il grafico                                        *
-              **************************************************************/
-                      fetchDataVector();
-                      fetchLaserOutput();
-             /*****************************************************
-             * Visualizzazione dati relativi ai protettori ottici *
-             ******************************************************/
-                      displayLaserOutput();
-                      displayNumberOfPulse();
-                      displayCoefficient_k();
-                      displayCoefficient_ki();
-                      display_ni_max();
-                      displayTimeBase();
-         }
+        MyLaserSP_Pr->setPulseWidth(pulseWidth);
+        MyLaserSkinSP_Pr->setPulseWidth(pulseWidth);
+        myLaserGoggle->setPulseWidth(pulseWidth);
+        MyLaserClassSP_Pr->setPulseWidth(pulseWidth);
+
+        modeLockedPeak();
+
+        /*************************************************************
+        * La funzione fetchDataVector() va invocata quando cambia    *
+        * la frequenza o la durata dell'impulso.                     *
+        * Seleziona il campo corrispondente della Tabella B.2 EN207  *
+        * per entrambi gli oggetti relativi ai protettori ottici.    *
+        * Memorizza il vettore corrispondente in dataVector ed       *
+        * aggiorna il grafico                                        *
+        **************************************************************/
+        fetchDataVector();
+        fetchLaserOutput();
+    }
 	
 	/********************
      * IMPULSI MULTIPLI *
      ********************/
 	 
-         else if(n_laser==2){
-	/*****************************************
-     * Imposto il valore negli oggetti Laser *
-     *****************************************/
-			 MyLaserMP_Pr->setPulseWidth(pulseWidth);
-             MyLaserSkinMP_Pr->setPulseWidth(pulseWidth);
-             myLaserGoggle->setPulseWidth(pulseWidth);
-             MyLaserClassMP_Pr->setPulseWidth(pulseWidth);
+    else if(n_laser==operation::MULTI_PULSE)
+    {
+        /****************************************
+        * Imposto il valore negli oggetti Laser *
+        *****************************************/
+        MyLaserMP_Pr->setPulseWidth(pulseWidth);
+        MyLaserSkinMP_Pr->setPulseWidth(pulseWidth);
+        myLaserGoggle->setPulseWidth(pulseWidth);
+        MyLaserClassMP_Pr->setPulseWidth(pulseWidth);
 
-			 QString scaleNumberString = QString::fromStdString(myLaserGoggle->goggleMark());
+        QString scaleNumberString = QString::fromStdString(myLaserGoggle->goggleMark());
+        modeLockedPeak();
 
-             modeLockedPeak();
-
-	/**************************************************************
-     * La funzione fetchDataVector() va invocata quando cambia    *
-     * la frequenza o la durata dell'impulso.                     *
-     * Seleziona il campo corrispondente della Tabella B.2 EN207  *
-     * per entrambi gli oggetti relativi ai protettori ottici.    *
-     * Memorizza il vettore corrispondente in dataVector ed       *
-     * aggiorna il grafico                                        *
-     **************************************************************/            
-             fetchDataVector();
-             fetchLaserOutput();
-    /*****************************************************
-    * Visualizzazione dati relativi ai protettori ottici *
-    ******************************************************/
-             displayLaserOutput();
-             displayNumberOfPulse();
-             displayCoefficient_k();
-             displayCoefficient_ki();
-             display_ni_max();
-             displayTimeBase();
-		 }
+        /*************************************************************
+        * La funzione fetchDataVector() va invocata quando cambia    *
+        * la frequenza o la durata dell'impulso.                     *
+        * Seleziona il campo corrispondente della Tabella B.2 EN207  *
+        * per entrambi gli oggetti relativi ai protettori ottici.    *
+        * Memorizza il vettore corrispondente in dataVector ed       *
+        * aggiorna il grafico                                        *
+        **************************************************************/
+        fetchDataVector();
+        fetchLaserOutput();
+        /*****************************************************
+        * Visualizzazione dati relativi ai protettori ottici *
+        ******************************************************/
+    }
 		 
-	/*******************************************
-     * Imposto i widget per la visualizzazione *
-     *******************************************/
-		 setWidgets();
-         set_LEA_Widgets();
+    /******************************************
+    * Imposto i widget per la visualizzazione *
+    *******************************************/
+    setWidgets();
+    set_LEA_Widgets();
+    setLaserGoggleWidgets();
 		 
 	/*******************************************************
     * Imposto altri valori necessarie per la parte grafica *
     ********************************************************/
-         setOpticalDistance();
-         setSkinDistances();
-         setLambertianMax();
+    setOpticalDistance();
+    setSkinDistances();
+    setLambertianMax();
 
-    /******************
-     * Emetto segnali *
-     ******************/
-        emit EMP_Changed();//Cambia l'EMP
-        emit modified();//Per salvataggio file
+    /*****************
+    * Emetto segnali *
+    ******************/
+    emit EMP_Changed();//Cambia l'EMP
+    emit modified();//Per salvataggio file
 }
 
-void DockControls::displayScaleNumber()
+void DockControls::setLaserGoggleWidgets()
 {
-    computeOpticalDensity();
-    if(opticalDensity>0)
+    displayScaleNumber();
+    displayTimeBase();
+    displayLaserOutput();
+    displayNumberOfPulse();
+    displayCoefficient_ki();
+    displayCoefficient_k();
+    display_ni_max();
+
+    if(n_laser==operation::MULTI_PULSE)
     {
-    QString scaleNumberString = QString::fromStdString(myLaserGoggle->goggleMark());  
-    dockGoggle->ui->tScaleNumberLabel->setText("LB");
-    dockGoggle->ui->scaleNumberLabel->setText(scaleNumberString);
+        displayDLaserOutput();
+        displayDTimeBase();
+        displayDScaleNumber();
     }
-    else
-    {
-    dockGoggle->ui->tScaleNumberLabel->setText("----");
-    dockGoggle->ui->scaleNumberLabel->setText("non supera l'EMP");
-    }
+}
+
+void DockControls::displayLaserOutput()
+{
+    QString laserOutputString= QString::number(laserOutput,'e',2);
+    QString myUnitCodeString = QString::fromStdString(myLaserGoggle->getCodeUnit());
+    QString myOutput=QString::fromStdString(myLaserGoggle->outputSort());
+
+    if(n_laser==operation::MULTI_PULSE)
+        myOutput=myOutput+"<sub>c</sub>";
+
+    dockGoggle->ui->tLaserOutputLabel->setText(myOutput+" " + myUnitCodeString);
+    dockGoggle->ui->laserOutputLabel->setText(laserOutputString);
 }
 
 void DockControls::displayTimeBase()
 {
-    if(n_laser==0)
+    if(n_laser==operation::CONTINUOS_WAVE)
     {
     QString timeBaseString =QString::number(myLaserGoggle->getPulseWidth());
     dockGoggle->ui->tTimeBaseLabel->setText("T<sub>b</sub> [s]");
     dockGoggle->ui->timeBaseLabel->setText(timeBaseString);
     }
-    if((n_laser==1)or(n_laser==2))
+    if((n_laser==operation::PULSE)or(n_laser==operation::MULTI_PULSE))
     {
         if((wavelength>=180)&&(wavelength<=315))
         {
@@ -909,27 +845,20 @@ void DockControls::displayTimeBase()
     dockGoggle->ui->kindOfLaserLabel->setText(QString::fromStdString(myLaserGoggle->getLaserPulseOperation()));
 }
 
-void DockControls::displayDTimeBase()
+void DockControls::displayScaleNumber()
 {
-    if(n_laser==2)
+    computeOpticalDensity();
+    if(opticalDensity>0)
     {
-    QString dTimeBaseString = QString::number(myDLaserGoggle->getPulseWidth());
-    dockGoggle->ui->tDTimeBaseLabel->setText("T<sub>b</sub> [s]");
-    dockGoggle->ui->dTimeBaseLabel->setText(dTimeBaseString);
+        QString scaleNumberString = QString::fromStdString(myLaserGoggle->goggleMark());
+        dockGoggle->ui->tScaleNumberLabel->setText("LB");
+        dockGoggle->ui->scaleNumberLabel->setText(scaleNumberString);
     }
-}
-
-void DockControls::displayLaserOutput()
-{
-    QString laserOutputString= QString::number(laserOutput,'e',2);
-    QString myUnitCodeString = QString::fromStdString(myLaserGoggle->getCodeUnit());
-    QString myOutput=QString::fromStdString(myLaserGoggle->outputSort());
-
-    if(n_laser==2)
-        myOutput=myOutput+"<sub>c</sub>";
-
-    dockGoggle->ui->tLaserOutputLabel->setText(myOutput+" " + myUnitCodeString);
-    dockGoggle->ui->laserOutputLabel->setText(laserOutputString);
+    else
+    {
+        dockGoggle->ui->tScaleNumberLabel->setText("----");
+        dockGoggle->ui->scaleNumberLabel->setText("non supera l'EMP");
+    }
 }
 
 void DockControls::displayNumberOfPulse()
@@ -953,6 +882,14 @@ void DockControls::displayCoefficient_k()
     dockGoggle->ui->coefficient_kLabel->setText(Coefficient_kString);
 }
 
+void DockControls::display_ni_max()
+{
+    QString ni ="ν";
+    QString ni_maxString = QString::number(myLaserGoggle->get_ni_max(), 'e', 2);
+    dockGoggle->ui->tn_maxLabel->setText(ni.toHtmlEscaped()+"<sub>max</sub> [Hz]");
+    dockGoggle->ui->n_maxLabel->setText(ni_maxString);
+}
+
 void DockControls::displayDLaserOutput()
 {
     dLaserOutput= myDLaserGoggle->laserIrrRadCorrected(myLaserGoggle->getPowerErg()*myLaserGoggle->getFrequency());
@@ -963,14 +900,6 @@ void DockControls::displayDLaserOutput()
     dockGoggle->ui->dLaserOutputLabel->setText(dLaserOutputString);
 }
 
-void DockControls::display_ni_max()
-{
-    QString ni ="ν";
-    QString ni_maxString = QString::number(myLaserGoggle->get_ni_max(), 'e', 2);
-    dockGoggle->ui->tn_maxLabel->setText(ni.toHtmlEscaped()+"<sub>max</sub> [Hz]");
-    dockGoggle->ui->n_maxLabel->setText(ni_maxString);
-}
-
 void DockControls::displayDScaleNumber()
 {
     dComputeOpticalDensity();
@@ -978,19 +907,29 @@ void DockControls::displayDScaleNumber()
     QString scaleNumberDString = QString::fromStdString(myDLaserGoggle->goggleMark());
     if(dOpticalDensity>0)
     {
-    dockGoggle->ui->tScaleNumberDLabel->setText("LB");
-    dockGoggle->ui->scaleNumberDLabel->setText(scaleNumberDString);
+        dockGoggle->ui->tScaleNumberDLabel->setText("LB");
+        dockGoggle->ui->scaleNumberDLabel->setText(scaleNumberDString);
     }
     else
     {
-    dockGoggle->ui->tScaleNumberDLabel->setText("----");
-    dockGoggle->ui->scaleNumberDLabel->setText("non supera l'EMP");
+        dockGoggle->ui->tScaleNumberDLabel->setText("----");
+        dockGoggle->ui->scaleNumberDLabel->setText("non supera l'EMP");
+    }
+}
+
+void DockControls::displayDTimeBase()
+{
+    if(n_laser==operation::MULTI_PULSE)
+    {
+        QString dTimeBaseString = QString::number(myDLaserGoggle->getPulseWidth());
+        dockGoggle->ui->tDTimeBaseLabel->setText("T<sub>b</sub> [s]");
+        dockGoggle->ui->dTimeBaseLabel->setText(dTimeBaseString);
     }
 }
 
 void DockControls::on_prfControl_valueChanged()
 {
-   /********************************************
+    /*******************************************
     * Ricavo il valore impostato dal controllo *
     ********************************************/
 	
@@ -998,192 +937,172 @@ void DockControls::on_prfControl_valueChanged()
     qDebug()<< "Esponente di prfControl: "<<exponent;
     double mantissa=ui->prfControl->getMantissa();
 
-   /********************************************************************************+****
+    /*******************************************************************************+****
     * Memorizzo il valore impostato dal controllo nella variabile membro corrispondente *
     *************************************************************************************/
 
     prf=mantissa*powf(10.0, exponent);
 
-    if(n_laser==2)
+    if(n_laser==operation::MULTI_PULSE)
     {
-		
-    /*******************
-    * IMPULSI MULTIPLI *
-    * ******************/
-	
-   /*****************************************
-    * Imposto il valore negli oggetti Laser *
-    *****************************************/
-	
-    MyLaserMP_Pr->setPRF(prf);
-    MyLaserSkinMP_Pr->setPRF(prf);
-    MyLaserClassMP_Pr->setPRF(prf);
-    myLaserGoggle->setFrequency(prf);
 
-    /********************************************************************
-    * Imposto il valore della potenza media nell'oggetto myDLaserGoggle *
-    * data dal prodotto dell'energia dell'impulso per la frequenza      *
-    *********************************************************************/
+        /*******************
+        * IMPULSI MULTIPLI *
+        * ******************/
 
-    myDLaserGoggle->setPowerErg(myLaserGoggle->getPowerErg()*prf);
+        /****************************************
+        * Imposto il valore negli oggetti Laser *
+        *****************************************/
 
-    modeLockedPeak();
+        MyLaserMP_Pr->setPRF(prf);
+        MyLaserSkinMP_Pr->setPRF(prf);
+        MyLaserClassMP_Pr->setPRF(prf);
+        myLaserGoggle->setFrequency(prf);
 
-    /*************************************************************
-     * Seleziono il campo corrispondente della Tabella B.2 EN207 *
-     * Memorizzo il vettore corrispondente in dataVector per     *
-     * per l'oggetto myDLaserGoggle                              *
-     *************************************************************/
-    fetchDLaserOutput();
+        /********************************************************************
+        * Imposto il valore della potenza media nell'oggetto myDLaserGoggle *
+        * data dal prodotto dell'energia dell'impulso per la frequenza      *
+        *********************************************************************/
 
-    /**************************************************************
-     * Prelevo i dati relativi al laser per tracciare il grafico  *
-     * relativo ai protettori ottici per l'oggetto myDLaserGoggle *                          *
-     **************************************************************/
-    fetchDDataVector();
+        myDLaserGoggle->setPowerErg(myLaserGoggle->getPowerErg()*prf);
 
-    /*************************************************************
-     * Seleziono il campo corrispondente della Tabella B.2 EN207 *
-     * Memorizzo il vettore corrispondente in dataVector per     *
-     * per l'oggetto myLaserGoggle                              *
-     *************************************************************/
-    fetchLaserOutput();
-	
-    /**************************************************************
-     * Prelevo i dati relativi al laser per tracciare il grafico  *
-     * relativo ai protettori ottici per l'oggetto myDLaserGoggle *                          *
-     **************************************************************/
-    fetchDataVector();
-	
+        modeLockedPeak();
 
-    /**************************************************
-     * Visualizzazione dati relativi a myLaserGoggle *
-     **************************************************/
-    displayDLaserOutput();
-    displayLaserOutput();
-    displayNumberOfPulse();
-    displayCoefficient_k();
-    displayCoefficient_ki();
-    display_ni_max();
+        /************************************************************
+        * Seleziono il campo corrispondente della Tabella B.2 EN207 *
+        * Memorizzo il vettore corrispondente in dataVector per     *
+        * per l'oggetto myDLaserGoggle                              *
+        *************************************************************/
+        fetchDLaserOutput();
 
-    /**************************************************
-     * Visualizzazione dati relativi a myDLaserGoggle *
-     **************************************************/
-    displayDLaserOutput();
+        /*************************************************************
+        * Prelevo i dati relativi al laser per tracciare il grafico  *
+        * relativo ai protettori ottici per l'oggetto myDLaserGoggle *                          *
+        **************************************************************/
+        fetchDDataVector();
 
-   /*******************************************
-    * Imposto i widget per la visualizzazione *
-    *******************************************/
-    setWidgets();
-    set_LEA_Widgets();
+        /*************************************************************
+        * Seleziono il campo corrispondente della Tabella B.2 EN207 *
+        * Memorizzo il vettore corrispondente in dataVector per     *
+        * per l'oggetto myLaserGoggle                              *
+        *************************************************************/
+        fetchLaserOutput();
 
-    /*******************************************************
-    * Imposto altri valori necessarie per la parte grafica *
-    ********************************************************/	
-    setOpticalDistance();
-    setSkinDistances();
-    setLambertianMax();
-	
-    /******************
-     * Emetto segnali *
-     ******************/
-    emit EMP_Changed();//Cambia l'EMP
-    emit modified();//Per salvataggio file
+        /*************************************************************
+        * Prelevo i dati relativi al laser per tracciare il grafico  *
+        * relativo ai protettori ottici per l'oggetto myDLaserGoggle *                          *
+        **************************************************************/
+        fetchDataVector();
+
+       /*******************************************
+        * Imposto i widget per la visualizzazione *
+        *******************************************/
+        setWidgets();
+        set_LEA_Widgets();
+        setLaserGoggleWidgets();
+
+        /*******************************************************
+        * Imposto altri valori necessarie per la parte grafica *
+        ********************************************************/
+        setOpticalDistance();
+        setSkinDistances();
+        setLambertianMax();
+
+        /******************
+         * Emetto segnali *
+         ******************/
+        emit EMP_Changed();//Cambia l'EMP
+        emit modified();//Per salvataggio file
     }
 }
 
 
 void DockControls::on_beamDiameterControl_valueChanged()
 {
-   /********************************************
+    /*******************************************
     * Ricavo il valore impostato dal controllo *
     ********************************************/
     int exponent=ui->beamDiameterControl->getExponent();
     qDebug()<< "Esponente di beamDiameterControl: "<<exponent;
     double mantissa=ui->beamDiameterControl->getMantissa();
 
-   /********************************************************************************+****
+    /*******************************************************************************+****
     * Memorizzo il valore impostato dal controllo nella variabile membro corrispondente *
     *************************************************************************************/
     beamDiameter=mantissa*powf(10, exponent);
 
-   /******************
+    /*****************
     * CONTINUOS WAVE *
     * ****************/	
-    if(n_laser==0){
-		
-   /*****************************************
-    * Imposto il valore negli oggetti Laser *
-    *****************************************/
-    MyLaserCW_Pr->setBeamDiameter(beamDiameter);
-    MyLaserSkinSP_Pr->setBeamDiameter(beamDiameter);
-    MyLaserClassCW_Pr->setBeamDiameter(beamDiameter);
-	myLaserGoggle->setBeamDiameter(beamDiameter);
+    if(n_laser==operation::CONTINUOS_WAVE){
 
-    modeLockedPeak();
+        /****************************************
+        * Imposto il valore negli oggetti Laser *
+        *****************************************/
+        MyLaserCW_Pr->setBeamDiameter(beamDiameter);
+        MyLaserSkinSP_Pr->setBeamDiameter(beamDiameter);
+        MyLaserClassCW_Pr->setBeamDiameter(beamDiameter);
+        myLaserGoggle->setBeamDiameter(beamDiameter);
+
+        modeLockedPeak();
     }
     else
 		
     /************
     * IMPULSATO *
     * ***********/
-    if (n_laser==1){
-	
-   /*****************************************
-    * Imposto il valore negli oggetti Laser *
-    *****************************************/
-	MyLaserSP_Pr->setBeamDiameter(beamDiameter);
-	MyLaserSkinSP_Pr->setBeamDiameter(beamDiameter);   
-    MyLaserClassSP_Pr->setBeamDiameter(beamDiameter);
-	myLaserGoggle->setBeamDiameter(beamDiameter);
+    if (n_laser==operation::PULSE)
+    {
+        /****************************************
+        * Imposto il valore negli oggetti Laser *
+        *****************************************/
+        MyLaserSP_Pr->setBeamDiameter(beamDiameter);
+        MyLaserSkinSP_Pr->setBeamDiameter(beamDiameter);
+        MyLaserClassSP_Pr->setBeamDiameter(beamDiameter);
+        myLaserGoggle->setBeamDiameter(beamDiameter);
 
-    modeLockedPeak();
-	}
+        modeLockedPeak();
+    }
 		
     /*******************
     * IMPULSI MULTIPLI *
     * ******************/
-    else if (n_laser==2){
-	
-   /*****************************************
-    * Imposto il valore negli oggetti Laser *
-    *****************************************/
-    MyLaserMP_Pr->setBeamDiameter(beamDiameter);
-    MyLaserSkinMP_Pr->setBeamDiameter(beamDiameter); 
-    MyLaserClassMP_Pr->setBeamDiameter(beamDiameter);
-	myLaserGoggle->setBeamDiameter(beamDiameter);
-    myDLaserGoggle->setBeamDiameter(beamDiameter);
+    else if (n_laser==operation::MULTI_PULSE)
+    {
+       /*****************************************
+        * Imposto il valore negli oggetti Laser *
+        *****************************************/
+        MyLaserMP_Pr->setBeamDiameter(beamDiameter);
+        MyLaserSkinMP_Pr->setBeamDiameter(beamDiameter);
+        MyLaserClassMP_Pr->setBeamDiameter(beamDiameter);
+        myLaserGoggle->setBeamDiameter(beamDiameter);
+        myDLaserGoggle->setBeamDiameter(beamDiameter);
 
-    modeLockedPeak();
-	
-    /******************************************************************************************	
-	* Invoco le funzioni per il prelievo dei dati e il tracciamento dei grafici per l'oggetto *
-	* myDLaserGoggle                                                                          *
-	******************************************************************************************/
-    fetchDLaserOutput();
-    fetchDDataVector();
-    displayDLaserOutput();
+        modeLockedPeak();
+
+        /******************************************************************************************
+        * Invoco le funzioni per il prelievo dei dati e il tracciamento dei grafici per l'oggetto *
+        * myDLaserGoggle                                                                          *
+        ******************************************************************************************/
+        fetchDLaserOutput();
+        fetchDDataVector();
     }
 	
     /******************************************************************************************	
 	* Invoco le funzioni per il prelievo dei dati e il tracciamento dei grafici per l'oggetto *
-	* myLaserGoggle                                                                          *
+    * myLaserGoggle                                                                           *
 	******************************************************************************************/
     fetchLaserOutput();
     fetchDataVector();
-    displayLaserOutput();
-    displayNumberOfPulse();
-    displayCoefficient_k();
-    displayCoefficient_ki();
-    display_ni_max();
 
-   /*******************************************
+    /******************************************
     * Imposto i widget per la visualizzazione *
     *******************************************/
     setWidgets();
     set_LEA_Widgets();
+    setLaserGoggleWidgets();
 
-   /********************************************************
+    /*******************************************************
     * Imposto altri valori necessarie per la parte grafica *
     ********************************************************/
     setOpticalDistance();
@@ -1219,99 +1138,99 @@ void DockControls::showControls(bool _show)
     dockGoggle->ui->tTimeBaseLabel->setVisible(details);
     dockGoggle->ui->timeBaseLabel->setVisible(details);
 
-        dockGoggle->ui->coefficient_kLabel->setVisible(_show and details);
-          dockGoggle->ui->tCoefficient_kLabel->setVisible(_show and details);
-            dockGoggle->ui->coefficient_kiLabel->setVisible(_show and details);
-              dockGoggle->ui->tCoefficient_kiLabel->setVisible(_show and details);
-                dockGoggle->ui->numberOfPulseLabel->setVisible(_show and details);
-                  dockGoggle->ui->tNumberOfPulseLabel->setVisible(_show and details);
-                    dockGoggle->ui->n_maxLabel->setVisible(_show and details);
-                      dockGoggle->ui->tn_maxLabel->setVisible(_show and details);
-                        dockGoggle->ui->tDLaserOutputLabel->setVisible(_show and details);
-                          dockGoggle->ui->dLaserOutputLabel->setVisible(_show and details);
-                            dockGoggle->ui->tDTimeBaseLabel->setVisible(_show and details);
-                              dockGoggle->ui->dTimeBaseLabel->setVisible(_show and details);
-                                dockGoggle->ui->tMeanPowerLabel->setVisible(_show and details);
-                                  dockGoggle->ui->meanPowerLabel->setVisible(_show and details);
+    dockGoggle->ui->coefficient_kLabel->setVisible(_show and details);
+    dockGoggle->ui->tCoefficient_kLabel->setVisible(_show and details);
+    dockGoggle->ui->coefficient_kiLabel->setVisible(_show and details);
+    dockGoggle->ui->tCoefficient_kiLabel->setVisible(_show and details);
+    dockGoggle->ui->numberOfPulseLabel->setVisible(_show and details);
+    dockGoggle->ui->tNumberOfPulseLabel->setVisible(_show and details);
+    dockGoggle->ui->n_maxLabel->setVisible(_show and details);
+    dockGoggle->ui->tn_maxLabel->setVisible(_show and details);
+    dockGoggle->ui->tDLaserOutputLabel->setVisible(_show and details);
+    dockGoggle->ui->dLaserOutputLabel->setVisible(_show and details);
+    dockGoggle->ui->tDTimeBaseLabel->setVisible(_show and details);
+    dockGoggle->ui->dTimeBaseLabel->setVisible(_show and details);
+    dockGoggle->ui->tMeanPowerLabel->setVisible(_show and details);
+    dockGoggle->ui->meanPowerLabel->setVisible(_show and details);
 
-                                  dockGoggle->ui->tabWidget->setTabVisible(1, _show);
-                                  dockLea->ui->tabWidget->setTabVisible(1, _show);
-                                    if (_show)
-                                    {
-                                        if(details)
-                                            dChartView->show();
+    dockGoggle->ui->tabWidget->setTabVisible(1, _show);
+    dockLea->ui->tabWidget->setTabVisible(1, _show);
+    if(_show)
+    {
+        if(details)
+            dChartView->show();
 
-                                        dockGoggle->ui->tabWidget->setTabText(0,"Criterio dell'impulso");
-                                        dockGoggle->ui->tabWidget->setTabText(1,"Criterio della potenza media");
+        dockGoggle->ui->tabWidget->setTabText(0,"Criterio dell'impulso");
+        dockGoggle->ui->tabWidget->setTabText(1,"Criterio della potenza media");
+        dockLea->ui->tabWidget->setTabText(0, "Criterio dell'impulso");
+        dockLea->ui->tabWidget->setTabText(1,"Criteri della potenza media e degli effetti termici");
+    }
+    else
+    {
+        if(details)
+            dChartView->hide();
 
-                                        dockLea->ui->tabWidget->setTabText(0, "Criterio dell'impulso");
-                                        dockLea->ui->tabWidget->setTabText(1,"Criteri della potenza media e degli effetti termici");
-                                     }
-                                    else
-                                    {
-                                        if(details)
-                                            dChartView->hide();
-
-                                        if(n_laser==0){
-                                            dockGoggle->ui->tabWidget->setTabText(0,"Criterio della potenza");
-                                            dockLea->ui->tabWidget->setTabText(0,"Criterio della potenza");
-                                            }
-                                        else if(n_laser==1){
-                                            dockGoggle->ui->tabWidget->setTabText(0,"Criterio dell'impulso");
-                                            dockLea->ui->tabWidget->setTabText(0,"Criterio dell'impulso");
-                                            }
-                                    }
+        if(n_laser==operation::CONTINUOS_WAVE)
+        {
+            dockGoggle->ui->tabWidget->setTabText(0,"Criterio della potenza");
+            dockLea->ui->tabWidget->setTabText(0,"Criterio della potenza");
+        }
+        else if(n_laser==operation::PULSE)
+        {
+            dockGoggle->ui->tabWidget->setTabText(0,"Criterio dell'impulso");
+            dockLea->ui->tabWidget->setTabText(0,"Criterio dell'impulso");
+        }
+    }
 }
 
 void DockControls::on_alphaControl_valueChanged()
 {
-   /********************************************
+    /*******************************************
     * Ricavo il valore impostato dal controllo *
     ********************************************/
     int exponent=ui->alphaControl->getExponent();
     qDebug()<< "Esponente di alphaControl: "<<exponent;
     double mantissa=ui->alphaControl->getMantissa();
 	
-   /********************************************************************************+****
+    /*******************************************************************************+****
     * Memorizzo il valore impostato dal controllo nella variabile membro corrispondente *
     *************************************************************************************/
     alpha=mantissa*powf(10, exponent);
 	
-   /******************
+    /*****************
     * CONTINUOS WAVE *
     * ****************/	
-    if(n_laser==0)
+    if(n_laser==operation::CONTINUOS_WAVE)
     {   
-
-	/*****************************************
-    * Imposto il valore negli oggetti Laser *
-    *****************************************/
-    MyLaserCW_Pr->setAlpha(alpha);
-    MyLaserSkinSP_Pr->setAlpha(alpha);
+        /****************************************
+        * Imposto il valore negli oggetti Laser *
+        *****************************************/
+        MyLaserCW_Pr->setAlpha(alpha);
+        MyLaserSkinSP_Pr->setAlpha(alpha);
     }
     else
-   /*************
+    /************
     * IMPULSATO *
     * ***********/
-    if(n_laser==1)
+    if(n_laser==operation::PULSE)
     {
-	/*****************************************
+    /****************************************
     * Imposto il valore negli oggetti Laser *
     *****************************************/
-    MyLaserSP_Pr->setAlpha(alpha);
-    MyLaserSkinSP_Pr->setAlpha(alpha);
+        MyLaserSP_Pr->setAlpha(alpha);
+        MyLaserSkinSP_Pr->setAlpha(alpha);
     }
     else
     /*******************
     * IMPULSI MULTIPLI *
     * ******************/
-    if(n_laser==2)
+        if(n_laser==operation::MULTI_PULSE)
     {
 	/*****************************************
     * Imposto il valore negli oggetti Laser *
     *****************************************/
-    MyLaserMP_Pr->setAlpha(alpha);
-    MyLaserSkinMP_Pr->setAlpha(alpha);
+        MyLaserMP_Pr->setAlpha(alpha);
+        MyLaserSkinMP_Pr->setAlpha(alpha);
     }
 
    /*******************************************
@@ -1342,64 +1261,64 @@ void DockControls::on_divergenceControl_valueChanged()
     qDebug()<< "Esponente di divergenceControl: "<<exponent;
     double mantissa=ui->divergenceControl->getMantissa();
 	
-   /********************************************************************************+****
+    /********************************************************************************+****
     * Memorizzo il valore impostato dal controllo nella variabile membro corrispondente *
     *************************************************************************************/
     divergence=mantissa*powf(10, exponent);
 	
-   /******************	
+    /*****************
     * CONTINUOS WAVE *
     * ****************/	
-    if(n_laser==0)
+    if(n_laser==operation::CONTINUOS_WAVE)
     {
-	/*****************************************
+    /****************************************
     * Imposto il valore negli oggetti Laser *
     *****************************************/
-    MyLaserCW_Pr->setDivergence(divergence);
-    MyLaserSkinSP_Pr->setDivergence(divergence);
-    MyLaserClassCW_Pr->setDivergence(divergence);
+        MyLaserCW_Pr->setDivergence(divergence);
+        MyLaserSkinSP_Pr->setDivergence(divergence);
+        MyLaserClassCW_Pr->setDivergence(divergence);
     }
     else
-	/*************
+    /************
     * IMPULSATO *
     * ***********/
-    if(n_laser==1)
+    if(n_laser==operation::PULSE)
     {
-   /*****************************************
-    * Imposto il valore negli oggetti Laser *
-    *****************************************/
-    MyLaserSP_Pr->setDivergence(divergence);
-    MyLaserSkinSP_Pr->setDivergence(divergence);
-    MyLaserClassSP_Pr->setDivergence(divergence);
+        /****************************************
+        * Imposto il valore negli oggetti Laser *
+        *****************************************/
+        MyLaserSP_Pr->setDivergence(divergence);
+        MyLaserSkinSP_Pr->setDivergence(divergence);
+        MyLaserClassSP_Pr->setDivergence(divergence);
     }
     else
-   /********************
+    /*******************
     * IMPULSI MULTIPLI *
     * ******************/
-    if(n_laser==2)
+    if(n_laser==operation::CONTINUOS_WAVE)
     {
-   /*****************************************
-    * Imposto il valore negli oggetti Laser *
-    *****************************************/
-    MyLaserMP_Pr->setDivergence(divergence);
-    MyLaserSkinMP_Pr->setDivergence(divergence);    
-    MyLaserClassMP_Pr->setDivergence(divergence);
+        /****************************************
+        * Imposto il valore negli oggetti Laser *
+        *****************************************/
+        MyLaserMP_Pr->setDivergence(divergence);
+        MyLaserSkinMP_Pr->setDivergence(divergence);
+        MyLaserClassMP_Pr->setDivergence(divergence);
     }
 	
-   /*******************************************
+    /******************************************
     * Imposto i widget per la visualizzazione *
     *******************************************/
     setWidgets();
     set_LEA_Widgets();
 	
-   /********************************************************
+    /*******************************************************
     * Imposto altri valori necessarie per la parte grafica *
     ********************************************************/	
     setOpticalDistance();
     setSkinDistances();
     setLambertianMax();
 	
-   /******************
+    /*****************
     * Emetto segnali *
     ******************/
     emit EMP_Changed();//Cambia l'EMP
@@ -1420,8 +1339,8 @@ void DockControls::setWidgets()
     QString minEMPSkin;  
     QString skinPowerErgUnit="Energia [J]";
 
-    if(n_laser==0)
-        {
+    if(n_laser==operation::CONTINUOS_WAVE)
+    {
         ui->powerErgControl->setTitle("Potenza [W]");
         MyLaserCW_Pr->laserUpdate();
         MyLaserSkinSP_Pr->laserSkinUpdate();
@@ -1430,14 +1349,13 @@ void DockControls::setWidgets()
             if(MyLaserCW_Pr->getFormulaSort()=="E")
             {
                 powerErgUnit="Potenza [W]= ";
-                    empUnit="[W/m<sup>2</sup>]";
+                empUnit="[W/m<sup>2</sup>]";
             }
-            else
-                if(MyLaserCW_Pr->getFormulaSort()=="H")
-                {
-                    powerErgUnit="Energia [J]= ";
-                    empUnit="[J/m<sup>2</sup>]";
-                }
+            else if(MyLaserCW_Pr->getFormulaSort()=="H")
+            {
+                powerErgUnit="Energia [J]= ";
+                empUnit="[J/m<sup>2</sup>]";
+            }
         /********************************************************
          * Results widgets                                      *
          ********************************************************/
@@ -1495,9 +1413,10 @@ void DockControls::setWidgets()
 
         bool DNRO_scientNot;
         DNRO_scientNot=MyLaserCW_Pr->getNOHD()>1.0e+03;
+
         if(DNRO_scientNot)
             dockResults->ui->NOHDLabel->setText(QString::number(MyLaserCW_Pr->getNOHD(),'e', 2));
-            else
+        else
             dockResults->ui->NOHDLabel->setText(QString::number(MyLaserCW_Pr->getNOHD(),'f', 1));
 
         dockResults->ui->conditions_Label->setText("EMP \nper esposizioni\nda onda continua");
@@ -1524,9 +1443,9 @@ void DockControls::setWidgets()
         dockResults->ui->tOD_FilterLabel->setText("OD Filtro");
         dockResults->ui->OD_FilterLabel->setText(QString::number(opticalDensity, 'e', 2));
 
-        /********************************************************
-         * Effects widgets                                      *
-         ********************************************************/
+        /*******************************************************
+        * Effects widgets                                      *
+        ********************************************************/
 
         //Label non visibili
         dockEffects->ui->tTminLabel->setVisible(false);
@@ -1554,9 +1473,9 @@ void DockControls::setWidgets()
         dockEffects->ui->tGammaLabel->setText(gamma.toHtmlEscaped() + " [mrad]");
 
         if(MyLaserCW_Pr->getGamma()==0)
-          dockEffects->ui->GammaLabel->setText("Non applicabile");
-            else
-        dockEffects->ui->GammaLabel->setText(QString::number(MyLaserCW_Pr->getGamma(),'e', 2));
+            dockEffects->ui->GammaLabel->setText("Non applicabile");
+        else
+            dockEffects->ui->GammaLabel->setText(QString::number(MyLaserCW_Pr->getGamma(),'e', 2));
 
         dockEffects->ui->tRadiationLabel->setText("Tipo di radiazione");
         dockEffects->ui->RadiationLabel->setText(QString::fromStdString(MyLaserCW_Pr->getRadiation()));
@@ -1570,9 +1489,9 @@ void DockControls::setWidgets()
         dockEffects->ui->tNoteLabel->setText("Note");
         dockEffects->ui->NoteLabel->setText(QString::fromStdString(MyLaserCW_Pr->getPhotochemicalNote()));
 
-        /*******************
-         * reset controlli *
-         *******************/
+        /******************
+        * reset controlli *
+        *******************/
 
         ui->prfControl->setBackgroundColor("#e0e0e0");
         ui->pulseControl->setBackgroundColor("#e0e0e0");
@@ -1583,27 +1502,24 @@ void DockControls::setWidgets()
 
         //Skin widgets
         setSkinWidgetsSingle();
-        }
-
-else
-     if(n_laser==1)
-        {
+    }
+    else if(n_laser==operation::PULSE)
+    {
         ui->powerErgControl->setTitle("Energia [J]");
         MyLaserSP_Pr->laserUpdate();
         MyLaserSkinSP_Pr->laserSkinUpdate();
         displayScaleNumber();
 
-             if(MyLaserSP_Pr->getFormulaSort()=="E")
-             {
-                 powerErgUnit="Potenza [W]= ";
-                     empUnit="[W/m<sup>2</sup>]";
-             }
-             else
-                 if(MyLaserSP_Pr->getFormulaSort()=="H")
-                 {
-                     powerErgUnit="Energia [J]= ";
-                     empUnit="[J/m<sup>2</sup>]";
-                 }
+        if(MyLaserSP_Pr->getFormulaSort()=="E")
+        {
+            powerErgUnit="Potenza [W]= ";
+            empUnit="[W/m<sup>2</sup>]";
+        }
+        else if(MyLaserSP_Pr->getFormulaSort()=="H")
+        {
+            powerErgUnit="Energia [J]= ";
+            empUnit="[J/m<sup>2</sup>]";
+        }
 
        /********************************************************
         * Results widgets                                      *
@@ -1662,9 +1578,10 @@ else
 
         bool DNRO_scientNot;
         DNRO_scientNot=MyLaserSP_Pr->getNOHD()>1.0e+03;
+
         if(DNRO_scientNot)
             dockResults->ui->NOHDLabel->setText(QString::number(MyLaserSP_Pr->getNOHD(),'e', 2));
-            else
+        else
             dockResults->ui->NOHDLabel->setText(QString::number(MyLaserSP_Pr->getNOHD(),'f', 1));
 
         dockResults->ui->conditions_Label->setText("EMP \nper esposizioni\nda impulso singolo");
@@ -1707,9 +1624,9 @@ else
         dockEffects->ui->T2_Label->setText(QString::number(MyLaserSP_Pr->getT2(),'e', 2));
 
         if(MyLaserSP_Pr->getGamma()==0)
-          dockEffects->ui->GammaLabel->setText("Non applicabile");
-            else
-          dockEffects->ui->GammaLabel->setText(QString::number(MyLaserSP_Pr->getGamma(),'e', 2));
+            dockEffects->ui->GammaLabel->setText("Non applicabile");
+        else
+            dockEffects->ui->GammaLabel->setText(QString::number(MyLaserSP_Pr->getGamma(),'e', 2));
 
         dockEffects->ui->RadiationLabel->setText(QString::fromStdString(MyLaserSP_Pr->getRadiation()));
         dockEffects->ui->SkinDamageLabel->setText(QString::fromStdString(MyLaserSP_Pr->getSkinDamage()));
@@ -1729,8 +1646,7 @@ else
         ui->pulseControl->setBackgroundColor("#555555");
         ui->pulseControl->setStatusTipHelp("");
     }
-else
-if(n_laser==2)
+    else if(n_laser==operation::MULTI_PULSE)
     {
         ui->powerErgControl->setTitle("Energia [J]");
         MyLaserMP_Pr->laserUpdate();
@@ -1738,34 +1654,32 @@ if(n_laser==2)
         displayScaleNumber();
         displayDScaleNumber();
 
-             if(MyLaserMP_Pr->getFormulaSort()=="E")
-             {
-                 powerErgUnit="Potenza [W]= ";
-                 empUnit="[W/m<sup>2</sup>]";
-                 minEMP="E<sub>min</sub> [W/m<sup>2</sup>]";
-                 thermalEMP="E<sub>th</sub> [W/m<sup>2</sup>]";
-                 meanEMP="E<sub>mean</sub> [W/m<sup>2</sup>]";
-             }
-             else
-                 if(MyLaserMP_Pr->getFormulaSort()=="H")
-                 {
-                     powerErgUnit="Energia [J]= ";
-                     empUnit="[J/m<sup>2</sup>]";
-                     minEMP="H<sub>min</sub> [J/m<sup>2</sup>]";                   
-                     thermalEMP="H<sub>th</sub> [J/m<sup>2</sup>]";
-                     meanEMP="H<sub>mean</sub> [J/m<sup>2</sup>]";
-                 }
+            if(MyLaserMP_Pr->getFormulaSort()=="E")
+            {
+                powerErgUnit="Potenza [W]= ";
+                empUnit="[W/m<sup>2</sup>]";
+                minEMP="E<sub>min</sub> [W/m<sup>2</sup>]";
+                thermalEMP="E<sub>th</sub> [W/m<sup>2</sup>]";
+                meanEMP="E<sub>mean</sub> [W/m<sup>2</sup>]";
+            }
+            else if(MyLaserMP_Pr->getFormulaSort()=="H")
+            {
+                powerErgUnit="Energia [J]= ";
+                empUnit="[J/m<sup>2</sup>]";
+                minEMP="H<sub>min</sub> [J/m<sup>2</sup>]";
+                thermalEMP="H<sub>th</sub> [J/m<sup>2</sup>]";
+                meanEMP="H<sub>mean</sub> [J/m<sup>2</sup>]";
+            }
 
 
-             if(MyLaserMP_Pr->getMeanPowerFormulaSort()=="E")
-             {
-                     empUnitMP="[W/m<sup>2</sup>]";
-             }
-             else
-                 if(MyLaserMP_Pr->getMeanPowerFormulaSort()=="H")
-                 {
-                     empUnitMP="[J/m<sup>2</sup>]";
-                 }
+            if(MyLaserMP_Pr->getMeanPowerFormulaSort()=="E")
+            {
+                empUnitMP="[W/m<sup>2</sup>]";
+            }
+            else if(MyLaserMP_Pr->getMeanPowerFormulaSort()=="H")
+            {
+                empUnitMP="[J/m<sup>2</sup>]";
+            }
 
         /********************************************************
         * Results widgets                                      *
@@ -1843,22 +1757,19 @@ if(n_laser==2)
         dockResults->ui->tThermalEMP_Label->setText(thermalEMP);
 
         if((wavelength>=400)and(wavelength<=1.0e+06))
-            {
             dockResults->ui->ThermalEMP_Label->setText(QString::number(MyLaserMP_Pr->getThermalEMP(),'e', 2));
-            }
-                else{
-                dockResults->ui->ThermalEMP_Label->setText("Non applicabile");
-                }
+        else
+            dockResults->ui->ThermalEMP_Label->setText("Non applicabile");
 
         dockResults->ui->tCountingLabel->setText("Conteggio");
         dockResults->ui->CountingLabel->setText(QString::fromStdString(MyLaserMP_Pr->valutateCounting()));
 
         dockResults->ui->tCP_Label->setText("C<sub>p</sub>");
 
-        if((wavelength>=400)and(wavelength<=1.0e+06)){
-            dockResults->ui->CP_Label->setText(QString::number(MyLaserMP_Pr->getCPCoefficient(),'e', 2));}
-            else{
-            dockResults->ui->CP_Label->setText("Non applicabile");}
+        if((wavelength>=400)and(wavelength<=1.0e+06))
+            dockResults->ui->CP_Label->setText(QString::number(MyLaserMP_Pr->getCPCoefficient(),'e', 2));
+        else
+            dockResults->ui->CP_Label->setText("Non applicabile");
 
         dockResults->ui->tPulseNumberThLabel->setText("N<sub>th</sub>");
         dockResults->ui->PulseNumberThLabel->setText(QString::number(MyLaserMP_Pr->getPulseNumber()));
@@ -1873,11 +1784,11 @@ if(n_laser==2)
 
         bool DNRO_scientNot;
         DNRO_scientNot=MyLaserMP_Pr->getNOHD()>1.0e+03;
+
         if(DNRO_scientNot)
             dockResults->ui->NOHDLabel->setText(QString::number(MyLaserMP_Pr->getNOHD(),'e', 2));
-            else
+        else
             dockResults->ui->NOHDLabel->setText(QString::number(MyLaserMP_Pr->getNOHD(),'f', 1));
-
 
         dockResults->ui->conditions_Label->setText("EMP \nper esposizioni\nripetute");
 
@@ -1898,6 +1809,7 @@ if(n_laser==2)
         dockResults->ui->EMP_1st_Label->setText(firstCondition);
 
         QString formulaEMP;
+
         if(MyLaserMP_Pr->getMeanPowerFormulaSort()=="H")
             formulaEMP=QString::fromStdString(MyLaserMP_Pr->getMeanPowerFormulaEMP()+"/N");
         else
@@ -1913,29 +1825,24 @@ if(n_laser==2)
 
         QString thirdCondition;
 
-        if((wavelength>=400)and(wavelength<=1.0e+06)){
+        if((wavelength>=400)and(wavelength<=1.0e+06))
+        {
             QString  empUnitTmin;
 
             if(MyLaserMP_Pr->getFormulaSort_3rdCondition()=="E")
                 empUnitTmin="[W/m<sup>2</sup>]";
-                        else
-            if(MyLaserMP_Pr->getFormulaSort_3rdCondition()=="H")
-                 empUnitTmin="[J/m<sup>2</sup>]";
+            else if(MyLaserMP_Pr->getFormulaSort_3rdCondition()=="H")
+                empUnitTmin="[J/m<sup>2</sup>]";
 
-            thirdCondition=QString(" %1 C<sub>p</sub> = %2  %3")
-                                            .arg(QString::fromStdString(MyLaserMP_Pr->getFormula_3rdCondition()))
-                                            .arg(QString::number(MyLaserMP_Pr->getEMP_3rdCondition(),'e', 2))
-                                            .arg(empUnitTmin);
+        thirdCondition=QString(" %1 C<sub>p</sub> = %2  %3")
+                                .arg(QString::fromStdString(MyLaserMP_Pr->getFormula_3rdCondition()))
+                                .arg(QString::number(MyLaserMP_Pr->getEMP_3rdCondition(),'e', 2))
+                                .arg(empUnitTmin);
         }
         else
-        {
             thirdCondition="Non applicabile";
-        }
-
 
         dockResults->ui->EMP_3rd_Label->setText(thirdCondition);
-
-
         dockResults->ui->EMP_1st_Label->setVisible(true);
         dockResults->ui->EMP_2nd_Label->setVisible(true);
         dockResults->ui->EMP_3rd_Label->setVisible(true);
@@ -1976,9 +1883,9 @@ if(n_laser==2)
         dockEffects->ui->EyeDamageLabel->setText(QString::fromStdString(MyLaserMP_Pr->getEyeDamage_MP()));
 
         if(MyLaserMP_Pr->getGamma_MP()==0)
-          dockEffects->ui->GammaLabel->setText("Non applicabile");
-            else
-          dockEffects->ui->GammaLabel->setText(QString::number(MyLaserMP_Pr->getGamma_MP(),'e', 2));
+            dockEffects->ui->GammaLabel->setText("Non applicabile");
+        else
+            dockEffects->ui->GammaLabel->setText(QString::number(MyLaserMP_Pr->getGamma_MP(),'e', 2));
 
         dockEffects->ui->NoteLabel->setText(QString::fromStdString(MyLaserMP_Pr->getPhotochemicalNote_MP()));
 
@@ -2014,53 +1921,47 @@ if(n_laser==2)
         * Widget pelle                                          *
         *********************************************************/
 
-                 if(MyLaserSkinMP_Pr->getFormulaSort()=="E")
-                 {
-                         empSkinUnit="[W/m<sup>2</sup>]";
-                         minEMPSkin="E<sub>min</sub> [W/m<sup>2</sup>]";
-                 }
-                 else
-                     if(MyLaserSkinMP_Pr->getFormulaSort()=="H")
-                     {
-                         empSkinUnit="[J/m<sup>2</sup>]";
-                         minEMPSkin="H<sub>min</sub> [W/m<sup>2</sup>]";
-                     }
+        if(MyLaserSkinMP_Pr->getFormulaSort()=="E")
+        {
+            empSkinUnit="[W/m<sup>2</sup>]";
+            minEMPSkin="E<sub>min</sub> [W/m<sup>2</sup>]";
+        }
+        else if(MyLaserSkinMP_Pr->getFormulaSort()=="H")
+        {
+            empSkinUnit="[J/m<sup>2</sup>]";
+            minEMPSkin="H<sub>min</sub> [W/m<sup>2</sup>]";
+        }
 
-                 if(MyLaserSkinMP_Pr->getMeanPowerFormulaSort()=="E")
-                 {
-                         empSkinUnitMP="[W/m<sup>2</sup>]";
-                 }
-                 else
-                     if(MyLaserMP_Pr->getMeanPowerFormulaSort()=="H")
-                     {
-                         empSkinUnitMP="[J/m<sup>2</sup>]";
-                     }
+        if(MyLaserSkinMP_Pr->getMeanPowerFormulaSort()=="E")
+            empSkinUnitMP="[W/m<sup>2</sup>]";
+        else if(MyLaserMP_Pr->getMeanPowerFormulaSort()=="H")
+            empSkinUnitMP="[J/m<sup>2</sup>]";
 
-            dockSkin->ui->tFormulaSkinLabel->setText("Formula");
-            dockSkin->ui->FormulaSkinLabel->setText(QString::fromStdString(MyLaserSkinMP_Pr->getFormulaEMP()));
+        dockSkin->ui->tFormulaSkinLabel->setText("Formula");
+        dockSkin->ui->FormulaSkinLabel->setText(QString::fromStdString(MyLaserSkinMP_Pr->getFormulaEMP()));
 
-            dockSkin->ui->tEMP_SkinLabel->setText(QString::fromStdString(MyLaserSkinMP_Pr->getFormulaSort()) + empSkinUnit);
-            dockSkin->ui->EMP_SkinLabel->setText(QString::number(MyLaserSkinMP_Pr->getEMP(),'e', 2));
+        dockSkin->ui->tEMP_SkinLabel->setText(QString::fromStdString(MyLaserSkinMP_Pr->getFormulaSort()) + empSkinUnit);
+        dockSkin->ui->EMP_SkinLabel->setText(QString::number(MyLaserSkinMP_Pr->getEMP(),'e', 2));
 
-            dockSkin->ui->tFormulaSkinMP_Label->setVisible(true);
-            dockSkin->ui->FormulaSkinMP_Label->setVisible(true);
+        dockSkin->ui->tFormulaSkinMP_Label->setVisible(true);
+        dockSkin->ui->FormulaSkinMP_Label->setVisible(true);
 
-            dockSkin->ui->tEMP_MP_SkinLabel->setVisible(true);
-            dockSkin->ui->EMP_MP_SkinLabel->setVisible(true);
+        dockSkin->ui->tEMP_MP_SkinLabel->setVisible(true);
+        dockSkin->ui->EMP_MP_SkinLabel->setVisible(true);
 
-            dockSkin->ui->tMeanPowerSkinLabel->setVisible(true);
-            dockSkin->ui->MeanPowerSkinLabel->setVisible(true);
+        dockSkin->ui->tMeanPowerSkinLabel->setVisible(true);
+        dockSkin->ui->MeanPowerSkinLabel->setVisible(true);
 
-            dockSkin->ui->tMeanIrradianceSkinLabel->setVisible(true);
-            dockSkin->ui->MeanIrradianceSkinLabel->setVisible(true);
+        dockSkin->ui->tMeanIrradianceSkinLabel->setVisible(true);
+        dockSkin->ui->MeanIrradianceSkinLabel->setVisible(true);
 
-            dockSkin->ui->tPulseNumberSkinLabel->setVisible(true);
-            dockSkin->ui->PulseNumberSkinLabel->setVisible(true);
+        dockSkin->ui->tPulseNumberSkinLabel->setVisible(true);
+        dockSkin->ui->PulseNumberSkinLabel->setVisible(true);
 
-            dockSkin->ui->tminEMP_SkinLabel->setVisible(true);
-            dockSkin->ui->minEMP_SkinLabel->setVisible(true);
+        dockSkin->ui->tminEMP_SkinLabel->setVisible(true);
+        dockSkin->ui->minEMP_SkinLabel->setVisible(true);
 
-            dockSkin->ui->tEMP_MP_SkinLabel->setText(QString::fromStdString(MyLaserSkinMP_Pr->getMeanPowerFormulaSort()) + "<sub>Te</sub> " + empSkinUnitMP);
+        dockSkin->ui->tEMP_MP_SkinLabel->setText(QString::fromStdString(MyLaserSkinMP_Pr->getMeanPowerFormulaSort()) + "<sub>Te</sub> " + empSkinUnitMP);
             dockSkin->ui->EMP_MP_SkinLabel->setText(QString::number(MyLaserSkinMP_Pr->getEMP_MP(),'e', 2));
 
             dockSkin->ui->tFormulaSkinMP_Label->setText("Formula T<sub>e</sub>");
@@ -2119,7 +2020,7 @@ if(n_laser==2)
     }
 }
 
-int DockControls::get_n_laser()const
+DockControls::operation DockControls::get_n_laser()const
 {
     return n_laser;
 }
@@ -2129,12 +2030,12 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
 	/******************************************
 	* L'indice scelto della casella combinata *
 	*******************************************/
-    n_laser=index;
+    n_laser=static_cast<operation>(index);
 
    /******************
     * CONTINUOS WAVE *
     * ****************/	
-    if(n_laser==0)
+    if(n_laser==operation::CONTINUOS_WAVE)
     {
 		
 	/***********************************************************************************
@@ -2164,11 +2065,12 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     //Non è possibile impostare il valore della prf essendo non definita per l'oggetto MyLaserCW_Pr
     myLaserGoggle->setFrequency(LaserGoggle::CONTINUOS_OPERATION);
 
-    powerErg=1.0e+00;//potenza
+    powerErg=LaserSafetyCW::POWER;//potenza
     ui->powerErgControl->setValue(powerErg);
     on_powerErgControl_valueChanged();
 
-    T_Skin=5.0;//tempo esposizione pelle
+    T_Skin=LaserSkinSafety::EXPOSURE_TIME;
+    //tempo esposizione pelle
     ui->T_SkinControl->setValue(T_Skin);
     on_T_SkinControl_valueChanged();
     ui->T_SkinControl->setEnabled(true);
@@ -2184,7 +2086,6 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     ui->pulseControl->setEnabled(false);
 
     MyLaserCW_Pr->setExposureTimeEditable(isTeEdtitingEnabled());
-    exposureTimeControl=ui->teControl->getDialNumber();
 
     if(isTeEdtitingEnabled()){
         MyLaserCW_Pr->setEditedExposureTime(exposureTimeControl);
@@ -2217,17 +2118,11 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     modeLockedPeak();
     fetchDataVector();
     fetchLaserOutput();
-    displayLaserOutput();
-    displayTimeBase();
-    displayNumberOfPulse();
-    displayCoefficient_k();
-    displayCoefficient_ki();
-    display_ni_max();
 	//Nascondo i controlli riguardanti i protettori ottici non previsti
     showControls(false);
     }
     else
-    if (n_laser==1)
+    if (n_laser==operation::PULSE)
     {
 
    /************
@@ -2292,12 +2187,6 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     modeLockedPeak();
     fetchDataVector();
     fetchLaserOutput();
-    displayLaserOutput();
-    displayTimeBase();
-    displayNumberOfPulse();
-    displayCoefficient_k();
-    displayCoefficient_ki();
-    display_ni_max();
 	//Nascondo i controlli riguardanti i protettori ottici non previsti
     showControls(false);
     }
@@ -2305,7 +2194,7 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
    /********************
     * IMPULSI MULTIPLI *
     * ******************/	
-    if (n_laser==2)
+    if (n_laser==operation::MULTI_PULSE)
     {
 		
    /****************************************************************
@@ -2351,10 +2240,11 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     * il valore corrisposndente altrimenti aggiorno con il tempo di esposizione predefinito *
     *****************************************************************************************/
 
-    if(isTeEdtitingEnabled()){
-        exposureTimeControl=ui->teControl->getDialNumber();
+    if(isTeEdtitingEnabled())
+    {
         MyLaserMP_Pr->setEditedExposureTime(exposureTimeControl);
-        ui->teControl->setEnabled(true);}
+        ui->teControl->setEnabled(true);
+    }
     else
         MyLaserMP_Pr->setExposureTime();
 
@@ -2368,7 +2258,7 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
 
 
     //ogni volta cha passo al funzionamento ad impulsi multipli imposto la frequenza a 10 Hz
-    prf=10.0;
+    prf=LaserSafetyMP::PULSE_REPETITION_FREQUENCY;
     ui->prfControl->setEnabled(true);
     ui->prfControl->setValue(prf);
     on_prfControl_valueChanged();
@@ -2378,7 +2268,7 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     MyLaserClassMP_Pr->setPRF(prf);
     myLaserGoggle->setFrequency(prf);
 	
-    T_Skin=5.0;
+    T_Skin=LaserSkinSafety::EXPOSURE_TIME;
     MyLaserSkinMP_Pr->setExposureTime(T_Skin);
     on_T_SkinControl_valueChanged();
     ui->T_SkinControl->setValue(T_Skin);
@@ -2414,17 +2304,9 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     modeLockedPeak();
     fetchLaserOutput();
     fetchDataVector();
-    displayLaserOutput();
-    displayNumberOfPulse();
-    displayCoefficient_k();
-    displayCoefficient_ki();
-    display_ni_max();
-    displayTimeBase();
 
     fetchDLaserOutput();
     fetchDDataVector();
-    displayDLaserOutput();
-    displayDTimeBase();
 
     //Mostro i tutti controlli riguardanti i protettori
     showControls(true);
@@ -2435,6 +2317,7 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     *******************************************/
     setWidgets();
     set_LEA_Widgets();
+    setLaserGoggleWidgets();
 
    /*******************************************************
     * Imposto altri valori necessari per la parte grafica *
@@ -2469,10 +2352,10 @@ void DockControls::setSkinWidgetsSingle()
             empSkinUnit="[J/m<sup>2</sup>]";
         }
 
-    if(n_laser==0)
+    if(n_laser==operation::CONTINUOS_WAVE)
                 skinPowerErgUnit="Potenza [W]";
     else
-        if(n_laser==1)
+        if(n_laser==operation::PULSE)
                 skinPowerErgUnit="Energia [J]";
 
     dockSkin->ui->tFormulaSkinMP_Label->setVisible(false);
@@ -2507,7 +2390,7 @@ void DockControls::setSkinWidgetsSingle()
     bool DNRO_scientNot;
 
 
-    if(n_laser==0)
+    if(n_laser==operation::CONTINUOS_WAVE)
     {
         DNRO_scientNot=MyLaserSkinSP_Pr->getPowerNSHD()>1.0e+03;
         if(DNRO_scientNot)
@@ -2519,7 +2402,7 @@ void DockControls::setSkinWidgetsSingle()
 
     }
         else
-    if(n_laser==1)
+    if(n_laser==operation::PULSE)
     {
         DNRO_scientNot=MyLaserSkinSP_Pr->getErgNSHD()>1.0e+03;
         if(DNRO_scientNot)
@@ -2554,15 +2437,14 @@ void DockControls::setPowerErgForEMP()
 {
     double _powerErgForEMP;
 
-    if(n_laser==0)
+    if(n_laser==operation::CONTINUOS_WAVE)
         _powerErgForEMP=MyLaserCW_Pr->getPowerErgForEMP();
-        else
-    if(n_laser==1)
+    else if(n_laser==operation::PULSE)
         _powerErgForEMP=MyLaserSP_Pr->getPowerErgForEMP();
-        else
+    else
         _powerErgForEMP=MyLaserMP_Pr->getPowerErgForEMP();
 
-        if(_powerErgForEMP==powerErgForEMP)
+    if(_powerErgForEMP==powerErgForEMP)
         return;
 
     powerErgForEMP=_powerErgForEMP;
@@ -2579,10 +2461,10 @@ void DockControls::setEMP()
 {
     double _myEMP;
 
-    if(n_laser==0)
+    if(n_laser==operation::CONTINUOS_WAVE)
         _myEMP=MyLaserCW_Pr->getEMP();
         else
-    if(n_laser==1)
+    if(n_laser==operation::PULSE)
         _myEMP=MyLaserSP_Pr->getEMP();
     else
         _myEMP=MyLaserMP_Pr->returnMultiPulse_EMP();
@@ -2628,19 +2510,19 @@ void DockControls::setOpticalDistance()
 {
     double _NOHD;
 
-    if(n_laser==0)
-        {
-         _NOHD=MyLaserCW_Pr->getNOHD();
-         }
-         else
-            if(n_laser==1)
-                {
-                _NOHD=MyLaserSP_Pr->getNOHD();
-                }
-                else
-                    {
-                    _NOHD=MyLaserMP_Pr->getNOHD();
-                    }
+    if(n_laser==operation::CONTINUOS_WAVE)
+    {
+        _NOHD=MyLaserCW_Pr->getNOHD();
+    }
+    else if(n_laser==operation::PULSE)
+    {
+        _NOHD=MyLaserSP_Pr->getNOHD();
+    }
+    else
+    {
+        _NOHD=MyLaserMP_Pr->getNOHD();
+    }
+
     if(_NOHD==NOHD)
         return;
 
@@ -2652,38 +2534,37 @@ void DockControls::setLambertianMax()
 {
     double _lambertianMax;
 
-    if(n_laser==0)
-        {
-         _lambertianMax=MyLaserCW_Pr->getLambertianMax();
-         }
-         else
-            if(n_laser==1)
-                {
-                _lambertianMax=MyLaserSP_Pr->getLambertianMax();
-                }
-                else
-                    {
-                    _lambertianMax=MyLaserMP_Pr->getLambertianMax();
-                    }
-    if(_lambertianMax==lambertianMax)
-       return;
+    if(n_laser==operation::CONTINUOS_WAVE)
+    {
+        _lambertianMax=MyLaserCW_Pr->getLambertianMax();
+    }
+    else if(n_laser==operation::PULSE)
+    {
+        _lambertianMax=MyLaserSP_Pr->getLambertianMax();
+    }
+    else
+    {
+        _lambertianMax=MyLaserMP_Pr->getLambertianMax();
+    }
 
-     lambertianMax=_lambertianMax;
-     qDebug()<<"Massimo valore della riflessione su superficie lambertiana: "<<lambertianMax;
-     emit lambertianMaxChanged();
+    if(_lambertianMax==lambertianMax)
+        return;
+
+    lambertianMax=_lambertianMax;
+    qDebug()<<"Massimo valore della riflessione su superficie lambertiana: "<<lambertianMax;
+    emit lambertianMaxChanged();
 }
 
 void DockControls::setSkinDistances()
 {
     double _NSHD;
 
-        if(n_laser==0)
-            _NSHD=MyLaserSkinSP_Pr->getPowerNSHD();
-            else
-        if(n_laser==1)
-            _NSHD=MyLaserSkinSP_Pr->getErgNSHD();
-        else
-            _NSHD=MyLaserSkinMP_Pr->getNSHD();
+    if(n_laser==operation::CONTINUOS_WAVE)
+        _NSHD=MyLaserSkinSP_Pr->getPowerNSHD();
+    else if(n_laser==operation::PULSE)
+        _NSHD=MyLaserSkinSP_Pr->getErgNSHD();
+    else
+        _NSHD=MyLaserSkinMP_Pr->getNSHD();
 
     if(_NSHD==NSHD)
         return;
@@ -2737,7 +2618,7 @@ void DockControls::setDialControls()
 
     ui->pulseControl->setTitle(tr("t [s]"));
     ui->pulseControl->setMinimumExponent(-11);
-    ui->pulseControl->setMaximumExponent(3);
+    ui->pulseControl->setMaximumExponent(4);
     ui->pulseControl->setValue(2.50e-01);
 
     QString phi="φ";
@@ -2773,30 +2654,9 @@ void DockControls::setDialControls()
     ui->internalWaist_checkBox->setChecked(false);
 }
 
-void DockControls::on_comboBox_currentIndexChanged(const QString &arg1)
-{
-    if(arg1=="UVA")
-        setUVA();
-    else
-    if(arg1=="VIS")
-        setVIS();
-    else
-    if(arg1=="IRA")
-        setIRA();
-    else
-    if(arg1=="IRB")
-        setIRB();
-    else
-    if(arg1=="IRC")
-        setIRC();      
-
-    setWidgets();
-    emit modified();
-}
-
 void DockControls::setUVA()
 {
-    ui->wavelengthScrollBar->setMinimum(180);
+    ui->wavelengthScrollBar->setMinimum(181);
     ui->wavelengthScrollBar->setMaximum(399);
     ui->wavelengthScrollBar->setValue(380);
 }
@@ -2808,63 +2668,77 @@ void DockControls::setVIS()
     ui->wavelengthScrollBar->setValue(633);
 }
 
-void DockControls::setIRA()
+void DockControls::setIRA_NIR()
 {
     ui->wavelengthScrollBar->setMinimum(701);
     ui->wavelengthScrollBar->setMaximum(1400);
     ui->wavelengthScrollBar->setValue(1064);
 }
 
-void DockControls::setIRB()
+void DockControls::setIRB_SWIR()
 {
     ui->wavelengthScrollBar->setMinimum(1401);
     ui->wavelengthScrollBar->setMaximum(3000);
     ui->wavelengthScrollBar->setValue(1583);
 }
 
-void DockControls::setIRC()
+void DockControls::setIRC_MWIR()
 {
     ui->wavelengthScrollBar->setMinimum(3001);
-    ui->wavelengthScrollBar->setMaximum(20000);
+    ui->wavelengthScrollBar->setMaximum(8000);
+    ui->wavelengthScrollBar->setValue(3391);
+}
+
+void DockControls::setIRC_LWIR()
+{
+    ui->wavelengthScrollBar->setMinimum(8001);
+    ui->wavelengthScrollBar->setMaximum(15000);
     ui->wavelengthScrollBar->setValue(10600);
+}
+
+void DockControls::setIRC_FIR()
+{
+    ui->wavelengthScrollBar->setMinimum(15001);
+    ui->wavelengthScrollBar->setMaximum(999999);
+    ui->wavelengthScrollBar->setValue(571699);
 }
 
 void DockControls::on_enableTeCheckBox_toggled(bool checked)
 {
     enableTeEditing=checked;
     ui->teControl->setEnabled(checked);
+
     if(checked)
-      on_teControl_valueChanged();
+        on_teControl_valueChanged();
     else
     {
-              /*****************
-              * CONTINUOS WAVE *
-              * ****************/
+        /*****************
+        * CONTINUOS WAVE *
+        ******************/
 
-                if(n_laser==0)
-                  {
-                  /********************************************************
-                   * Imposto il valore del tempo di esposizione impostato *
-                   ********************************************************/
-                   MyLaserCW_Pr->setExposureTimeEditable(false);
-                   MyLaserCW_Pr->setExposureTime();
-                   exposureTimeControl=MyLaserCW_Pr->getExposureTime();
-                   MyLaserCW_Pr->setPulseWidth(exposureTimeControl);
-                   }
-                else
-              if(n_laser==2)
-              /********************
-               * IMPULSI multipli *
-               ********************/
-                  {
-                  /********************************************************
-                   * Imposto il valore del tempo di esposizione impostato *
-                   ********************************************************/
-                   MyLaserMP_Pr->setExposureTimeEditable(false);
-                   MyLaserMP_Pr->setExposureTime();
-                   exposureTimeControl=MyLaserMP_Pr->getExposureTime();
-                   MyLaserMP_Pr->setPulseWidth(pulseWidth);
-                  }
+        if(n_laser==operation::CONTINUOS_WAVE)
+        {
+            /********************************************************
+            * Imposto il valore del tempo di esposizione impostato *
+            ********************************************************/
+            MyLaserCW_Pr->setExposureTimeEditable(false);
+            MyLaserCW_Pr->setExposureTime();
+            exposureTimeControl=MyLaserCW_Pr->getExposureTime();
+            MyLaserCW_Pr->setPulseWidth(exposureTimeControl);
+        }
+        else if(n_laser==operation::MULTI_PULSE)
+        /********************
+         * IMPULSI multipli *
+         ********************/
+         {
+            /********************************************************
+            * Imposto il valore del tempo di esposizione impostato *
+            ********************************************************/
+            MyLaserMP_Pr->setExposureTimeEditable(false);
+            MyLaserMP_Pr->setExposureTime();
+            exposureTimeControl=MyLaserMP_Pr->getExposureTime();
+            MyLaserMP_Pr->setPulseWidth(pulseWidth);
+        }
     }
 
     setWidgets();
@@ -2892,108 +2766,107 @@ void DockControls::enablePulseControl(bool enabled)
 
 void DockControls::computeOpticalDensity()
 {
-double CW_EMP;
-double SP_EMP;
-double powerErg;
-double firstAndThirdEMP;
-double opticalDensityRatio=0.0;
-double beamArea;
-double timeBase;
-QString formulaSort;
+    double CW_EMP;
+    double SP_EMP;
+    double powerErg;
+    double firstAndThirdEMP;
+    double opticalDensityRatio=0.0;
+    double beamArea;
+    double timeBase;
+    QString formulaSort;
 
-if(n_laser==0)
-{
-    double irradiance;
-    CW_EMP=MyLaserCW_Pr->getEMP();
-    formulaSort=QString::fromStdString(MyLaserCW_Pr->getFormulaSort());
-    MyLaserCW_Pr->computeBeamArea();
-    timeBase=MyLaserCW_Pr->getExposureTime();
-    beamArea=MyLaserCW_Pr->getBeamArea();
-    powerErg=MyLaserCW_Pr->getPowerErg();
-    irradiance=powerErg/beamArea;
+    if(n_laser==operation::CONTINUOS_WAVE)
+    {
+        double irradiance;
+        CW_EMP=MyLaserCW_Pr->getEMP();
+        formulaSort=QString::fromStdString(MyLaserCW_Pr->getFormulaSort());
+        MyLaserCW_Pr->computeBeamArea();
+        timeBase=MyLaserCW_Pr->getExposureTime();
+        beamArea=MyLaserCW_Pr->getBeamArea();
+        powerErg=MyLaserCW_Pr->getPowerErg();
+        irradiance=powerErg/beamArea;
 
-    if(formulaSort=='E')
-        opticalDensityRatio=irradiance/CW_EMP;
-    else{
-     if(formulaSort=='H')
-         opticalDensityRatio=irradiance*timeBase/CW_EMP;
+        if(formulaSort=='E')
+            opticalDensityRatio=irradiance/CW_EMP;
+        else{
+         if(formulaSort=='H')
+             opticalDensityRatio=irradiance*timeBase/CW_EMP;
     }
 
     opticalDensity=std::log10(opticalDensityRatio);
 }
-else
-    if(n_laser==1)
+    else if(n_laser==operation::PULSE)
     {
-    double energyExposure;
+        double energyExposure;
 
-    SP_EMP= MyLaserSP_Pr->getEMP();
-    powerErg=MyLaserSP_Pr->getPowerErg();
-    formulaSort=QString::fromStdString(MyLaserSP_Pr->getFormulaSort());
-    double pulseWidth=MyLaserSP_Pr->getPulseWidth();
-    MyLaserSP_Pr->computeBeamArea();
-    beamArea=MyLaserSP_Pr->getBeamArea();
-    energyExposure=powerErg/beamArea;
+        SP_EMP= MyLaserSP_Pr->getEMP();
+        powerErg=MyLaserSP_Pr->getPowerErg();
+        formulaSort=QString::fromStdString(MyLaserSP_Pr->getFormulaSort());
+        double pulseWidth=MyLaserSP_Pr->getPulseWidth();
+        MyLaserSP_Pr->computeBeamArea();
+        beamArea=MyLaserSP_Pr->getBeamArea();
+        energyExposure=powerErg/beamArea;
 
-    if(formulaSort=='E'){
-        opticalDensityRatio=energyExposure/(SP_EMP*pulseWidth);
+            if(formulaSort=='E'){
+                opticalDensityRatio=energyExposure/(SP_EMP*pulseWidth);
     }
-    else{
-     if(formulaSort=='H')
-         opticalDensityRatio=energyExposure/SP_EMP;
+    else
+    {
+        if(formulaSort=='H')
+            opticalDensityRatio=energyExposure/SP_EMP;
     }
-
     opticalDensity=std::log10(opticalDensityRatio);
     }
 
-else
-   if(n_laser==2)
-   {
-   double exposure;
-   double timeForPulse;
+    else if(n_laser==operation::MULTI_PULSE)
+    {
+        double exposure;
+        double timeForPulse;
 
-   MyLaserMP_Pr->computeEMP_ForOD();
-   firstAndThirdEMP=MyLaserMP_Pr->getEMP_ForOD();
-   pulseWidth=myLaserGoggle->getPulseWidth();
-   formulaSort=QString::fromStdString(MyLaserMP_Pr->getFormulaSort());
-   qDebug() << "Primo e terzo emp: " << firstAndThirdEMP;
+        MyLaserMP_Pr->computeEMP_ForOD();
+        firstAndThirdEMP=MyLaserMP_Pr->getEMP_ForOD();
+        pulseWidth=myLaserGoggle->getPulseWidth();
+        formulaSort=QString::fromStdString(MyLaserMP_Pr->getFormulaSort());
+        qDebug() << "Primo e terzo emp: " << firstAndThirdEMP;
 
-   if(MyLaserMP_Pr->getPRF()>1/MyLaserMP_Pr->getTmin())
-   {
-       if(firstAndThirdEMP==MyLaserMP_Pr->getThermalEMP())
-           timeForPulse=MyLaserMP_Pr->getTmin();
-       else
-           timeForPulse=MyLaserMP_Pr->getPulseWidth();
-   }
-   else
-       timeForPulse=MyLaserMP_Pr->getPulseWidth();
+            if(MyLaserMP_Pr->getPRF()>1/MyLaserMP_Pr->getTmin())
+            {
+                if(firstAndThirdEMP==MyLaserMP_Pr->getThermalEMP())
+                    timeForPulse=MyLaserMP_Pr->getTmin();
+                else
+                    timeForPulse=MyLaserMP_Pr->getPulseWidth();
+            }
+            else
+            timeForPulse=MyLaserMP_Pr->getPulseWidth();
 
-   powerErg=MyLaserMP_Pr->getPowerErg();
+        powerErg=MyLaserMP_Pr->getPowerErg();
 
-   MyLaserMP_Pr->computeBeamArea();
-   beamArea=MyLaserMP_Pr->getBeamArea();
+        MyLaserMP_Pr->computeBeamArea();
+        beamArea=MyLaserMP_Pr->getBeamArea();
 
-   /****************************************************************************
-    * L'EMP da considerare nel caso di laser MODELOCKED è riferito             *
-    * alla potenza di picco pertanto nel caso in cui la lunghezza d'onda sia   *
-    * > 1400 e < 400 nm e che t< 10^9 l'uscita del laser va calcolata come Q/t *
-    ****************************************************************************/
-  if((wavelength<=1400)and(wavelength>=400)and (pulseWidth>=MODELOCKED_LIMIT))
-  exposure=powerErg/beamArea;
-  else
-  exposure=powerErg/(beamArea*timeForPulse);
+        /****************************************************************************
+        * L'EMP da considerare nel caso di laser MODELOCKED è riferito             *
+        * alla potenza di picco pertanto nel caso in cui la lunghezza d'onda sia   *
+        * > 1400 e < 400 nm e che t< 10^9 l'uscita del laser va calcolata come Q/t *
+        ****************************************************************************/
+        if((wavelength<=1400)and(wavelength>=400)and (pulseWidth>=MODELOCKED_LIMIT))
+            exposure=powerErg/beamArea;
+        else
+            exposure=powerErg/(beamArea*timeForPulse);
 
-    if(formulaSort=="E")
-        opticalDensityRatio=exposure/(firstAndThirdEMP*timeForPulse);
-    else if(formulaSort=="H")
+        if(formulaSort=="E")
+            opticalDensityRatio=exposure/(firstAndThirdEMP*timeForPulse);
+        else if(formulaSort=="H")
         opticalDensityRatio=exposure/firstAndThirdEMP;
 
-    opticalDensity=std::log10(opticalDensityRatio);
+        opticalDensity=std::log10(opticalDensityRatio);
     }
 }
 
 void DockControls::dComputeOpticalDensity()
 {
-    if(n_laser==2){
+    if(n_laser==operation::MULTI_PULSE)
+    {
         double secondEMP=0.0;
         double powerErg;
         double meanPower;
@@ -3013,15 +2886,15 @@ void DockControls::dComputeOpticalDensity()
         irradiance=meanPower/beamArea;
 
         if(formulaSort=='E')
-             secondEMP=MyLaserMP_Pr->getEMP_MP();
+            secondEMP=MyLaserMP_Pr->getEMP_MP();
         else if(formulaSort=='H')
-             secondEMP=MyLaserMP_Pr->getEMP_MP()/MyLaserMP_Pr->getExposureTime();
+            secondEMP=MyLaserMP_Pr->getEMP_MP()/MyLaserMP_Pr->getExposureTime();
 
         opticalDensityRatio=irradiance/secondEMP;
 
         dOpticalDensity=std::log10(opticalDensityRatio);
-        }
-        else
+    }
+    else
         dOpticalDensity=0;
 }
 
@@ -3040,12 +2913,12 @@ bool DockControls::isModeLocked()
 {
     bool modeLocking=false;
 
-    if(n_laser!=0){
-        if((wavelength<400)or(wavelength>1400)){
-           if(pulseWidth<1.0e-09)
-            {
-            modeLocking=true;
-            }
+    if(n_laser!=operation::CONTINUOS_WAVE)
+    {
+        if((wavelength<400)or(wavelength>1400))
+        {
+            if(pulseWidth<1.0e-09)
+                modeLocking=true;
         }
     }
 
@@ -3055,13 +2928,10 @@ bool DockControls::isModeLocked()
 
 void DockControls::modeLockedPeak()
 {
-    if(isModeLocked()){
-           effectivePowerErg=powerErg/pulseWidth;
-           }
-       else
-           {
-            effectivePowerErg=powerErg;
-           }
+    if(isModeLocked())
+        effectivePowerErg=powerErg/pulseWidth;
+    else
+        effectivePowerErg=powerErg;
 }
 
 
@@ -3070,42 +2940,40 @@ void DockControls::on_checkGaussianBeam_clicked(bool checked)
     gaussianBeam=checked;
     if(checked)
         beamCorrection=1.0;
-          else
+    else
         beamCorrection=2.5;
 
     on_powerErgControl_valueChanged();
-
 }
 
 void DockControls::set_LEA_Widgets()
 {
-        if(((wavelength<302.5)or(wavelength>4000)))
-        {
-                dockLea->ui->frame_cond1->setVisible(false);
-                dockLea->ui->frame_cond1_1->setVisible(false);
-                dockLea->ui->frame_cond1_2->setVisible(false);
-                dockLea->ui->tBeamAperture1_Label->setVisible(false);
-                dockLea->ui->beamAperture1_Label->setVisible(false);
-                dockLea->ui->tBeamAperture1_Label_2->setVisible(false);
-                dockLea->ui->beamAperture1_Label_2->setVisible(false);
-                dockLea->ui->tBeamAperture1_Label_3->setVisible(false);
-                dockLea->ui->beamAperture1_Label_3->setVisible(false);
-        }
-            else
-            {
-                dockLea->ui->frame_cond1->setVisible(true);
-                dockLea->ui->frame_cond1_1->setVisible(true);
-                dockLea->ui->frame_cond1_2->setVisible(true);
-                dockLea->ui->tBeamAperture1_Label->setVisible(true);
-                dockLea->ui->beamAperture1_Label->setVisible(true);
-                dockLea->ui->tBeamAperture1_Label_2->setVisible(true);
-                dockLea->ui->beamAperture1_Label_2->setVisible(true);
-                dockLea->ui->tBeamAperture1_Label_3->setVisible(true);
-                dockLea->ui->beamAperture1_Label_3->setVisible(true);
-            }
+    if(((wavelength<302.5)or(wavelength>4000)))
+    {
+        dockLea->ui->frame_cond1->setVisible(false);
+        dockLea->ui->frame_cond1_1->setVisible(false);
+        dockLea->ui->frame_cond1_2->setVisible(false);
+        dockLea->ui->tBeamAperture1_Label->setVisible(false);
+        dockLea->ui->beamAperture1_Label->setVisible(false);
+        dockLea->ui->tBeamAperture1_Label_2->setVisible(false);
+        dockLea->ui->beamAperture1_Label_2->setVisible(false);
+        dockLea->ui->tBeamAperture1_Label_3->setVisible(false);
+        dockLea->ui->beamAperture1_Label_3->setVisible(false);
+    }
+    else
+    {
+        dockLea->ui->frame_cond1->setVisible(true);
+        dockLea->ui->frame_cond1_1->setVisible(true);
+        dockLea->ui->frame_cond1_2->setVisible(true);
+        dockLea->ui->tBeamAperture1_Label->setVisible(true);
+        dockLea->ui->beamAperture1_Label->setVisible(true);
+        dockLea->ui->tBeamAperture1_Label_2->setVisible(true);
+        dockLea->ui->beamAperture1_Label_2->setVisible(true);
+        dockLea->ui->tBeamAperture1_Label_3->setVisible(true);
+        dockLea->ui->beamAperture1_Label_3->setVisible(true);
+    }
 
-
-    if(n_laser==0)
+    if(n_laser==operation::CONTINUOS_WAVE)
     {
         MyLaserClassCW_Pr->updateAll();
         setWidgetsForCW_Operation();
@@ -3117,7 +2985,7 @@ void DockControls::set_LEA_Widgets()
         dockLea->ui->frame_baseTime->setVisible(true);
         dockLea->ui->frame_thermalC5->setVisible(false);
     }
-    else if(n_laser==1)
+    else if(n_laser==operation::PULSE)
     {
         MyLaserClassSP_Pr->updateAll();
         setWidgetsForSinglePulse_Operation();
@@ -3129,7 +2997,7 @@ void DockControls::set_LEA_Widgets()
         dockLea->ui->base_Label->setText("SP");
         dockLea->ui->frame_thermalC5->setVisible(false);
     }
-    else if(n_laser==2)
+    else if(n_laser==operation::MULTI_PULSE)
     {
         MyLaserClassMP_Pr->updateAll();
         setWidgetsForMultiPulse_Operation();
@@ -3143,8 +3011,7 @@ void DockControls::set_LEA_Widgets()
 
         if((wavelength>=400)and(wavelength<=1400))
         {
-         dockLea->ui->frame_thermal->setVisible(true);
-
+        dockLea->ui->frame_thermal->setVisible(true);
             if(prf<1/MyLaserClassMP_Pr->getTi())
             {
                 setWidgetsForThermal();
@@ -3157,26 +3024,26 @@ void DockControls::set_LEA_Widgets()
             }
         }
         else
-                dockLea->ui->frame_thermal->setVisible(false);
+            dockLea->ui->frame_thermal->setVisible(false);
     }
 }
 
 QString DockControls::getLaserClassString(const LaserClassCW::laserClass & myLaserClass)
 {
     QString laserClassString;
-    if(myLaserClass==LaserClassCW::CLASSE_1)
+    if(myLaserClass==LaserClassCW::laserClass::CLASSE_1)
         laserClassString="Classe 1";
-    else if(myLaserClass==LaserClassCW::CLASSE_1M)
+    else if(myLaserClass==LaserClassCW::laserClass::CLASSE_1M)
         laserClassString="Classe 1M";
-    else if(myLaserClass==LaserClassCW::CLASSE_2)
+    else if(myLaserClass==LaserClassCW::laserClass::CLASSE_2)
         laserClassString="Classe 2";
-    else if(myLaserClass==LaserClassCW::CLASSE_2M)
+    else if(myLaserClass==LaserClassCW::laserClass::CLASSE_2M)
         laserClassString="Classe 2M";
-    else if(myLaserClass==LaserClassCW::CLASSE_3R)
+    else if(myLaserClass==LaserClassCW::laserClass::CLASSE_3R)
         laserClassString="Classe 3R";
-    else if(myLaserClass==LaserClassCW::CLASSE_3B)
+    else if(myLaserClass==LaserClassCW::laserClass::CLASSE_3B)
         laserClassString="Classe 3B";
-    else if(myLaserClass==LaserClassCW::CLASSE_4)
+    else if(myLaserClass==LaserClassCW::laserClass::CLASSE_4)
         laserClassString="Classe 4";
     else
         laserClassString="Non classificato";
@@ -3212,25 +3079,25 @@ void DockControls::setWidgetsForCW_Operation()
     QString PowerErgCond_3_Label;
     ComputeLEA::ClassData myClassData;
 
-    if ((myLaserClass==LaserClassCW::CLASSE_1)or(myLaserClass==LaserClassCW::CLASSE_1M))
+    if ((myLaserClass==LaserClassCW::laserClass::CLASSE_1)or(myLaserClass==LaserClassCW::laserClass::CLASSE_1M))
     {
         myClassData=ComputeLEA::ClassData::CLASSE_1_1M;
         tFormulaLEA_Label="Formula 1 - 1M";
         tLEA_Value_Label="LEA 1 - 1M";
     }
-    else if ((myLaserClass==LaserClassCW::CLASSE_2)or(myLaserClass==LaserClassCW::CLASSE_2M))
+    else if ((myLaserClass==LaserClassCW::laserClass::CLASSE_2)or(myLaserClass==LaserClassCW::laserClass::CLASSE_2M))
     {
         myClassData=ComputeLEA::ClassData::CLASSE_2_2M;
         tFormulaLEA_Label="Formula 2 - 2M";
         tLEA_Value_Label="LEA 2 - 2M";
     }
-    else if (myLaserClass==LaserClassCW::CLASSE_3R)
+    else if (myLaserClass==LaserClassCW::laserClass::CLASSE_3R)
     {
         myClassData=ComputeLEA::ClassData::CLASSE_3R;
         tFormulaLEA_Label="Formula 3R";
         tLEA_Value_Label="LEA 3R";
     }
-    else if ((myLaserClass==LaserClassCW::CLASSE_3B)or(myLaserClass==LaserClassCW::CLASSE_4))
+    else if ((myLaserClass==LaserClassCW::laserClass::CLASSE_3B)or(myLaserClass==LaserClassCW::laserClass::CLASSE_4))
     {
         myClassData=ComputeLEA::ClassData::CLASSE_3B;
         tFormulaLEA_Label="Formula 3B";
@@ -3294,7 +3161,7 @@ void DockControls::setWidgetsForCW_Operation()
 
     dockLea->ui->class_Label->setText(getLaserClassString(myLaserClass));
 
-    ui->warning_Label->setVisible(!(myLaserClass==LaserClassCW::CLASSE_1));
+    ui->warning_Label->setVisible(!(myLaserClass==LaserClassCW::laserClass::CLASSE_1));
     ui->class_Label->setText(getLaserClassString(myLaserClass));
 }
 
@@ -3327,25 +3194,25 @@ void DockControls::setWidgetsForSinglePulse_Operation()
     QString PowerErgCond_3_Label;
     ComputeLEA::ClassData myClassData;
 
-    if ((myLaserClass==LaserClassCW::CLASSE_1)or(myLaserClass==LaserClassCW::CLASSE_1M))
+    if ((myLaserClass==LaserClassCW::laserClass::CLASSE_1)or(myLaserClass==LaserClassCW::laserClass::CLASSE_1M))
     {
         myClassData=ComputeLEA::ClassData::CLASSE_1_1M;
         tFormulaLEA_Label="Formula 1 - 1M";
         tLEA_Value_Label="LEA 1 - 1M";
     }
-    else if ((myLaserClass==LaserClassCW::CLASSE_2)or(myLaserClass==LaserClassCW::CLASSE_2M))
+    else if ((myLaserClass==LaserClassCW::laserClass::CLASSE_2)or(myLaserClass==LaserClassCW::laserClass::CLASSE_2M))
     {
         myClassData=ComputeLEA::ClassData::CLASSE_2_2M;
         tFormulaLEA_Label="Formula 2 - 2M";
         tLEA_Value_Label="LEA 2 - 2M";
     }
-    else if (myLaserClass==LaserClassCW::CLASSE_3R)
+    else if (myLaserClass==LaserClassCW::laserClass::CLASSE_3R)
     {
         myClassData=ComputeLEA::ClassData::CLASSE_3R;
         tFormulaLEA_Label="Formula 3R";
         tLEA_Value_Label="LEA 3R";
     }
-    else if ((myLaserClass==LaserClassCW::CLASSE_3B)or(myLaserClass==LaserClassCW::CLASSE_4))
+    else if ((myLaserClass==LaserClassCW::laserClass::CLASSE_3B)or(myLaserClass==LaserClassCW::laserClass::CLASSE_4))
     {
         myClassData=ComputeLEA::ClassData::CLASSE_3B;
         tFormulaLEA_Label="Formula 3B";
@@ -3408,7 +3275,7 @@ void DockControls::setWidgetsForSinglePulse_Operation()
 
     dockLea->ui->class_Label->setText(getLaserClassString(myLaserClass));
 
-    ui->warning_Label->setVisible(!(myLaserClass==LaserClassCW::CLASSE_1));
+    ui->warning_Label->setVisible(!(myLaserClass==LaserClassCW::laserClass::CLASSE_1));
     ui->class_Label->setText(getLaserClassString(myLaserClass));
 }
 
@@ -3447,25 +3314,25 @@ void DockControls::setWidgetsForMultiPulse_Operation()
     QString PowerErgCond_3_Label;
     ComputeLEA::ClassData myClassData;
 
-    if ((myLaserClass==LaserClassCW::CLASSE_1)or(myLaserClass==LaserClassCW::CLASSE_1M))
+    if ((myLaserClass==LaserClassCW::laserClass::CLASSE_1)or(myLaserClass==LaserClassCW::laserClass::CLASSE_1M))
     {
         myClassData=ComputeLEA::ClassData::CLASSE_1_1M;
         tFormulaLEA_Label="Formula 1 - 1M";
         tLEA_Value_Label="LEA 1 - 1M";
     }
-    else if ((myLaserClass==LaserClassCW::CLASSE_2)or(myLaserClass==LaserClassCW::CLASSE_2M))
+    else if ((myLaserClass==LaserClassCW::laserClass::CLASSE_2)or(myLaserClass==LaserClassCW::laserClass::CLASSE_2M))
     {
         myClassData=ComputeLEA::ClassData::CLASSE_2_2M;
         tFormulaLEA_Label="Formula 2 - 2M";
         tLEA_Value_Label="LEA 2 - 2M";
     }
-    else if (myLaserClass==LaserClassCW::CLASSE_3R)
+    else if (myLaserClass==LaserClassCW::laserClass::CLASSE_3R)
     {
         myClassData=ComputeLEA::ClassData::CLASSE_3R;
         tFormulaLEA_Label="Formula 3R";
         tLEA_Value_Label="LEA 3R";
     }
-    else if ((myLaserClass==LaserClassCW::CLASSE_3B)or(myLaserClass==LaserClassCW::CLASSE_4))
+    else if ((myLaserClass==LaserClassCW::laserClass::CLASSE_3B)or(myLaserClass==LaserClassCW::laserClass::CLASSE_4))
     {
         myClassData=ComputeLEA::ClassData::CLASSE_3B;
         tFormulaLEA_Label="Formula 3B";
@@ -3525,7 +3392,7 @@ void DockControls::setWidgetsForMultiPulse_Operation()
 
     dockLea->ui->class_Label->setText(getLaserClassString(myLaserClass));
 
-    ui->warning_Label->setVisible(!(myLaserClass==LaserClassCW::CLASSE_1));
+    ui->warning_Label->setVisible(!(myLaserClass==LaserClassCW::laserClass::CLASSE_1));
     ui->class_Label->setText(getLaserClassString(myLaserClass));
 //    dockLea->ui->class_Label->setText(QString::fromStdString(MyLaserClassMP_Pr->getLaserClass()));
 
@@ -3588,16 +3455,16 @@ void DockControls::setWidgetsForMultiPulse_Operation()
 
     dockLea->ui->class_Label->setText(getLaserClassString(myLaserClass));
 
-    ui->warning_Label->setVisible(!(myLaserClass==LaserClassCW::CLASSE_1));
+    ui->warning_Label->setVisible(!(myLaserClass==LaserClassCW::laserClass::CLASSE_1));
     ui->class_Label->setText(getLaserClassString(myLaserClass));
 
     dockLea->ui->MeanPowerLabel->setText(QString::number(MyLaserClassMP_Pr->getMeanPower(),'e', 2)+" W");
     dockLea->ui->CountingLabel->setText(QString::fromStdString(MyLaserClassMP_Pr->valutateCounting()));
 
-            if((wavelength>=400)and(wavelength<=1400)){
-                dockLea->ui->C5_Label->setText(QString::number(MyLaserClassMP_Pr->getC5Coefficient(),'e', 2));}
-                else{
-                dockLea->ui->C5_Label->setText("Non applicabile");}
+    if((wavelength>=400)and(wavelength<=1400)){
+        dockLea->ui->C5_Label->setText(QString::number(MyLaserClassMP_Pr->getC5Coefficient(),'e', 2));}
+    else
+        dockLea->ui->C5_Label->setText("Non applicabile");
 
     dockLea->ui->PulseNumberLabel->setText(QString::number(MyLaserClassMP_Pr->getPulseNumber()));
 }
@@ -3633,31 +3500,31 @@ void DockControls::setWidgetsForThermal()
     dockLea->ui->beamAperture1_Label_3->setText(QString::number(MyLaserClassMP_Pr->getBeamAtStop_Cond_1(), 'e', 2)+" mm");
     dockLea->ui->beamAperture3_Label_3->setText(QString::number(MyLaserClassMP_Pr->getBeamAtStop_Cond_3(), 'e', 2)+" mm");
 
-	    QString TimeBase_Label=QString("%1 s")
+    QString TimeBase_Label=QString("%1 s")
                          .arg(QString::number(MyLaserClassMP_Pr->getTimeBase()));
 
 
     myLaserClass=MyLaserClassMP_Pr->getLaserClass();
 
-    if ((myLaserClass==LaserClassCW::CLASSE_1)or(myLaserClass==LaserClassCW::CLASSE_1M))
+    if ((myLaserClass==LaserClassCW::laserClass::CLASSE_1)or(myLaserClass==LaserClassCW::laserClass::CLASSE_1M))
     {
         myClassData=ComputeLEA::ClassData::CLASSE_1_1M;
         tFormulaLEA_Label="Formula 1 - 1M";
         tLEA_Value_Label="LEA 1 - 1M";
     }
-    else if ((myLaserClass==LaserClassCW::CLASSE_2)or(myLaserClass==LaserClassCW::CLASSE_2M))
+    else if ((myLaserClass==LaserClassCW::laserClass::CLASSE_2)or(myLaserClass==LaserClassCW::laserClass::CLASSE_2M))
     {
         myClassData=ComputeLEA::ClassData::CLASSE_2_2M;
         tFormulaLEA_Label="Formula 2 - 2M";
         tLEA_Value_Label="LEA 2 - 2M";
     }
-    else if (myLaserClass==LaserClassCW::CLASSE_3R)
+    else if (myLaserClass==LaserClassCW::laserClass::CLASSE_3R)
     {
         myClassData=ComputeLEA::ClassData::CLASSE_3R;
         tFormulaLEA_Label="Formula 3R";
         tLEA_Value_Label="LEA 3R";
     }
-    else if ((myLaserClass==LaserClassCW::CLASSE_3B)or(myLaserClass==LaserClassCW::CLASSE_4))
+    else if ((myLaserClass==LaserClassCW::laserClass::CLASSE_3B)or(myLaserClass==LaserClassCW::laserClass::CLASSE_4))
     {
         myClassData=ComputeLEA::ClassData::CLASSE_3B;
         tFormulaLEA_Label="Formula 3B";
@@ -3714,7 +3581,7 @@ void DockControls::setWidgetsForThermal()
 
     dockLea->ui->class_Label->setText(getLaserClassString(myLaserClass));
 
-    ui->warning_Label->setVisible(!(myLaserClass==LaserClassCW::CLASSE_1));
+    ui->warning_Label->setVisible(!(myLaserClass==LaserClassCW::laserClass::CLASSE_1));
     ui->class_Label->setText(getLaserClassString(myLaserClass));
 }
 
@@ -3752,25 +3619,25 @@ void DockControls::setWidgetsForThermalTi()
 	QString TimeBase_Label=QString("%1 s")
                     .arg(QString::number(MyLaserClassMP_Pr->getTimeBase()));
 
-    if ((myLaserClass==LaserClassCW::CLASSE_1)or(myLaserClass==LaserClassCW::CLASSE_1M))
+    if ((myLaserClass==LaserClassCW::laserClass::CLASSE_1)or(myLaserClass==LaserClassCW::laserClass::CLASSE_1M))
     {
         myClassData=ComputeLEA::ClassData::CLASSE_1_1M;
         tFormulaLEA_Label="Formula 1 - 1M";
         tLEA_Value_Label="LEA 1 - 1M";
     }
-    else if ((myLaserClass==LaserClassCW::CLASSE_2)or(myLaserClass==LaserClassCW::CLASSE_2M))
+    else if ((myLaserClass==LaserClassCW::laserClass::CLASSE_2)or(myLaserClass==LaserClassCW::laserClass::CLASSE_2M))
     {
         myClassData=ComputeLEA::ClassData::CLASSE_2_2M;
         tFormulaLEA_Label="Formula 2 - 2M";
         tLEA_Value_Label="LEA 2 - 2M";
     }
-    else if (myLaserClass==LaserClassCW::CLASSE_3R)
+    else if (myLaserClass==LaserClassCW::laserClass::CLASSE_3R)
     {
         myClassData=ComputeLEA::ClassData::CLASSE_3R;
         tFormulaLEA_Label="Formula 3R";
         tLEA_Value_Label="LEA 3R";
     }
-    else if ((myLaserClass==LaserClassCW::CLASSE_3B)or(myLaserClass==LaserClassCW::CLASSE_4))
+    else if ((myLaserClass==LaserClassCW::laserClass::CLASSE_3B)or(myLaserClass==LaserClassCW::laserClass::CLASSE_4))
     {
         myClassData=ComputeLEA::ClassData::CLASSE_3B;
         tFormulaLEA_Label="Formula 3B";
@@ -3827,17 +3694,17 @@ void DockControls::setWidgetsForThermalTi()
 
     dockLea->ui->class_Label->setText(getLaserClassString(myLaserClass));
 
-    ui->warning_Label->setVisible(!(myLaserClass==LaserClassCW::CLASSE_1));
+    ui->warning_Label->setVisible(!(myLaserClass==LaserClassCW::laserClass::CLASSE_1));
     ui->class_Label->setText(getLaserClassString(myLaserClass));
 }
 
 void DockControls::on_internalWaist_checkBox_toggled(bool checked)
 {
-    if(n_laser==0)
+    if(n_laser==operation::CONTINUOS_WAVE)
         MyLaserClassCW_Pr->setInternalWaist(checked);
-    if(n_laser==1)
+    if(n_laser==operation::PULSE)
         MyLaserClassSP_Pr->setInternalWaist(checked);
-    if(n_laser==2)
+    if(n_laser==operation::MULTI_PULSE)
         MyLaserClassMP_Pr->setInternalWaist(checked);
 
     internalWaist=checked;
@@ -3874,135 +3741,35 @@ LaserGoggle::material DockControls::getGoggleMaterial()const
 
 
 void DockControls::updateGoggle()
-{
-/**************************************************************
- * La funzione fetchDataVector() va invocata quando cambia    *
- * la frequenza o la durata dell'impulso.                     *                                 *
- * Seleziona il campo corrispondente della Tabella B.2 EN207  *
- * per l'oggetto myLaserGoggle.                               *
- * Memorizza il vettore corrispondente in dataVector ed       *
- * aggiorna il grafico                                        *
- **************************************************************/
+{  
+    if(n_laser==operation::PULSE)
+    {
+        myLaserGoggle->setPulseWidth(pulseWidth);
+        fetchLaserOutput();
+        fetchDataVector();
+    }
 
-fetchLaserOutput();
-fetchDataVector();
+    else if(n_laser==operation::MULTI_PULSE)
+    {
+        myLaserGoggle->setWavelength(wavelength);
+        myDLaserGoggle->setWavelength(wavelength);
+        myLaserGoggle->setPulseWidth(pulseWidth);
 
-/*****************************************************
-* Visualizzazione dati relativi ai protettori ottici *
-******************************************************/
-
-displayLaserOutput();
-displayTimeBase();
-displayNumberOfPulse();
-displayCoefficient_k();
-displayCoefficient_ki();
-display_ni_max();
-
-
-/*************
- * IMPULSATO *
- * ***********/
-
-if(n_laser==1)
-{
-
-/*****************************************
-* Imposto il valore negli oggetti Laser *
-*****************************************/
-
- myLaserGoggle->setPulseWidth(pulseWidth);
-fetchLaserOutput();
-
-/**************************************************************
- * La funzione fetchDataVector() va invocata quando cambia    *
- * la frequenza o la durata dell'impulso.                     *                                 *
- * Seleziona il campo corrispondente della Tabella B.2 EN207  *
- * per l'oggetto myLaserGoggle.                               *
- * Memorizza il vettore corrispondente in dataVector ed       *
- * aggiorna il grafico                                        *
- **************************************************************/
-fetchDataVector();
-
-/*****************************************************
-* Visualizzazione dati relativi ai protettori ottici *
-******************************************************/
-
-displayLaserOutput();
-displayTimeBase();
-displayNumberOfPulse();
-displayCoefficient_k();
-displayCoefficient_ki();
-display_ni_max();
-}
-
-/********************
- * IMPULSI MULTIPLI *
- ********************/
-
-if(n_laser==2)
-{
-
-/*****************************************
- * Imposto il valore negli oggetti Laser *
- *****************************************/
-
-
-
- /***********************************************************************
-  * Imposto il valore negli oggetti occhiali protettori.                *
-  * Il valore della base dei tempi dipende dalla lunghezza d'onda e va  *
-  * pertanto impostato in funzione di questa (EN 207 B.4).              *
-  * Per l'oggetto myLaserGoggle si procede impostando il valore della   *
-  * durata dell'impulso.                                                *
-  * Per l'oggetto myDLaserGoggle il valore della base dei tempi dipende *
-  * dalla lunghezza d'onda. Imposto in modo esplicito la base dei tempi *
-  **********************************************************************/
-
- myLaserGoggle->setWavelength(wavelength);
- myDLaserGoggle->setWavelength(wavelength);
-
- myLaserGoggle->setPulseWidth(pulseWidth);
-
-if(((wavelength>315) && (wavelength<=1e+06)))//base dei tempi 5 s
-     {
-         myDLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE);
-      }
-    else{
-        if(((wavelength>=180) && (wavelength<=315)))//base dei tempi 30000 5
-          {
-             myDLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE_LOW_WAVELENGTH);
-          }
+        if(((wavelength>315) && (wavelength<=1e+06)))//base dei tempi 5 s
+            myDLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE);
+        else
+        {
+            if(((wavelength>=180) && (wavelength<=315)))//base dei tempi 30000 5
+                myDLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE_LOW_WAVELENGTH);
         }
-    /**************************************************************
-     * La funzione fetchDataVector() va invocata quando cambia    *
-     * la frequenza o la durata dell'impulso.                     *
-     * Seleziona il campo corrispondente della Tabella B.2 EN207  *
-     * per entrambi gli oggetti relativi ai protettori ottici.    *
-     * Memorizza il vettore corrispondente in dataVector ed       *
-     * aggiorna il grafico                                        *
-     **************************************************************/
-    modeLockedPeak();
 
+        modeLockedPeak();
+        fetchDLaserOutput();
+        fetchDDataVector();
+    }
     fetchLaserOutput();
     fetchDataVector();
-
-    /*****************************************************
-    * Visualizzazione dati relativi ai protettori ottici *
-    ******************************************************/
-
-    //Oggetto myLaserGoggle
-    displayLaserOutput();
-    displayTimeBase();
-    displayNumberOfPulse();
-    displayCoefficient_k();
-    displayCoefficient_ki();
-    display_ni_max();
-
-    //Oggetto myLaserGoggle
-    fetchDDataVector();
-    displayDLaserOutput();
-    displayDTimeBase();
-    }
+    setLaserGoggleWidgets();
 }
 
 vector<pair<int, double>> DockControls::getGoggleDataVect()const
@@ -4036,19 +3803,19 @@ std::string DockControls::getDGoggleLimitsUnit()const
 
 void DockControls::leaExpressions_SP()
 {
-    if(n_laser==1)
+    if(n_laser==operation::PULSE)
         LEA_SP=MyLaserClassSP_Pr->getLEA_Expressions();
 }
 
 void DockControls::leaExpressions_CW()
 {
-        if(n_laser==0)
+    if(n_laser==operation::CONTINUOS_WAVE)
         LEA_CW=MyLaserClassCW_Pr->getLEA_Expressions();
 }
 
 void DockControls::leaExpressions_MP()
 {
-        if(n_laser==2){
+    if(n_laser==operation::MULTI_PULSE){
         LEA_SP_MultiPulse=MyLaserClassMP_Pr->getLEA_Expressions();
         LEA_Mean=MyLaserClassMP_Pr->getMeanLEA_Expressions();
 
@@ -4091,7 +3858,7 @@ bool DockControls::isHF_LaserCLass()
     bool highFrequency;
     highFrequency=false;
 
-    if(n_laser==2)
+    if(n_laser==operation::MULTI_PULSE)
     {
         if((wavelength>=400)and(wavelength<=1400))
         {
@@ -4110,10 +3877,10 @@ bool DockControls::isThermal_LaserCLass()
     bool isThermal;
     isThermal=false;
 
-    if(n_laser==2)
+    if(n_laser==operation::MULTI_PULSE)
     {
         if((wavelength>=400)and(wavelength<=1400))
-               isThermal=true;
+            isThermal=true;
     }
     return isThermal;
 }
@@ -4123,17 +3890,17 @@ DockControls::operation DockControls::laserOperation() const
     operation myLaserOperation;
     switch(n_laser)
     {
-    case 0:
-    myLaserOperation=CONTINUOS_WAVE;
-    break;
-    case 1:
-    myLaserOperation=PULSE;
-    break;
-    case 2:
-    myLaserOperation=MULTI_PULSE;
-    break;
+    case operation::CONTINUOS_WAVE:
+        myLaserOperation=operation::CONTINUOS_WAVE;
+        break;
+    case operation::PULSE:
+        myLaserOperation=operation::PULSE;
+        break;
+    case operation::MULTI_PULSE:
+        myLaserOperation=operation::MULTI_PULSE;
+        break;
     default:
-    myLaserOperation=NOT_WORKING;
+        myLaserOperation=operation::NOT_WORKING;
     }
 
     return myLaserOperation;
@@ -4147,4 +3914,31 @@ DockControls::~DockControls()
     delete MyLaserSafetyMP;
     delete MyLaserSkinSafetyMP;
     delete MyLaserClassMP;
+}
+
+void DockControls::on_comboBoxBands_currentIndexChanged(int index)
+{
+    if(index==0)
+        setUVA();
+    else
+    if(index==1)
+        setVIS();
+    else
+    if(index==2)
+       setIRA_NIR();
+    else
+    if(index==3)
+       setIRB_SWIR();
+    else
+    if(index==4)
+       setIRC_MWIR();
+    else
+    if(index==5)
+       setIRC_LWIR();
+    else
+    if(index==6)
+       setIRC_FIR();
+
+    setWidgets();
+        emit modified();
 }

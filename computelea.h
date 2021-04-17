@@ -5,7 +5,6 @@
 #include <string>
 #include <cstddef>
 #include <array>
-#include <QtGui>
 
 using namespace std;
 
@@ -92,9 +91,7 @@ public:
     array <string, N_LEA> getLEA_FormulaTipo()const;/*!< Restituisce un array di tipo string con il tipo formule dei lea calcolati */
     array <string, N_LEA> getLEA_FormulaUnit()const;/*!< Restituisce un array di tipo string con l'unità di misura dei lea calcolati */
 
-
     double getApertureThirdCondition()const;/*!< Restituisce il diametro del diaframma calcolato da valuateApertureCondition_3().*/
-
 
     double getApertureStopCond_1()const;/*!< Restituisce il valore del diametro del diaframma in mm riguardante la 1<sup>a</sup> condizione corrispondente ai parametri impostati */
     double getApertureStopCond_3()const;/*!< Restituisce il valore del diametro del diaframma in mm riguardante la 3<sup>a</sup> condizione corrispondente ai parametri impostati */
@@ -104,6 +101,10 @@ public:
     string typeOfEyeDamage(const int&);/*!< Restituisce il possibile danno al sistema oculare. */
     string typeOfRadiation(const int&);/*!< Restituisce il tipo di radiazione emessa dal dispositivo. */
     string typeOfSkinDamage(const int&);/*!< Restituisce il possibile danno alla cute. */
+
+    std::array<leadata, EmpLeaTables::TABLEROW_1_1M> getLEA_1_1M_Table()const;
+    std::array<leadata, EmpLeaTables::TABLEROW_3R> getLEA_3R_Table()const;
+    std::array<leadata, EmpLeaTables::TABLEROW_3B> getLEA_3B_Table()const;
 
 protected:
     void selectLea_1M_Row(const std::array<leadata, EmpLeaTables::TABLEROW_1_1M> &);/*!< Seleziona la riga del LEA di Classe 1 e 1M

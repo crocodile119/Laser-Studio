@@ -91,15 +91,15 @@ QPainterPath LabRoom::shape() const
     return path;
 }
 
-void LabRoom::paint(QPainter *painter,
-                 const QStyleOptionGraphicsItem *option,
-                 QWidget * /* widget */)
+void LabRoom::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget * /* widget */)
 {
     QPen pen(myOutlineColor);
-    if (option->state & QStyle::State_Selected) {
+    if (option->state & QStyle::State_Selected)
+    {
         pen.setStyle(Qt::DotLine);
         pen.setWidth(2);
     }
+
     pen.setCosmetic(true);
 
     QPen textPen(myTextColor);
@@ -138,18 +138,18 @@ void LabRoom::paint(QPainter *painter,
     painter->restore();
     painter->setTransform(transform);
 
-
     update();
 }
 
 QVariant LabRoom::itemChange(GraphicsItemChange change,
                           const QVariant &value)
 {
-    if (change == ItemPositionHasChanged && scene()) {
-            setTextLabel();
-
+    if (change == ItemPositionHasChanged && scene())
+    {
+        setTextLabel();
         return pos();
     }
+
     return QGraphicsItem::itemChange(change, value);
 }
 
@@ -201,14 +201,14 @@ void LabRoom::setTextLabel()
 
 QRectF LabRoom::labelRect()
 {
-        const int Padding = 10;
-        QFontMetricsF metrics =(QFontMetricsF)qApp->font();
-        myTextRect = metrics.boundingRect(textLabel);
-        myTextRect.adjust(-Padding, -Padding, +Padding, +Padding);
+    const int Padding = 10;
+    QFontMetricsF metrics =(QFontMetricsF)qApp->font();
+    myTextRect = metrics.boundingRect(textLabel);
+    myTextRect.adjust(-Padding, -Padding, +Padding, +Padding);
+    QPointF rectPoint((-labRectExt.width())*(1-scale)/2-Padding, labRectExt.height()*(1-scale)/2-myTextRect.height()/2-Padding);
+    myTextRect.translate(-rectPoint);
 
-        QPointF rectPoint((-labRectExt.width())*(1-scale)/2-Padding, labRectExt.height()*(1-scale)/2-myTextRect.height()/2-Padding);
-        myTextRect.translate(-rectPoint);
-        return myTextRect;
+    return myTextRect;
 }
 
 void LabRoom::setRoomRect(const QRectF& _labRect)
@@ -243,41 +243,3 @@ void LabRoom::setPixScale(const double& _scale)
 {
     scale=_scale;
 }
-/*
-QRectF LabRoom::resizeHandle() const
-{
-    QPointF br = labRectExt.bottomRight();
-    return QRectF(br - QPointF(resizeHandleWidth, resizeHandleWidth), br);
-}
-
-void LabRoom::mousePressEvent(QGraphicsSceneMouseEvent *event)
-{
-    if(event->button()==Qt::LeftButton)
-    {
-        event->accept();
-        m_resizeHandlePressed = resizeHandle().contains(event->pos());
-
-        if (m_resizeHandlePressed)
-           m_mousePressOffset = labRectExt.bottomRight() - event->pos();
-        else
-           m_mousePressOffset = event->pos() - labRectExt.topLeft();
-    }
-        QGraphicsItem::mouseMoveEvent(event);
-}
-
-void LabRoom::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
-{
-    if(event->button()==Qt::LeftButton)
-    {
-        event->accept();
-        QRectF rect;
-
-    if (m_resizeHandlePressed) {
-        labRectExt = QRectF(labRectExt.topLeft(), event->pos() + m_mousePressOffset);
-        } else {
-            labRectExt.moveTopLeft(event->pos() - m_mousePressOffset);
-        }
-    }
-    QGraphicsItem::mouseMoveEvent(event);
-}
-*/

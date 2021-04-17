@@ -3,9 +3,6 @@
 #include <cstdlib>
 #include <sstream>
 #include <cmath>
-#include <QTextStream>
-#include <QFile>
-#include <QDataStream>
 #include <iostream>
 #include <array>
 #include <algorithm>
@@ -50,14 +47,11 @@ void ComputeEMP::setPulseWidth(const double& _pulseWidth)
 
 double ComputeEMP::getPulseWidth() const
 {
-
-return pulseWidth;
-
+    return pulseWidth;
 }
 
 void ComputeEMP::setAlpha(const double& _alpha)
 {
-
     alpha = _alpha;
 }
 
@@ -88,12 +82,11 @@ void ComputeEMP::selectLeaRow()
         time1=empStructValues.at(index).time1;
         time2=empStructValues.at(index).time2;
 
-
         if(((wavelength>wavelenght1)and(wavelength<=wavelenght2))and((pulseWidth>time1)and(pulseWidth<=time2 )))
-         {
+        {
             myEmpData=empStructValues.at(index);
             break;
-         }
+        }
     }
 }
 
@@ -106,15 +99,15 @@ void ComputeEMP::EMP()
 	 
     if (((wavelength>=400) and (wavelength<=1400)) and ((pulseWidth>10) and (pulseWidth<30000)))
     {
-    PhotoEffects();
-    ThermoEffects();
-    EMPPhotoThermo();
+        PhotoEffects();
+        ThermoEffects();
+        EMPPhotoThermo();
     }
     else{
-    _PhotoGamma=0;
-    notes="nessuna";
-    valutateFormula();
-    EMP_Value();
+        _PhotoGamma=0;
+        notes="nessuna";
+        valutateFormula();
+        EMP_Value();
     }
 }
 
@@ -129,27 +122,27 @@ void ComputeEMP::valutateFormula()
     string coeffValue;
 
     if (myEmpData.sort==0)
-         Tipo="E";
-      else if (myEmpData.sort==1)
-          Tipo="H";
+        Tipo="E";
+    else if (myEmpData.sort==1)
+        Tipo="H";
 
     if (myEmpData.CA==0)
-     tabCA = "";
-  else
-      tabCA = " C<sub>A</sub>";
+        tabCA = "";
+    else
+        tabCA = " C<sub>A</sub>";
 
-  if (myEmpData.CB==0)
-     tabCB="";
-  else
-      tabCB=" C<sub>B</sub>";
+    if (myEmpData.CB==0)
+        tabCB="";
+    else
+        tabCB=" C<sub>B</sub>";
 
   if (myEmpData.CC==0)
-     tabCC="";
+      tabCC="";
   else
       tabCC=" C<sub>C</sub>";
 
   if (myEmpData.CE==0)
-     tabCE="";
+      tabCE="";
   else
       tabCE=" C<sub>E</sub>";
 
@@ -198,63 +191,61 @@ void ComputeEMP::EMP_Value()
     double _t_exp_EMP=0;
 	
     if (myEmpData.CA==0)
-			_CA_EMP=1;
-		else
-			_CA_EMP=CA;
+        _CA_EMP=1;
+    else
+        _CA_EMP=CA;
 		
     if (myEmpData.CB==0)
-			_CB_EMP=1;
-		else
-			_CB_EMP=CB;
+        _CB_EMP=1;
+    else
+        _CB_EMP=CB;
 
     if (myEmpData.CC==0)
-			_CC_EMP=1;
-		else
-			_CC_EMP=CC;			
+        _CC_EMP=1;
+    else
+        _CC_EMP=CC;
 
     if (myEmpData.CE==0)
-			_CE_EMP=1.0;
-		else
-			_CE_EMP=CE;
+        _CE_EMP=1.0;
+    else
+        _CE_EMP=CE;
 		
     if (myEmpData.t==0)
-			_t_exp_EMP=1;
-		else
-			_t_exp_EMP=t_exp;
+        _t_exp_EMP=1;
+    else
+        _t_exp_EMP=t_exp;
 				
-
     EMP_Result=myEmpData.formula*_CA_EMP*_CB_EMP*_CC_EMP*_CE_EMP*_t_exp_EMP;
 }
 
 double ComputeEMP::getCA() const
 {
-	
-		return CA;
+    return CA;
 }
 
 double ComputeEMP::getCB() const
 {
-		return CB;
+    return CB;
 }
 
 double ComputeEMP::getCC() const
 {
-		return CC;
+    return CC;
 }
 
 double ComputeEMP::getCE() const
 {	
-		return CE;
+    return CE;
 }
 
 double ComputeEMP::getT1() const
 {
-		return T1;
+    return T1;
 }
 
 double ComputeEMP::getT2() const
 {
-		return T2;
+    return T2;
 }
 	
 double ComputeEMP::getEMP() const
@@ -269,105 +260,110 @@ double ComputeEMP::getGamma() const
 
 void ComputeEMP::ComputeParameters()
 {
-        if (wavelength<700)
-				{					
-					CA=1;
-                }
-        else if ((wavelength>=700) and (wavelength<=1050))
-					{         
-                        CA=pow(10,0.002*(wavelength-700));
-					}
-                        else if((wavelength>1050) and (wavelength<1400))
-						{
-							CA=5;
-						}
-							else
-							{								
-								CA=1;		
-							}		
-				
-        if ((wavelength>=400) and (wavelength<450))
-				{
-					CB=1;
-                } else if ((wavelength>=450) and (wavelength<=700))
-					{
-                        CB=pow(10,0.02*(wavelength-450));
-					}
-						else
-						{						
-							CB=1;		
-						}	
+    if (wavelength<700)
+    {
+        CA=1;
+    }
+    else if ((wavelength>=700) and (wavelength<=1050))
+    {
+        CA=pow(10,0.002*(wavelength-700));
+    }
+    else if((wavelength>1050) and (wavelength<1400))
+    {
+        CA=5;
+    }
+    else
+    {
+        CA=1;
+    }
 
+    if ((wavelength>=400) and (wavelength<450))
+    {
+        CB=1;
+    }
+    else if ((wavelength>=450) and (wavelength<=700))
+    {
+        CB=pow(10,0.02*(wavelength-450));
+    }
+    else
+    {
+        CB=1;
+    }
 
-        if ((wavelength>=700) and (wavelength<1150))
-				{
-					CC=1;
-                } else if ((wavelength>=1150) and (wavelength<1200))
-					{	
-                        CC=pow(10,0.018*(wavelength-1150));
-					}
-                    else if ((wavelength>=1200) and (wavelength<=1400))
-					{
-						CC=8;
-					}
-						else
-							{
-							CC=1;		
-							}	
+    if ((wavelength>=700) and (wavelength<1150))
+    {
+        CC=1;
+    }
+    else if ((wavelength>=1150) and (wavelength<1200))
+    {
+        CC=pow(10,0.018*(wavelength-1150));
+    }
+    else if ((wavelength>=1200) and (wavelength<=1400))
+    {
+        CC=8;
+    }
+    else
+    {
+        CC=1;
+    }
 
-        if ((wavelength>=400) and (wavelength<1400))
-        {
-            if (alpha<ALPHA_MIN)
-                    {
-                        CE=1.0;
-                    } else if ((alpha>=ALPHA_MIN) and (alpha<=ALPHA_MAX))
-                        {
-                            CE= alpha/ALPHA_MIN;
-                        }
-                        else if (alpha>ALPHA_MAX)
-                            {
-                            CE=pow(alpha,2)/(ALPHA_MIN*ALPHA_MAX);
-            }
-        }
-            else
-            {
-                CE=1.0;
-            }
-
-        if (wavelength<450)
-					{
-                        T1=10;
-                    } else if ((wavelength>=450) and (wavelength<=500))
-						{
-                            T1=10*pow(10,0.02*(wavelength-450));
-						}
-                            else if (wavelength>500)
-							{
-							T1=100;
-							}
-					
+    if ((wavelength>=400) and (wavelength<1400))
+    {
         if (alpha<ALPHA_MIN)
-					{
-						T2=10;
-                    } else if ((alpha>=ALPHA_MIN) and (alpha<=ALPHA_MAX))
-						{
-                            T2=10*pow(10,(alpha-ALPHA_MIN)/98.5);
-						}
-                            else if (alpha>ALPHA_MAX)
-							{
-							T2=100;
-							}
-        if (myEmpData.t==1)
-					{
-                        t_exp=pow(pulseWidth, 0.75);
-                    } else if (myEmpData.t==2)
-						{
-                        t_exp=pow(pulseWidth, 0.25);
-						}
-							else
-							{
-							t_exp=1;
-							}
+        {
+            CE=1.0;
+        }
+        else if ((alpha>=ALPHA_MIN) and (alpha<=ALPHA_MAX))
+        {
+            CE= alpha/ALPHA_MIN;
+        }
+        else if (alpha>ALPHA_MAX)
+        {
+            CE=pow(alpha,2)/(ALPHA_MIN*ALPHA_MAX);
+        }
+    }
+    else
+    {
+        CE=1.0;
+    }
+
+    if (wavelength<450)
+    {
+        T1=10;
+    }
+    else if ((wavelength>=450) and (wavelength<=500))
+    {
+        T1=10*pow(10,0.02*(wavelength-450));
+    }
+    else if (wavelength>500)
+    {
+        T1=100;
+    }
+					
+    if (alpha<ALPHA_MIN)
+    {
+        T2=10;
+    }
+    else if ((alpha>=ALPHA_MIN) and (alpha<=ALPHA_MAX))
+    {
+        T2=10*pow(10,(alpha-ALPHA_MIN)/98.5);
+    }
+    else if (alpha>ALPHA_MAX)
+    {
+        T2=100;
+    }
+    if (myEmpData.t==1)
+    {
+        t_exp=pow(pulseWidth, 0.75);
+    }
+    else if (myEmpData.t==2)
+    {
+    t_exp=pow(pulseWidth, 0.25);
+    }
+    else
+    {
+    t_exp=1;
+    }
 }
 
 string ComputeEMP::getFormulaEMP()const
@@ -416,97 +412,94 @@ void ComputeEMP::PhotoEffects()
 void ComputeEMP::ThermoEffects()
 {
     if (((wavelength>=400) and (wavelength<700)) and ((pulseWidth>10) and (pulseWidth<=30000)))
-	{	
-         if (alpha <ALPHA_MIN)
-		 {
-			_ThermoEMP=10;
-			_ThermoFormulaSort="E";
-			_ThermoFormula="E =10";
-            _ThermoEMPH=_ThermoEMP*pulseWidth;
-		 }
-		 else
-                 if (alpha >=ALPHA_MIN)
-				 {
-                     if (pulseWidth<=T2)
-					 {
-                        _ThermoEMP=18*CE*pow(pulseWidth,0.75);
-						_ThermoFormulaSort="H";
-                        _ThermoFormula="H = 18 C<sub>E</sub> t<sup>0.75</sup>";
-						_ThermoEMPH=_ThermoEMP;
-					 }
-						 else
-                             if (pulseWidth>T2)
-						{
-							_ThermoEMP=18*CE*pow(T2,(-0.25));
-							_ThermoFormulaSort="E";
-                            _ThermoFormula="E = 18 C<sub>E</sub> T<sub>2</sub><sup>(-0.25)</sup>";
-                            _ThermoEMPH=_ThermoEMP*pulseWidth;
-						}
-				}
+    {
+    if (alpha <ALPHA_MIN)
+     {
+        _ThermoEMP=10;
+        _ThermoFormulaSort="E";
+        _ThermoFormula="E = 10";
+        _ThermoEMPH=_ThermoEMP*pulseWidth;
+     }
+     else
+        if (alpha >=ALPHA_MIN)
+        {
+            if (pulseWidth<=T2)
+            {
+                _ThermoEMP=18*CE*pow(pulseWidth,0.75);
+                _ThermoFormulaSort="H";
+                _ThermoFormula="H = 18 C<sub>E</sub> t<sup>0.75</sup>";
+                _ThermoEMPH=_ThermoEMP;
+             }
+            else
+            if (pulseWidth>T2)
+            {
+                _ThermoEMP=18*CE*pow(T2,(-0.25));
+                _ThermoFormulaSort="E";
+                _ThermoFormula="E = 18 C<sub>E</sub> T<sub>2</sub><sup>(-0.25)</sup>";
+                _ThermoEMPH=_ThermoEMP*pulseWidth;
+            }
+        }
 	}
 	else
     if (((wavelength>=700) and (wavelength<1400)) and ((pulseWidth>10) and (pulseWidth<=30000)))
 	{	
-         if (alpha <ALPHA_MIN)
-		 {
+        if (alpha <ALPHA_MIN)
+        {
             _ThermoFormula="E = 10 C<sub>A</sub> C<sub>C</sub>";
             _ThermoEMP=10*CA*CC;
-			_ThermoFormulaSort="E";
+            _ThermoFormulaSort="E";
             _ThermoEMPH=_ThermoEMP*pulseWidth;
-		 } 
-		 else 
-			 
-         if (alpha >=ALPHA_MIN)
-		 {
-             if (pulseWidth<=T2)
-				{
+        }
+        else if (alpha >=ALPHA_MIN)
+        {
+            if (pulseWidth<=T2)
+            {
                 _ThermoEMP=18*CA*CC*CE*pow(pulseWidth,0.75);
-				_ThermoEMPH=_ThermoEMP;
-				_ThermoFormulaSort="H";
+                _ThermoEMPH=_ThermoEMP;
+                _ThermoFormulaSort="H";
                 _ThermoFormula="H = 18 C<sub>A</sub> C<sub>C</sub> C<sub>E</sub> t<sup>0.75</sup>";
-				} 
-				else 
-                    if (pulseWidth>T2)
-					{
-					_ThermoEMP=18*CA*CC*CE*pow(T2,(-0.25));
+            }
+            else
+            if (pulseWidth>T2)
+            {
+                _ThermoEMP=18*CA*CC*CE*pow(T2,(-0.25));
+                if(_ThermoEMP>=1000)
+                    _ThermoEMP=1000;
 
-                    if(_ThermoEMP>=1000)
-                        _ThermoEMP=1000;
-
-					_ThermoFormulaSort="E";
-                    _ThermoEMPH=_ThermoEMP*pulseWidth;
-                    _ThermoFormula="E = 18 C<sub>A</sub> C<sub>C</sub> C<sub>E</sub> T<sub>2</sub><sup>(-0.25)</sup>";
-					} 
+                _ThermoFormulaSort="E";
+                _ThermoEMPH=_ThermoEMP*pulseWidth;
+                _ThermoFormula="E = 18 C<sub>A</sub> C<sub>C</sub> C<sub>E</sub> T<sub>2</sub><sup>(-0.25)</sup>";
+            }
 		}
 	}
-		EMP_Result=_ThermoEMP;
-        formula=_ThermoFormula;
-        formulaSort=_ThermoFormulaSort;
+    EMP_Result=_ThermoEMP;
+    formula=_ThermoFormula;
+    formulaSort=_ThermoFormulaSort;
 }	
 void ComputeEMP::EMPPhotoThermo()
-	{
-        if ((wavelength>=400) and (wavelength<=600))
-		{
-			if(_ThermoEMPH<=_PhotoEMPH)
-			{
-				EMP_Result=_ThermoEMP;
-                formula=_ThermoFormula;
-                formulaSort=_ThermoFormulaSort;
-				_PhotoGamma=0;
-                notes="prevale l'effetto termico";
-			} 
-			else 
-				if(_PhotoEMPH<_ThermoEMPH)
-			{
-				EMP_Result=_PhotoEMP;
+{
+    if ((wavelength>=400) and (wavelength<=600))
+    {
+        if(_ThermoEMPH<=_PhotoEMPH)
+        {
+            EMP_Result=_ThermoEMP;
+            formula=_ThermoFormula;
+            formulaSort=_ThermoFormulaSort;
+            _PhotoGamma=0;
+            notes="prevale l'effetto termico";
+        }
+        else
+        if(_PhotoEMPH<_ThermoEMPH)
+        {
+                EMP_Result=_PhotoEMP;
                 formula=_PhotoFormula;
                 formulaSort=_PhotoFormulaSort;
                 notes="prevale l'effetto fotochimico";
-			}
-		}
-		else 
-            notes="nessuna";
-	}
+        }
+    }
+    else
+    notes="nessuna";
+}
 	
 void ComputeEMP::BioEffects()
 {
@@ -632,4 +625,9 @@ void ComputeEMP::adaptForSkinEMP()
            formulaSort="E";
            }
     }
+}
+
+std::array<empdata, EmpLeaTables::TABLEROW_EMP> ComputeEMP::getEMP_Table()const
+{
+    return empStructValues;
 }

@@ -4,11 +4,9 @@
 #include "footprintdialog.h"
 
 FootprintDialog::FootprintDialog(FootprintObject *_footprint, QWidget *parent)
-    : QDialog(parent)
+    : QDialog(parent), myFootprint(_footprint)
 {
     setupUi(this);
-
-    myFootprint=_footprint;
 
     auto myFootprintRectangle=myFootprint->getRectangle();
     QRectF myRect=myFootprintRectangle.rect();
@@ -25,8 +23,6 @@ FootprintDialog::FootprintDialog(FootprintObject *_footprint, QWidget *parent)
 void FootprintDialog::on_buttonBox_accepted()
 {
     QRectF myFootprintRect=QRectF(0, 0, widthSpinBox->value(), heightSpinBox->value());
-    //QPointF center= QPointF(widthSpinBox->value()/2, heightSpinBox->value()/2);
-    //myFootprintRect.translate(-center);
 
     auto myRectangle=myFootprint->getRectangle();
     myRectangle.setRect(myFootprintRect);

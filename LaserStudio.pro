@@ -1,6 +1,7 @@
 QT += widgets
 QT += charts
 QT += printsupport
+CONFIG += thread
 
 qtHaveModule(printsupport): QT += printsupport
 RC_ICONS = LaserStudioIcon.ico
@@ -54,8 +55,8 @@ SOURCES +=\
     laserskinsafety.cpp \
     laserskinsafetymp.cpp \
     link.cpp \
-    mainwindow.cpp \
     main.cpp \
+    mainwindow.cpp \
     mychartview.cpp \
     objectlink.cpp \
     reflector.cpp \
@@ -126,7 +127,6 @@ HEADERS  += mainwindow.h \
     reflectorpropertiesdialog.h \
     reflectorslistmodel.h \
     reflectorsqlist.h \
-    saveutilities.h \
     scalenumbersmodelview.h \
     scientificnotationcontrol.h \
     sliderscrolllabel.h \
@@ -157,7 +157,3 @@ FORMS    += \
     reflectorsqlist.ui \
     sliderscrolllabel.ui \
     wetchartdialog.ui
-
-
-INCLUDEPATH += $$PWD/.
-DEPENDPATH += $$PWD/.

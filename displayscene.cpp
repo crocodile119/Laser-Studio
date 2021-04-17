@@ -46,7 +46,8 @@ bool DisplayScene::eventFilter(QObject *watched, QEvent *event)
         setMousePosition(mouseSceneEvent->scenePos());
         }
     }
-return QGraphicsView::eventFilter(watched, event);
+
+    return QGraphicsView::eventFilter(watched, event);
 }
 
 void DisplayScene::setMousePosition(QPointF _position)
@@ -79,12 +80,13 @@ void DisplayScene::deleteScene()
 
 void DisplayScene::mousePressEvent(QMouseEvent *event)
 {
-    if (event->button() == Qt::LeftButton) {
+    if (event->button() == Qt::LeftButton)
+    {
         pressPosition = event->pos();
         seqNumberList.clear();
         qDebug() << "pos in press: " << pressPosition;
     }
-          QGraphicsView::mousePressEvent(event);
+    QGraphicsView::mousePressEvent(event);
 }
 
 void DisplayScene::mouseMoveEvent(QMouseEvent *event)
@@ -105,14 +107,8 @@ void DisplayScene::mouseReleaseEvent(QMouseEvent *event)
         qDebug() << "QRectF in mouseReleaseEvent: " << selectionRect;
         emit mouseRelease();
     }
-        QGraphicsView::mouseReleaseEvent(event);
+    QGraphicsView::mouseReleaseEvent(event);
 }
-/*
-QGraphicsScene* DisplayScene::getScene()
-{
-    return scene;
-}
-*/
 
 QRect DisplayScene::getSelectionRect()
 {

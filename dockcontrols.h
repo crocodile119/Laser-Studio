@@ -44,8 +44,8 @@ class DockControls : public QDockWidget
 
 
 public:
-    enum operation{CONTINUOS_WAVE, PULSE, MULTI_PULSE, NOT_WORKING};
-    explicit DockControls(QWidget *parent, DockResults *dockResults, DockEffects *dockEffects,
+    enum class operation{CONTINUOS_WAVE, PULSE, MULTI_PULSE, NOT_WORKING};
+    DockControls(QWidget *parent, DockResults *dockResults, DockEffects *dockEffects,
                           DockSkin *dockSkin, DockGoggle *dockGoggle, DockLea *dockLea);
     ~DockControls();
     Ui::DockControls *ui;
@@ -54,10 +54,13 @@ public:
     static const int DOCKGOGGLEMAXIMUN;
     static const double MODELOCKED_LIMIT;
 
+    void setUpGoggle();
     void fetchDataVector();
     void fetchDDataVector();
     void fetchLaserOutput();
     void fetchDLaserOutput();
+
+    void setLaserGoggleWidgets();
     void displayScaleNumber();
     void displayDScaleNumber();
     void displayLaserOutput();
@@ -83,9 +86,11 @@ public:
 
     void setUVA();
     void setVIS();
-    void setIRA();
-    void setIRB();
-    void setIRC();
+    void setIRA_NIR();
+    void setIRB_SWIR();
+    void setIRC_MWIR();
+    void setIRC_LWIR();
+    void setIRC_FIR();
 
     double getEMP()const;
     double getBeamDiameter()const;
@@ -110,7 +115,7 @@ public:
     void dComputeOpticalDensity();
     double getOpticalDensity();
     double getDOpticalDensity();
-    int get_n_laser()const;
+    operation get_n_laser()const;
     bool isModeLocked();
     void modeLockedPeak();
     operation laserOperation()const;
@@ -159,11 +164,11 @@ private slots:
     void on_wavelengthScrollBar_valueChanged(int value);
     void setEMP();
     void setPowerErgForEMP();
-    void on_comboBox_currentIndexChanged(const QString &arg1);
     void on_enableTeCheckBox_toggled(bool checked);   
     void on_pushButton_toggled(bool checked);
     void on_checkGaussianBeam_clicked(bool checked);
     void on_internalWaist_checkBox_toggled(bool checked);
+    void on_comboBoxBands_currentIndexChanged(int index);
 
 signals:
     void modified();
@@ -182,23 +187,23 @@ signals:
 private:
     //Variabili membro riguardanti i controlli
     int operationCombo;
-    double powerErg;
     bool gaussianBeam;
     bool internalWaist;
     double beamCorrection;
-    double alpha;
+
+    double powerErg;
+    double wavelength;
     double pulseWidth;
+    double alpha;
     double divergence;
     double beamDiameter;
     double prf;
     double T_Skin;
-    double wavelength;
     double powerErgPeak;
 
     double effectivePowerErg;
     double myEMP;
     double powerErgForEMP;
-    double myTimeBase;
     double NOHD;
     double NSHD;
     double lambertianMax;
@@ -214,9 +219,8 @@ private:
     DockLea *dockLea;
     ReflectorsQList *dockReflectorsList;
 
-    int n_laser;
+    operation n_laser;
     MyPolarChartView *polarChartView;
-    enum {MagicNumber = 0x7E51D683, RowCount = 10, RowCountMPE=11, ColumnCountMPE=6, RowCountData=17, ColumnCountData=1};
     ScaleNumbersModelView *myModel;
     ScaleNumbersModelView *myDModel;
     LaserGoggle *myLaserGoggle;

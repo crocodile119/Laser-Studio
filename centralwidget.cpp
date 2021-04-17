@@ -28,7 +28,9 @@
     const double CentralWidget::NEPERO_N=2.7182818284590452353602874713527;
 
 CentralWidget::CentralWidget(QWidget *parent) :
-    QWidget(parent)
+    QWidget(parent), myDockResults(new DockResults(this)), myDockEffects(new DockEffects(this)),
+    myDockSkin(new DockSkin(this)), myDockLea(new DockLea(this)), myDockGoggle(new DockGoggle(this)),
+    myDockReflectorsList(new ReflectorsQList(this))
 {
     setStyleSheet(tr("QWidget {background-color: #555555;}\n"
                      "QLabel {background: none;}\n"
@@ -37,12 +39,7 @@ CentralWidget::CentralWidget(QWidget *parent) :
                      "QGraphicsView {background-color:#f0f0f0;}"
                      ));
 
-    myDockResults= new DockResults(this);
-    myDockEffects =new DockEffects(this);
-    myDockSkin = new DockSkin(this);
-    myDockGoggle = new DockGoggle(this);
-    myDockLea= new DockLea(this);
-    myDockReflectorsList=new ReflectorsQList(this);
+
 
     clearInstallationDesription();
     scale=1;
@@ -70,7 +67,7 @@ CentralWidget::CentralWidget(QWidget *parent) :
 
     scintillationBool=false;
     atmEffectsBool=false;
-    meteoRange=23000;
+    meteoRange=CentralWidget::STANDARD_VISIBILITY_DISTANCE;
     a_coefficient=0.06*powf(meteoRange, 0.33);
 
     atmoshericEffectsCoefficient=3.91/(meteoRange)*powf(550.0/(632.0), a_coefficient);
@@ -212,7 +209,7 @@ bool CentralWidget::writeFile(const QString &fileName)
         << myDockControls->ui->pulseControl->getScientificNumber() << myDockControls->ui->divergenceControl->getScientificNumber()
         << myDockControls->ui->beamDiameterControl->getScientificNumber() << myDockControls->ui->prfControl->getScientificNumber()
         << myDockControls->ui->wavelengthScrollBar->value() << myDockControls->ui->operationCombo->currentIndex()
-        << myDockControls->ui->checkGaussianBeam->isChecked() << myDockControls->ui->comboBox->currentIndex()
+        << myDockControls->ui->checkGaussianBeam->isChecked() << myDockControls->ui->comboBoxBands->currentIndex()
         << myDockControls->ui->T_SkinControl->getScientificNumber() << myDockControls->ui->teControl->getDialNumber()
         << myDockControls->ui->enableTeCheckBox->isChecked() << myDockControls->ui->internalWaist_checkBox->isChecked()
         << myDockControls->getLambertianMax() << myDockControls->getEMP()
@@ -287,7 +284,7 @@ bool CentralWidget::readFile(const QString &fileName)
 
      myDockControls->ui->operationCombo->setCurrentIndex(operationCombo);
      myDockControls->ui->enableTeCheckBox->setChecked(isTeChecked);
-     myDockControls->ui->comboBox->setCurrentIndex(comboBox);
+     myDockControls->ui->comboBoxBands->setCurrentIndex(comboBox);
      myDockControls->ui->powerErgControl->setValue(powerErgControl);
      myDockControls->ui->alphaControl->setValue(alphaControl);
      myDockControls->ui->pulseControl->setValue(pulseControl);

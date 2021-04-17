@@ -6,7 +6,7 @@
 class DiffusionHazard
 {
 public:
-    enum kindOfSurface{MEDIUM, LARGE, POINT};
+    enum class kindOfSurface{MEDIUM, LARGE, POINT};
     DiffusionHazard(double, double, double, double, double);
     void computeSpotDiameter();
     void computeAlpha();

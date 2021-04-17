@@ -3,7 +3,6 @@
 #include "empdata.h"
 #include "empleatables.h"
 #include <string>
-#include <QtGui>
 #include <array>
 
 using namespace std;
@@ -60,7 +59,7 @@ public:
     double getGamma() const;/*!< Restituisce il valore dell'angolo &gamma; in mrad. L'angolo &gamma; ha significato solo per esposizioni
     * con effetti fotochimici. */
     void adaptForSkinEMP();/*!< Potrà essere invocato qualora fosse necessario ottenere il valore di EMP per la pelle. */
-
+    std::array<empdata, EmpLeaTables::TABLEROW_EMP> getEMP_Table()const;
 
 
 protected:

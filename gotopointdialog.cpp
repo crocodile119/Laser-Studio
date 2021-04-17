@@ -5,10 +5,9 @@
 #include "ui_gotopointdialog.h"
 
 GoToPointDialog::GoToPointDialog(QWidget *parent, QPointF position)
-    : QDialog(parent)
+    : QDialog(parent), center(position)
 {
     setupUi(this);
-    center=position;
 
     xPosition=center.x();
     yPosition=center.y();

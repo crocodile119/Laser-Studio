@@ -2,12 +2,12 @@
 #include <string>
 #include "laserclasscw.h"
 
-const double LaserClassCW::PI = 3.141592653589793;
-const double LaserClassCW::BEAM_DIAMETER=7.0;
-const double LaserClassCW::POWER=1.0;
-const double LaserClassCW::DIVERGENCE=1.5;
-const double LaserClassCW::TIME_BASE=0.25;
-const double LaserClassCW::ALPHA=1.5;
+const double LaserClassCW::PI{3.141592653589793};
+const double LaserClassCW::PUPIL_DIAMETER{7.0};
+const double LaserClassCW::POWER{1.0};
+const double LaserClassCW::DIVERGENCE {1.5};
+const double LaserClassCW::TIME_BASE{0.25};
+const double LaserClassCW::ALPHA{1.5};
 
 LaserClassCW::LaserClassCW(double _beamDiameter, double _powerErg,  double _divergence, double _wavelength,
                            double _pulseWidth, double _alpha):myLaserClass( _wavelength,_pulseWidth, _alpha)
@@ -138,7 +138,7 @@ array<double, ComputeLEA::N_LEA> LaserClassCW::leaPowerErgUnit(laserOperation my
                                                                _LEA_formulaSort, const double &_powerErg, const double &time)
 {
     array<double, ComputeLEA::N_LEA>myPowerErgEq;
-    if(myOperation==CW)
+    if(myOperation==laserOperation::CW)
     {
         for(size_t i=0; i<ComputeLEA::N_LEA; i++)
         {
@@ -306,21 +306,21 @@ LaserClassCW::laserClass LaserClassCW::valuateClass(array<bool, LaserClassCW::N_
 {
     laserClass _laserClassAssigned;
     if(myClassValuation[0])
-        _laserClassAssigned=CLASSE_1;
+        _laserClassAssigned=laserClass::CLASSE_1;
     else if(myClassValuation[1])
-        _laserClassAssigned=CLASSE_1M;
+        _laserClassAssigned=laserClass::CLASSE_1M;
     else if(myClassValuation[2])
-        _laserClassAssigned=CLASSE_2;
+        _laserClassAssigned=laserClass::CLASSE_2;
     else if(myClassValuation[3])
-        _laserClassAssigned=CLASSE_2M;
+        _laserClassAssigned=laserClass::CLASSE_2M;
     else if(myClassValuation[4])
-        _laserClassAssigned=CLASSE_3R;
+        _laserClassAssigned=laserClass::CLASSE_3R;
     else if(myClassValuation[5])
-        _laserClassAssigned=CLASSE_3B;
+        _laserClassAssigned=laserClass::CLASSE_3B;
     else if(myClassValuation[6])
-        _laserClassAssigned=CLASSE_4;
+        _laserClassAssigned=laserClass::CLASSE_4;
     else
-        _laserClassAssigned=NON_CLASSIFICATO;
+        _laserClassAssigned=laserClass::NON_CLASSIFICATO;
 
     return _laserClassAssigned;
 }
@@ -593,5 +593,5 @@ void LaserClassCW::updateAll()
     //Calcolo i valori di LEA
     myLaserClass.calculate();
     computeBeamArea();
-    classUpdate(CW, timeBase, powerErg);
+    classUpdate(laserOperation::CW, timeBase, powerErg);
 }

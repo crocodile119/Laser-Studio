@@ -25,7 +25,7 @@ using namespace std;
 class LaserSafetyMP : public LaserSafetyCW
 {
 public:
-LaserSafetyMP(double=PULSE_REPETITION_FREQUENCY, double=BEAM_DIAMETER, double=POWER, double=DIVERGENCE, double=EmpLeaTables::HE_NE_WAVELENGTH,
+LaserSafetyMP(double=PULSE_REPETITION_FREQUENCY, double=PUPIL_DIAMETER, double=POWER, double=DIVERGENCE, double=EmpLeaTables::HE_NE_WAVELENGTH,
               double=EmpLeaTables::NATURAL_AVERSION_TIME, double=EmpLeaTables::ALPHA_MIN);/*!< L'istanza della classe prevede l'inserimento dei parametri:
 <ul>
 <li>frequenza di ripetizione degli impulsi <b>PRF</b> in Hz;</li>

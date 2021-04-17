@@ -39,7 +39,8 @@ void LaserClassMP::meanClassUpdate(const double& _timeBase, const double& _meanP
      * risulta applicabile (lunghezza d'onda >=302.5 e <=4000).                    *                                      *
      * *****************************************************************************/
 
-    if((wavelength>=302.5)and(wavelength<=4000)){
+    if((wavelength>=302.5)and(wavelength<=4000))
+    {
     /**************************************************************************
      * Calcolo il diametro del fascio alla stessa distanza della condizione 1 *                                                *
      **************************************************************************/
@@ -50,12 +51,12 @@ void LaserClassMP::meanClassUpdate(const double& _timeBase, const double& _meanP
      ****************************************************************************/
 
         meanCouplingFactor_Cond_1=valuateCouplingFactor(meanApCond_1, meanBeamAtStop_Cond_1);
-        }
-        else
-            {
-             meanCouplingFactor_Cond_1=1.0;
-             meanBeamAtStop_Cond_1=std::nan("N.A.");
-            }
+    }
+    else
+    {
+        meanCouplingFactor_Cond_1=1.0;
+        meanBeamAtStop_Cond_1=std::nan("N.A.");
+    }
 
     /****************************************************************************
      * prelevo l'apertura calcolata per la condizione 1 e calcolo il fattore di *
@@ -108,8 +109,7 @@ void LaserClassMP::meanClassUpdate(const double& _timeBase, const double& _meanP
 }
 
 void LaserClassMP::c5ClassUpdate()
-    {
-
+{
     LEA_Corrected=computeLEA_ThermalCorrection(myLaserClass.getLEA());
     c5ClassValutation=valuateLEA_forClass(powerErg_Cond_1, powerErg_Cond_3,
                                         LEA_Corrected);
@@ -121,7 +121,7 @@ void LaserClassMP::c5ClassUpdate()
 }
 
 void LaserClassMP::tiClassUpdate(const double& _Tmin, const double& _powerErg)
-    {
+{
     //In base a ciacuno dei LEA delle varie classi trasformo l'unità di misura dell'uscita laser
     tiPowerErgEq=powerErgUnit(myTiLaserClass.getLEA_FormulaSort(), _powerErg, _Tmin);
     //del laser calcolo le distanze e le aperture relative alle condizioni 1 e 3
@@ -138,23 +138,24 @@ void LaserClassMP::tiClassUpdate(const double& _Tmin, const double& _powerErg)
      * risulta applicabile (lunghezza d'onda >=302.5 e <=4000).                    *                                      *
      * *****************************************************************************/
 
-    if((wavelength>=302.5)and(wavelength<=4000)){
-    /**************************************************************************
-     * Calcolo il diametro del fascio alla stessa distanza della condizione 1 *                                                *
-     **************************************************************************/
+    if((wavelength>=302.5)and(wavelength<=4000))
+    {
+        /**************************************************************************
+         * Calcolo il diametro del fascio alla stessa distanza della condizione 1 *                                                *
+         **************************************************************************/
         tiBeamAtStop_Cond_1=valuateBeamDiameterAtStop(tiDistCond_1, divergence);
-    /****************************************************************************
-     * prelevo l'apertura calcolata per la condizione 1 e calcolo il fattore di *
-     * accoppiamento corrispondente                                             *
-     ****************************************************************************/
+        /****************************************************************************
+         * prelevo l'apertura calcolata per la condizione 1 e calcolo il fattore di *
+         * accoppiamento corrispondente                                             *
+         ****************************************************************************/
 
         tiCouplingFactor_Cond_1=valuateCouplingFactor(tiApCond_1, tiBeamAtStop_Cond_1);
-        }
-        else
-            {
-             tiCouplingFactor_Cond_1=1.0;
-             tiBeamAtStop_Cond_1=std::nan("N.A.");
-            }
+    }
+    else
+    {
+        tiCouplingFactor_Cond_1=1.0;
+        tiBeamAtStop_Cond_1=std::nan("N.A.");
+    }
 
     /****************************************************************************
      * prelevo l'apertura calcolata per la condizione 1 e calcolo il fattore di *
@@ -245,16 +246,16 @@ void LaserClassMP::computePulseNumber()
 {
     /*La funzione calcola il numero degli impulsi del treno come prodotto del Pulse Repetition Frequency e del tempo di esposizione.*/
     if((wavelength>=400)and(wavelength<=1400))
-        {
+    {
         if(prf> (1/Ti)){
             pulseNumber=ceil(static_cast<int>(0.5+(1/Ti)*Te));}//se il conteggio non è regolare il numero di impulsi è pari al rapporto del tempo di esposizione con Te con Ti
-            else
+        else
             pulseNumber=ceil(prf*Te);//altrimenti è pari al prodotto della PRF con il tempo di esposizione Te.
-         }
+    }
     else
-        {
+    {
          pulseNumber=ceil(prf*timeBase);
-        }
+    }
     /*************************************************************************
      *                          ATTENZIONE                                   *
      * PulseNumber è un intero quindi risulta pari a q anche nel caso in cui *
@@ -269,35 +270,39 @@ void LaserClassMP::computeC5()
     ************************************************************************************************************************/
     if((wavelength>=400)and(wavelength<=1400)and(pulseWidth<=0.25))
     {
-        if(pulseWidth<=Ti){
+        if(pulseWidth<=Ti)
+        {
             if(timeBase<=0.25)
                 C5=1;
-                else{
-                    if(pulseNumber<=600)
+            else if(pulseNumber<=600)
                     C5=1;
-                    else{
-                        C5=5*std::pow(pulseNumber, -0.25);
-                        if(C5<0.4)
-                        C5=0.4;
-                        }
-                    }
-                }
-        if(pulseWidth>Ti){
+            else
+            {
+                C5=5*std::pow(pulseNumber, -0.25);
+                if(C5<0.4)
+                    C5=0.4;
+            }
+        }
+
+        else
+        {
             if((alpha<=5)or(alpha>100))
-            C5=1;
+                C5=1;
             else if((alpha>5)and(alpha<=alpha_max))
-                {
+            {
                 if(pulseNumber<=40)
                     C5=std::pow(pulseNumber, -0.25);
-                    else
+                else
                     C5=0.4;
-                }else if(alpha>alpha_max){
-                        if(pulseNumber<=625)
+            }
+            else if(alpha>alpha_max)
+            {
+                if(pulseNumber<=625)
                     C5=std::pow(pulseNumber, -0.25);
-                    else
+                else
                     C5=0.2;
-                    }
-                }
+            }
+        }
     }
 }
 
@@ -312,14 +317,13 @@ string LaserClassMP::valutateCounting()
 
     if((wavelength>=400)and(wavelength<=1400))
     {
-         if(prf> (1/Ti))
-          _Counting="non regolare";
-          else
-          _Counting="regolare";
-     }else
-        {
-           _Counting="regolare";
-        }
+        if(prf> (1/Ti))
+            _Counting="non regolare";
+        else
+            _Counting="regolare";
+    }
+    else
+        _Counting="regolare";
 
     return _Counting;
 }
@@ -341,19 +345,14 @@ double LaserClassMP::getPRF()const
 
 void LaserClassMP::setTimeBase()
 {
-        if ((wavelength>=400) and (wavelength<=700))
-            {
-            timeBase=0.25;
-            }
-            else if((wavelength>=180)and (wavelength<400))
-                {
-                timeBase=30000;
-                }
-                    else
-                    {
-                    timeBase=100;
-                    }
-        myMeanLaserClass.setPulseWidth(timeBase);
+    if((wavelength>=400) and (wavelength<=700))
+        timeBase=0.25;
+    else if((wavelength>=180)and (wavelength<400))
+        timeBase=30000;
+    else
+        timeBase=100;
+
+    myMeanLaserClass.setPulseWidth(timeBase);
 }
 
 
@@ -447,6 +446,7 @@ array<double, ComputeLEA::N_LEA> LaserClassMP::computeLEA_ThermalCorrection(arra
     {
         _LEA_ThermalCorrected[i]=C5*_LEA_Value[i];
     }
+
     return _LEA_ThermalCorrected;
 }
 
@@ -456,7 +456,7 @@ void LaserClassMP::updateAll()
     computePulseNumber();
     computeC5();
     myLaserClass.calculate();
-    classUpdate(PULSED, pulseWidth, powerErg);
+    classUpdate(laserOperation::PULSED, pulseWidth, powerErg);
 
     setTimeBase();
     computeBeamArea();
@@ -473,16 +473,19 @@ void LaserClassMP::updateAll()
             c5ClassUpdate();
             systemClassValutation=valuateSystemClass(classValutation, meanClassValutation, c5ClassValutation);
         }
-         else{
+        else
+        {
             setAlpha_max(Ti);
             computeC5();
             highFrequencyValuation();
             systemClassValutation=valuateSystemClass(classValutation, meanClassValutation, tiClassValutation);
         }
     }
-    else{
+    else
+    {
     array<bool, LaserClassCW::N_CLASS> noTiClassValuation={false, false, false, false, false, false, false};
-    systemClassValutation=valuateSystemClass(classValutation, meanClassValutation, noTiClassValuation);}
+    systemClassValutation=valuateSystemClass(classValutation, meanClassValutation, noTiClassValuation);
+    }
 
     systemLaserClassAssigned=valuateClass(systemClassValutation);
 }
@@ -497,10 +500,10 @@ void LaserClassMP::setAlpha_max(const double &pulse)
 {
     if(pulse<6.25e-004)
         alpha_max=5;
-        else if((pulse>=6.25e-004)and(pulse<0.25))
-            alpha_max=200*pow(pulse, 0.5);
-                else if(pulse>0.25)
-                alpha_max=100;
+    else if((pulse>=6.25e-004)and(pulse<0.25))
+        alpha_max=200*pow(pulse, 0.5);
+    else if(pulse>0.25)
+        alpha_max=100;
 }
 
 array<bool, LaserClassCW::N_CLASS> LaserClassMP::valuateSystemClass(array<bool, LaserClassCW::N_CLASS> myClassValuation,
@@ -640,7 +643,7 @@ array<double, ComputeLEA::N_LEA> LaserClassMP::getMeanPowerErg_Cond_3()const
     return meanPowerErg_Cond_3;
 }
 
-string LaserClassMP::getMeanLaserClassAssigned()const
+LaserClassCW::laserClass LaserClassMP::getMeanLaserClassAssigned()const
 {
     return meanLaserClassAssigned;
 }
@@ -650,7 +653,7 @@ array<double, ComputeLEA::N_LEA> LaserClassMP::getMeanLEA_Corrected()const
     return meanLEA_Corrected;
 }
 
-string LaserClassMP::getC5LaserClassAssigned()const
+LaserClassCW::laserClass LaserClassMP::getC5LaserClassAssigned()const
 {
     return c5LaserClassAssigned;
 }
@@ -775,7 +778,7 @@ array<double, ComputeLEA::N_LEA> LaserClassMP::getTiPowerErg_Cond_3()const
     return tiPowerErg_Cond_3;
 }
 
-string LaserClassMP::getTiLaserClassAssigned()const
+LaserClassMP::laserClass LaserClassMP::getTiLaserClassAssigned()const
 {
     return tiLaserClassAssigned;
 }

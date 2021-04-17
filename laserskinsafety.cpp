@@ -5,7 +5,7 @@
 using namespace std;
 
 const double LaserSkinSafety::PI = 3.141592653589793;
-const double LaserSkinSafety::BEAM_DIAMETER=7.0;
+const double LaserSkinSafety::PUPIL_DIAMETER=7.0;
 const double LaserSkinSafety::POWER_ENERGY=1.0e-01;
 const double LaserSkinSafety::DIVERGENCE=1.5;
 const double LaserSkinSafety::EXPOSURE_TIME=5;
@@ -13,43 +13,42 @@ const double LaserSkinSafety::EXPOSURE_TIME=5;
 LaserSkinSafety::LaserSkinSafety(double _beamDiameter, double _powerErg,  double _divergence, double _wavelength,
                         double _pulseWidth, double _alpha):mySkinLaser(_wavelength, _pulseWidth, _alpha)
 {
-setBeamDiameter(_beamDiameter);
-setPowerErg(_powerErg);
-setDivergence(_divergence);
-setWavelength(_wavelength);
-setPulseWidth(_pulseWidth);
-setAlpha(_alpha);
+    setBeamDiameter(_beamDiameter);
+    setPowerErg(_powerErg);
+    setDivergence(_divergence);
+    setWavelength(_wavelength);
+    setPulseWidth(_pulseWidth);
+    setAlpha(_alpha);
 
-mySkinLaser.EMP();
-mySkinLaser.adaptForSkinEMP();
-mySkinLaser.getEMP();
-formula=mySkinLaser.getFormulaEMP();
-formulaSort=mySkinLaser.getFormulaSort();
-CA=mySkinLaser.getCA();
-CB=mySkinLaser.getCB();
-CC=mySkinLaser.getCC();
-CE=mySkinLaser.getCE();
-T1=mySkinLaser.getT1();
-T2=mySkinLaser.getT2();
-gamma=mySkinLaser.getGamma();
-radiation=mySkinLaser.getRadiation();
-skinDamage=mySkinLaser.getSkinDamage();
-eyeDamage=mySkinLaser.getEyeDamage();
-notes=mySkinLaser.getPhotochemicalNote();
+    mySkinLaser.EMP();
+    mySkinLaser.adaptForSkinEMP();
+    mySkinLaser.getEMP();
+    formula=mySkinLaser.getFormulaEMP();
+    formulaSort=mySkinLaser.getFormulaSort();
+    CA=mySkinLaser.getCA();
+    CB=mySkinLaser.getCB();
+    CC=mySkinLaser.getCC();
+    CE=mySkinLaser.getCE();
+    T1=mySkinLaser.getT1();
+    T2=mySkinLaser.getT2();
+    gamma=mySkinLaser.getGamma();
+    radiation=mySkinLaser.getRadiation();
+    skinDamage=mySkinLaser.getSkinDamage();
+    eyeDamage=mySkinLaser.getEyeDamage();
+    notes=mySkinLaser.getPhotochemicalNote();
 
-computePowerNSHD();
-computePowerForExended();
-
+    computePowerNSHD();
+    computePowerForExended();
 }
 
 void LaserSkinSafety::laserSkinUpdate()
 {
-mySkinLaser.EMP();
-mySkinLaser.adaptForSkinEMP();
-EMP_Result=getEMP();
-computePowerForExended();
-computePowerNSHD();
-computeErgNSHD();
+    mySkinLaser.EMP();
+    mySkinLaser.adaptForSkinEMP();
+    EMP_Result=getEMP();
+    computePowerForExended();
+    computePowerNSHD();
+    computeErgNSHD();
 }
 
 double LaserSkinSafety::getWavelength()const
@@ -144,17 +143,17 @@ double LaserSkinSafety::computePowerNSHD()
 {
     double ForNSHD;
     formulaSort=getFormulaSort();
-        if(formulaSort=="E")
-            ForNSHD=powerErg;
-                else
-            ForNSHD=powerErg*exposureTime;
+    if(formulaSort=="E")
+        ForNSHD=powerErg;
+    else
+        ForNSHD=powerErg*exposureTime;
 
-            double underroot;
+    double underroot;
 
-            underroot=(4*ForNSHD)/(PI*EMP_Result);
-            powerNSHD=(sqrt(underroot)-(beamDiameter/1000))/(divergence/1000);
-            if (powerNSHD<0)
-                powerNSHD=0;
+    underroot=(4*ForNSHD)/(PI*EMP_Result);
+    powerNSHD=(sqrt(underroot)-(beamDiameter/1000))/(divergence/1000);
+    if(powerNSHD<0)
+        powerNSHD=0;
 
     return powerNSHD;
 }
@@ -173,8 +172,8 @@ double LaserSkinSafety::computeErgNSHD()
 		
     underroot=(4*ForNSHD)/(PI*EMP_Result);
     ergNSHD=(sqrt(underroot)-(beamDiameter/1000))/(divergence/1000);
-        if (ergNSHD<0)
-            ergNSHD=0;
+    if (ergNSHD<0)
+        ergNSHD=0;
 
     return ergNSHD;
 }

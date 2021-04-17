@@ -23,7 +23,7 @@ Per procedere al calcolo dell'<b>EMP</b> sarà necessario invocare la funzione m
 class LaserSkinSafety
 {
 public:
-LaserSkinSafety(double=BEAM_DIAMETER, double=POWER_ENERGY, double=DIVERGENCE, double=EmpLeaTables::HE_NE_WAVELENGTH,
+LaserSkinSafety(double=PUPIL_DIAMETER, double=POWER_ENERGY, double=DIVERGENCE, double=EmpLeaTables::HE_NE_WAVELENGTH,
                 double=EXPOSURE_TIME, double=EmpLeaTables::ALPHA_MIN);/*!< L'istanza della classe prevede l'inserimento dei parametri:
 <ul>
 <li>diametro del fascio <b>a</b> in mm;</li>
@@ -46,7 +46,7 @@ La classe prevede inoltre un costruttore di default con i seguenti parametri:
  */
 
 const static double PI; /*!< Valore della costante &pi;. */
-const static double BEAM_DIAMETER; /*!< Parametro di default del diametro del fascio in mm. */
+const static double PUPIL_DIAMETER; /*!< Parametro di default del diametro del fascio in mm. */
 const static double POWER_ENERGY;/*!< Parametro di default della potenza ottica del dispositivo in Watt o dell'energia dell'impulso in Joule
 a seconda della modalità di funzionamento, CW o ad impulso. */
 const static double DIVERGENCE;/*!< Parametro di default della divergenza del fascio in mrad. */

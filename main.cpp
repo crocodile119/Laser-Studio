@@ -1,6 +1,7 @@
 #include <QApplication>
 #include <QObject>
 #include <QSplashScreen>
+#include <QMessageBox>
 
 #include "mainwindow.h"
 
@@ -9,6 +10,7 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     app.setStyle("fusion");
     Q_INIT_RESOURCE(LaserStudio);
+
     QSplashScreen *splash = new QSplashScreen;
     splash->setPixmap(QPixmap(":/images/splash.png"));
     splash->show();
@@ -27,7 +29,8 @@ int main(int argc, char *argv[])
    // establishConnections();
     mainWin.showMaximized();
     splash->finish(&mainWin);
-    delete splash;
-    return app.exec();
 
+    delete splash;
+
+    return app.exec();
 }

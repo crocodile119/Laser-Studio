@@ -4,11 +4,10 @@
 #include "reflectorpropertiesdialog.h"
 
 ReflectorPropertiesDialog::ReflectorPropertiesDialog(Reflector *reflector, QWidget *parent)
-    : QDialog(parent)
+    : QDialog(parent), reflector(reflector)
 {
     setupUi(this);
 
-    this->reflector = reflector;
     xSpinBox->setValue(reflector->x());
     ySpinBox->setValue(reflector->y());
     reflectionSpinBox->setValue(reflector->getMaterialCoeff());
@@ -32,9 +31,9 @@ ReflectorPropertiesDialog::ReflectorPropertiesDialog(Reflector *reflector, QWidg
     }
 
     if(this->reflector->getReflectorKind()==GLASS_TARGET)
-    label_5->setText(tr("τ"));
+        label_5->setText(tr("τ"));
     else
-    label_5->setText(tr("ρ"));
+        label_5->setText(tr("ρ"));
 }
 
 void ReflectorPropertiesDialog::on_buttonBox_accepted()
@@ -51,10 +50,10 @@ void ReflectorPropertiesDialog::on_buttonBox_accepted()
 
 void ReflectorPropertiesDialog::on_positioningSlider_valueChanged(int value)
 {
-     positioningLabel->setText(QString::number(value));
+    positioningLabel->setText(QString::number(value));
 
-     if(reflector->getReflectorKind()==LAMBERTIAN_TARGET)
-     actualPositioningLabel->setText(QString::number(value+reflector->getLaserPhase(), 'f', 0));
-     else
-     actualPositioningLabel->setText(QString::number(2*(value+reflector->getLaserPhase()), 'f', 0));
+    if(reflector->getReflectorKind()==LAMBERTIAN_TARGET)
+        actualPositioningLabel->setText(QString::number(value+reflector->getLaserPhase(), 'f', 0));
+    else
+        actualPositioningLabel->setText(QString::number(2*(value+reflector->getLaserPhase()), 'f', 0));
 }

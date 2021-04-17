@@ -6,10 +6,11 @@ TablesController *TablesController::singleton=nullptr;
 TablesController *TablesController::getInstance()
 {
     if (singleton == nullptr)
-          singleton= new TablesController;
+        singleton= new TablesController;
 
-        return singleton;
+    return singleton;
 }
+
 TablesController::TablesController():myEmpLeaTables(new EmpLeaTables)
 {
 }
@@ -17,11 +18,11 @@ TablesController::TablesController():myEmpLeaTables(new EmpLeaTables)
 
 void TablesController::destroy() {
 
-           if (singleton != nullptr) {
-               delete singleton;
-               singleton= nullptr;
-           }
-
+    if (singleton != nullptr)
+    {
+        delete singleton;
+        singleton= nullptr;
+    }
 }
 
 std::array<leadata, EmpLeaTables::TABLEROW_1_1M>TablesController::writeLeaInStructValues_1_1M()

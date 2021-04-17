@@ -79,17 +79,15 @@ void LaserSkinSafetyMP::computeMeanPowerEMP()
     powerFormulaSort=myMeanPower_SkinLaser.getFormulaSort();
     powerSkinEMP=myMeanPower_SkinLaser.getEMP();
 
-        if(PRF!=0)
-        {
-            if(powerFormulaSort=="H")
-                meanPow_EMP_Result=powerSkinEMP/ceil(exposureTime*PRF);// calcola l'H medio come il rapporo dell'H in Te con N.
-            else if(powerFormulaSort=="E")
-                meanPow_EMP_Result=powerSkinEMP/(PRF*pulseWidth);//calcola l'E medio come il rapporo dell'H medio con t.
-        }
+    if(PRF!=0)
+    {
+        if(powerFormulaSort=="H")
+            meanPow_EMP_Result=powerSkinEMP/ceil(exposureTime*PRF);// calcola l'H medio come il rapporo dell'H in Te con N.
+        else if(powerFormulaSort=="E")
+            meanPow_EMP_Result=powerSkinEMP/(PRF*pulseWidth);//calcola l'E medio come il rapporo dell'H medio con t.
+    }
         else
-        {
-        meanPow_EMP_Result=powerSkinEMP;//utile per evitare divisione per 0 quando la PRF si riduce a 0.
-        }
+    meanPow_EMP_Result=powerSkinEMP;//utile per evitare divisione per 0 quando la PRF si riduce a 0.
 }
 
 void LaserSkinSafetyMP::computeMeanPowerIrradiance()
@@ -116,27 +114,19 @@ void LaserSkinSafetyMP::equateMeanPowerEMP()
 {    
     if(formulaSort=="H")
     {
-//se l'EMP calcolato per il tempo di funzionamento è espresso in esposizione radiante esprimo l'emissione radiante in esposizione radiante
+    //se l'EMP calcolato per il tempo di funzionamento è espresso in esposizione radiante esprimo l'emissione radiante in esposizione radiante
         if(powerFormulaSort=="H")
-            meanPow_EMP_Equate=meanPow_EMP_Result;
-        else
-//altrimenti trasformo l'EMP in esposizione radiante un irradianza dividendo per il tempo di esposizione.
-        if(powerFormulaSort=="E")
-        {
+            meanPow_EMP_Equate=meanPow_EMP_Result;  
+        else if(powerFormulaSort=="E")//altrimenti trasformo l'EMP in esposizione radiante un irradianza dividendo per il tempo di esposizione.
             meanPow_EMP_Equate=meanPow_EMP_Result*pulseWidth;//ottengo il valore della radianza media da E
-        }
     }
-// viceversa se l'EMP del tempo di funzionamento è espresso in irradianza
-    else
-    if(formulaSort=="E")
+    // viceversa se l'EMP del tempo di funzionamento è espresso in irradianza
+    else if(formulaSort=="E")
     {
         if(powerFormulaSort=="H")
-        {
             meanPow_EMP_Equate=meanPow_EMP_Result/pulseWidth;//calcolo E da H dividendo per t.
-        }
-        else
-        if(powerFormulaSort=="E")
-        meanPow_EMP_Equate=meanPow_EMP_Result;
+        else if(powerFormulaSort=="E")
+            meanPow_EMP_Equate=meanPow_EMP_Result;
     }
 }
 
@@ -171,13 +161,13 @@ void LaserSkinSafetyMP::computeMeanPower_NSHD()
             else
         ForNSHD=meanPower*exposureTime;// altrimenti si ricava l'energia
 
-		double underroot;
+    double underroot;
     //si applica la formula pe il calcolo della NSHD
 
-        underroot=(4*ForNSHD)/(PI*powerSkinEMP);//si impiega l'EMP per gli effetti medi
-        meanPower_NSHD=(sqrt(underroot)-(beamDiameter/1000))/(divergence/1000);
-        if (meanPower_NSHD<0)// se il risultato è minore di zero allora la NSHD viene impostato a zero.
-            meanPower_NSHD=0;
+    underroot=(4*ForNSHD)/(PI*powerSkinEMP);//si impiega l'EMP per gli effetti medi
+    meanPower_NSHD=(sqrt(underroot)-(beamDiameter/1000))/(divergence/1000);
+    if(meanPower_NSHD<0)// se il risultato è minore di zero allora la NSHD viene impostato a zero.
+        meanPower_NSHD=0;
 }
 
 void LaserSkinSafetyMP::computeSinglePulse_NSHD()
@@ -188,20 +178,18 @@ void LaserSkinSafetyMP::computeSinglePulse_NSHD()
     double ForNSHD=0;
     formulaSort=getFormulaSort();
 	
-    if(formulaSort=="E"){
-           ForNSHD=powerErg/pulseWidth;// se l'EMP è espresso in irradianza si considera la potenza (PowerErg è l'energia dell'impulso).
-           }
-             else if(formulaSort=="H")
-                {
-                ForNSHD=powerErg;// altrimenti si considera l'energia dell'impulso
-                }
+    if(formulaSort=="E")
+        ForNSHD=powerErg/pulseWidth;// se l'EMP è espresso in irradianza si considera la potenza (PowerErg è l'energia dell'impulso).
+    else if(formulaSort=="H")
+        ForNSHD=powerErg;// altrimenti si considera l'energia dell'impulso
 
-		double underroot;
+    double underroot;
     //si applica la formula pe il calcolo della NSHD
-        underroot=(4*ForNSHD)/(PI*SP_EMP_Result);//si impiega l'EMP del singolo impulso
-        singlePulse_NSHD=(sqrt(underroot)-(beamDiameter/1000))/(divergence/1000);
-        if (singlePulse_NSHD<0)// se il risultato è minore di zero allora la NSHD viene impostato a zero.
-            singlePulse_NSHD=0;
+    underroot=(4*ForNSHD)/(PI*SP_EMP_Result);//si impiega l'EMP del singolo impulso
+    singlePulse_NSHD=(sqrt(underroot)-(beamDiameter/1000))/(divergence/1000);
+
+    if (singlePulse_NSHD<0)// se il risultato è minore di zero allora la NSHD viene impostato a zero.
+        singlePulse_NSHD=0;
 }
 
 void LaserSkinSafetyMP::computeNSHD()

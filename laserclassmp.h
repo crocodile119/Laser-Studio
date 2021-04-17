@@ -18,7 +18,7 @@ using namespace std;
 class LaserClassMP: public LaserClassSP
 {
 public:
-    LaserClassMP(double=PULSE_REPETITION_FREQUENCY, double=BEAM_DIAMETER, double=PULSE_ENERGY, double=DIVERGENCE,
+    LaserClassMP(double=PULSE_REPETITION_FREQUENCY, double=PUPIL_DIAMETER, double=PULSE_ENERGY, double=DIVERGENCE,
                  double=EmpLeaTables::HE_NE_WAVELENGTH, double=PULSE_WIDTH, double=ALPHA);/*!< L'istanza della classe prevede l'inserimento dei parametri:
 
 <ul>
@@ -179,7 +179,7 @@ La classe prevede inoltre un costruttore di default con i seguenti parametri:
     * della 1<sup>a</sup> condizione. */
     array<double, ComputeLEA::N_LEA> getMeanPowerErg_Cond_3()const;/*!< Restituisce l'uscita del dispositivo media corretta con il fattore di accoppiamento
     * della 3<sup>a</sup> condizione. */
-    string getMeanLaserClassAssigned()const;/*!< Opera il confronto di ciascun con le uscite corrette LEA relative  agli effetti medi per
+    laserClass getMeanLaserClassAssigned()const;/*!< Opera il confronto di ciascun con le uscite corrette LEA relative  agli effetti medi per
     * la 1<sup>a</sup> e la 3<sup>a</sup> condizione e fornisce un array di tipo booleano cong gli estessi criteri espositi in
     * LaserClassCW::valuateLEA_forClass(double*, double*, double*).*/
     array<double, ComputeLEA::N_LEA> getMeanLEA_Corrected()const; /*!< Restituisce i valori del LEA per la valutazione degli effetti medi corretti da
@@ -226,7 +226,7 @@ La classe prevede inoltre un costruttore di default con i seguenti parametri:
     * della 1<sup>a</sup> condizione. */
     array<double, ComputeLEA::N_LEA> getTiPowerErg_Cond_3()const;/*!< Restituisce l'uscita del dispositivo riguardante l'alta frequenza corretta con il fattore di accoppiamento
     * della 3<sup>a</sup> condizione. */
-    string getTiLaserClassAssigned()const;
+    laserClass getTiLaserClassAssigned()const;
     array<double, ComputeLEA::N_LEA>getTiLEA_Corrected()const;
     void setTe();/*!< Imposta il tempo di esposizione cda impiegare per la valutazione degli effetti termici cioè il valore minimo tra
     * <b>T<sub>2</sub></b> e <b>T<sub>b</sub></b> */
@@ -237,7 +237,7 @@ La classe prevede inoltre un costruttore di default con i seguenti parametri:
 
     array<string, ComputeLEA::N_LEA> getTiLEA_Expressions()const;
 
-    string getC5LaserClassAssigned()const;
+    laserClass getC5LaserClassAssigned()const;
     array<double, ComputeLEA::N_LEA>getLEA_Corrected()const;
 
     array<bool, LaserClassCW::N_CLASS> valuateSystemClass(array<bool, LaserClassCW::N_CLASS>, array<bool, LaserClassCW::N_CLASS>, array<bool, LaserClassCW::N_CLASS> c5ClassValutation);
@@ -282,10 +282,10 @@ private:
     double meanCouplingFactor_Cond_3;
     array<double, ComputeLEA::N_LEA> meanPowerErg_Cond_1;
     array<double, ComputeLEA::N_LEA> meanPowerErg_Cond_3;
-    string meanLaserClassAssigned;
+    laserClass meanLaserClassAssigned;
     array<double, ComputeLEA::N_LEA> meanLEA_Corrected;
 
-    string c5LaserClassAssigned;
+    laserClass c5LaserClassAssigned;
     array<bool, LaserClassCW::N_CLASS> c5ClassValutation;
 
     array<double, ComputeLEA::N_LEA> tiLEA_Value;
@@ -305,7 +305,7 @@ private:
     double tiCouplingFactor_Cond_3;
     array<double, ComputeLEA::N_LEA> tiPowerErg_Cond_1;
     array<double, ComputeLEA::N_LEA>tiPowerErg_Cond_3;
-    string tiLaserClassAssigned;
+    laserClass tiLaserClassAssigned;
     array<double, ComputeLEA::N_LEA>tiLEA_Corrected;
     array<double, ComputeLEA::N_LEA>LEA_Corrected;
     array <bool, LaserClassCW::N_CLASS> systemClassValutation;

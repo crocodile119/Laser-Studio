@@ -15,7 +15,7 @@ void LaserClassSP::updateAll()
     //Calcolo i valori di LEA
     myLaserClass.calculate();
     computeBeamArea();
-    classUpdate(PULSED, pulseWidth, powerErg);
+    classUpdate(laserOperation::PULSED, pulseWidth, powerErg);
 }
 
 void LaserClassSP::setPulseWidth(const double _pulseWidth)

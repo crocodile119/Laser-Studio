@@ -22,7 +22,7 @@ using namespace std;
 class LaserSkinSafetyMP : public LaserSkinSafety
 {
 public:
-LaserSkinSafetyMP(double=PULSE_REPETITION_FREQEUNCY, double=EXPOSURE_TIME, double=BEAM_DIAMETER, double=POWER_ENERGY, double=DIVERGENCE, double=EmpLeaTables::HE_NE_WAVELENGTH,
+LaserSkinSafetyMP(double=PULSE_REPETITION_FREQEUNCY, double=EXPOSURE_TIME, double=PUPIL_DIAMETER, double=POWER_ENERGY, double=DIVERGENCE, double=EmpLeaTables::HE_NE_WAVELENGTH,
                   double=PULSE_WIDTH, double=EmpLeaTables::ALPHA_MIN);/*!< L'istanza della classe prevede l'inserimento dei parametri:
 <ul>
 <li>frequenza di ripetizione degli impulsi <b>PRF</b> in Hz;</li>

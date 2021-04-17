@@ -22,7 +22,7 @@ Per procedere al calcolo dell'<b>EMP</b> sarà necessario invocare la funzione m
 class LaserSafety
 {
 public:
-LaserSafety(double=BEAM_DIAMETER, double=PULSE_ENERGY, double=DIVERGENCE, double=EmpLeaTables::HE_NE_WAVELENGTH, double=PULSE_WIDTH,
+LaserSafety(double=PUPIL_DIAMETER, double=PULSE_ENERGY, double=DIVERGENCE, double=EmpLeaTables::HE_NE_WAVELENGTH, double=PULSE_WIDTH,
 double=EmpLeaTables::ALPHA_MIN);/*!< L'istanza della classe prevede l'inserimento dei parametri:
 <ul>
 <li>diametro del fascio <b>a</b> in mm;</li>
@@ -49,7 +49,7 @@ const static double PI;/*!< Valore della costante <b>&pi;</b>. */
 
 const static double PULSE_ENERGY;/*!< Parametro di default dell'energia dell'impulso in J. */
 const static double PULSE_WIDTH;/*!< Parametro di default della durata dell'impulso in secondi. */
-const static double BEAM_DIAMETER;/*!< Parametro di default del diametro del fascio in mrad. */
+const static double PUPIL_DIAMETER;/*!< Parametro di default del diametro del fascio in mrad. */
 const static double DIVERGENCE;/*!< Parametro di default della divergenza del fascio in mrad. */
 
 double getWavelength()const;/*!< Restituisce il valore della lunghezza d'onda <b>&lambda;</b> in nm.*/

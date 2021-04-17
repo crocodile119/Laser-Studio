@@ -4,11 +4,10 @@
 #include "laserpropertiesdialog.h"
 
 LaserPropertiesDialog::LaserPropertiesDialog(LaserPoint *laserpoint, QWidget *parent)
-    : QDialog(parent)
+    : QDialog(parent), laserpoint(laserpoint)
 {
     setupUi(this);
 
-    this->laserpoint = laserpoint;
     xSpinBox->setValue(int(laserpoint->x()));
     ySpinBox->setValue(int(laserpoint->y()));
     areaSpinBox->setValue(laserpoint->getAperture());

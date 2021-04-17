@@ -51,6 +51,7 @@ class MainWindow : public QMainWindow
 public:
     enum htmlConfig{REPORT, PDF};
     MainWindow();
+    ~MainWindow();
     bool eventFilter (QObject *watched, QEvent *event)override;
     int seqNumerCount()const;
 
@@ -247,7 +248,7 @@ private:
     QItemSelectionModel *environmentSelectionModel;
 
     QString curFile;
-    QString FILENAME;
+    QString externalFilename;
     QString curDirectoryFile;
     bool externalFile;
     QStringList recentFiles;

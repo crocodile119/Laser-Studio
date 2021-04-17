@@ -13,7 +13,7 @@ using namespace std;
 class LaserClassSP : public LaserClassCW
 {
 public:
-    LaserClassSP(double=BEAM_DIAMETER, double=PULSE_ENERGY, double=DIVERGENCE, double=EmpLeaTables::HE_NE_WAVELENGTH,
+    LaserClassSP(double=PUPIL_DIAMETER, double=PULSE_ENERGY, double=DIVERGENCE, double=EmpLeaTables::HE_NE_WAVELENGTH,
                  double=PULSE_WIDTH, double=ALPHA); /*!< L'istanza della classe prevede l'inserimento dei parametri:
 <ul>
 <li>diametro del fascio <b>a</b> in mm;</li>

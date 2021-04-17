@@ -18,7 +18,7 @@ Per procedere al calcolo dell'<b>EMP</b> sarà necessario invocare la funzione m
 class LaserSafetyCW : public LaserSafety
 {
 public:
-LaserSafetyCW(double=BEAM_DIAMETER, double=POWER, double=DIVERGENCE, double=EmpLeaTables::HE_NE_WAVELENGTH,
+LaserSafetyCW(double=PUPIL_DIAMETER, double=POWER, double=DIVERGENCE, double=EmpLeaTables::HE_NE_WAVELENGTH,
               double=EmpLeaTables::NATURAL_AVERSION_TIME, double=EmpLeaTables::ALPHA_MIN);/*!< L'istanza della classe prevede l'inserimento dei parametri:
 <ul>
 <li>diametro del fascio <b>a</b> in mm;</li>

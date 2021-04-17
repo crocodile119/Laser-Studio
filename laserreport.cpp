@@ -5,9 +5,7 @@
 
 LaserReport::LaserReport(CentralWidget* _laserWindow, LaserPoint* _laserpoint, typeOfReport _myTypeOfReport):laserWindow(_laserWindow),
     laserpoint(_laserpoint),myTypeOfReport(_myTypeOfReport)
-
 {
-
 }
 
 QTextDocument* LaserReport::buildReportDocument()
@@ -83,18 +81,18 @@ QTextDocument* LaserReport::buildReportDocument()
         UriGoggle, QVariant(myGoggleImage));
     myCursor.insertImage(imageGoggleFormat);
 
-    if(laserWindow->myDockControls->laserOperation()==DockControls::MULTI_PULSE)
+    if(laserWindow->myDockControls->laserOperation()==DockControls::operation::MULTI_PULSE)
     {
-    myCursor.insertHtml(htmlDGoggleDetails());
-    QImage myDGoggleImage = QImage("./dChartViewImg.png");
+        myCursor.insertHtml(htmlDGoggleDetails());
+        QImage myDGoggleImage = QImage("./dChartViewImg.png");
 
-    QUrl UriDGoggle=QUrl("mydata://dChartViewImg.png");
+        QUrl UriDGoggle=QUrl("mydata://dChartViewImg.png");
 
-    QTextImageFormat imageDGoggleFormat;
-    imageDGoggleFormat.setName(UriDGoggle.toString());
-    imageDGoggleFormat.setQuality(800);
+        QTextImageFormat imageDGoggleFormat;
+        imageDGoggleFormat.setName(UriDGoggle.toString());
+        imageDGoggleFormat.setQuality(800);
 
-    textDocument->addResource(QTextDocument::ImageResource,
+        textDocument->addResource(QTextDocument::ImageResource,
         UriDGoggle, QVariant(myDGoggleImage));
 
     myCursor.insertImage(imageDGoggleFormat);
@@ -105,7 +103,7 @@ QTextDocument* LaserReport::buildReportDocument()
     myCursor.insertHtml(htmlFootprints());
     myCursor.insertHtml(htmlBinoculars());
 
-return textDocument;
+    return textDocument;
 }
 
 void LaserReport::adjustWidth()
@@ -119,183 +117,183 @@ void LaserReport::adjustWidth()
 
 void LaserReport::laserAssessmentResults()
 {
-input.clear();
-output.clear();
-goggle.clear();
-effects.clear();
-skin.clear();
+    input.clear();
+    output.clear();
+    goggle.clear();
+    effects.clear();
+    skin.clear();
 
-QString powerErgStr= laserWindow->myDockControls->ui->powerErgControl->getTitle()+ "= " + QString::number(laserWindow->myDockControls->ui->powerErgControl->getScientificNumber(), 'e', 2);
-QString wavelengthStr= "&lambda; [nm]= " + QString::number(laserWindow->myDockControls->ui->wavelengthScrollBar->value());
-QString alphaStr= "&alpha; [mrad]= " + QString::number(laserWindow->myDockControls->ui->alphaControl->getScientificNumber(), 'e', 2);
-QString pulseStr= laserWindow->myDockControls->ui->pulseControl->getTitle()+ "= " + QString::number(laserWindow->myDockControls->ui->pulseControl->getScientificNumber(), 'e', 2);
-QString divergenceStr= "&phi; [mrad]= " +  QString::number(laserWindow->myDockControls->ui->divergenceControl->getScientificNumber(), 'e', 2);
-QString diameterStr= "a [mm]= " + QString::number(laserWindow->myDockControls->ui->beamDiameterControl->getScientificNumber(), 'e', 2);
-QString prfStr= laserWindow->myDockControls->ui->prfControl->getTitle()+ "= " + QString::number(laserWindow->myDockControls->ui->prfControl->getScientificNumber(), 'e', 2);
-QString teSkin="T<sub>cute</sub> [s]= " +QString::number(laserWindow->myDockControls->ui->T_SkinControl->getScientificNumber(),'f', 2);
+    QString powerErgStr= laserWindow->myDockControls->ui->powerErgControl->getTitle()+ "= " + QString::number(laserWindow->myDockControls->ui->powerErgControl->getScientificNumber(), 'e', 2);
+    QString wavelengthStr= "&lambda; [nm]= " + QString::number(laserWindow->myDockControls->ui->wavelengthScrollBar->value());
+    QString alphaStr= "&alpha; [mrad]= " + QString::number(laserWindow->myDockControls->ui->alphaControl->getScientificNumber(), 'e', 2);
+    QString pulseStr= laserWindow->myDockControls->ui->pulseControl->getTitle()+ "= " + QString::number(laserWindow->myDockControls->ui->pulseControl->getScientificNumber(), 'e', 2);
+    QString divergenceStr= "&phi; [mrad]= " +  QString::number(laserWindow->myDockControls->ui->divergenceControl->getScientificNumber(), 'e', 2);
+    QString diameterStr= "a [mm]= " + QString::number(laserWindow->myDockControls->ui->beamDiameterControl->getScientificNumber(), 'e', 2);
+    QString prfStr= laserWindow->myDockControls->ui->prfControl->getTitle()+ "= " + QString::number(laserWindow->myDockControls->ui->prfControl->getScientificNumber(), 'e', 2);
+    QString teSkin="T<sub>cute</sub> [s]= " +QString::number(laserWindow->myDockControls->ui->T_SkinControl->getScientificNumber(),'f', 2);
 
-input.append(powerErgStr);
-input.append(wavelengthStr);
-input.append(alphaStr);
-input.append(pulseStr);
-input.append(divergenceStr);
-input.append(diameterStr);
+    input.append(powerErgStr);
+    input.append(wavelengthStr);
+    input.append(alphaStr);
+    input.append(pulseStr);
+    input.append(divergenceStr);
+    input.append(diameterStr);
 
-effects.append(laserWindow->myDockEffects->ui->tRadiationLabel->text()+":"+laserWindow->myDockEffects->ui->RadiationLabel->text());
-effects.append(laserWindow->myDockEffects->ui->tSkinDamageLabel->text()+":"+laserWindow->myDockEffects->ui->SkinDamageLabel->text());
-effects.append(laserWindow->myDockEffects->ui->tEyeDamageLabel->text()+":"+laserWindow->myDockEffects->ui->EyeDamageLabel->text());
-effects.append(laserWindow->myDockEffects->ui->tNoteLabel->text()+":"+laserWindow->myDockEffects->ui->NoteLabel->text());
+    effects.append(laserWindow->myDockEffects->ui->tRadiationLabel->text()+":"+laserWindow->myDockEffects->ui->RadiationLabel->text());
+    effects.append(laserWindow->myDockEffects->ui->tSkinDamageLabel->text()+":"+laserWindow->myDockEffects->ui->SkinDamageLabel->text());
+    effects.append(laserWindow->myDockEffects->ui->tEyeDamageLabel->text()+":"+laserWindow->myDockEffects->ui->EyeDamageLabel->text());
+    effects.append(laserWindow->myDockEffects->ui->tNoteLabel->text()+":"+laserWindow->myDockEffects->ui->NoteLabel->text());
 
-if(laserWindow->myDockControls->laserOperation()==DockControls::CONTINUOS_WAVE)
+    if(laserWindow->myDockControls->laserOperation()==DockControls::operation::CONTINUOS_WAVE)
     {
-     output.append(laserWindow->myDockResults->ui->conditions_Label->text()+"$"+laserWindow->myDockResults->ui->EMP_1st_Label->text());
-     output.append("Dettaglio risultati:$ ");
+        output.append(laserWindow->myDockResults->ui->conditions_Label->text()+"$"+laserWindow->myDockResults->ui->EMP_1st_Label->text());
+        output.append("Dettaglio risultati:$ ");
 
-     output.append(laserWindow->myDockResults->ui->tFormulaLabel->text()+"$"+laserWindow->myDockResults->ui->FormulaLabel->text());
-     output.append(laserWindow->myDockResults->ui->tEMP_Label->text()+"$"+laserWindow->myDockResults->ui->EMP_Label->text());
-     output.append(laserWindow->myDockResults->ui->tExposureTimeLabel->text()+"$"+laserWindow->myDockResults->ui->ExposureTimeLabel->text());
+        output.append(laserWindow->myDockResults->ui->tFormulaLabel->text()+"$"+laserWindow->myDockResults->ui->FormulaLabel->text());
+        output.append(laserWindow->myDockResults->ui->tEMP_Label->text()+"$"+laserWindow->myDockResults->ui->EMP_Label->text());
+        output.append(laserWindow->myDockResults->ui->tExposureTimeLabel->text()+"$"+laserWindow->myDockResults->ui->ExposureTimeLabel->text());
 
-     output.append(laserWindow->myDockResults->ui->tPowerErgLabel->text()+"$"+laserWindow->myDockResults->ui->PowerErgLabel->text());
-     output.append(laserWindow->myDockEffects->ui->tCA_Label->text()+"$"+laserWindow->myDockEffects->ui->CA_Label->text());
-     output.append(laserWindow->myDockEffects->ui->tCB_Label->text()+"$"+laserWindow->myDockEffects->ui->CB_Label->text());
-     output.append(laserWindow->myDockEffects->ui->tCC_Label->text()+"$"+laserWindow->myDockEffects->ui->CC_Label->text());
-     output.append(laserWindow->myDockEffects->ui->tCE_Label->text()+"$"+laserWindow->myDockEffects->ui->CE_Label->text());
-     output.append(laserWindow->myDockEffects->ui->tT1_Label->text()+"$"+laserWindow->myDockEffects->ui->T1_Label->text());
-     output.append(laserWindow->myDockEffects->ui->tT2_Label->text()+"$"+laserWindow->myDockEffects->ui->T2_Label->text());
-     output.append(laserWindow->myDockResults->ui->tNOHDLabel->text()+"$"+laserWindow->myDockResults->ui->NOHDLabel->text());
-     output.append(laserWindow->myDockResults->ui->tOD_FilterLabel->text()+"$"+laserWindow->myDockResults->ui->tOD_FilterLabel->text());
+        output.append(laserWindow->myDockResults->ui->tPowerErgLabel->text()+"$"+laserWindow->myDockResults->ui->PowerErgLabel->text());
+        output.append(laserWindow->myDockEffects->ui->tCA_Label->text()+"$"+laserWindow->myDockEffects->ui->CA_Label->text());
+        output.append(laserWindow->myDockEffects->ui->tCB_Label->text()+"$"+laserWindow->myDockEffects->ui->CB_Label->text());
+        output.append(laserWindow->myDockEffects->ui->tCC_Label->text()+"$"+laserWindow->myDockEffects->ui->CC_Label->text());
+        output.append(laserWindow->myDockEffects->ui->tCE_Label->text()+"$"+laserWindow->myDockEffects->ui->CE_Label->text());
+        output.append(laserWindow->myDockEffects->ui->tT1_Label->text()+"$"+laserWindow->myDockEffects->ui->T1_Label->text());
+        output.append(laserWindow->myDockEffects->ui->tT2_Label->text()+"$"+laserWindow->myDockEffects->ui->T2_Label->text());
+        output.append(laserWindow->myDockResults->ui->tNOHDLabel->text()+"$"+laserWindow->myDockResults->ui->NOHDLabel->text());
+        output.append(laserWindow->myDockResults->ui->tOD_FilterLabel->text()+"$"+laserWindow->myDockResults->ui->tOD_FilterLabel->text());
 
-     skin.append(laserWindow->myDockSkin->ui->conditions_Label->text()+"$"+laserWindow->myDockSkin->ui->EMP_1st_Label->text());
-     skin.append("Dettaglio risultati:$ ");
-     skin.append(laserWindow->myDockSkin->ui->tFormulaSkinLabel->text()+"$"+laserWindow->myDockSkin->ui->FormulaSkinLabel->text());
-     skin.append(laserWindow->myDockSkin->ui->tEMP_SkinLabel->text()+"$"+laserWindow->myDockSkin->ui->EMP_SkinLabel->text());
-     skin.append(laserWindow->myDockSkin->ui->tNSHDLabel->text()+"$"+laserWindow->myDockSkin->ui->NSHDLabel->text());
+        skin.append(laserWindow->myDockSkin->ui->conditions_Label->text()+"$"+laserWindow->myDockSkin->ui->EMP_1st_Label->text());
+        skin.append("Dettaglio risultati:$ ");
+        skin.append(laserWindow->myDockSkin->ui->tFormulaSkinLabel->text()+"$"+laserWindow->myDockSkin->ui->FormulaSkinLabel->text());
+        skin.append(laserWindow->myDockSkin->ui->tEMP_SkinLabel->text()+"$"+laserWindow->myDockSkin->ui->EMP_SkinLabel->text());
+        skin.append(laserWindow->myDockSkin->ui->tNSHDLabel->text()+"$"+laserWindow->myDockSkin->ui->NSHDLabel->text());
 
-     goggle.append(laserWindow->myDockGoggle->ui->kindOfLaserLabel->text()+": ");
-     goggle.append(laserWindow->myDockGoggle->ui->tLaserOutputLabel->text()+":"+laserWindow->myDockGoggle->ui->laserOutputLabel->text());
-     goggle.append("Numero di scala: " + laserWindow->myDockGoggle->ui->scaleNumberLabel->text());
+        goggle.append(laserWindow->myDockGoggle->ui->kindOfLaserLabel->text()+": ");
+        goggle.append(laserWindow->myDockGoggle->ui->tLaserOutputLabel->text()+":"+laserWindow->myDockGoggle->ui->laserOutputLabel->text());
+        goggle.append("Numero di scala: " + laserWindow->myDockGoggle->ui->scaleNumberLabel->text());
 
-     input.append(teSkin);
+        input.append(teSkin);
     }
 
-    else if(laserWindow->myDockControls->laserOperation()==DockControls::PULSE)
-{
-     output.append(laserWindow->myDockResults->ui->conditions_Label->text()+"$"+laserWindow->myDockResults->ui->EMP_1st_Label->text());
-     output.append("Dettaglio risultati$ ");
+    else if(laserWindow->myDockControls->laserOperation()==DockControls::operation::PULSE)
+    {
+        output.append(laserWindow->myDockResults->ui->conditions_Label->text()+"$"+laserWindow->myDockResults->ui->EMP_1st_Label->text());
+        output.append("Dettaglio risultati$ ");
 
-     output.append(laserWindow->myDockResults->ui->tFormulaLabel->text()+"$"+laserWindow->myDockResults->ui->FormulaLabel->text());
-     output.append(laserWindow->myDockResults->ui->tEMP_Label->text()+"$"+laserWindow->myDockResults->ui->EMP_Label->text());
-     output.append(laserWindow->myDockResults->ui->tExposureTimeLabel->text()+"$"+laserWindow->myDockResults->ui->ExposureTimeLabel->text());
-     output.append(laserWindow->myDockResults->ui->tPowerErgLabel->text()+"$"+laserWindow->myDockResults->ui->PowerErgLabel->text());
-     output.append(laserWindow->myDockEffects->ui->tCA_Label->text()+"$"+laserWindow->myDockEffects->ui->CA_Label->text());
-     output.append(laserWindow->myDockEffects->ui->tCB_Label->text()+"$"+laserWindow->myDockEffects->ui->CB_Label->text());
-     output.append(laserWindow->myDockEffects->ui->tCC_Label->text()+"$"+laserWindow->myDockEffects->ui->CC_Label->text());
-     output.append(laserWindow->myDockEffects->ui->tCE_Label->text()+"$"+laserWindow->myDockEffects->ui->CE_Label->text());
-     output.append(laserWindow->myDockEffects->ui->tT1_Label->text()+"$"+laserWindow->myDockEffects->ui->T1_Label->text());
-     output.append(laserWindow->myDockEffects->ui->tT2_Label->text()+"$"+laserWindow->myDockEffects->ui->T2_Label->text());
-     output.append(laserWindow->myDockEffects->ui->tGammaLabel->text()+"$"+laserWindow->myDockEffects->ui->GammaLabel->text());
-     output.append(laserWindow->myDockResults->ui->tNOHDLabel->text()+"$"+laserWindow->myDockResults->ui->NOHDLabel->text());
-     output.append(laserWindow->myDockResults->ui->tOD_FilterLabel->text()+"$"+laserWindow->myDockResults->ui->tOD_FilterLabel->text());
+        output.append(laserWindow->myDockResults->ui->tFormulaLabel->text()+"$"+laserWindow->myDockResults->ui->FormulaLabel->text());
+        output.append(laserWindow->myDockResults->ui->tEMP_Label->text()+"$"+laserWindow->myDockResults->ui->EMP_Label->text());
+        output.append(laserWindow->myDockResults->ui->tExposureTimeLabel->text()+"$"+laserWindow->myDockResults->ui->ExposureTimeLabel->text());
+        output.append(laserWindow->myDockResults->ui->tPowerErgLabel->text()+"$"+laserWindow->myDockResults->ui->PowerErgLabel->text());
+        output.append(laserWindow->myDockEffects->ui->tCA_Label->text()+"$"+laserWindow->myDockEffects->ui->CA_Label->text());
+        output.append(laserWindow->myDockEffects->ui->tCB_Label->text()+"$"+laserWindow->myDockEffects->ui->CB_Label->text());
+        output.append(laserWindow->myDockEffects->ui->tCC_Label->text()+"$"+laserWindow->myDockEffects->ui->CC_Label->text());
+        output.append(laserWindow->myDockEffects->ui->tCE_Label->text()+"$"+laserWindow->myDockEffects->ui->CE_Label->text());
+        output.append(laserWindow->myDockEffects->ui->tT1_Label->text()+"$"+laserWindow->myDockEffects->ui->T1_Label->text());
+        output.append(laserWindow->myDockEffects->ui->tT2_Label->text()+"$"+laserWindow->myDockEffects->ui->T2_Label->text());
+        output.append(laserWindow->myDockEffects->ui->tGammaLabel->text()+"$"+laserWindow->myDockEffects->ui->GammaLabel->text());
+        output.append(laserWindow->myDockResults->ui->tNOHDLabel->text()+"$"+laserWindow->myDockResults->ui->NOHDLabel->text());
+        output.append(laserWindow->myDockResults->ui->tOD_FilterLabel->text()+"$"+laserWindow->myDockResults->ui->tOD_FilterLabel->text());
 
-     skin.append(laserWindow->myDockSkin->ui->conditions_Label->text()+"$"+laserWindow->myDockSkin->ui->EMP_1st_Label->text());
-     skin.append("Dettaglio risultati$ ");
+        skin.append(laserWindow->myDockSkin->ui->conditions_Label->text()+"$"+laserWindow->myDockSkin->ui->EMP_1st_Label->text());
+        skin.append("Dettaglio risultati$ ");
 
-     skin.append(laserWindow->myDockSkin->ui->tFormulaSkinLabel->text()+"$"+laserWindow->myDockSkin->ui->FormulaSkinLabel->text());
-     skin.append(laserWindow->myDockSkin->ui->tEMP_SkinLabel->text()+"$"+laserWindow->myDockSkin->ui->EMP_SkinLabel->text());
-     skin.append(laserWindow->myDockSkin->ui->tNSHDLabel->text()+"$"+laserWindow->myDockSkin->ui->NSHDLabel->text());
+        skin.append(laserWindow->myDockSkin->ui->tFormulaSkinLabel->text()+"$"+laserWindow->myDockSkin->ui->FormulaSkinLabel->text());
+        skin.append(laserWindow->myDockSkin->ui->tEMP_SkinLabel->text()+"$"+laserWindow->myDockSkin->ui->EMP_SkinLabel->text());
+        skin.append(laserWindow->myDockSkin->ui->tNSHDLabel->text()+"$"+laserWindow->myDockSkin->ui->NSHDLabel->text());
 
-     goggle.append(laserWindow->myDockGoggle->ui->kindOfLaserLabel->text()+": ");
-     goggle.append("Output: "+laserWindow->myDockGoggle->ui->laserOutputLabel->text());
-     goggle.append("Numero di scala: " + laserWindow->myDockGoggle->ui->scaleNumberLabel->text());
-}
-    else if(laserWindow->myDockControls->laserOperation()==DockControls::MULTI_PULSE)
-{
-    output.append(laserWindow->myDockResults->ui->conditions_Label->text()+"$ ");
-
-    QString firstCondition=QString("%1 $ %2")
-    .arg("Prima condizione")
-    .arg(laserWindow->myDockResults->ui->EMP_1st_Label->text());
-    output.append(firstCondition);
-
-    QString secondCondition=QString("%1 $ %2")
-    .arg("Seconda condizione")
-    .arg(laserWindow->myDockResults->ui->EMP_2nd_Label->text());
-    output.append(secondCondition);
-
-    QString thirdCondition=QString("%1 $ %2")
-    .arg("Terza condizione")
-    .arg(laserWindow->myDockResults->ui->EMP_3rd_Label->text());
-    output.append(thirdCondition);
-
-    output.append("Dettaglio risultati $ ");
-    output.append(laserWindow->myDockResults->ui->tFormulaLabel->text()+"$"+laserWindow->myDockResults->ui->FormulaLabel->text());
-    output.append(laserWindow->myDockResults->ui->tEMP_Label->text()+"$"+laserWindow->myDockResults->ui->EMP_Label->text());
-    output.append(laserWindow->myDockResults->ui->tFormulaMP_Label->text()+"$"+laserWindow->myDockResults->ui->FormulaMP_Label->text());
-    output.append(laserWindow->myDockResults->ui->tEMP_MP_Label->text().toLatin1()+"$"+laserWindow->myDockResults->ui->EMP_MP_Label->text().toLatin1());
-    output.append(laserWindow->myDockResults->ui->tExposureTimeLabel->text()+"$"+laserWindow->myDockResults->ui->ExposureTimeLabel->text());
-    output.append(laserWindow->myDockResults->ui->tPowerErgLabel->text()+"$"+laserWindow->myDockResults->ui->PowerErgLabel->text());
-
-    output.append(laserWindow->myDockEffects->ui->tCA_Label->text()+"$"+laserWindow->myDockEffects->ui->CA_Label->text());
-    output.append(laserWindow->myDockEffects->ui->tCB_Label->text()+"$"+laserWindow->myDockEffects->ui->CB_Label->text());
-    output.append(laserWindow->myDockEffects->ui->tCC_Label->text()+"$"+laserWindow->myDockEffects->ui->CC_Label->text());
-    output.append(laserWindow->myDockEffects->ui->tCE_Label->text()+"$"+laserWindow->myDockEffects->ui->CE_Label->text());
-    output.append(laserWindow->myDockEffects->ui->tT1_Label->text()+"$"+laserWindow->myDockEffects->ui->T1_Label->text());
-    output.append(laserWindow->myDockEffects->ui->tT2_Label->text()+"$"+laserWindow->myDockEffects->ui->T2_Label->text());
-
-    output.append(laserWindow->myDockResults->ui->tMeanPowerLabel->text()+"$"+laserWindow->myDockResults->ui->MeanPowerLabel->text());
-    output.append(laserWindow->myDockResults->ui->tMeanIrradianceLabel->text()+"$"+laserWindow->myDockResults->ui->MeanIrradianceLabel->text());
-    output.append(laserWindow->myDockResults->ui->tThermalEMP_Label->text()+"$"+laserWindow->myDockResults->ui->ThermalEMP_Label->text());
-    output.append(laserWindow->myDockResults->ui->tEMP_mean_Label->text()+"$"+laserWindow->myDockResults->ui->tEMP_mean_Label->text());
-    output.append(laserWindow->myDockEffects->ui->tTminLabel->text()+"$"+laserWindow->myDockEffects->ui->TminLabel->text());
-
-    output.append(laserWindow->myDockResults->ui->tCP_Label->text()+"$"+laserWindow->myDockResults->ui->CP_Label->text());
-    output.append(laserWindow->myDockResults->ui->tPulseNumberLabel->text()+"$"+laserWindow->myDockResults->ui->PulseNumberLabel->text());
-    output.append(laserWindow->myDockResults->ui->tPulseNumberThLabel->text()+"$"+laserWindow->myDockResults->ui->PulseNumberLabel->text());
-    output.append(laserWindow->myDockResults->ui->tminEMP_Label->text()+"$"+laserWindow->myDockResults->ui->minEMP_Label->text());
-    output.append(laserWindow->myDockResults->ui->tNOHDLabel->text()+"$"+laserWindow->myDockResults->ui->NOHDLabel->text());
-
-    output.append(laserWindow->myDockResults->ui->tOD_FilterLabel->text()+"$"+laserWindow->myDockResults->ui->OD_FilterLabel->text());
-    output.append(laserWindow->myDockResults->ui->tOD_MeanFilterLabel->text()+"$"+laserWindow->myDockResults->ui->OD_MeanFilterLabel->text());
-
-    input.append(prfStr);
-    input.append(teSkin);
-
-    effects.append(laserWindow->myDockResults->ui->tCountingLabel->text()+":"+laserWindow->myDockResults->ui->CountingLabel->text());
-
-    skin.append(laserWindow->myDockSkin->ui->conditions_Label->text()+"$ ");
-    QString skinFirstCondition=QString("%1 $ %2")
-    .arg("Prima condizione")
-    .arg(laserWindow->myDockSkin->ui->EMP_1st_Label->text());
-    skin.append(skinFirstCondition);
-
-    QString skinSecondCondition=QString("%1 $ %2")
-    .arg("Seconda condizione")
-    .arg(laserWindow->myDockSkin->ui->EMP_2nd_Label->text());
-
-    skin.append(skinSecondCondition);
-    skin.append("Dettaglio risultati$ ");
-
-    skin.append(laserWindow->myDockSkin->ui->tFormulaSkinLabel->text()+"$"+laserWindow->myDockSkin->ui->FormulaSkinLabel->text());
-    skin.append(laserWindow->myDockSkin->ui->tEMP_SkinLabel->text()+"$"+laserWindow->myDockSkin->ui->EMP_SkinLabel->text());
-    skin.append(laserWindow->myDockSkin->ui->tFormulaSkinMP_Label->text()+"$"+laserWindow->myDockSkin->ui->FormulaSkinMP_Label->text());
-    skin.append(laserWindow->myDockSkin->ui->tEMP_MP_SkinLabel->text()+"$"+laserWindow->myDockSkin->ui->EMP_MP_SkinLabel->text());
-    skin.append(laserWindow->myDockSkin->ui->tMeanPowerSkinLabel->text()+"$"+laserWindow->myDockSkin->ui->MeanPowerSkinLabel->text());
-    skin.append(laserWindow->myDockSkin->ui->tMeanIrradianceSkinLabel->text()+"$"+laserWindow->myDockSkin->ui->MeanIrradianceSkinLabel->text());
-    skin.append(laserWindow->myDockSkin->ui->tPulseNumberSkinLabel->text()+"$"+laserWindow->myDockSkin->ui->PulseNumberSkinLabel->text());
-    skin.append(laserWindow->myDockSkin->ui->tminEMP_SkinLabel->text()+"$"+laserWindow->myDockSkin->ui->minEMP_SkinLabel->text());
-    skin.append(laserWindow->myDockSkin->ui->tNSHDLabel->text()+"$"+laserWindow->myDockSkin->ui->tNSHDLabel->text());
-
-    goggle.append(laserWindow->myDockGoggle->ui->kindOfLaserLabel->text()+": ");
-    goggle.append(laserWindow->myDockGoggle->ui->tLaserOutputLabel->text()+":"+laserWindow->myDockGoggle->ui->laserOutputLabel->text());
-    goggle.append("Numero di scala:" + laserWindow->myDockGoggle->ui->scaleNumberLabel->text());
-    goggle.append(laserWindow->myDockGoggle->ui->tn_maxLabel->text()+":"+laserWindow->myDockGoggle->ui->n_maxLabel->text());
-    goggle.append(laserWindow->myDockGoggle->ui->tMeanPowerLabel->text()+":"+laserWindow->myDockGoggle->ui->meanPowerLabel->text());
-    goggle.append("Numero di scala componente continua: " + laserWindow->myDockGoggle->ui->scaleNumberDLabel->text());
-    goggle.append(laserWindow->myDockGoggle->ui->tCoefficient_kLabel->text()+":"+laserWindow->myDockGoggle->ui->coefficient_kLabel->text());
-    goggle.append(laserWindow->myDockGoggle->ui->tCoefficient_kiLabel->text()+":"+laserWindow->myDockGoggle->ui->coefficient_kiLabel->text());
-    goggle.append(laserWindow->myDockGoggle->ui->tNumberOfPulseLabel->text()+":"+laserWindow->myDockGoggle->ui->numberOfPulseLabel->text());
+        goggle.append(laserWindow->myDockGoggle->ui->kindOfLaserLabel->text()+": ");
+        goggle.append("Output: "+laserWindow->myDockGoggle->ui->laserOutputLabel->text());
+        goggle.append("Numero di scala: " + laserWindow->myDockGoggle->ui->scaleNumberLabel->text());
     }
-        qDebug() << output;
+    else if(laserWindow->myDockControls->laserOperation()==DockControls::operation::MULTI_PULSE)
+    {
+        output.append(laserWindow->myDockResults->ui->conditions_Label->text()+"$ ");
+
+        QString firstCondition=QString("%1 $ %2")
+        .arg("Prima condizione")
+        .arg(laserWindow->myDockResults->ui->EMP_1st_Label->text());
+        output.append(firstCondition);
+
+        QString secondCondition=QString("%1 $ %2")
+        .arg("Seconda condizione")
+        .arg(laserWindow->myDockResults->ui->EMP_2nd_Label->text());
+        output.append(secondCondition);
+
+        QString thirdCondition=QString("%1 $ %2")
+        .arg("Terza condizione")
+        .arg(laserWindow->myDockResults->ui->EMP_3rd_Label->text());
+        output.append(thirdCondition);
+
+        output.append("Dettaglio risultati $ ");
+        output.append(laserWindow->myDockResults->ui->tFormulaLabel->text()+"$"+laserWindow->myDockResults->ui->FormulaLabel->text());
+        output.append(laserWindow->myDockResults->ui->tEMP_Label->text()+"$"+laserWindow->myDockResults->ui->EMP_Label->text());
+        output.append(laserWindow->myDockResults->ui->tFormulaMP_Label->text()+"$"+laserWindow->myDockResults->ui->FormulaMP_Label->text());
+        output.append(laserWindow->myDockResults->ui->tEMP_MP_Label->text().toLatin1()+"$"+laserWindow->myDockResults->ui->EMP_MP_Label->text().toLatin1());
+        output.append(laserWindow->myDockResults->ui->tExposureTimeLabel->text()+"$"+laserWindow->myDockResults->ui->ExposureTimeLabel->text());
+        output.append(laserWindow->myDockResults->ui->tPowerErgLabel->text()+"$"+laserWindow->myDockResults->ui->PowerErgLabel->text());
+
+        output.append(laserWindow->myDockEffects->ui->tCA_Label->text()+"$"+laserWindow->myDockEffects->ui->CA_Label->text());
+        output.append(laserWindow->myDockEffects->ui->tCB_Label->text()+"$"+laserWindow->myDockEffects->ui->CB_Label->text());
+        output.append(laserWindow->myDockEffects->ui->tCC_Label->text()+"$"+laserWindow->myDockEffects->ui->CC_Label->text());
+        output.append(laserWindow->myDockEffects->ui->tCE_Label->text()+"$"+laserWindow->myDockEffects->ui->CE_Label->text());
+        output.append(laserWindow->myDockEffects->ui->tT1_Label->text()+"$"+laserWindow->myDockEffects->ui->T1_Label->text());
+        output.append(laserWindow->myDockEffects->ui->tT2_Label->text()+"$"+laserWindow->myDockEffects->ui->T2_Label->text());
+
+        output.append(laserWindow->myDockResults->ui->tMeanPowerLabel->text()+"$"+laserWindow->myDockResults->ui->MeanPowerLabel->text());
+        output.append(laserWindow->myDockResults->ui->tMeanIrradianceLabel->text()+"$"+laserWindow->myDockResults->ui->MeanIrradianceLabel->text());
+        output.append(laserWindow->myDockResults->ui->tThermalEMP_Label->text()+"$"+laserWindow->myDockResults->ui->ThermalEMP_Label->text());
+        output.append(laserWindow->myDockResults->ui->tEMP_mean_Label->text()+"$"+laserWindow->myDockResults->ui->tEMP_mean_Label->text());
+        output.append(laserWindow->myDockEffects->ui->tTminLabel->text()+"$"+laserWindow->myDockEffects->ui->TminLabel->text());
+
+        output.append(laserWindow->myDockResults->ui->tCP_Label->text()+"$"+laserWindow->myDockResults->ui->CP_Label->text());
+        output.append(laserWindow->myDockResults->ui->tPulseNumberLabel->text()+"$"+laserWindow->myDockResults->ui->PulseNumberLabel->text());
+        output.append(laserWindow->myDockResults->ui->tPulseNumberThLabel->text()+"$"+laserWindow->myDockResults->ui->PulseNumberLabel->text());
+        output.append(laserWindow->myDockResults->ui->tminEMP_Label->text()+"$"+laserWindow->myDockResults->ui->minEMP_Label->text());
+        output.append(laserWindow->myDockResults->ui->tNOHDLabel->text()+"$"+laserWindow->myDockResults->ui->NOHDLabel->text());
+
+        output.append(laserWindow->myDockResults->ui->tOD_FilterLabel->text()+"$"+laserWindow->myDockResults->ui->OD_FilterLabel->text());
+        output.append(laserWindow->myDockResults->ui->tOD_MeanFilterLabel->text()+"$"+laserWindow->myDockResults->ui->OD_MeanFilterLabel->text());
+
+        input.append(prfStr);
+        input.append(teSkin);
+
+        effects.append(laserWindow->myDockResults->ui->tCountingLabel->text()+":"+laserWindow->myDockResults->ui->CountingLabel->text());
+
+        skin.append(laserWindow->myDockSkin->ui->conditions_Label->text()+"$ ");
+        QString skinFirstCondition=QString("%1 $ %2")
+        .arg("Prima condizione")
+        .arg(laserWindow->myDockSkin->ui->EMP_1st_Label->text());
+        skin.append(skinFirstCondition);
+
+        QString skinSecondCondition=QString("%1 $ %2")
+        .arg("Seconda condizione")
+        .arg(laserWindow->myDockSkin->ui->EMP_2nd_Label->text());
+
+        skin.append(skinSecondCondition);
+        skin.append("Dettaglio risultati$ ");
+
+        skin.append(laserWindow->myDockSkin->ui->tFormulaSkinLabel->text()+"$"+laserWindow->myDockSkin->ui->FormulaSkinLabel->text());
+        skin.append(laserWindow->myDockSkin->ui->tEMP_SkinLabel->text()+"$"+laserWindow->myDockSkin->ui->EMP_SkinLabel->text());
+        skin.append(laserWindow->myDockSkin->ui->tFormulaSkinMP_Label->text()+"$"+laserWindow->myDockSkin->ui->FormulaSkinMP_Label->text());
+        skin.append(laserWindow->myDockSkin->ui->tEMP_MP_SkinLabel->text()+"$"+laserWindow->myDockSkin->ui->EMP_MP_SkinLabel->text());
+        skin.append(laserWindow->myDockSkin->ui->tMeanPowerSkinLabel->text()+"$"+laserWindow->myDockSkin->ui->MeanPowerSkinLabel->text());
+        skin.append(laserWindow->myDockSkin->ui->tMeanIrradianceSkinLabel->text()+"$"+laserWindow->myDockSkin->ui->MeanIrradianceSkinLabel->text());
+        skin.append(laserWindow->myDockSkin->ui->tPulseNumberSkinLabel->text()+"$"+laserWindow->myDockSkin->ui->PulseNumberSkinLabel->text());
+        skin.append(laserWindow->myDockSkin->ui->tminEMP_SkinLabel->text()+"$"+laserWindow->myDockSkin->ui->minEMP_SkinLabel->text());
+        skin.append(laserWindow->myDockSkin->ui->tNSHDLabel->text()+"$"+laserWindow->myDockSkin->ui->tNSHDLabel->text());
+
+        goggle.append(laserWindow->myDockGoggle->ui->kindOfLaserLabel->text()+": ");
+        goggle.append(laserWindow->myDockGoggle->ui->tLaserOutputLabel->text()+":"+laserWindow->myDockGoggle->ui->laserOutputLabel->text());
+        goggle.append("Numero di scala:" + laserWindow->myDockGoggle->ui->scaleNumberLabel->text());
+        goggle.append(laserWindow->myDockGoggle->ui->tn_maxLabel->text()+":"+laserWindow->myDockGoggle->ui->n_maxLabel->text());
+        goggle.append(laserWindow->myDockGoggle->ui->tMeanPowerLabel->text()+":"+laserWindow->myDockGoggle->ui->meanPowerLabel->text());
+        goggle.append("Numero di scala componente continua: " + laserWindow->myDockGoggle->ui->scaleNumberDLabel->text());
+        goggle.append(laserWindow->myDockGoggle->ui->tCoefficient_kLabel->text()+":"+laserWindow->myDockGoggle->ui->coefficient_kLabel->text());
+        goggle.append(laserWindow->myDockGoggle->ui->tCoefficient_kiLabel->text()+":"+laserWindow->myDockGoggle->ui->coefficient_kiLabel->text());
+        goggle.append(laserWindow->myDockGoggle->ui->tNumberOfPulseLabel->text()+":"+laserWindow->myDockGoggle->ui->numberOfPulseLabel->text());
+    }
+    qDebug() << output;
 }
 
 
@@ -305,90 +303,88 @@ void LaserReport::classifierDetails()
 
     QString spEffects;
 
-    if(laserWindow->myDockControls->laserOperation()==DockControls::CONTINUOS_WAVE)
+    if(laserWindow->myDockControls->laserOperation()==DockControls::operation::CONTINUOS_WAVE)
         spEffects="Criterio della potenza : ";
     else
         spEffects="Criterio dell'impulso : ";
 
     classifierDetailsOutput.append(spEffects);
 
-    if(laserWindow->myDockControls->laserOperation()==DockControls::CONTINUOS_WAVE)
+    if(laserWindow->myDockControls->laserOperation()==DockControls::operation::CONTINUOS_WAVE)
     {
-    laserWindow->myDockControls->leaExpressions_CW();
+        laserWindow->myDockControls->leaExpressions_CW();
 
-    QString LEA_Classe1Str= "LEA Classe 1 e 1M  :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_CW()[0]);
-    QString LEA_Classe2Str= "LEA Classe 2 e 2M  :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_CW()[1]);
-    QString LEA_Classe3RStr= "LEA Classe 3R  :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_CW()[2]);
-    QString LEA_Classe3BStr= "LEA Classe 3B  :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_CW()[3]);
+        QString LEA_Classe1Str= "LEA Classe 1 e 1M  :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_CW()[0]);
+        QString LEA_Classe2Str= "LEA Classe 2 e 2M  :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_CW()[1]);
+        QString LEA_Classe3RStr= "LEA Classe 3R  :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_CW()[2]);
+        QString LEA_Classe3BStr= "LEA Classe 3B  :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_CW()[3]);
 
-    classifierDetailsOutput.append(LEA_Classe1Str);
-    classifierDetailsOutput.append(LEA_Classe2Str);
-    classifierDetailsOutput.append(LEA_Classe3RStr);
-    classifierDetailsOutput.append(LEA_Classe3BStr);
-
+        classifierDetailsOutput.append(LEA_Classe1Str);
+        classifierDetailsOutput.append(LEA_Classe2Str);
+        classifierDetailsOutput.append(LEA_Classe3RStr);
+        classifierDetailsOutput.append(LEA_Classe3BStr);
     }
-    else if(laserWindow->myDockControls->laserOperation()==DockControls::PULSE)
+    else if(laserWindow->myDockControls->laserOperation()==DockControls::operation::PULSE)
     {
-    laserWindow->myDockControls->leaExpressions_SP();
+        laserWindow->myDockControls->leaExpressions_SP();
 
-    QString LEA_Classe1Str= "LEA Classe 1 e 1M  :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_SP()[0]);
-    QString LEA_Classe2Str= "LEA Classe 2 e 2M  :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_SP()[1]);
-    QString LEA_Classe3RStr= "LEA Classe 3R  :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_SP()[2]);
-    QString LEA_Classe3BStr= "LEA Classe 3B  :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_SP()[3]);
+        QString LEA_Classe1Str= "LEA Classe 1 e 1M  :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_SP()[0]);
+        QString LEA_Classe2Str= "LEA Classe 2 e 2M  :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_SP()[1]);
+        QString LEA_Classe3RStr= "LEA Classe 3R  :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_SP()[2]);
+        QString LEA_Classe3BStr= "LEA Classe 3B  :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_SP()[3]);
 
-    classifierDetailsOutput.append(LEA_Classe1Str);
-    classifierDetailsOutput.append(LEA_Classe2Str);
-    classifierDetailsOutput.append(LEA_Classe3RStr);
-    classifierDetailsOutput.append(LEA_Classe3BStr);
-
+        classifierDetailsOutput.append(LEA_Classe1Str);
+        classifierDetailsOutput.append(LEA_Classe2Str);
+        classifierDetailsOutput.append(LEA_Classe3RStr);
+        classifierDetailsOutput.append(LEA_Classe3BStr);
     }
-    else if(laserWindow->myDockControls->laserOperation()==DockControls::MULTI_PULSE)
+    else if(laserWindow->myDockControls->laserOperation()==DockControls::operation::MULTI_PULSE)
     {
-    laserWindow->myDockControls->leaExpressions_MP();
+        laserWindow->myDockControls->leaExpressions_MP();
 
-    QString LEA_Classe1_SP_MultiPulseStr= "LEA Classe 1 e 1M :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_SP_MultiPulse()[0]);
-    QString LEA_Classe2_SP_MultiPulseStr= "LEA Classe 2 e 2M :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_SP_MultiPulse()[1]);
-    QString LEA_Classe3R_SP_MultiPulseStr= "LEA Classe 3R :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_SP_MultiPulse()[2]);
-    QString LEA_Classe3B_SP_MultiPulseStr= "LEA Classe 3B :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_SP_MultiPulse()[3]);
+        QString LEA_Classe1_SP_MultiPulseStr= "LEA Classe 1 e 1M :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_SP_MultiPulse()[0]);
+        QString LEA_Classe2_SP_MultiPulseStr= "LEA Classe 2 e 2M :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_SP_MultiPulse()[1]);
+        QString LEA_Classe3R_SP_MultiPulseStr= "LEA Classe 3R :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_SP_MultiPulse()[2]);
+        QString LEA_Classe3B_SP_MultiPulseStr= "LEA Classe 3B :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_SP_MultiPulse()[3]);
 
-    QString effects_MeanStr="Criterio della potenza media : ";
-    QString LEA_Classe1_MeanStr= "LEA Classe 1 e 1M :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_Mean()[0]);
-    QString LEA_Classe2_MeanStr= "LEA Classe 2 e 2M :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_Mean()[1]);
-    QString LEA_Classe3R_MeanStr= "LEA Classe 3R :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_Mean()[2]);
-    QString LEA_Classe3B_MeanStr= "LEA Classe 3B :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_Mean()[3]);
+        QString effects_MeanStr="Criterio della potenza media : ";
+        QString LEA_Classe1_MeanStr= "LEA Classe 1 e 1M :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_Mean()[0]);
+        QString LEA_Classe2_MeanStr= "LEA Classe 2 e 2M :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_Mean()[1]);
+        QString LEA_Classe3R_MeanStr= "LEA Classe 3R :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_Mean()[2]);
+        QString LEA_Classe3B_MeanStr= "LEA Classe 3B :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_Mean()[3]);
 
-    classifierDetailsOutput.append(LEA_Classe1_SP_MultiPulseStr);
-    classifierDetailsOutput.append(LEA_Classe2_SP_MultiPulseStr);
-    classifierDetailsOutput.append(LEA_Classe3R_SP_MultiPulseStr);
-    classifierDetailsOutput.append(LEA_Classe3B_SP_MultiPulseStr);
+        classifierDetailsOutput.append(LEA_Classe1_SP_MultiPulseStr);
+        classifierDetailsOutput.append(LEA_Classe2_SP_MultiPulseStr);
+        classifierDetailsOutput.append(LEA_Classe3R_SP_MultiPulseStr);
+        classifierDetailsOutput.append(LEA_Classe3B_SP_MultiPulseStr);
 
-    classifierDetailsOutput.append(effects_MeanStr);
-    classifierDetailsOutput.append(LEA_Classe1_MeanStr);
-    classifierDetailsOutput.append(LEA_Classe2_MeanStr);
-    classifierDetailsOutput.append(LEA_Classe3R_MeanStr);
-    classifierDetailsOutput.append(LEA_Classe3B_MeanStr);
+        classifierDetailsOutput.append(effects_MeanStr);
+        classifierDetailsOutput.append(LEA_Classe1_MeanStr);
+        classifierDetailsOutput.append(LEA_Classe2_MeanStr);
+        classifierDetailsOutput.append(LEA_Classe3R_MeanStr);
+        classifierDetailsOutput.append(LEA_Classe3B_MeanStr);
 
-    if(laserWindow->myDockControls->isThermal_LaserCLass())
-    {
-        QString effects_thermalStr="Criterio dell'impulso termico";
+        if(laserWindow->myDockControls->isThermal_LaserCLass())
+        {
+            QString effects_thermalStr="Criterio dell'impulso termico";
 
-        if(!laserWindow->myDockControls->isHF_LaserCLass())
-            effects_thermalStr+=" : ";
-        else
-            effects_thermalStr+=" ad alta frequenza di ripetizione : ";
+            if(!laserWindow->myDockControls->isHF_LaserCLass())
+                effects_thermalStr+=" : ";
+            else
+                effects_thermalStr+=" ad alta frequenza di ripetizione : ";
 
-        QString LEA_Classe1_ThrmalStr= "LEA Classe 1 e 1M :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_Thermal()[0]);
-        QString LEA_Classe2_ThrmalStr= "LEA Classe 2 e 2M :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_Thermal()[1]);
-        QString LEA_Classe3R_ThrmalStr= "LEA Classe 3R :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_Thermal()[2]);
-        QString LEA_Classe3B_ThrmalStr= "LEA Classe 3B :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_Thermal()[3]);
+            QString LEA_Classe1_ThrmalStr= "LEA Classe 1 e 1M :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_Thermal()[0]);
+            QString LEA_Classe2_ThrmalStr= "LEA Classe 2 e 2M :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_Thermal()[1]);
+            QString LEA_Classe3R_ThrmalStr= "LEA Classe 3R :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_Thermal()[2]);
+            QString LEA_Classe3B_ThrmalStr= "LEA Classe 3B :" + QString::fromStdString(laserWindow->myDockControls->getLeaExpressions_Thermal()[3]);
 
-        classifierDetailsOutput.append(effects_thermalStr);
-        classifierDetailsOutput.append(LEA_Classe1_ThrmalStr);
-        classifierDetailsOutput.append(LEA_Classe2_ThrmalStr);
-        classifierDetailsOutput.append(LEA_Classe3R_ThrmalStr);
-        classifierDetailsOutput.append(LEA_Classe3B_ThrmalStr);
+            classifierDetailsOutput.append(effects_thermalStr);
+            classifierDetailsOutput.append(LEA_Classe1_ThrmalStr);
+            classifierDetailsOutput.append(LEA_Classe2_ThrmalStr);
+            classifierDetailsOutput.append(LEA_Classe3R_ThrmalStr);
+            classifierDetailsOutput.append(LEA_Classe3B_ThrmalStr);
+        }
     }
-  }
 }
 
 void LaserReport::classifierResults()
@@ -425,93 +421,92 @@ void LaserReport::classifierResults()
 
     classifierResultsOutput.append(classStr);
 
-    if(laserWindow->myDockControls->laserOperation()==DockControls::PULSE)
+    if(laserWindow->myDockControls->laserOperation()==DockControls::operation::PULSE)
     {
-    QString timeBaseStr ="Base dei tempi :" + laserWindow->myDockLea->ui->timeBase_Label->text();
-    classifierResultsOutput.append(timeBaseStr);
+        QString timeBaseStr ="Base dei tempi :" + laserWindow->myDockLea->ui->timeBase_Label->text();
+        classifierResultsOutput.append(timeBaseStr);
     }
 
-    if(laserWindow->myDockControls->laserOperation()==DockControls::MULTI_PULSE)
+    else if(laserWindow->myDockControls->laserOperation()==DockControls::operation::MULTI_PULSE)
     {
+        QString meanPowerEffects="Criterio della potenza media : ";
+        QString meanPowerLabelStr= laserWindow->myDockLea->ui->tCond3LEA_Label->text() + " :" + laserWindow->myDockLea->ui->MeanPowerLabel->text();
+        QString Te_Str= laserWindow->myDockLea->ui->tTe_Label->text() + " :" + laserWindow->myDockLea->ui->Te_Label->text();
 
-    QString meanPowerEffects="Criterio della potenza media : ";
-    QString meanPowerLabelStr= laserWindow->myDockLea->ui->tCond3LEA_Label->text() + " :" + laserWindow->myDockLea->ui->MeanPowerLabel->text();
-    QString Te_Str= laserWindow->myDockLea->ui->tTe_Label->text() + " :" + laserWindow->myDockLea->ui->Te_Label->text();
+        QString couplingFactor1str_2= "Fattore di accoppiamento 1<sup>a</sup> condizione :" +  laserWindow->myDockLea->ui->couplingFactor1_Label_2->text();
+        QString couplingFactor3str_2= "Fattore di accoppiamento 3<sup>a</sup> condizione :" +  laserWindow->myDockLea->ui->couplingFactor3_Label_2->text();
+        QString apertureDiam1str_2= "Diametro diaframma 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDiam1_Label_2->text();
+        QString apertureDiam3str_2=  "Diametro diaframma 3<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDiam3_Label_2->text();
+        QString apertureDist1str_2=  "Distanza apertura 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDist1_Label_2->text();
+        QString apertureDist3str_2=  "Diametro apertura 3<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDist3_Label_2->text();
+        QString beamAperture1str_2=  "Dimensione del fascio all'apertura 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->beamAperture1_Label_2->text();
+        QString beamAperture3str_2= "Dimensione del fascio all'apertura 3<sup>a</sup> condizione :"+ laserWindow->myDockLea->ui->beamAperture3_Label_2->text();
+        QString formulaLEAstr_2= laserWindow->myDockLea->ui->tFormulaLEA_Label->text() + " :" + laserWindow->myDockLea->ui->FormulaLEA_Label_2->text();
+        QString LEAstr_2= laserWindow->myDockLea->ui->tLEA_Label->text() + " :" + laserWindow->myDockLea->ui->LEA_Label_2->text();
+        QString powerErgCond1LEAstr_2= laserWindow->myDockLea->ui->tCond1LEA_Label->text() + " :" + laserWindow->myDockLea->ui->cond1LEA_Label_2->text();
+        QString powerErgCond3LEAstr_2= laserWindow->myDockLea->ui->tCond3LEA_Label->text() + " :" + laserWindow->myDockLea->ui->cond3LEA_Label_2->text();
+        QString classStr_2= "Classe sistema :" + laserWindow->myDockLea->ui->class_Label->text();
 
-    QString couplingFactor1str_2= "Fattore di accoppiamento 1<sup>a</sup> condizione :" +  laserWindow->myDockLea->ui->couplingFactor1_Label_2->text();
-    QString couplingFactor3str_2= "Fattore di accoppiamento 3<sup>a</sup> condizione :" +  laserWindow->myDockLea->ui->couplingFactor3_Label_2->text();
-    QString apertureDiam1str_2= "Diametro diaframma 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDiam1_Label_2->text();
-    QString apertureDiam3str_2=  "Diametro diaframma 3<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDiam3_Label_2->text();
-    QString apertureDist1str_2=  "Distanza apertura 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDist1_Label_2->text();
-    QString apertureDist3str_2=  "Diametro apertura 3<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDist3_Label_2->text();
-    QString beamAperture1str_2=  "Dimensione del fascio all'apertura 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->beamAperture1_Label_2->text();
-    QString beamAperture3str_2= "Dimensione del fascio all'apertura 3<sup>a</sup> condizione :"+ laserWindow->myDockLea->ui->beamAperture3_Label_2->text();
-    QString formulaLEAstr_2= laserWindow->myDockLea->ui->tFormulaLEA_Label->text() + " :" + laserWindow->myDockLea->ui->FormulaLEA_Label_2->text();
-    QString LEAstr_2= laserWindow->myDockLea->ui->tLEA_Label->text() + " :" + laserWindow->myDockLea->ui->LEA_Label_2->text();
-    QString powerErgCond1LEAstr_2= laserWindow->myDockLea->ui->tCond1LEA_Label->text() + " :" + laserWindow->myDockLea->ui->cond1LEA_Label_2->text();
-    QString powerErgCond3LEAstr_2= laserWindow->myDockLea->ui->tCond3LEA_Label->text() + " :" + laserWindow->myDockLea->ui->cond3LEA_Label_2->text();
-    QString classStr_2= "Classe sistema :" + laserWindow->myDockLea->ui->class_Label->text();
+        classifierResultsOutput.append(meanPowerEffects);
+        classifierResultsOutput.append(meanPowerLabelStr);
+        classifierResultsOutput.append(Te_Str);
+        classifierResultsOutput.append(couplingFactor1str_2);
+        classifierResultsOutput.append(couplingFactor3str_2);
+        classifierResultsOutput.append(apertureDiam1str_2);
+        classifierResultsOutput.append(apertureDiam3str_2);
+        classifierResultsOutput.append(apertureDist1str_2);
+        classifierResultsOutput.append(apertureDist3str_2);
 
-    classifierResultsOutput.append(meanPowerEffects);
-    classifierResultsOutput.append(meanPowerLabelStr);
-    classifierResultsOutput.append(Te_Str);
-    classifierResultsOutput.append(couplingFactor1str_2);
-    classifierResultsOutput.append(couplingFactor3str_2);
-    classifierResultsOutput.append(apertureDiam1str_2);
-    classifierResultsOutput.append(apertureDiam3str_2);
-    classifierResultsOutput.append(apertureDist1str_2);
-    classifierResultsOutput.append(apertureDist3str_2);
+        classifierResultsOutput.append(beamAperture1str_2);
+        classifierResultsOutput.append(beamAperture3str_2);
+        classifierResultsOutput.append(formulaLEAstr_2);
+        classifierResultsOutput.append(LEAstr_2);
+        classifierResultsOutput.append(powerErgCond1LEAstr_2);
+        classifierResultsOutput.append(powerErgCond3LEAstr_2);
 
-    classifierResultsOutput.append(beamAperture1str_2);
-    classifierResultsOutput.append(beamAperture3str_2);
-    classifierResultsOutput.append(formulaLEAstr_2);
-    classifierResultsOutput.append(LEAstr_2);
-    classifierResultsOutput.append(powerErgCond1LEAstr_2);
-    classifierResultsOutput.append(powerErgCond3LEAstr_2);
+        if(laserWindow->myDockControls->isThermal_LaserCLass())
+        {
+            QString thermalEffects="Criterio dell'impulso effetti termici : ";
+            QString couplingFactor1str_3= "Fattore di accoppiamento 1<sup>a</sup> condizione :" +  laserWindow->myDockLea->ui->couplingFactor1_Label_3->text();
+            QString couplingFactor3str_3= "Fattore di accoppiamento 3<sup>a</sup> condizione :" +  laserWindow->myDockLea->ui->couplingFactor3_Label_3->text();
+            QString apertureDiam1str_3= "Diametro diaframma 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDiam1_Label_3->text();
+            QString apertureDiam3str_3=  "Diametro diaframma 3<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDiam3_Label_3->text();
+            QString apertureDist1str_3=  "Distanza apertura 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDist1_Label_3->text();
+            QString apertureDist3str_3=  "Diametro apertura 3<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDist3_Label_3->text();
+            QString beamAperture1str_3=  "Dimensione del fascio all'apertura 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->beamAperture1_Label_3->text();
+            QString beamAperture3str_3= "Dimensione del fascio all'apertura 3<sup>a</sup> condizione :"+ laserWindow->myDockLea->ui->beamAperture3_Label_3->text();
+            QString formulaLEAstr_3= laserWindow->myDockLea->ui->tFormulaLEA_Label->text() + " :" + laserWindow->myDockLea->ui->FormulaLEA_Label_3->text();
+            QString LEAstr_3= laserWindow->myDockLea->ui->tLEA_Label->text() + " :" + laserWindow->myDockLea->ui->LEA_Label_3->text();
+            QString powerErgCond1LEAstr_3= laserWindow->myDockLea->ui->tCond1LEA_Label->text() + " :" + laserWindow->myDockLea->ui->cond1LEA_Label_3->text();
+            QString powerErgCond3LEAstr_3= laserWindow->myDockLea->ui->tCond3LEA_Label->text() + " :" + laserWindow->myDockLea->ui->cond3LEA_Label_3->text();
 
-    if(laserWindow->myDockControls->isThermal_LaserCLass())
-    {
-    QString thermalEffects="Criterio dell'impulso effetti termici : ";
-    QString couplingFactor1str_3= "Fattore di accoppiamento 1<sup>a</sup> condizione :" +  laserWindow->myDockLea->ui->couplingFactor1_Label_3->text();
-    QString couplingFactor3str_3= "Fattore di accoppiamento 3<sup>a</sup> condizione :" +  laserWindow->myDockLea->ui->couplingFactor3_Label_3->text();
-    QString apertureDiam1str_3= "Diametro diaframma 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDiam1_Label_3->text();
-    QString apertureDiam3str_3=  "Diametro diaframma 3<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDiam3_Label_3->text();
-    QString apertureDist1str_3=  "Distanza apertura 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDist1_Label_3->text();
-    QString apertureDist3str_3=  "Diametro apertura 3<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDist3_Label_3->text();
-    QString beamAperture1str_3=  "Dimensione del fascio all'apertura 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->beamAperture1_Label_3->text();
-    QString beamAperture3str_3= "Dimensione del fascio all'apertura 3<sup>a</sup> condizione :"+ laserWindow->myDockLea->ui->beamAperture3_Label_3->text();
-    QString formulaLEAstr_3= laserWindow->myDockLea->ui->tFormulaLEA_Label->text() + " :" + laserWindow->myDockLea->ui->FormulaLEA_Label_3->text();
-    QString LEAstr_3= laserWindow->myDockLea->ui->tLEA_Label->text() + " :" + laserWindow->myDockLea->ui->LEA_Label_3->text();
-    QString powerErgCond1LEAstr_3= laserWindow->myDockLea->ui->tCond1LEA_Label->text() + " :" + laserWindow->myDockLea->ui->cond1LEA_Label_3->text();
-    QString powerErgCond3LEAstr_3= laserWindow->myDockLea->ui->tCond3LEA_Label->text() + " :" + laserWindow->myDockLea->ui->cond3LEA_Label_3->text();
+            QString Ti_Str= laserWindow->myDockLea->ui->tTi_Label->text() + " :" + laserWindow->myDockLea->ui->Ti_Label->text();
+            QString Ti_prf_Str= laserWindow->myDockLea->ui->tTi_prf_Label->text() + " :" + laserWindow->myDockLea->ui->Ti_prf_Label->text();
+            QString C5_Str= laserWindow->myDockLea->ui->tC5_Label->text() + " :" + laserWindow->myDockLea->ui->C5_Label->text();
+            QString pulseNumberLabel_Str= laserWindow->myDockLea->ui->tPulseNumberLabel->text() + " :" + laserWindow->myDockLea->ui->PulseNumberLabel->text();
+            QString countingLabel_Str= laserWindow->myDockLea->ui->tCountingLabel->text() + " :" + laserWindow->myDockLea->ui->CountingLabel->text();
 
-    QString Ti_Str= laserWindow->myDockLea->ui->tTi_Label->text() + " :" + laserWindow->myDockLea->ui->Ti_Label->text();
-    QString Ti_prf_Str= laserWindow->myDockLea->ui->tTi_prf_Label->text() + " :" + laserWindow->myDockLea->ui->Ti_prf_Label->text();
-    QString C5_Str= laserWindow->myDockLea->ui->tC5_Label->text() + " :" + laserWindow->myDockLea->ui->C5_Label->text();
-    QString pulseNumberLabel_Str= laserWindow->myDockLea->ui->tPulseNumberLabel->text() + " :" + laserWindow->myDockLea->ui->PulseNumberLabel->text();
-    QString countingLabel_Str= laserWindow->myDockLea->ui->tCountingLabel->text() + " :" + laserWindow->myDockLea->ui->CountingLabel->text();
+            classifierResultsOutput.append(thermalEffects);
+            classifierResultsOutput.append(Ti_Str);
+            classifierResultsOutput.append(Ti_prf_Str);
+            classifierResultsOutput.append(C5_Str);
+            classifierResultsOutput.append(pulseNumberLabel_Str);
+            classifierResultsOutput.append(countingLabel_Str);
 
-    classifierResultsOutput.append(thermalEffects);
-    classifierResultsOutput.append(Ti_Str);
-    classifierResultsOutput.append(Ti_prf_Str);
-    classifierResultsOutput.append(C5_Str);
-    classifierResultsOutput.append(pulseNumberLabel_Str);
-    classifierResultsOutput.append(countingLabel_Str);
+            classifierResultsOutput.append(couplingFactor1str_3);
+            classifierResultsOutput.append(couplingFactor3str_3);
+            classifierResultsOutput.append(apertureDiam1str_3);
+            classifierResultsOutput.append(apertureDiam3str_3);
+            classifierResultsOutput.append(apertureDist1str_3);
+            classifierResultsOutput.append(apertureDist3str_3);
 
-    classifierResultsOutput.append(couplingFactor1str_3);
-    classifierResultsOutput.append(couplingFactor3str_3);
-    classifierResultsOutput.append(apertureDiam1str_3);
-    classifierResultsOutput.append(apertureDiam3str_3);
-    classifierResultsOutput.append(apertureDist1str_3);
-    classifierResultsOutput.append(apertureDist3str_3);
-
-    classifierResultsOutput.append(beamAperture1str_3);
-    classifierResultsOutput.append(beamAperture3str_3);
-    classifierResultsOutput.append(formulaLEAstr_3);
-    classifierResultsOutput.append(LEAstr_3);
-    classifierResultsOutput.append(powerErgCond1LEAstr_3);
-    classifierResultsOutput.append(powerErgCond3LEAstr_3);
-    }
+            classifierResultsOutput.append(beamAperture1str_3);
+            classifierResultsOutput.append(beamAperture3str_3);
+            classifierResultsOutput.append(formulaLEAstr_3);
+            classifierResultsOutput.append(LEAstr_3);
+            classifierResultsOutput.append(powerErgCond1LEAstr_3);
+            classifierResultsOutput.append(powerErgCond3LEAstr_3);
+        }
     }
 }
 
@@ -559,14 +554,15 @@ void LaserReport::firstPageReport()
         break;
     }
 
-QString environment="Ambiente:";
+    QString environment="Ambiente:";
+
     if(isIndoor())
         environment+=" laboratorio";
     else
         environment+=" poligono";
 
-QString armAttenuationString;
-QString scintillationString;
+    QString armAttenuationString;
+    QString scintillationString;
 
     if(isIndoor())
     {
@@ -575,21 +571,21 @@ QString scintillationString;
     }
     else
     {
-    if(laserWindow->getAtmEffectsBool())
-        armAttenuationString= "Effetti Atmosferici: valutati";
-    else
-        armAttenuationString= "Effetti Atmosferici: non valutati";
+        if(laserWindow->getAtmEffectsBool())
+            armAttenuationString= "Effetti Atmosferici: valutati";
+        else
+            armAttenuationString= "Effetti Atmosferici: non valutati";
 
-
-    if(laserWindow->getScintillationBool())
-        scintillationString= "Scintillazione: valutata";
-    else
-        scintillationString= "Scintillazione: non valutata";
+        if(laserWindow->getScintillationBool())
+            scintillationString= "Scintillazione: valutata";
+        else
+            scintillationString= "Scintillazione: non valutata";
     }
 
 
     QString filterStr;
     QString transmittanceStr;
+
     if(laserpoint->isFilterOn())
     {
         filterStr="Filtro montato su ottica: presente";
@@ -603,7 +599,7 @@ QString scintillationString;
     laser.append(aperturaStr);
 
     if(laserpoint->isFilterOn())
-      laser.append(transmittanceStr);
+        laser.append(transmittanceStr);
 
     laser.append(installationStr);
     laser.append(environment);
@@ -625,18 +621,18 @@ void LaserReport::reflectorsValuation()
     else
        inHazardArea="Si";
 
-        reflectors.append("Posizione [m, m]: " + QString("(%1,%2)")
+    reflectors.append("Posizione [m, m]: " + QString("(%1,%2)")
                           .arg(reflector->pos().x())
                           .arg(reflector->pos().y()));
-        reflectors.append("Nell'area di rischio: "+ inHazardArea);
-        reflectors.append("Tipo di riflettore: " + reflector->getReflectorKindString());
-        reflectors.append("Divergenza laser [mrad]: " + QString::number(reflector->getDivergence()));
-        reflectors.append("Distanza del riflettore [m]: " + QString::number(reflector->getReflectorDistance(),'f',1));
-        reflectors.append("Coefficiente di riflessione: " + QString::number(reflector->getMaterialCoeff()));
-        reflectors.append("Posizionamento [gradi]: " + QString::number(reflector->getPositioning()));
-        reflectors.append("Distanza di sicurezza ottica dal riflettore [m]: "+ QString::number(reflector->getPositioningElement(),'f',1));
+    reflectors.append("Nell'area di rischio: "+ inHazardArea);
+    reflectors.append("Tipo di riflettore: " + reflector->getReflectorKindString());
+    reflectors.append("Divergenza laser [mrad]: " + QString::number(reflector->getDivergence()));
+    reflectors.append("Distanza del riflettore [m]: " + QString::number(reflector->getReflectorDistance(),'f',1));
+    reflectors.append("Coefficiente di riflessione: " + QString::number(reflector->getMaterialCoeff()));
+    reflectors.append("Posizionamento [gradi]: " + QString::number(reflector->getPositioning()));
+    reflectors.append("Distanza di sicurezza ottica dal riflettore [m]: "+ QString::number(reflector->getPositioningElement(),'f',1));
 
-        if(reflector->getReflectorKind()!=MIRROR_TARGET)
+    if(reflector->getReflectorKind()!=MIRROR_TARGET)
         reflectors.append("Distanza di sicurezza ottica massima dal riflettore [m]: "+ QString::number(reflector->getMaxElement(),'f',1));
 }
 
@@ -683,10 +679,10 @@ void LaserReport::binocularsValuation()
 
 void LaserReport::footprintsValuation()
 {
-        footprints.append("Posizione [m, m]: " + QString("(%1,%2)")
+    footprints.append("Posizione [m, m]: " + QString("(%1,%2)")
                           .arg(footprint->pos().x())
                           .arg(footprint->pos().y()));
-        footprints.append("Dimensioni [m X m]: "+ QString::number(footprint->getRectangle().rect().width()) + " X "
+    footprints.append("Dimensioni [m X m]: "+ QString::number(footprint->getRectangle().rect().width()) + " X "
                           + QString::number(footprint->getRectangle().rect().height()));
 }
 
@@ -720,18 +716,19 @@ QString LaserReport::htmlLaserInstallation()
 {
     QString html;
 
-        html +="<table width="+correction+">\n"
-               "<tr><th colspan=\"2\">Installazione del punto laser</th>\n";
+    html +="<table width="+correction+">\n"
+            "<tr><th colspan=\"2\">Installazione del punto laser</th>\n";
 
-        foreach (QString entry, laser) {
-            QStringList fields = entry.split(":");
-            QString title = fields[0];
-            QString body = fields[1];
+    foreach (QString entry, laser)
+    {
+        QStringList fields = entry.split(":");
+        QString title = fields[0];
+        QString body = fields[1];
 
-            html +="<tr><td bgcolor=\"#fbfbfb\"><b>" + title + "</b></td>\n"
-                   "<td>" + body + "</td></tr>\n";
-        }
-            html += "</table><br>\n";
+        html +="<tr><td bgcolor=\"#fbfbfb\"><b>" + title + "</b></td>\n"
+                "<td>" + body + "</td></tr>\n";
+    }
+    html += "</table><br>\n";
 
     return html;
 }
@@ -740,18 +737,12 @@ QString LaserReport::kindOfLaser()
 {
     QString kindOfLaser;
 
-    if(laserWindow->myDockControls->laserOperation()==DockControls::CONTINUOS_WAVE)
-    {
+    if(laserWindow->myDockControls->laserOperation()==DockControls::operation::CONTINUOS_WAVE)
         kindOfLaser="Laser Countinuos Wave";
-    }
-    else if(laserWindow->myDockControls->laserOperation()==DockControls::PULSE)
-    {
+    else if(laserWindow->myDockControls->laserOperation()==DockControls::operation::PULSE)
         kindOfLaser="Laser impulsato";
-    }
-    else if(laserWindow->myDockControls->laserOperation()==DockControls::MULTI_PULSE)
-    {
+    else if(laserWindow->myDockControls->laserOperation()==DockControls::operation::MULTI_PULSE)
         kindOfLaser="Laser ad impulsi multipli";
-    }
 
     return kindOfLaser;
 }
@@ -765,7 +756,8 @@ QString LaserReport::htmlInputData(const QString & kindOfLaser)
             "<tr>\n<td bgcolor=\"#fbfbfb\"><b>Tipo di laser</b></td>\n"
                            "<td>" + kindOfLaser + "</td>\n</tr>";
 
-    foreach (QString entry, input) {
+    foreach (QString entry, input)
+    {
         QStringList fields = entry.split("=");
         QString title = fields[0];
         QString body = fields[1];
@@ -785,18 +777,17 @@ QString LaserReport::htmlEyeExposition()
     html += "<table width="+correction+">\n"
             "<tr>\n<th colspan=\"2\">Valutazione D.Lgs. 81/2008  - Esposizione dell'occhio</th>\n</tr>\n";
 
-    foreach (QString entry, output) {
+    foreach (QString entry, output)
+    {
         QStringList fields = entry.split("$");
         QString title = fields[0];
         QString body = fields[1];
 
-        if(body==" "){
+        if(body==" ")
             html +="<tr>\n<td colspan=\"2\"><i>" + title + "</i></td>\n</tr>\n";
-        }
-        else{
+        else
         html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b></td>\n"
                "<td>" + body + "</td>\n</tr>\n";
-        }
     }
 
     html +="\n</table><br>\n";
@@ -811,21 +802,21 @@ QString LaserReport::htmlSkinExposition()
     html += "<table width="+correction+">\n"
             "<tr>\n<th colspan=\"2\">Valutazione D.Lgs. 81/2008 - Esposizione della cute</th>\n</tr>\n";
 
-    foreach (QString entry, skin) {
+    foreach (QString entry, skin)
+    {
         QStringList fields = entry.split("$");
         QString title = fields[0];
         QString body = fields[1];
 
-        if(body==" "){
+        if(body==" ")
             html +="<tr>\n<td colspan=\"2\"><i>" + title + "</i></td>\n</tr>\n";
-        }
-        else{
+        else
         html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b></td>\n"
                "<td>" + body + "</td>\n</tr>\n";
-        }
     }
 
     html +="\n</table><br>\n";
+
     return html;
 }
 
@@ -836,7 +827,8 @@ QString LaserReport::htmlEffects()
     html +="<table width="+correction+">\n"
            "<tr>\n<th colspan=\"2\">Effetti</th>\n</tr>\n";
 
-    foreach (QString entry, effects) {
+    foreach (QString entry, effects)
+    {
         QStringList fields = entry.split(":");
         QString title = fields[0].toHtmlEscaped();
         QString body = fields[1].toHtmlEscaped();
@@ -856,17 +848,19 @@ QString LaserReport::htmlGoggleAssessment()
     html +="<table width="+correction+">\n"
             "<tr>\n<th colspan=\"2\">Dispositivi protettori</tr>\n</th>\n";
 
-    foreach (QString entry, goggle) {
+    foreach (QString entry, goggle)
+    {
         QStringList fields = entry.split(":");
         QString title = fields[0];
         QString body = fields[1];
 
     if(body==" ")
-            html +="<tr>\n<td colspan=\"2\"><i>" + title + "</i></td>\n</tr>\n";
-    else{
+        html +="<tr>\n<td colspan=\"2\"><i>" + title + "</i></td>\n</tr>\n";
+    else
         html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b>\n</td>\n"
-               "<td>" + body + "</td>\n</tr>";}
+               "<td>" + body + "</td>\n</tr>";
     }
+
     html +="\n</tbody>\n</table><br><br><br><br><br>\n";
 
     return html;
@@ -890,14 +884,13 @@ QString LaserReport::htmlGoggleDetails()
    vector< pair <int,double> >::const_iterator constIterator; // const_iterator
    // display vector elements using const_iterator
 
-   for ( constIterator = dataVector.begin();
-   constIterator != dataVector.end(); ++constIterator )
-       {
-       if(constIterator->first==scale)
-       html += "<tr><td><b>LB" + QString::number(constIterator->first) + "</b></td>\n<td><b>"
+   for ( constIterator = dataVector.begin(); constIterator != dataVector.end(); ++constIterator )
+    {
+        if(constIterator->first==scale)
+            html += "<tr><td><b>LB" + QString::number(constIterator->first) + "</b></td>\n<td><b>"
             + QString::number(constIterator->second) +"</b></td></tr>\n";
        else
-       html += "<tr><td>LB" + QString::number(constIterator->first) + "</td>\n<td>"
+            html += "<tr><td>LB" + QString::number(constIterator->first) + "</td>\n<td>"
             + QString::number(constIterator->second) +"</td></tr>\n";
        }
 
@@ -924,16 +917,15 @@ QString LaserReport::htmlDGoggleDetails()
    vector< pair <int,double> >::const_iterator constIterator; // const_iterator
    // display vector elements using const_iterator
 
-   for ( constIterator = dataVector.begin();
-   constIterator != dataVector.end(); ++constIterator )
-       {
+   for ( constIterator = dataVector.begin(); constIterator != dataVector.end(); ++constIterator )
+    {
        if(constIterator->first==scale)
        html += "<tr><td><b>LB" + QString::number(constIterator->first) + "</b></td>\n<td><b>"
             + QString::number(constIterator->second) +"</b></td></tr>\n";
        else
        html += "<tr><td>LB" + QString::number(constIterator->first) + "</td>\n<td>"
             + QString::number(constIterator->second) +"</td></tr>\n";
-       }
+    }
 
    html += "\n</table><br>\n";
 
@@ -944,32 +936,33 @@ void LaserReport::buidReflectorsDocumentPart()
 {
     QString html;
 
-    if(!myReflectors.empty()){
+    if(!myReflectors.empty())
+    {
+        html +="<br><h2>Elementi riflettori presenti nell'area di sgombero</h2>";
+        QList<pair<Reflector*, int>>::iterator myIterator; // iterator
+        myIterator = myReflectors.begin();
+        int i =1;
 
-    html +="<br><h2>Elementi riflettori presenti nell'area di sgombero</h2>";
-    QList<pair<Reflector*, int>>::iterator myIterator; // iterator
-    myIterator = myReflectors.begin();
-    int i =1;
-    while (myIterator != myReflectors.end() )
+        while (myIterator != myReflectors.end() )
         {
             reflector=myIterator->first;
             myCursor.insertHtml(htmlReflectors(i));
 
             if(reflector->getReflectorKind()!=MIRROR_TARGET)
             {
-            QUrl Uri=QUrl("mydata://"+reflectorsImageName[i-1]);
+                QUrl Uri=QUrl("mydata://"+reflectorsImageName[i-1]);
 
-            QTextImageFormat imageFormat;
-            imageFormat.setName(Uri.toString());
-            imageFormat.setQuality(800);
+                QTextImageFormat imageFormat;
+                imageFormat.setName(Uri.toString());
+                imageFormat.setQuality(800);
 
-            textDocument->addResource(QTextDocument::ImageResource,
-                Uri, QVariant(reflectorsGraphImage[i-1]));
+                textDocument->addResource(QTextDocument::ImageResource,
+                    Uri, QVariant(reflectorsGraphImage[i-1]));
 
-            myCursor.insertImage(imageFormat);
+                myCursor.insertImage(imageFormat);
             }
-            ++i;
-            ++myIterator;
+        ++i;
+        ++myIterator;
         }
     }
 }
@@ -979,55 +972,53 @@ QString LaserReport::htmlReflectors(const int & number)
     QString html;
     QString htmlImage;
 
-        reflectorsValuation();
+    reflectorsValuation();
 
-            if(reflector->getReflectorKind()==WET_TARGET)
-                {
-                if(reflector->getOpticalDiameter()!=0)
-                    {
-                    htmlImage+="<h3>Coefficienti di riflessione da superficie bagnata</h3>\n";
-                    htmlImage+=printSpecularReflectorCoefficients(reflector->getRho_sVect());
+    if(reflector->getReflectorKind()==WET_TARGET)
+    {
+        if(reflector->getOpticalDiameter()!=0)
+        {
+            htmlImage+="<h3>Coefficienti di riflessione da superficie bagnata</h3>\n";
+            htmlImage+=printSpecularReflectorCoefficients(reflector->getRho_sVect());
 
-                    htmlImage+="<h3>Distanza di sicurezza in funzione dell'angolo di riflessione (valori non nulli)</h3>\n";
-                    htmlImage+=printReflectorTable(reflector->getZsVect());
-                    }
-                }
-            else
-            if(reflector->getReflectorKind()==GLASS_TARGET)
-                {
-                if(reflector->getOpticalDiameter()!=0)
-                {
-                htmlImage+="<h3>Coefficienti di riflessione da superficie di vetro</h3>\n";
-                htmlImage+=printSpecularReflectorCoefficients(reflector->getRho_sVect());
+            htmlImage+="<h3>Distanza di sicurezza in funzione dell'angolo di riflessione (valori non nulli)</h3>\n";
+            htmlImage+=printReflectorTable(reflector->getZsVect());
+        }
+    }
+    else if(reflector->getReflectorKind()==GLASS_TARGET)
+    {
+        if(reflector->getOpticalDiameter()!=0)
+        {
+            htmlImage+="<h3>Coefficienti di riflessione da superficie di vetro</h3>\n";
+            htmlImage+=printSpecularReflectorCoefficients(reflector->getRho_sVect());
 
-                htmlImage+="<h3>Distanza di sicurezza in funzione dell'angolo di riflessione (valori non nulli)</h3>\n";
-                htmlImage+=printReflectorTable(reflector->getZsVect());
-                }
-            }
-            else
-            if(reflector->getReflectorKind()==LAMBERTIAN_TARGET)
-                {
-              if(reflector->getOpticalDiameter()!=0)
-                    {
-                    htmlImage+="<h3>Distanza di sicurezza in funzione dell'angolo di riflessione (valori non nulli)</h3>\n";
-                    htmlImage+=printReflectorTable(reflector->getZsVect());
-                    }
-                }
-            html +=
-            "<table width="+correction+">\n"
+            htmlImage+="<h3>Distanza di sicurezza in funzione dell'angolo di riflessione (valori non nulli)</h3>\n";
+            htmlImage+=printReflectorTable(reflector->getZsVect());
+        }
+    }
+    else if(reflector->getReflectorKind()==LAMBERTIAN_TARGET)
+    {
+        if(reflector->getOpticalDiameter()!=0)
+        {
+            htmlImage+="<h3>Distanza di sicurezza in funzione dell'angolo di riflessione (valori non nulli)</h3>\n";
+            htmlImage+=printReflectorTable(reflector->getZsVect());
+        }
+    }
+    html +="<table width="+correction+">\n"
              "<tr><th colspan=\"2\">Riflettore n. "+ QString::number(number) +"</th></tr>\n";
 
-            foreach (QString entry, reflectors) {
-            QStringList fields = entry.split(": ");
-            QString title = fields[0].toHtmlEscaped();
-            QString body = fields[1].toHtmlEscaped();
+    foreach (QString entry, reflectors)
+    {
+        QStringList fields = entry.split(": ");
+        QString title = fields[0].toHtmlEscaped();
+        QString body = fields[1].toHtmlEscaped();
 
-            html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b></td>\n"
+        html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b></td>\n"
                    "<td>" + body + "</td>\n</tr>\n";
-            }
+    }
 
-            html +="\n</table><br>\n";
-            html +=htmlImage+"\n<hr><br><br>\n";
+    html +="\n</table><br>\n";
+    html +=htmlImage+"\n<hr><br><br>\n";
 
     return html;
 }
@@ -1059,8 +1050,7 @@ QString LaserReport::printReflectorTable( vector< pair <double,double> > myVecto
        for(int i=0; i<vectorCount; i++)
             myVector.pop_back();
    }
-   for ( constIterator = myVector.begin();
-        constIterator != myVector.end(); std::advance(constIterator, step ))
+   for ( constIterator = myVector.begin(); constIterator != myVector.end(); std::advance(constIterator, step ))
    {
        if(constIterator->second!=0)
        {
@@ -1104,8 +1094,7 @@ QString LaserReport::printSpecularReflectorCoefficients( vector< pair <double,do
             myVector.pop_back();
    }
 
-   for ( constIterator = myVector.begin();
-        constIterator != myVector.end(); std::advance(constIterator, step))
+   for ( constIterator = myVector.begin(); constIterator != myVector.end(); std::advance(constIterator, step))
    {
        if(constIterator->second!=0)
        {
@@ -1125,36 +1114,38 @@ QString LaserReport::htmlFootprints()
 {
     QString html;
 
-    if(!myFootprints.empty()){
+    if(!myFootprints.empty())
+    {
         html +="<br><h2>Ingombri presenti nell'area</h2>";
 
-    QList<pair<FootprintObject*, int>>::iterator myIterator; // iterator
-    myIterator = myFootprints.begin();
-    int i =1;
-    while (myIterator != myFootprints.end() )
+        QList<pair<FootprintObject*, int>>::iterator myIterator; // iterator
+        myIterator = myFootprints.begin();
+        int i =1;
+        while(myIterator != myFootprints.end())
         {
-        footprint=myIterator->first;
-        footprints.clear();
-        footprintsValuation();
+            footprint=myIterator->first;
+            footprints.clear();
+            footprintsValuation();
 
-        html +=
-        "<table width="+correction+">\n"
-         "<tr><th colspan=\"2\">Ingombro n. "+ QString::number(i) +"</th></tr>\n";
+            html +=
+            "<table width="+correction+">\n"
+            "<tr><th colspan=\"2\">Ingombro n. "+ QString::number(i) +"</th></tr>\n";
 
-        foreach (QString entry, footprints) {
-        QStringList fields = entry.split(": ");
-        QString title = fields[0].toHtmlEscaped();
-        QString body = fields[1].toHtmlEscaped();
+            foreach (QString entry, footprints)
+            {
+                QStringList fields = entry.split(": ");
+                QString title = fields[0].toHtmlEscaped();
+                QString body = fields[1].toHtmlEscaped();
 
-        html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b></td>\n"
-               "<td>" + body + "</td>\n</tr>\n";
-        }
+                html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b></td>\n"
+                       "<td>" + body + "</td>\n</tr>\n";
+            }
 
         html +="\n</table><br>\n";
         ++myIterator;
-      ++i;
+    ++i;
+        }
     }
-  }
     return html;
 }
 
@@ -1163,36 +1154,37 @@ QString LaserReport::htmlBinoculars()
     QString html;
 
     if(!myBinoculars.empty())
-        html +="<br><h2>Dispositivi ottici presenti</h2>";
     {
+        html +="<br><h2>Dispositivi ottici presenti</h2>";
 
-    QList<pair<Binocular*, int>>::iterator myIterator; // iterator
-    myIterator = myBinoculars.begin();
-    int i =1;
-    while (myIterator != myBinoculars.end() )
+        QList<pair<Binocular*, int>>::iterator myIterator; // iterator
+        myIterator = myBinoculars.begin();
+        int i =1;
+
+        while(myIterator != myBinoculars.end())
         {
-        binocular=myIterator->first;
-        binoculars.clear();
-        binocularsValuation();
+            binocular=myIterator->first;
+            binoculars.clear();
+            binocularsValuation();
 
-        html +=
-        "<table width="+correction+">\n"
-         "<tr><th colspan=\"2\">Dispositivo ottico n. "+ QString::number(i) +"</th></tr>\n";
+            html +=
+            "<table width="+correction+">\n"
+             "<tr><th colspan=\"2\">Dispositivo ottico n. "+ QString::number(i) +"</th></tr>\n";
 
-        foreach (QString entry, binoculars) {
-        QStringList fields = entry.split(": ");
-        QString title = fields[0].toHtmlEscaped();
-        QString body = fields[1].toHtmlEscaped();
+            foreach (QString entry, binoculars) {
+            QStringList fields = entry.split(": ");
+            QString title = fields[0].toHtmlEscaped();
+            QString body = fields[1].toHtmlEscaped();
 
-        html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b></td>\n"
-               "<td>" + body + "</td>\n</tr>\n";
+            html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b></td>\n"
+                   "<td>" + body + "</td>\n</tr>\n";
+            }
+
+            html +="\n</table><br>\n";
+            ++myIterator;
+          ++i;
         }
-
-        html +="\n</table><br>\n";
-        ++myIterator;
-      ++i;
     }
-  }
     return html;
 }
 
@@ -1213,44 +1205,42 @@ QString LaserReport::htmlClassifier()
     html +="<table width="+correction+">\n"
            "<tr><th colspan=\"2\">Livelli di Emissione Accessibili valutati</th>\n";
 
-    foreach (QString entry, classifierDetailsOutput) {
+    foreach (QString entry, classifierDetailsOutput)
+    {
         QStringList fields = entry.split(":");
         QString title = fields[0];
         QString body = fields[1];
 
-        if(body==" "){
-            html +="<tr>\n<td colspan=\"2\"><i>" + title + "</i></td>\n</tr>\n";
-        }
-        else{
-        html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b></td>\n"
+        if(body==" ")
+            html +="<tr>\n<td colspan=\"2\"><i>" + title + "</i></td>\n</tr>\n";      
+        else
+            html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b></td>\n"
                "<td>" + body + "</td>\n</tr>\n";
-        }
     }
 
-html += "</table><br>\n";
-
-        html +="<table width="+correction+">\n"
+    html += "</table><br>\n";
+    html +="<table width="+correction+">\n"
                "<tr><th colspan=\"2\">Risultato valutazione</th>\n";
 
-        foreach (QString entry, classifierResultsOutput) {
-            QStringList fields = entry.split(":");
-            QString title = fields[0];
-            QString body = fields[1];
+    foreach (QString entry, classifierResultsOutput)
+    {
+        QStringList fields = entry.split(":");
+        QString title = fields[0];
+        QString body = fields[1];
 
-            if(body==" "){
+        if(body==" ")
                 html +="<tr>\n<td colspan=\"2\"><i>" + title + "</i></td>\n</tr>\n";
-            }
-            else{
+        else
             html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b></td>\n"
                    "<td>" + body + "</td>\n</tr>\n";
-            }
-        }
+    }
         if(classStr!="Classe 1")
             html +="<tr>\n<td colspan=\"2\"><img style= width: 40px; height: 25px;\"\n"
         "alt=\"Attenzione\" title=\"Attenzione\"\n"
         "src=\"mydata://laser_warning.png\">  Attenzione, verificare la presenza delle etichette di sicurezza</td>\n</tr>\n";
 
          html += "</table><br>\n";
+
     return html;
 }
 

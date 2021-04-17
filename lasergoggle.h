@@ -49,7 +49,7 @@ public:
     const static double PULSE_WIDTH; /*!< Parametro di default della durata dell'impulso in secondi. */
     const static double POWER_ENERGY;/*!< Parametro di default della potenza ottica del dispositivo in Watt o dell'energia dell'impulso in Joule
 a seconda della modalità di funzionamento, CW o ad impulso. */
-    const static double BEAM_DIAMETER;/*!< Parametro di default del diametro del fascio in mm. */
+    const static double PUPIL_DIAMETER;/*!< Parametro di default del diametro del fascio in mm. */
 
     enum material{ONLY_REFLECTOR,
     /**< Riflettori semplici. */

@@ -23,7 +23,7 @@ using namespace std;
 class LaserClassCW
 {
 public:
-LaserClassCW(double=BEAM_DIAMETER, double=POWER, double=DIVERGENCE, double=EmpLeaTables::HE_NE_WAVELENGTH,
+LaserClassCW(double=PUPIL_DIAMETER, double=POWER, double=DIVERGENCE, double=EmpLeaTables::HE_NE_WAVELENGTH,
              double=TIME_BASE, double=ALPHA);  /*!< L'istanza della classe prevede l'inserimento dei parametri:
 <ul>
 <li>diametro del fascio <b>a</b> in mm;</li>
@@ -44,13 +44,13 @@ La classe prevede inoltre un costruttore di default con i seguenti parametri:
  */
 
 static const size_t N_CLASS{7};
-static const double BEAM_DIAMETER;/*!< Parametro di default del diametro del fascio in mm. */
+static const double PUPIL_DIAMETER;/*!< Parametro di default del diametro del fascio in mm. */
 static const double POWER;/*!< Parametro di default della potenza ottica del dispositivo in Watt. */
 static const double DIVERGENCE;/*!< Parametro di default della divergenza del fascio in mrad. */
 static const double TIME_BASE;/*!< Parametro di default della base dei tempi in secondi. */
 static const double ALPHA;/*!< Parametro di default dell'angolo sotteso dalla sorgente apparente in mrad. */
 
-enum laserOperation{CW,
+enum class laserOperation{CW,
     /**< Funzionamento ad onda continua. */
     PULSED,
     /**< Funzionamento ad impulso singolo. */
@@ -58,7 +58,7 @@ enum laserOperation{CW,
     /**< Funzionamento ad impulsi multipli. */
     };
 
-enum laserClass{CLASSE_1,
+enum class laserClass{CLASSE_1,
     /**< Laser di Classe 1 */
      CLASSE_1M,
     /**< Laser di Classe 1M */

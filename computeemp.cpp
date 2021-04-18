@@ -27,7 +27,6 @@ ComputeEMP::ComputeEMP(double _wavelength, double _pulseWidth, double _alpha): E
     pulseWidth = _pulseWidth;
     alpha=_alpha;
 	EMP();
-
 }
 
 void ComputeEMP::setWavelength(const double& _wavelength)

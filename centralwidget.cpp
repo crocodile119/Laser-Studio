@@ -71,7 +71,6 @@ CentralWidget::CentralWidget(QWidget *parent) :
     a_coefficient=0.06*powf(meteoRange, 0.33);
 
     atmoshericEffectsCoefficient=3.91/(meteoRange)*powf(550.0/(632.0), a_coefficient);
-
 }
 
 void CentralWidget::setNewScene()

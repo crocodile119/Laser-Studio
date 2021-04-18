@@ -62,10 +62,10 @@ DockControls::DockControls(QWidget *parent, DockResults *_dockResults, DockEffec
 
     connect(this, SIGNAL(EMP_Changed()), this, SLOT(setEMP()));
     connect(this, SIGNAL(powerErgForEMPChanged()), this, SLOT(setPowerErgForEMP()));
-    connect(dockGoggle->ui->pushButton, SIGNAL(toggled(bool)), this, SLOT(on_pushButton_toggled(bool)));
+    connect(dockGoggle->ui->showGoggleCharts, SIGNAL(toggled(bool)), this, SLOT(showGoggleCharts(bool)));
 }
 
-void DockControls::on_pushButton_toggled(bool checked)
+void DockControls::showGoggleCharts(bool checked)
 {
     double width;
 
@@ -80,7 +80,7 @@ void DockControls::on_pushButton_toggled(bool checked)
         width=DOCKGOGGLEMINIMUN+450;
 
         dockGoggle->setFixedWidth(width);
-        dockGoggle->ui->pushButton->setText("<<");
+        dockGoggle->ui->showGoggleCharts->setText("<<");
     }
 
     else
@@ -90,7 +90,7 @@ void DockControls::on_pushButton_toggled(bool checked)
 
         chartView->hide();
         dockGoggle->setFixedWidth(DOCKGOGGLEMINIMUN);
-        dockGoggle->ui->pushButton->setText(">>");
+        dockGoggle->ui->showGoggleCharts->setText(">>");
     }
 }
 
@@ -156,9 +156,9 @@ void DockControls::setUpGoggle()
     string myNewDGoggleMark = myDLaserGoggle->goggleMark(LaserGoggle::HE_NE_WAVELENGTH, myGoggleTimeBase, 0, LaserGoggle::PUPIL_DIAMETER,
                                                          LaserGoggle::CONTINUOS_OPERATION);
 
-
+    const double NO_ZERO_POWER_ERG=1;
     frequencyDataVector=myDLaserGoggle->getDataVector();
-    dLaserOutput=myDLaserGoggle->laserIrrRadCorrected(ZERO_POWER_ERG);
+    dLaserOutput=myDLaserGoggle->laserIrrRadCorrected(NO_ZERO_POWER_ERG);
     myDModel=new ScaleNumbersModelView(this);
     myDModel->setTableList(frequencyDataVector);
     dockGoggle->ui->dTableView->setModel(myDModel);
@@ -194,88 +194,87 @@ void DockControls::on_wavelengthScrollBar_valueChanged(int value)
 					
     if(n_laser==operation::CONTINUOS_WAVE)
     {
-    /****************************************
-    * Imposto il valore negli oggetti Laser *
-    *****************************************/
+        /****************************************
+        * Imposto il valore negli oggetti Laser *
+        *****************************************/
 
-    MyLaserCW_Pr->setWavelength(wavelength);
-    MyLaserCW_Pr->setExposureTime();
-    MyLaserCW_Pr->setPulseWidth(MyLaserCW_Pr->getExposureTime());
-    MyLaserSkinSP_Pr->setWavelength(wavelength);
+        MyLaserCW_Pr->setWavelength(wavelength);
+        MyLaserCW_Pr->setExposureTime();
+        MyLaserCW_Pr->setPulseWidth(MyLaserCW_Pr->getExposureTime());
+        MyLaserSkinSP_Pr->setWavelength(wavelength);
 
-    MyLaserClassCW_Pr->setWavelength(wavelength);
-    MyLaserClassCW_Pr->setTimeBase();
+        MyLaserClassCW_Pr->setWavelength(wavelength);
+        MyLaserClassCW_Pr->setTimeBase();
 
-    /*********************************************************************
-    * Imposto il valore nell'oggetto occhiali protettori.                *
-    * Il valore della base dei tempi dipende dalla lunghezza d'onda e va *
-    * pertanto impostato in funzione di questa (EN 207 B.4).             *
-    **********************************************************************/
+        /*********************************************************************
+        * Imposto il valore nell'oggetto occhiali protettori.                *
+        * Il valore della base dei tempi dipende dalla lunghezza d'onda e va *
+        * pertanto impostato in funzione di questa (EN 207 B.4).             *
+        **********************************************************************/
 
-    myLaserGoggle->setWavelength(wavelength);
+        myLaserGoggle->setWavelength(wavelength);
 
-    if(((wavelength>315) && (wavelength<=1e+06)))//base dei tempi 5 s
-        myLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE);
-    else
-    if(((myLaserGoggle->getWavelength()>=180) && (myLaserGoggle->getWavelength()<=315)))//base dei tempi 30000 s
-        myLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE_LOW_WAVELENGTH);
+        if(((wavelength>315) && (wavelength<=1e+06)))//base dei tempi 5 s
+            myLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE);
+        else
+        if(((myLaserGoggle->getWavelength()>=180) && (myLaserGoggle->getWavelength()<=315)))//base dei tempi 30000 s
+            myLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE_LOW_WAVELENGTH);
 
-    enableTeEditing=ui->teControl->isEnabled();
-    /*************************************************************
-    * La funzione fetchDataVector() va invocata quando cambia    *
-    * la frequenza o la durata dell'impulso.                     *                                 *
-    * Seleziona il campo corrispondente della Tabella B.2 EN207  *
-    * per l'oggetto myLaserGoggle.                               *
-    * Memorizza il vettore corrispondente in dataVector ed       *
-    * aggiorna il grafico                                        *
-    **************************************************************/
+        enableTeEditing=ui->teControl->isEnabled();
+        /*************************************************************
+        * La funzione fetchDataVector() va invocata quando cambia    *
+        * la frequenza o la durata dell'impulso.                     *                                 *
+        * Seleziona il campo corrispondente della Tabella B.2 EN207  *
+        * per l'oggetto myLaserGoggle.                               *
+        * Memorizza il vettore corrispondente in dataVector ed       *
+        * aggiorna il grafico                                        *
+        **************************************************************/
 
-    modeLockedPeak();
-    fetchDataVector();
-    fetchLaserOutput();
+        modeLockedPeak();
+        fetchDataVector();
+        fetchLaserOutput();
 
-    /************
-    * IMPULSATO *
-    *************/
+        /************
+        * IMPULSATO *
+        *************/
     }
     else if(n_laser==operation::PULSE)
-    {
+    {  
+        /****************************************
+        * Imposto il valore negli oggetti Laser *
+        *****************************************/
 
-    /****************************************
-    * Imposto il valore negli oggetti Laser *
-    *****************************************/
+        MyLaserSP_Pr->setWavelength(wavelength);
+        MyLaserSkinSP_Pr->setWavelength(wavelength);
+        MyLaserClassSP_Pr->setWavelength(wavelength);
 
-    MyLaserSP_Pr->setWavelength(wavelength);
-    MyLaserSkinSP_Pr->setWavelength(wavelength);
-    MyLaserClassSP_Pr->setWavelength(wavelength);
-				
-    /*********************************************************************
-    * Imposto il valore nell'oggetto occhiali protettori.                *
-    * Il valore della base dei tempi dipende dalla lunghezza d'onda e va *
-    * pertanto impostato in funzione di questa (EN 207 B.4).             *
-    * In questo caso si assume come tempo base la durata dell'impulso.   *
-    **********************************************************************/
+        /*********************************************************************
+        * Imposto il valore nell'oggetto occhiali protettori.                *
+        * Il valore della base dei tempi dipende dalla lunghezza d'onda e va *
+        * pertanto impostato in funzione di questa (EN 207 B.4).             *
+        * In questo caso si assume come tempo base la durata dell'impulso.   *
+        **********************************************************************/
 
-    myLaserGoggle->setWavelength(wavelength);
-    myLaserGoggle->setPulseWidth(pulseWidth);
+        myLaserGoggle->setWavelength(wavelength);
+        myLaserGoggle->setPulseWidth(pulseWidth);
 
-    modeLockedPeak();
+        modeLockedPeak();
 
-    fetchLaserOutput();
+        fetchLaserOutput();
 
-    /*************************************************************
-    * La funzione fetchDataVector() va invocata quando cambia    *
-    * la frequenza o la durata dell'impulso.                     *                                 *
-    * Seleziona il campo corrispondente della Tabella B.2 EN207  *
-    * per l'oggetto myLaserGoggle.                               *
-    * Memorizza il vettore corrispondente in dataVector ed       *
-    * aggiorna il grafico                                        *
-    **************************************************************/
-    fetchDataVector();
+        /*************************************************************
+        * La funzione fetchDataVector() va invocata quando cambia    *
+        * la frequenza o la durata dell'impulso.                     *                                 *
+        * Seleziona il campo corrispondente della Tabella B.2 EN207  *
+        * per l'oggetto myLaserGoggle.                               *
+        * Memorizza il vettore corrispondente in dataVector ed       *
+        * aggiorna il grafico                                        *
+        **************************************************************/
+        fetchDataVector();
 
-    /*****************************************************
-    * Visualizzazione dati relativi ai protettori ottici *
-    ******************************************************/
+        /*****************************************************
+        * Visualizzazione dati relativi ai protettori ottici *
+        ******************************************************/
     }
 
     /*******************
@@ -285,42 +284,42 @@ void DockControls::on_wavelengthScrollBar_valueChanged(int value)
     else if(n_laser==operation::MULTI_PULSE)
     {
 
-    /****************************************
-    * Imposto il valore negli oggetti Laser *
-    *****************************************/
-    MyLaserMP_Pr->setWavelength(wavelength);
-    MyLaserMP_Pr->setExposureTime();
-    MyLaserMP_Pr->setPulseWidth(pulseWidth);
+        /****************************************
+        * Imposto il valore negli oggetti Laser *
+        *****************************************/
+        MyLaserMP_Pr->setWavelength(wavelength);
+        MyLaserMP_Pr->setExposureTime();
+        MyLaserMP_Pr->setPulseWidth(pulseWidth);
 
-    MyLaserSkinMP_Pr->setWavelength(wavelength);
-    MyLaserSkinMP_Pr->setPulseWidth(pulseWidth);
+        MyLaserSkinMP_Pr->setWavelength(wavelength);
+        MyLaserSkinMP_Pr->setPulseWidth(pulseWidth);
 
-    MyLaserMP_Pr->computeTmin();
+        MyLaserMP_Pr->computeTmin();
 
-    MyLaserClassMP_Pr->setWavelength(wavelength);
-    MyLaserClassMP_Pr->setTimeBase();
+        MyLaserClassMP_Pr->setWavelength(wavelength);
+        MyLaserClassMP_Pr->setTimeBase();
 
-    /**********************************************************************
-    * Imposto il valore negli oggetti occhiali protettori.                *
-    * Il valore della base dei tempi dipende dalla lunghezza d'onda e va  *
-    * pertanto impostato in funzione di questa (EN 207 B.4).              *
-    * Per l'oggetto myLaserGoggle si procede impostando il valore della   *
-    * durata dell'impulso.                                                *
-    * Per l'oggetto myDLaserGoggle il valore della base dei tempi dipende *
-    * dalla lunghezza d'onda. Imposto in modo esplicito la base dei tempi *
-    **********************************************************************/
+        /**********************************************************************
+        * Imposto il valore negli oggetti occhiali protettori.                *
+        * Il valore della base dei tempi dipende dalla lunghezza d'onda e va  *
+        * pertanto impostato in funzione di questa (EN 207 B.4).              *
+        * Per l'oggetto myLaserGoggle si procede impostando il valore della   *
+        * durata dell'impulso.                                                *
+        * Per l'oggetto myDLaserGoggle il valore della base dei tempi dipende *
+        * dalla lunghezza d'onda. Imposto in modo esplicito la base dei tempi *
+        **********************************************************************/
 
-    myLaserGoggle->setWavelength(wavelength);
-    myDLaserGoggle->setWavelength(wavelength);
-    myLaserGoggle->setPulseWidth(pulseWidth);
+        myLaserGoggle->setWavelength(wavelength);
+        myDLaserGoggle->setWavelength(wavelength);
+        myLaserGoggle->setPulseWidth(pulseWidth);
 
-    if(((myDLaserGoggle->getWavelength()>315) && (myDLaserGoggle->getWavelength()<=1e+06)))//base dei tempi 5 s
-        myDLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE);
-    else
-    {
-        if(((myDLaserGoggle->getWavelength()>=180) && (myDLaserGoggle->getWavelength()<=315)))//base dei tempi 30000 5
-            myDLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE_LOW_WAVELENGTH);
-    }
+        if(((myDLaserGoggle->getWavelength()>315) && (myDLaserGoggle->getWavelength()<=1e+06)))//base dei tempi 5 s
+            myDLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE);
+        else
+        {
+            if(((myDLaserGoggle->getWavelength()>=180) && (myDLaserGoggle->getWavelength()<=315)))//base dei tempi 30000 5
+                myDLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE_LOW_WAVELENGTH);
+        }
         /*************************************************************
         * La funzione fetchDataVector() va invocata quando cambia    *
         * la frequenza o la durata dell'impulso.                     *
@@ -369,7 +368,7 @@ void DockControls::on_teControl_valueChanged()
         * CONTINUOS WAVE *
         ******************/
 
-        if(n_laser==operation::CONTINUOS_WAVE)
+    if(n_laser==operation::CONTINUOS_WAVE)
     {
         /********************************************************
         * Imposto il valore del tempo di esposizione impostato *
@@ -539,20 +538,23 @@ void DockControls::on_powerErgControl_valueChanged()
         * data dal prodotto dell'energia dell'impulso per la frequenza      *
         *********************************************************************/
 
-        myDLaserGoggle->setPowerErg(powerErg*myLaserGoggle->getFrequency());
+        if(myLaserGoggle->getFrequency()!=0)
+        {
+            myDLaserGoggle->setPowerErg(powerErg*myLaserGoggle->getFrequency());
 
-        /************************************************************
-        * Seleziono il campo corrispondente della Tabella B.2 EN207 *
-        * Memorizzo il vettore corrispondente in dataVector per     *
-        * per l'oggetto myDLaserGoggle                              *
-        *************************************************************/
-        fetchDLaserOutput();
+            /************************************************************
+            * Seleziono il campo corrispondente della Tabella B.2 EN207 *
+            * Memorizzo il vettore corrispondente in dataVector per     *
+            * per l'oggetto myDLaserGoggle                              *
+            *************************************************************/
+            fetchDLaserOutput();
 
-        /**************************************************************
-        * Prelevo i dati rlativi al laser per tracciare il grafico  *
-        * relativo ai protettori ottici per l'oggetto myDLaserGoggle *                          *
-        **************************************************************/
-        fetchDDataVector();
+            /**************************************************************
+            * Prelevo i dati rlativi al laser per tracciare il grafico  *
+            * relativo ai protettori ottici per l'oggetto myDLaserGoggle *                          *
+            **************************************************************/
+            fetchDDataVector();
+        }
     }
 
     /*************************************************************
@@ -1122,7 +1124,7 @@ void DockControls::showControls(bool _show)
 	/****************************************************
 	* Visualizza le label relative ai protettori ottici *
 	*****************************************************/
-    bool details=dockGoggle->ui->pushButton->isChecked();
+    bool details=dockGoggle->ui->showGoggleCharts->isChecked();
 
     if(details)
         chartView->show();
@@ -2218,17 +2220,17 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
 
 
    /******************************************************************
-	* Ogni volta che passo alla modalità di funzionamento AD IMPULSI *
+    * Ogni volta che passo alla modalità di funzionamento AD IMPULSI *
     * multipli imposto il valore dell'energia dell'impusl a 1.0e+03, il valore della     *
-	* frequenza a 10.0, il tempo di esposizione degli occhi a 1.0e-06,  *
-	* il tempo di esposizione della cute a 10. 				 *
-	******************************************************************/
+    * frequenza a 10.0, il tempo di esposizione degli occhi a 1.0e-06,  *
+    * il tempo di esposizione della cute a 10. 				 *
+    ******************************************************************/
     powerErg=1.0e-03;
     ui->powerErgControl->setValue(powerErg);
     on_powerErgControl_valueChanged();
 
     //ogni volta cha passo al funzionamento ad impulsi multipli imposto la durata degli impulsi a 1.0e-06 s
-    pulseWidth=1.0e-06;  
+    pulseWidth=1.0e-06;
 
     //abilito il checkbox per l'impotazione manuale del tempo di esposizione
 

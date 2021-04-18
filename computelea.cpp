@@ -304,9 +304,8 @@ string ComputeLEA::valuate_LEA_2M_FormulaUnit()
             leaFormulaUnit="W";
     }
     else
-    {
         leaFormulaUnit="";
-    }
+
     return leaFormulaUnit;
 }
 

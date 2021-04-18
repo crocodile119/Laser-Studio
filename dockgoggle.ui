@@ -58,7 +58,7 @@
        <string notr="true"/>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_1">
        <attribute name="title">
@@ -896,7 +896,7 @@ QLabel {margin-right: 10px}</string>
      </widget>
     </item>
     <item row="0" column="0" rowspan="2">
-     <widget class="QPushButton" name="pushButton">
+     <widget class="QPushButton" name="showGoggleCharts">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
         <horstretch>1</horstretch>

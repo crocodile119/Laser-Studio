@@ -165,7 +165,7 @@ private slots:
     void setEMP();
     void setPowerErgForEMP();
     void on_enableTeCheckBox_toggled(bool checked);   
-    void on_pushButton_toggled(bool checked);
+    void showGoggleCharts(bool checked);
     void on_checkGaussianBeam_clicked(bool checked);
     void on_internalWaist_checkBox_toggled(bool checked);
     void on_comboBoxBands_currentIndexChanged(int index);

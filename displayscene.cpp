@@ -40,10 +40,11 @@ void DisplayScene::resizeEvent(QResizeEvent *event)
 bool DisplayScene::eventFilter(QObject *watched, QEvent *event)
 {
     if(watched==scene){
-        if (event->type() == QEvent::GraphicsSceneMouseMove) {
-        QGraphicsSceneMouseEvent *mouseSceneEvent;
-        mouseSceneEvent = static_cast<QGraphicsSceneMouseEvent *>(event);
-        setMousePosition(mouseSceneEvent->scenePos());
+        if (event->type() == QEvent::GraphicsSceneMouseMove)
+        {
+            QGraphicsSceneMouseEvent *mouseSceneEvent;
+            mouseSceneEvent = static_cast<QGraphicsSceneMouseEvent *>(event);
+            setMousePosition(mouseSceneEvent->scenePos());
         }
     }
 
@@ -91,8 +92,8 @@ void DisplayScene::mousePressEvent(QMouseEvent *event)
 
 void DisplayScene::mouseMoveEvent(QMouseEvent *event)
 {
-    if (event->button() == Qt::LeftButton) {
-
+    if (event->button() == Qt::LeftButton)
+    {
         QRect rect(pressPosition, event->pos());
     }
     QGraphicsView::mouseMoveEvent(event);
@@ -100,7 +101,8 @@ void DisplayScene::mouseMoveEvent(QMouseEvent *event)
 
 void DisplayScene::mouseReleaseEvent(QMouseEvent *event)
 {
-    if (event->button() == Qt::LeftButton) {
+    if (event->button() == Qt::LeftButton)
+    {
         releasePosition = event->pos();
         QRect rect(pressPosition, releasePosition);
         selectionRect=rect.normalized();

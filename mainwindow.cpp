@@ -2815,13 +2815,14 @@ void MainWindow::createToolBars()
     viewToolBar->addAction(showGridAction);
 
     sceneToolBar = addToolBar(tr("Scena"));
+    sceneToolBar->setObjectName(tr("Scena"));
     sceneToolBar->addAction(deleteAction);
     sceneToolBar->addAction(sendToBackAction);
     sceneToolBar->addAction(bringToFrontAction);
     sceneToolBar->addAction(changeMeteoAct);
 
     environmentToolBar = addToolBar(tr("Ambiente"));
-    environmentToolBar->setObjectName(tr("Riflettori"));
+    environmentToolBar->setObjectName(tr("Ambiente"));
     environmentToolBar->addAction(setPolygonAct);
     environmentToolBar->addAction(addLabAct);
     environmentToolBar->addAction(addBinocularAct);

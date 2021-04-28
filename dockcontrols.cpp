@@ -9,6 +9,7 @@
 #include <QAbstractItemModel>
 #include <QListView>
 #include "mypolarchartview.h"
+#include <exception>
 
 const int DockControls::DOCKGOGGLEMINIMUN=405;
 const int DockControls::DOCKGOGGLEMAXIMUN=550;
@@ -1964,61 +1965,61 @@ void DockControls::setWidgets()
         dockSkin->ui->minEMP_SkinLabel->setVisible(true);
 
         dockSkin->ui->tEMP_MP_SkinLabel->setText(QString::fromStdString(MyLaserSkinMP_Pr->getMeanPowerFormulaSort()) + "<sub>Te</sub> " + empSkinUnitMP);
-            dockSkin->ui->EMP_MP_SkinLabel->setText(QString::number(MyLaserSkinMP_Pr->getEMP_MP(),'e', 2));
+        dockSkin->ui->EMP_MP_SkinLabel->setText(QString::number(MyLaserSkinMP_Pr->getEMP_MP(),'e', 2));
 
-            dockSkin->ui->tFormulaSkinMP_Label->setText("Formula T<sub>e</sub>");
-            dockSkin->ui->FormulaSkinMP_Label->setText(QString::fromStdString(MyLaserSkinMP_Pr->getMeanPowerFormulaEMP()));
+        dockSkin->ui->tFormulaSkinMP_Label->setText("Formula T<sub>e</sub>");
+        dockSkin->ui->FormulaSkinMP_Label->setText(QString::fromStdString(MyLaserSkinMP_Pr->getMeanPowerFormulaEMP()));
 
-            dockSkin->ui->tMeanPowerSkinLabel->setText("P<sub>m</sub> [W]");
-            dockSkin->ui->MeanPowerSkinLabel->setText(QString::number(MyLaserSkinMP_Pr->getMeanPower(),'e', 2));
+        dockSkin->ui->tMeanPowerSkinLabel->setText("P<sub>m</sub> [W]");
+        dockSkin->ui->MeanPowerSkinLabel->setText(QString::number(MyLaserSkinMP_Pr->getMeanPower(),'e', 2));
 
-            dockSkin->ui->tMeanIrradianceSkinLabel->setText("E<sub>m</sub> [W/m<sup>2</sup>]");
-            dockSkin->ui->MeanIrradianceSkinLabel->setText(QString::number(MyLaserSkinMP_Pr->getMeanIrradiance(),'e', 2));
+        dockSkin->ui->tMeanIrradianceSkinLabel->setText("E<sub>m</sub> [W/m<sup>2</sup>]");
+        dockSkin->ui->MeanIrradianceSkinLabel->setText(QString::number(MyLaserSkinMP_Pr->getMeanIrradiance(),'e', 2));
 
-            dockSkin->ui->tPulseNumberSkinLabel->setText("Numero impulsi");
-            dockSkin->ui->PulseNumberSkinLabel->setText(QString::number(MyLaserSkinMP_Pr->getPulseNumber(),'e', 2));
+        dockSkin->ui->tPulseNumberSkinLabel->setText("Numero impulsi");
+        dockSkin->ui->PulseNumberSkinLabel->setText(QString::number(MyLaserSkinMP_Pr->getPulseNumber(),'e', 2));
 
-            dockSkin->ui->tminEMP_SkinLabel->setText(minEMPSkin);
-            dockSkin->ui->minEMP_SkinLabel->setText(QString::number(MyLaserSkinMP_Pr->returnMultiPulse_EMP(),'e', 2));
+        dockSkin->ui->tminEMP_SkinLabel->setText(minEMPSkin);
+        dockSkin->ui->minEMP_SkinLabel->setText(QString::number(MyLaserSkinMP_Pr->returnMultiPulse_EMP(),'e', 2));
 
-            dockSkin->ui->tNSHDLabel->setText("DNRP [m]");
+        dockSkin->ui->tNSHDLabel->setText("DNRP [m]");
 
-            dockSkin->ui->conditions_Label->setText("EMP \nper esposizioni\nripetute");
-            dockSkin->ui->tEMP_1st_Label->setVisible(true);
-            dockSkin->ui->tEMP_2nd_Label->setVisible(true);
+        dockSkin->ui->conditions_Label->setText("EMP \nper esposizioni\nripetute");
+        dockSkin->ui->tEMP_1st_Label->setVisible(true);
+        dockSkin->ui->tEMP_2nd_Label->setVisible(true);
 
-            dockSkin->ui->tEMP_1st_Label->setText("1<sup>a</sup>");
-            dockSkin->ui->tEMP_2nd_Label->setText("2<sup>a</sup>");
+        dockSkin->ui->tEMP_1st_Label->setText("1<sup>a</sup>");
+        dockSkin->ui->tEMP_2nd_Label->setText("2<sup>a</sup>");
 
-            QString EMP_CWSP_Pulse=QString(" %1 = %2 %3")
+        QString EMP_CWSP_Pulse=QString(" %1 = %2 %3")
                                             .arg(QString::fromStdString(MyLaserSkinMP_Pr->getFormulaEMP()))
                                             .arg(QString::number(MyLaserSkinMP_Pr->getEMP_1stCondition(),'e', 2))
                                             .arg(empSkinUnit);
 
-            QString formulaSkinEMP;
+        QString formulaSkinEMP;
 
-            if(MyLaserSkinMP_Pr->getMeanPowerFormulaSort()=="H")
-                formulaSkinEMP=QString::fromStdString(MyLaserSkinMP_Pr->getMeanPowerFormulaEMP()+"/N");
-            else
-                formulaSkinEMP=QString::fromStdString(MyLaserSkinMP_Pr->getMeanPowerFormulaEMP()+"/(PRF &sdot; t)");
+        if(MyLaserSkinMP_Pr->getMeanPowerFormulaSort()=="H")
+            formulaSkinEMP=QString::fromStdString(MyLaserSkinMP_Pr->getMeanPowerFormulaEMP()+"/N");
+        else
+            formulaSkinEMP=QString::fromStdString(MyLaserSkinMP_Pr->getMeanPowerFormulaEMP()+"/(PRF &sdot; t)");
 
-            QString EMP_MP_Pulse=QString(" %1 = %2 %3")
+        QString EMP_MP_Pulse=QString(" %1 = %2 %3")
                                             .arg(formulaSkinEMP)
                                             .arg(QString::number(MyLaserSkinMP_Pr->getEMP_2ndCondition(),'e', 2))
                                             .arg(empSkinUnitMP);
 
-            dockSkin->ui->EMP_1st_Label->setText(EMP_CWSP_Pulse);
-            dockSkin->ui->EMP_2nd_Label->setText(EMP_MP_Pulse);
+        dockSkin->ui->EMP_1st_Label->setText(EMP_CWSP_Pulse);
+        dockSkin->ui->EMP_2nd_Label->setText(EMP_MP_Pulse);
 
-            dockSkin->ui->EMP_1st_Label->setVisible(true);
-            dockSkin->ui->EMP_2nd_Label->setVisible(true);
+        dockSkin->ui->EMP_1st_Label->setVisible(true);
+        dockSkin->ui->EMP_2nd_Label->setVisible(true);
 
 
-            DNRO_scientNot=MyLaserSkinMP_Pr->getNSHD()>1.0e+03;
-            if(DNRO_scientNot)
-                dockSkin->ui->NSHDLabel->setText(QString::number(MyLaserSkinMP_Pr->getNSHD(),'e', 2));
-                else
-                dockSkin->ui->NSHDLabel->setText(QString::number(MyLaserSkinMP_Pr->getNSHD(),'f', 1));
+        DNRO_scientNot=MyLaserSkinMP_Pr->getNSHD()>1.0e+03;
+        if(DNRO_scientNot)
+            dockSkin->ui->NSHDLabel->setText(QString::number(MyLaserSkinMP_Pr->getNSHD(),'e', 2));
+        else
+            dockSkin->ui->NSHDLabel->setText(QString::number(MyLaserSkinMP_Pr->getNSHD(),'f', 1));
     }
 }
 
@@ -2100,21 +2101,21 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     MyLaserCW_Pr->setPulseWidth(MyLaserCW_Pr->getExposureTime());
 
     if(((wavelength>315) && (wavelength<=1e+06)))
-         {
-             myLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE);
-          }
-        else
-            if(((myLaserGoggle->getWavelength()>=180) && (myLaserGoggle->getWavelength()<=315)))
-              {
-                 myLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE_LOW_WAVELENGTH);
-              }
+    {
+         myLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE);
+    }
+    else if(((myLaserGoggle->getWavelength()>=180) && (myLaserGoggle->getWavelength()<=315)))
+    {
+        myLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE_LOW_WAVELENGTH);
+    }
+
     enableTeEditing=ui->teControl->isEnabled();
 
     MyLaserClassCW_Pr->setTimeBase();
 
-   /******************************************************************************************	
+   /*******************************************************************************************
 	* Invoco le funzioni per il prelievo dei dati e il tracciamento dei grafici per l'oggetto *
-	* myLaserGoggle                                                                          *
+    * myLaserGoggle                                                                           *
 	******************************************************************************************/
 
     modeLockedPeak();
@@ -2210,6 +2211,7 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
    /*****************************************
     * Imposto il valore negli oggetti Laser *
     *****************************************/
+
     MyLaserMP_Pr=MyLaserSafetyMP;
     MyLaserSkinMP_Pr=MyLaserSkinSafetyMP;
     MyLaserClassMP_Pr=MyLaserClassMP;
@@ -2218,6 +2220,7 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     MyLaserSkinMP_Pr->setWavelength(wavelength);
     MyLaserClassMP_Pr->setWavelength(wavelength);
 
+    // list is safe to use - the exception did not affect it.
 
    /******************************************************************
     * Ogni volta che passo alla modalità di funzionamento AD IMPULSI *

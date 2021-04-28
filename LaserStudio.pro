@@ -1,11 +1,10 @@
-QT += widgets
-QT += charts
-QT += printsupport
-CONFIG += thread
+QT += core gui widgets charts printsupport
+CONFIG += c++14 thread
+TEMPLATE = app
+TARGET = LaserStudio
 
 qtHaveModule(printsupport): QT += printsupport
-RC_ICONS = LaserStudioIcon.ico
-CONFIG += c++14
+RC_ICONS = LaserStudioIcon.ico 
 
 SOURCES +=\
     atmosphericeffectsdialog.cpp \
@@ -41,6 +40,7 @@ SOURCES +=\
     lambertianchartdialog.cpp \
     lambertianchartview.cpp \
     lambertianreflector.cpp \
+    laserapplication.cpp \
     laserclasscw.cpp \
     laserclassmp.cpp \
     laserclasssp.cpp \
@@ -106,6 +106,7 @@ HEADERS  += mainwindow.h \
     lambertianchartdialog.h \
     lambertianchartview.h \
     lambertianreflector.h \
+    laserapplication.h \
     laserclasscw.h \
     laserclassmp.h \
     laserclasssp.h \

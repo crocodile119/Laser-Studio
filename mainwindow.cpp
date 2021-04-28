@@ -133,7 +133,6 @@ MainWindow::MainWindow()
         timer->setSingleShot(true);
         timer->start(100);
         loadFile(externalFilename);
-
         connect(timer, SIGNAL(timeout()), this, SLOT(makeSceneOfSavedItems()));
     }
 

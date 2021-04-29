@@ -891,7 +891,7 @@ QLabel {border-radius: 8px}</string>
           </font>
          </property>
          <property name="styleSheet">
-          <string notr="true">QLabel {color: #fafafa}</string>
+          <string notr="true"/>
          </property>
          <property name="text">
           <string>TextLabel</string>

@@ -114,6 +114,9 @@ private slots:
     void addReflector(const target& target);
     void addBinocular();
     void addFootprint();
+    void setGuiDarkTheme();
+    void changeGuiTheme();
+    void setThemeOnStart();
     void addLabList();
     void addBinocularList();
     void addBinocularLink();
@@ -271,6 +274,7 @@ private:
     double myEMP;
     double powerErg;
     double scale;
+    bool theme;
 
     enum { MaxRecentFiles = 5 };
     enum { nScales = 20 };
@@ -315,6 +319,7 @@ private:
     QStringList scales;
     QAction *zoomActions[nScales];
     QAction *selectAct;
+    QAction *darkThemeAct;
     QAction *separatorAction;
     QAction *showDockWidgetEffects;
     QAction *showDockWidgetResults;

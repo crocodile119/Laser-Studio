@@ -47,25 +47,11 @@ const QSize MainWindow::mySceneImageSize(600, 400);
 MainWindow::MainWindow()
       : laserWindow(new CentralWidget)
 {
-    setStyleSheet(tr("QWidget{background-color:#555555;}"
-                     "QWidget{color:#f0f0f0;}"
-                     "QMenu::item:selected{background-color:#00c800;}"
-                     "QMenu::item:selected{color:#f0f0f0;}"
-                     "QComboBox::item:selected{background-color:#00c800;}"
-                     "QComboBox::item:selected{color:#f0f0f0;}"
-                     "QMenu::item:checked{background-color:#666666;}"
-                     "QMenuBar::item:selected{color:#f0f0f0;}"
-                     "QMenuBar::item:selected{background-color:#00c800;}"
-                     "QToolBar{background-color:#555555;}"
-                     "QToolBar QToolButton:checked{background-color:#666666;}"
-                     "QTextEdit{background-color:#f0f0f0;}"
-                     "QGridLayout{color:#f0f0f0;}"
-                     "QGraphicsView{background-color:#f0f0f0;}"));
-
     QFont font;
     font.setPointSize(8);
     setFont(font);
 
+    setThemeOnStart();
     setCentralWidget(laserWindow);
 
     setWindowTitle(tr("Laser Studio"));
@@ -578,7 +564,7 @@ void MainWindow::environmentFromList()
 
 void MainWindow::setCondMeteo()
 {
-    AtmosphericEffectsDialog dialog(laserWindow, laserWindow->myDockControls->getWavelength());
+    AtmosphericEffectsDialog dialog(this, laserWindow, laserWindow->myDockControls->getWavelength());
     dialog.exec();
     if(dialog.result()==QDialog::Accepted)       
     {
@@ -849,7 +835,6 @@ void MainWindow::createActions()
 
     QActionGroup *zoomGroup = new QActionGroup(this);
 
-
     for (int i = 0; i < nScales; ++i)
     {
         QString zoomScale=scales.at(i);
@@ -884,7 +869,6 @@ void MainWindow::createActions()
     connect(selectAct, &QAction::triggered, this, &MainWindow::selectionMode);
     selectAct->setCheckable(true);
     selectAct->setChecked(true);
-    //view->addAction(dragAct);
     displayMenu->addAction(selectAct);
 
     displayGroup->addAction(dragAct);
@@ -964,6 +948,13 @@ void MainWindow::createActions()
 
     centerOnViewAction->setStatusTip(tr("Centra la vista nel punto specificato"));
     viewMenu->addAction(centerOnViewAction);
+
+    darkThemeAct = new QAction(tr("Dark thema"), this);
+    darkThemeAct->setStatusTip(tr("Imposta un tema con tonalità scure"));
+    connect(darkThemeAct, &QAction::triggered, this, &MainWindow::changeGuiTheme);
+    darkThemeAct->setCheckable(true);
+    darkThemeAct->setChecked(theme);
+    viewMenu->addAction(darkThemeAct);
 
     reflectorsEditMenu = menuBar()->addMenu(tr("&Dettagli scena"));
     reflectorsEditMenu ->setFont(font);
@@ -1602,6 +1593,7 @@ void MainWindow::writeSettings()
     settings.setValue("size", size());
     settings.setValue("geometry", saveGeometry());
     settings.setValue("windowState", saveState());
+    settings.setValue("theme", theme);
 
     /*****************************************************************
      * Application output segnala che non funziona quindi l'ho tolto *
@@ -4255,6 +4247,55 @@ void MainWindow::setGoggleMaterial(LaserGoggle::material myMaterial)
 {
     laserWindow->myDockControls->setGoggleMaterial(myMaterial);
     setWindowModified(true);
+}
+
+void MainWindow::changeGuiTheme()
+{
+    theme=darkThemeAct->isChecked();
+    setGuiDarkTheme();
+}
+
+void MainWindow::setGuiDarkTheme()
+{
+    if(theme)
+    {
+        setStyleSheet(tr("QWidget{background-color:#555555;}"
+                         "QWidget{color:#f0f0f0;}"
+                         "QMenu::item:selected{background-color:#00c800;}"
+                         "QMenu::item:selected{color:#f0f0f0;}"
+                         "QComboBox::item:selected{background-color:#00c800;}"
+                         "QComboBox::item:selected{color:#f0f0f0;}"
+                         "QMenu::item:checked{background-color:#666666;}"
+                         "QMenuBar::item:selected{color:#f0f0f0;}"
+                         "QMenuBar::item:selected{background-color:#00c800;}"
+                         "QToolBar{background-color:#555555;}"
+                         "QToolBar QToolButton:checked{background-color:#666666;}"
+                         "QTextEdit{background-color:#f0f0f0;}"
+                         "QGridLayout{color:#f0f0f0;}"
+                         "QGraphicsView{background-color:#f0f0f0;}"));
+
+        laserWindow->setStyleSheet(tr("QWidget {background-color: #555555;}\n"
+                         "QLabel {background: none;}\n"
+                         "QMenu::item:selected{background-color:#00c800;}"
+                         "QMenu::item:selected{color:#f0f0f0;}"
+                         "QGraphicsView {background-color:#f0f0f0;}"
+                         ));
+    }
+    else
+    {
+        setStyleSheet(tr(""));
+        laserWindow->setStyleSheet(tr(""));
+    }
+}
+
+void MainWindow::setThemeOnStart()
+{
+    QSettings settings("Carmine Giordano", "Laser Studio");
+    settings.beginGroup("mainWindow");
+    theme=settings.value("theme").toBool();
+    settings.endGroup();
+
+    setGuiDarkTheme();
 }
 
 MainWindow::~MainWindow()

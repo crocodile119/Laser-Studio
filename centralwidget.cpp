@@ -32,15 +32,6 @@ CentralWidget::CentralWidget(QWidget *parent) :
     myDockSkin(new DockSkin(this)), myDockLea(new DockLea(this)), myDockGoggle(new DockGoggle(this)),
     myDockReflectorsList(new ReflectorsQList(this))
 {
-    setStyleSheet(tr("QWidget {background-color: #555555;}\n"
-                     "QLabel {background: none;}\n"
-                     "QMenu::item:selected{background-color:#00c800;}"
-                     "QMenu::item:selected{color:#f0f0f0;}"
-                     "QGraphicsView {background-color:#f0f0f0;}"
-                     ));
-
-
-
     clearInstallationDesription();
     scale=1;
     scaleIndex=4;

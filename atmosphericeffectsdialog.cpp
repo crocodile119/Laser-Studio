@@ -3,7 +3,7 @@
 
 #include "atmosphericeffectsdialog.h"
 
-AtmosphericEffectsDialog::AtmosphericEffectsDialog(CentralWidget *_laserWindow, double _wavelength, QWidget *parent)
+AtmosphericEffectsDialog::AtmosphericEffectsDialog(QWidget *parent, CentralWidget *_laserWindow, double _wavelength)
     : QDialog(parent), wavelength(_wavelength), laserWindow(_laserWindow)
 {
     setupUi(this);
@@ -15,8 +15,14 @@ AtmosphericEffectsDialog::AtmosphericEffectsDialog(CentralWidget *_laserWindow, 
     A_Label->setText(QString::number(A, 'e', 2));
     meteoRangeSlider->setValue(V_int);
     meteoRangeLabel->setText(QString::number(V_int));
-
     atmosphericCoeffLabel->setText(QString::number(atmAttCoeff, 'e', 2));
+}
+
+void AtmosphericEffectsDialog::setDarkStylesheet()
+{
+    setStyleSheet("QDialog{background-color:#555555;}"
+    "QFrame{background-color:#555555;}"
+    "QDialog{color:#f0f0f0;}");
 }
 
 void AtmosphericEffectsDialog::on_buttonBox_accepted()

@@ -17,9 +17,7 @@
    <bool>false</bool>
   </property>
   <property name="styleSheet">
-   <string notr="true">QDialog{background-color:#555555;}
-QFrame{background-color:#555555;}
-QDialog{color:#f0f0f0;}</string>
+   <string notr="true"/>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">

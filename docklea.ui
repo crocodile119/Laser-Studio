@@ -18,9 +18,12 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>87</width>
-    <height>109</height>
+    <width>107</width>
+    <height>133</height>
    </size>
+  </property>
+  <property name="autoFillBackground">
+   <bool>true</bool>
   </property>
   <property name="styleSheet">
    <string notr="true"/>
@@ -42,19 +45,25 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>0</y>
-         <width>1462</width>
+         <y>-29</y>
+         <width>1506</width>
          <height>262</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_16">
         <item row="1" column="0">
          <widget class="QTabWidget" name="tabWidget">
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+          <property name="inputMethodHints">
+           <set>Qt::ImhNone</set>
+          </property>
           <property name="tabPosition">
            <enum>QTabWidget::North</enum>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="tab">
            <attribute name="title">
@@ -63,6 +72,9 @@
            <layout class="QGridLayout" name="gridLayout_13">
             <item row="0" column="0">
              <widget class="QFrame" name="frame_counting">
+              <property name="autoFillBackground">
+               <bool>true</bool>
+              </property>
               <property name="frameShape">
                <enum>QFrame::Panel</enum>
               </property>
@@ -414,6 +426,9 @@ QLabel {margin-right: 10px}</string>
                </item>
                <item row="0" column="0" rowspan="2">
                 <widget class="QFrame" name="frame_class">
+                 <property name="autoFillBackground">
+                  <bool>false</bool>
+                 </property>
                  <property name="frameShape">
                   <enum>QFrame::Panel</enum>
                  </property>
@@ -471,6 +486,9 @@ QLabel {margin-right: 10px}</string>
             </item>
             <item row="0" column="1">
              <widget class="QFrame" name="frame_base">
+              <property name="autoFillBackground">
+               <bool>true</bool>
+              </property>
               <property name="frameShape">
                <enum>QFrame::Panel</enum>
               </property>
@@ -1088,6 +1106,9 @@ padding: 8px}</string>
             </item>
             <item row="0" column="0">
              <widget class="QFrame" name="frame_meanPower">
+              <property name="autoFillBackground">
+               <bool>true</bool>
+              </property>
               <property name="frameShape">
                <enum>QFrame::Panel</enum>
               </property>
@@ -1653,6 +1674,9 @@ margin-right: 10px}</string>
             </item>
             <item row="0" column="1">
              <widget class="QFrame" name="frame_thermal">
+              <property name="autoFillBackground">
+               <bool>true</bool>
+              </property>
               <property name="frameShape">
                <enum>QFrame::Panel</enum>
               </property>

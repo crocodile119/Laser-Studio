@@ -57,8 +57,6 @@ DockControls::DockControls(QWidget *parent, DockResults *_dockResults, DockEffec
     displayScaleNumber();
     displayLaserOutput();
 
-    //in modo da aggiornare il valore di powerErgPeak alla prima variazione dei valore dei parametri
-    powerErgPeak=0;
     enableTeEditing=false;
 
     connect(this, SIGNAL(EMP_Changed()), this, SLOT(setEMP()));

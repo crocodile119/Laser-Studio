@@ -199,7 +199,6 @@ private:
     double beamDiameter;
     double prf;
     double T_Skin;
-    double powerErgPeak;
 
     double effectivePowerErg;
     double myEMP;

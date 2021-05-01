@@ -5,18 +5,6 @@
 DialControl::DialControl(QWidget *parent)
     : QWidget(parent)
 {
-        dialLabelSyle="QLabel {background-color: #fafafa}\n"
-                      "QLabel {border: 1px solid grey}\n"
-                      "QLabel {border-radius: 8px}\n"
-                      "QLabel {padding: 3px}\n"
-                      "QLabel {color: #000000}\n";
-
-        dialLabelSyleOff="QLabel {background-color: #f0f0f0}\n"
-                         "QLabel {border: 1px solid #a0a0a0}\n"
-                         "QLabel {border-radius: 8px}\n"
-                         "QLabel {padding: 3px}\n"
-                         "QLabel {color: #a0a0a0}\n";
-
         setMaximumSize(QSize(100, 110));
 
         gridLayout = new QGridLayout(this);
@@ -44,8 +32,6 @@ DialControl::DialControl(QWidget *parent)
 
         dialNumberLabel = new QLabel(this);
         dialNumberLabel->setObjectName(tr("dialNumberLabel"));
-        dialNumberLabel->setStyleSheet(dialLabelSyle);
-
         dialNumberLabel->setAlignment(Qt::AlignCenter);
 
         gridLayout->addWidget(dialNumberLabel, 2, 0, 1, 1);
@@ -99,14 +85,6 @@ QString DialControl::getTitle()const
 void DialControl::setEnabled(bool _enabled)
 {
     dial->setEnabled(_enabled);
-    if(_enabled)
-    {
-    dialNumberLabel->setStyleSheet(dialLabelSyle);
-    }
-    else
-    {
-    dialNumberLabel->setStyleSheet(dialLabelSyleOff);
-    }
 }
 
 bool DialControl::isEnabled()

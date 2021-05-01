@@ -18,13 +18,6 @@ AtmosphericEffectsDialog::AtmosphericEffectsDialog(QWidget *parent, CentralWidge
     atmosphericCoeffLabel->setText(QString::number(atmAttCoeff, 'e', 2));
 }
 
-void AtmosphericEffectsDialog::setDarkStylesheet()
-{
-    setStyleSheet("QDialog{background-color:#555555;}"
-    "QFrame{background-color:#555555;}"
-    "QDialog{color:#f0f0f0;}");
-}
-
 void AtmosphericEffectsDialog::on_buttonBox_accepted()
 {
     laserWindow->setAtmoshericEffectsCoefficient(atmAttCoeff);

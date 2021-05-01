@@ -32,8 +32,6 @@ signals:
 private:
     double dialNumber;
 
-    QString dialLabelSyle;
-    QString dialLabelSyleOff;
     QWidget *dialWidget;
     QGridLayout *gridLayout;
     QDial *dial;

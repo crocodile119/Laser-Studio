@@ -1495,11 +1495,6 @@ void DockControls::setWidgets()
         /******************
         * reset controlli *
         *******************/
-
-        ui->prfControl->setBackgroundColor("#e0e0e0");
-        ui->pulseControl->setBackgroundColor("#e0e0e0");
-        ui->prfControl->setBackgroundColor("#e0e0e0");
-        ui->pulseControl->setBackgroundColor("#e0e0e0");
         ui->prfControl->setStatusTipHelp("");
         ui->pulseControl->setStatusTipHelp("");
 
@@ -1646,7 +1641,7 @@ void DockControls::setWidgets()
          * sono stati immessi valori non fisicamente realizzabili                                 *
          ******************************************************************************************/
 
-        ui->pulseControl->setBackgroundColor("#555555");
+        ui->pulseControl->setBackgroundColor("");
         ui->pulseControl->setStatusTipHelp("");
     }
     else if(n_laser==operation::MULTI_PULSE)
@@ -1914,8 +1909,8 @@ void DockControls::setWidgets()
         }
         else
         {
-            ui->prfControl->setBackgroundColor("#555555");
-            ui->pulseControl->setBackgroundColor("#555555");
+            ui->prfControl->setBackgroundColor("");
+            ui->pulseControl->setBackgroundColor("");
             ui->prfControl->setStatusTipHelp("");
             ui->pulseControl->setStatusTipHelp("");
         }

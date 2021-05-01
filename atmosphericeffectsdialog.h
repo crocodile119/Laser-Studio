@@ -12,7 +12,6 @@ class AtmosphericEffectsDialog : public QDialog, private Ui::AtmosphericEffectsD
 public:
     AtmosphericEffectsDialog(QWidget *parent, CentralWidget *_laserWindow, double);
     ~AtmosphericEffectsDialog();
-    void setDarkStylesheet();
 
 private slots:
     void on_buttonBox_accepted();

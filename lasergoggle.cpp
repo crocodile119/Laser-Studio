@@ -18,7 +18,9 @@ const double LaserGoggle::PULSE_WIDTH=1.0e-06;
 const double LaserGoggle::POWER_ENERGY=1.0;
 const double LaserGoggle::PUPIL_DIAMETER=7.0;
 
-LaserGoggle::LaserGoggle(int _wavelength, double _pulseWidth, double _powerErg, double _beamDiameter)
+LaserGoggle::LaserGoggle(int _wavelength, double _pulseWidth, double _powerErg, double _beamDiameter):
+        wavelength(_wavelength), powerErg(_powerErg), beamDiameter(_beamDiameter), frequency(0),
+        myMeanPower(0), materialCorrection(1.0)
 {
     /**************************************************************************************************
     * Costruttore per istanza della classe relativa al funzionamento ad impulsi multipli riguardante  *
@@ -28,9 +30,6 @@ LaserGoggle::LaserGoggle(int _wavelength, double _pulseWidth, double _powerErg, 
     buildScaleNumbers();
 
     expositionData = new double[TABLEROWS];
-    wavelength = _wavelength;
-
-    materialCorrection=1.0;
 
     /***************************************************************************************************
      * L'impulso non può avere durata nulla, gli assegno nel caso di durata 0 il valore convenzionale  *
@@ -42,10 +41,6 @@ LaserGoggle::LaserGoggle(int _wavelength, double _pulseWidth, double _powerErg, 
      *  - inserire direttamente la base dei tempi pertinente.                                          *
      ***************************************************************************************************/
 
-    powerErg = _powerErg;
-    myMeanPower=0;
-    beamDiameter = _beamDiameter;
-    frequency=0;
 
     if(_pulseWidth==CONTINUOS_OPERATION)
     {
@@ -66,17 +61,12 @@ LaserGoggle::LaserGoggle(int _wavelength, double _pulseWidth, double _powerErg, 
 }
 
 //Overload costruttore
-LaserGoggle::LaserGoggle(int _wavelength, double _pulseWidth, double _powerErg, double _beamDiameter, double _frequency)
+LaserGoggle::LaserGoggle(int _wavelength, double _pulseWidth, double _powerErg, double _beamDiameter, double _frequency):
+    wavelength(_wavelength), powerErg(_powerErg), beamDiameter(_beamDiameter), frequency(_frequency),
+    materialCorrection(1.0)
 {
     buildScaleNumbers();
     expositionData = new double[TABLEROWS];
-    wavelength = _wavelength;
-
-    materialCorrection=1.0;
-
-    powerErg = _powerErg;
-    beamDiameter = _beamDiameter;
-    frequency = _frequency;
 
     if(_pulseWidth==CONTINUOS_OPERATION)
     {

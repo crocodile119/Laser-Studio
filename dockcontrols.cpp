@@ -752,8 +752,8 @@ void DockControls::on_pulseControl_valueChanged()
         myLaserGoggle->setPulseWidth(pulseWidth);
         MyLaserClassMP_Pr->setPulseWidth(pulseWidth);
 
-        QString scaleNumberString = QString::fromStdString(myLaserGoggle->goggleMark());
         modeLockedPeak();
+        QString scaleNumberString = QString::fromStdString(myLaserGoggle->goggleMark());
 
         /*************************************************************
         * La funzione fetchDataVector() va invocata quando cambia    *
@@ -830,7 +830,7 @@ void DockControls::displayTimeBase()
     dockGoggle->ui->tTimeBaseLabel->setText("T<sub>b</sub> [s]");
     dockGoggle->ui->timeBaseLabel->setText(timeBaseString);
     }
-    if((n_laser==operation::PULSE)or(n_laser==operation::MULTI_PULSE))
+    else if((n_laser==operation::PULSE)or(n_laser==operation::MULTI_PULSE))
     {
         if((wavelength>=180)&&(wavelength<=315))
         {

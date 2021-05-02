@@ -158,3 +158,9 @@ FORMS    += \
     reflectorsqlist.ui \
     sliderscrolllabel.ui \
     wetchartdialog.ui
+
+DISTFILES += \
+    ls_model.qmodel
+
+STATECHARTS += \
+    LS_State_Chart.scxml

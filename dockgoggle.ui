@@ -163,7 +163,7 @@
               <widget class="QWidget" name="scrollAreaWidgetContents">
                <property name="geometry">
                 <rect>
-                 <x>-173</x>
+                 <x>0</x>
                  <y>0</y>
                  <width>662</width>
                  <height>113</height>
@@ -513,7 +513,7 @@ QLabel {margin-right: 10px}</string>
                    </size>
                   </property>
                   <property name="styleSheet">
-                   <string notr="true">QLabel {color: #fafafa}</string>
+                   <string notr="true"/>
                   </property>
                   <property name="text">
                    <string>TextLabel</string>

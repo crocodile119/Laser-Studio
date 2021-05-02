@@ -4280,11 +4280,13 @@ void MainWindow::setGuiDarkTheme()
                          "QMenu::item:selected{color:#f0f0f0;}"
                          "QGraphicsView {background-color:#f0f0f0;}"
                          ));
+        laserWindow->myDockGoggle->setStyleSheet(tr("QLabel {color: #fafafa}"));
     }
     else
     {
         setStyleSheet(tr(""));
         laserWindow->setStyleSheet(tr(""));
+        laserWindow->myDockGoggle->setStyleSheet(tr(""));
     }
 }
 

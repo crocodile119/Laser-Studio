@@ -224,17 +224,19 @@ private:
     double myExpositionValue;
     double thermicExpositionValue;
     bool pulseTrain;
-    double powerErg;
+
     double wavelength;
-    double pulseWidth;
+    double powerErg;
     double beamDiameter;
+    double pulseWidth;
+    double frequency;
+    double myMeanPower;
     double materialCorrection;
 
     double irrRad;
-    double myMeanPower;
     int numberOfPulses;
     string myGoggleCode;
-    double frequency;
+
     double ki;
     double k;
     int myScaleNumber;

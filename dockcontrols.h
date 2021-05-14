@@ -83,6 +83,7 @@ public:
     void updateGoggle();
     void setGoggleMaterial(LaserGoggle::material);
     LaserGoggle::material getGoggleMaterial()const;
+    void updateAllCompositeControlsFunctions();
 
     void setUVA();
     void setVIS();

@@ -251,7 +251,6 @@ private:
     QItemSelectionModel *environmentSelectionModel;
 
     QString curFile;
-    QString externalFilename;
     QString curDirectoryFile;
     bool externalFile;
     QStringList recentFiles;

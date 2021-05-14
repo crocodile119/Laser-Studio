@@ -45,8 +45,8 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-29</y>
-         <width>1506</width>
+         <y>0</y>
+         <width>1462</width>
          <height>262</height>
         </rect>
        </property>
@@ -63,7 +63,7 @@
            <enum>QTabWidget::North</enum>
           </property>
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="tab">
            <attribute name="title">
@@ -459,7 +459,7 @@ padding: 3px;
 margin-right: 10px}</string>
                     </property>
                     <property name="text">
-                     <string>Classe sistema</string>
+                     <string>&lt;p&gt;Classe sistema&lt;br&gt;&lt;br&gt;CEI EN 60825-1 &lt;br&gt;edizione Sesta&lt;/p&gt;</string>
                     </property>
                    </widget>
                   </item>

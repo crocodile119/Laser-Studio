@@ -620,6 +620,16 @@ void DockControls::fetchDataVector()
     chartView->repaint();
 }
 
+void DockControls::updateAllCompositeControlsFunctions()
+{
+    on_T_SkinControl_valueChanged();
+    on_alphaControl_valueChanged();
+    on_beamDiameterControl_valueChanged();
+    on_divergenceControl_valueChanged();
+    on_powerErgControl_valueChanged();
+    on_prfControl_valueChanged();
+    on_pulseControl_valueChanged();
+}
 void DockControls::fetchDDataVector()
 {
     /*************************************************************
@@ -631,9 +641,10 @@ void DockControls::fetchDDataVector()
     * aggiorna il grafico                                        *
     **************************************************************/
 
-    dLaserOutput=myDLaserGoggle->laserIrrRadCorrected(myLaserGoggle->getPowerErg()*myLaserGoggle->getFrequency());
+    dLaserOutput=myDLaserGoggle->laserIrrRadCorrected(powerErg*myLaserGoggle->getFrequency());
     //Calcola e restituisce la marcatura memorizzandola in myNewGoggleMark
-    string myNewGoggleMark = myDLaserGoggle->goggleMark();
+    string myNewGoggleMark = myDLaserGoggle->goggleMark(wavelength, LaserGoggle::CONTINUOS_OPERATION, powerErg,
+                                                        beamDiameter, LaserGoggle::CONTINUOS_OPERATION);
     myDModel->setScaleNumber(myDLaserGoggle->getScaleNumber());
     frequencyDataVector=myDLaserGoggle->getDataVector();
     myDModel->setTableList(frequencyDataVector);
@@ -675,13 +686,14 @@ void DockControls::fetchDLaserOutput()
     * IMPORTANTE: Non aggiorna il modello per la visualizzazione *
     * dei numeri scala ma solo il grafico                        *
     **************************************************************/
-    QString meanPowerString = QString::number(myLaserGoggle->getPowerErg()*myLaserGoggle->getFrequency(), 'e', 2);
+    QString meanPowerString = QString::number(powerErg*myLaserGoggle->getFrequency(), 'e', 2);
     dockGoggle->ui->tMeanPowerLabel->setText("Pm [W]");
     dockGoggle->ui->meanPowerLabel->setText(meanPowerString);
-    dLaserOutput= myDLaserGoggle->laserIrrRadCorrected(myLaserGoggle->getPowerErg()*myLaserGoggle->getFrequency());
+    dLaserOutput= myDLaserGoggle->laserIrrRadCorrected(powerErg*myLaserGoggle->getFrequency());
     dChartView->setLaserOutput(dLaserOutput);
     //Calcola e restituisce la marcatura memorizzandola in myNewGoggleMark
-    string myNewGoggleMark = myDLaserGoggle->goggleMark();
+    string myNewGoggleMark = myDLaserGoggle->goggleMark(wavelength, LaserGoggle::CONTINUOS_OPERATION, powerErg,
+                                                        beamDiameter, LaserGoggle::CONTINUOS_OPERATION);
     dChartView->buildDataLaserOutput();
 }
 
@@ -893,7 +905,7 @@ void DockControls::display_ni_max()
 
 void DockControls::displayDLaserOutput()
 {
-    dLaserOutput= myDLaserGoggle->laserIrrRadCorrected(myLaserGoggle->getPowerErg()*myLaserGoggle->getFrequency());
+    dLaserOutput= myDLaserGoggle->laserIrrRadCorrected(powerErg*myLaserGoggle->getFrequency());
     QString dLaserOutputString= QString::number(dLaserOutput,'e',2);
     QString myDUnitCodeString = QString::fromStdString(myDLaserGoggle->getCodeUnit());
     QString myDOutput=QString::fromStdString(myDLaserGoggle->outputSort());
@@ -1296,7 +1308,7 @@ void DockControls::on_divergenceControl_valueChanged()
     /*******************
     * IMPULSI MULTIPLI *
     * ******************/
-    if(n_laser==operation::CONTINUOS_WAVE)
+    if(n_laser==operation::MULTI_PULSE)
     {
         /****************************************
         * Imposto il valore negli oggetti Laser *

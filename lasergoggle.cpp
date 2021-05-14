@@ -9,7 +9,6 @@
 const int LaserGoggle::TIMEBASE = 5;
 const int LaserGoggle::TIMEBASE_LOW_WAVELENGTH =30000;
 const double LaserGoggle::PI=3.141592653589793238462643383;
-const int LaserGoggle::TABLEROWS = 10;
 const int LaserGoggle::CONTINUOS_OPERATION=0;
 const double LaserGoggle::GLASS_EXPONENT=1.1693;
 const double LaserGoggle::PLASTIC_EXPONENT=1.2233;
@@ -28,8 +27,6 @@ LaserGoggle::LaserGoggle(int _wavelength, double _pulseWidth, double _powerErg, 
     ***************************************************************************************************/
 
     buildScaleNumbers();
-
-    expositionData = new double[TABLEROWS];
 
     /***************************************************************************************************
      * L'impulso non può avere durata nulla, gli assegno nel caso di durata 0 il valore convenzionale  *
@@ -66,7 +63,6 @@ LaserGoggle::LaserGoggle(int _wavelength, double _pulseWidth, double _powerErg, 
     materialCorrection(1.0)
 {
     buildScaleNumbers();
-    expositionData = new double[TABLEROWS];
 
     if(_pulseWidth==CONTINUOS_OPERATION)
     {
@@ -112,38 +108,34 @@ LaserGoggle::laserOperation LaserGoggle::getLaserOperation()
     return myLaserOperation;
 }
 
-int* LaserGoggle::buildScaleNumbers()
+array<int, LaserGoggle::TABLEROWS> LaserGoggle::buildScaleNumbers()
 {
-   LB_Scale = new int[TABLEROWS];
-   LB_Scale[0] = 1;
-   LB_Scale[1] = 2;
-   LB_Scale[2] = 3;
-   LB_Scale[3] = 4;
-   LB_Scale[4] = 5;
-   LB_Scale[5] = 6;
-   LB_Scale[6] = 7;
-   LB_Scale[7] = 8;
-   LB_Scale[8] = 9;
-   LB_Scale[9] = 10;
+   for(size_t i=0; i<TABLEROWS; i++ )
+   LB_Scale[i] = i+1;
+
    return LB_Scale;
 }
 
-double* LaserGoggle::selectData(const double &wavelength, const double &applicableTime)
+array<double, LaserGoggle::TABLEROWS> LaserGoggle::selectData(const double &wavelength, const double &applicableTime)
 {
     if((wavelength>=180.0) && (wavelength<315.0))
         {
         if(applicableTime>=3.0e+04)
         {
-            double D180_315_Values[] = {0.01, 0.1, 1.0, 10.0, 1.0e+02, 1.0e+03, 1.0e+04, 1.0e+05, 1.0e+06, 1.0e+07};
-            for (int i=0; i<TABLEROWS; i++)
-            expositionData[i]=D180_315_Values[i];
+            array<double, LaserGoggle::TABLEROWS> D180_315_Values = {0.01, 0.1, 1.0, 10.0, 1.0e+02, 1.0e+03, 1.0e+04, 1.0e+05, 1.0e+06, 1.0e+07};
+
+            for (size_t i=0; i<TABLEROWS; i++)
+                expositionData[i]=D180_315_Values[i];
+
             pulseCode=CONTINUOS_EMISSION;
         }
         if((applicableTime>=1.0e-09)&&(applicableTime<3.0e+04))
         {
-            double IR180_315_Values[] = {3.0e+02, 3.0e+03, 3.0e+04, 3.0e+05,  3.0e+06, 3.0e+07, 3.0e+08, 3.0e+09, 3.0e+10,3.0e+11};
-            for (int i=0; i<TABLEROWS; i++)
-            expositionData[i]=IR180_315_Values[i];
+            array<double, LaserGoggle::TABLEROWS> IR180_315_Values = {3.0e+02, 3.0e+03, 3.0e+04, 3.0e+05,  3.0e+06, 3.0e+07, 3.0e+08, 3.0e+09, 3.0e+10,3.0e+11};
+
+            for (size_t i=0; i<TABLEROWS; i++)
+                expositionData[i]=IR180_315_Values[i];
+
             if (applicableTime<1.0e-06)
                 pulseCode=Q_SWITCHED;
             else
@@ -151,9 +143,11 @@ double* LaserGoggle::selectData(const double &wavelength, const double &applicab
         }
         if(applicableTime<1.0e-09)
         {
-            double M180_315_Values[] = {3.0e+11, 3.0e+12, 3.0e+13, 3.0e+14, 3.0e+15, 3.0e+16, 3.0e+17, 3.0e+18, 3.0e+19, 3.0e+20};
-            for (int i=0; i<TABLEROWS; i++)
-            expositionData[i]=M180_315_Values[i];
+            array<double, LaserGoggle::TABLEROWS> M180_315_Values = {3.0e+11, 3.0e+12, 3.0e+13, 3.0e+14, 3.0e+15, 3.0e+16, 3.0e+17, 3.0e+18, 3.0e+19, 3.0e+20};
+
+            for (size_t i=0; i<TABLEROWS; i++)
+                expositionData[i]=M180_315_Values[i];
+
             pulseCode=MODE_LOCKED;
         }
     }
@@ -162,16 +156,20 @@ double* LaserGoggle::selectData(const double &wavelength, const double &applicab
         {
         if(applicableTime>=5.0e-04)
         {
-            double D315_1400_Values[] = { 1.0e+02, 1.0e+03, 1.0e+04, 1.0e+05, 1.0e+06, 1.0e+07, 1.0e+08, 1.0e+09, 1.0e+10, 1.0e+11};
-            for (int i=0; i<TABLEROWS; i++)
-            expositionData[i]=D315_1400_Values[i];
+            array<double, LaserGoggle::TABLEROWS> D315_1400_Values = { 1.0e+02, 1.0e+03, 1.0e+04, 1.0e+05, 1.0e+06, 1.0e+07, 1.0e+08, 1.0e+09, 1.0e+10, 1.0e+11};
+
+            for (size_t i=0; i<TABLEROWS; i++)
+                expositionData[i]=D315_1400_Values[i];
+
             pulseCode=CONTINUOS_EMISSION;
         }
         if((applicableTime>=1.0e-09)&&(applicableTime<5.0e-04))
         {
-            double IR315_1400_Values[] = {0.05, 0.5 , 5, 50, 5.0e+02, 5.0e+03, 5.0e+04, 5.0e+05, 5.0e+06, 5.0e+07};
-            for (int i=0; i<TABLEROWS; i++)
-            expositionData[i]=IR315_1400_Values[i];
+            array<double, LaserGoggle::TABLEROWS> IR315_1400_Values = {0.05, 0.5 , 5, 50, 5.0e+02, 5.0e+03, 5.0e+04, 5.0e+05, 5.0e+06, 5.0e+07};
+
+            for (size_t i=0; i<TABLEROWS; i++)
+                expositionData[i]=IR315_1400_Values[i];
+
             if (applicableTime<1.0e-06)
                 pulseCode=Q_SWITCHED;
             else
@@ -179,9 +177,11 @@ double* LaserGoggle::selectData(const double &wavelength, const double &applicab
         }
         if(applicableTime<1.0e-09)
         {
-            double M315_1400_Values[] = {1.5e-03, 1.5e-02, 0.15, 1.5, 15, 1.5e+02, 1.5e+03, 1.5e+04, 1.5e+05, 1.5e+06};
-            for (int i=0; i<TABLEROWS; i++)
-            expositionData[i]=M315_1400_Values[i];
+            array<double, LaserGoggle::TABLEROWS> M315_1400_Values = {1.5e-03, 1.5e-02, 0.15, 1.5, 15, 1.5e+02, 1.5e+03, 1.5e+04, 1.5e+05, 1.5e+06};
+
+            for (size_t i=0; i<TABLEROWS; i++)
+                expositionData[i]=M315_1400_Values[i];
+
             pulseCode=MODE_LOCKED;
         }
     }
@@ -191,16 +191,20 @@ double* LaserGoggle::selectData(const double &wavelength, const double &applicab
         {
         if(applicableTime>=1.0e-01)
         {
-            double D1400_1mm_Values[] = {1.0e+04, 1.0e+05, 1.0e+06, 1.0e+07, 1.0e+08, 1.0e+09, 1.0e+10, 1.0e+11, 1.0e+12, 1.0e+13};
-            for (int i=0; i<TABLEROWS; i++)
-            expositionData[i]=D1400_1mm_Values[i];
+            array<double, LaserGoggle::TABLEROWS> D1400_1mm_Values = {1.0e+04, 1.0e+05, 1.0e+06, 1.0e+07, 1.0e+08, 1.0e+09, 1.0e+10, 1.0e+11, 1.0e+12, 1.0e+13};
+
+            for (size_t i=0; i<TABLEROWS; i++)
+                expositionData[i]=D1400_1mm_Values[i];
+
             pulseCode=CONTINUOS_EMISSION;
         }
         if((applicableTime>=1.0e-09)&&(applicableTime<1.0e-01))
         {
-            double IR1400_1mm_Values[] = { 1.0e+03, 1.0e+04, 1.0e+05, 1.0e+06, 1.0e+07, 1.0e+08, 1.0e+09, 1.0e+10, 1.0e+11, 1.0e+12};
-            for (int i=0; i<TABLEROWS; i++)
-            expositionData[i]=IR1400_1mm_Values[i];
+            array<double, LaserGoggle::TABLEROWS> IR1400_1mm_Values = { 1.0e+03, 1.0e+04, 1.0e+05, 1.0e+06, 1.0e+07, 1.0e+08, 1.0e+09, 1.0e+10, 1.0e+11, 1.0e+12};
+
+            for (size_t i=0; i<TABLEROWS; i++)
+                expositionData[i]=IR1400_1mm_Values[i];
+
             if (applicableTime<1.0e-06)
                 pulseCode=Q_SWITCHED;
             else
@@ -208,9 +212,11 @@ double* LaserGoggle::selectData(const double &wavelength, const double &applicab
         }
         if(applicableTime<1.0e-09)
         {
-            double M1400_1mm_Values[] = {1.0e+12,  1.0e+13, 1.0e+14, 1.0e+15, 1.0e+16, 1.0e+17, 1.0e+18, 1.0e+19, 1.0e+20, 1.0e+21};
-            for (int i=0; i<TABLEROWS; i++)
-            expositionData[i]=M1400_1mm_Values[i];
+            array<double, LaserGoggle::TABLEROWS> M1400_1mm_Values = {1.0e+12,  1.0e+13, 1.0e+14, 1.0e+15, 1.0e+16, 1.0e+17, 1.0e+18, 1.0e+19, 1.0e+20, 1.0e+21};
+
+            for (size_t i=0; i<TABLEROWS; i++)
+                expositionData[i]=M1400_1mm_Values[i];
+
             pulseCode=MODE_LOCKED;
         }
     }
@@ -227,8 +233,8 @@ void LaserGoggle::setPulseCode()
     pulseCodeString="Laser ad onda continua";
     pulseCodeLetter='D';
     break;
-    case (SIMPLE_PULSED):
 
+    case (SIMPLE_PULSED):
     if(myLaserOperation==IMPULSATO)
         pulseCodeString="Laser ad impulso ";
     else if(myLaserOperation==IMPULSI_MULTIPLI)
@@ -236,8 +242,8 @@ void LaserGoggle::setPulseCode()
 
     pulseCodeLetter='I';
     break;
-    case (Q_SWITCHED):
 
+    case (Q_SWITCHED):
     if(myLaserOperation==IMPULSATO)
         pulseCodeString="Laser ad impulso Q Switched";
     else if(myLaserOperation==IMPULSI_MULTIPLI)
@@ -245,19 +251,20 @@ void LaserGoggle::setPulseCode()
 
     pulseCodeLetter='R';
     break;
+
     case (MODE_LOCKED):
     pulseCodeString="Laser a modi accoppiati (Mode Locked)";
     pulseCodeLetter='M';
     break;
     }
-
 }
 
-vector< pair <int,double> > LaserGoggle::buildDataVector(const double expositionData[], const int LB_Scale[])
+vector< pair <int,double> > LaserGoggle::buildDataVector(const array<int, LaserGoggle::TABLEROWS> LB_Scale,
+                                                         const array<double, LaserGoggle::TABLEROWS> expositionData)
 {
     vector< pair <int,double> > dataVector;
     // Entering values in vector of pairs
-    for (int i=0; i<TABLEROWS; i++)
+    for (size_t i=0; i<TABLEROWS; i++)
     dataVector.push_back( make_pair(LB_Scale[i],expositionData[i]) );
 
     return dataVector;
@@ -270,9 +277,9 @@ double LaserGoggle::laserIrrRadCorrected(double _laserOutput)
     return myExpositionValue;
 }
 
-int LaserGoggle::scaleNumber(vector< pair <int,double> > _dataVector,double myExpositionValue)
+int LaserGoggle::scaleNumber(vector< pair <int,double> > _dataVector, double myExpositionValue)
 {
-    int i=0;
+    size_t i=0;
 
     while((_dataVector[i].second<myExpositionValue)&& (i<=TABLEROWS-1))
     i++;
@@ -416,18 +423,10 @@ string LaserGoggle::getLaserPulseOperation()
 void LaserGoggle::prepareGoggleMark()
 {
     expositionData=selectData(wavelength, pulseWidth);
-    //printData();
-    dataVector=buildDataVector(expositionData, buildScaleNumbers());
-    //cout << "Lunghezza d'onda: " << wavelength << endl;
-    //cout << "Larghezza dell'impulso: " << pulseWidth << endl;
-    //cout << "Uscita del laser: " << powerErg << endl;
-    //cout << "Diametro del fascio: " << beamDiameter << endl;
-    //cout << "Frequenza: " << frequency << endl;
+    dataVector=buildDataVector(buildScaleNumbers(), expositionData);
     double myLaserDensityOutput;
     myLaserDensityOutput = laserIrrRadCorrected(powerErg);
-    //cout << "Uscita corretta del dispositivo laser: " << myLaserDensityOutput << endl;
     myScaleNumber=scaleNumber(dataVector, myLaserDensityOutput );
-    //cout<< "\nNumero di scala calcolato: " << myScaleNumber << endl;
 }
 
 string LaserGoggle::printGoggleCode()
@@ -621,7 +620,7 @@ double LaserGoggle::get_ni_max()const
 
 void LaserGoggle::printData()
 {
-    for(int i=0; i<TABLEROWS; i++)
+    for(size_t i=0; i<TABLEROWS; i++)
     {
         cout<< "Valori EN207 selezionati: "<< expositionData[i] <<endl;
     }
@@ -630,7 +629,7 @@ void LaserGoggle::printData()
 void LaserGoggle::printScaleNumbers(int myLB[])
 {
     cout << "I numeri di scala sono i seguenti: \n";
-    for(int i=0; i<TABLEROWS; ++i)
+    for(size_t i=0; i<TABLEROWS; ++i)
         cout<< myLB[i] <<", ";
 }
 
@@ -646,6 +645,4 @@ void LaserGoggle::printVector( vector< pair <int,double> > dataVector)
 
 LaserGoggle::~LaserGoggle()
 {
-    delete expositionData;
-    delete LB_Scale;
 }

@@ -37,7 +37,7 @@ class LaserGoggle
 public:
     const static int TIMEBASE;/*!< Base dei tempi per le lunghezze d'onda da 315 a 10<sup>6</sup> nm pari a 5 secondi. */
     const static int TIMEBASE_LOW_WAVELENGTH;/*!< Base dei tempi per le lunghezze d'onda da 180 a 315 nm pari a 30000 secondi. */
-    const static int TABLEROWS;/*!< Numero di righe del prospetto B1 della norma UNI EN 207. */
+    static const size_t TABLEROWS{10};/*!< Numero di righe del prospetto B1 della norma UNI EN 207. */
     const static double PI;/*!< Valore della costante <b>&pi;</b>. */
     const static int CONTINUOS_OPERATION;/*!< Funzionamento ad onda continua. */
     const static double GLASS_EXPONENT;/*!< Esponente per la correzione per filtro con materiale principale di vetro e pari a 1,1693
@@ -175,9 +175,9 @@ secondo i criteri illustrati di seguito:
     void setPulseCode();/*!< Imposta il codice di prova dell'occhiale ed la descrizione in funzione del risultato della valutazione effettuatail codice */
     string getLaserPulseOperation();/*!< Restituisce la descrizione del tipo di protettori calcolato."*/
 
-    double* selectData(const double &, const double &);/*!< Restituisce un array contenente la riga del prospetto B1 UNI EN 207
+    array<double, TABLEROWS>selectData(const double &, const double &);/*!< Restituisce un array contenente la riga del prospetto B1 UNI EN 207
     corrispondente  ai valori di lunghezza d'onda <b>&lambda;</b> e di tempo applicabile in seondi impostati. */
-    vector< pair <int,double> > buildDataVector(const double[], const int[]);/*!< Costruisce e restituisce un vettore STD il cui elemento è
+    vector< pair <int,double> > buildDataVector(const array<int, TABLEROWS>, const array<double, TABLEROWS>);/*!< Costruisce e restituisce un vettore STD il cui elemento è
     la coppia LB valore limite dell'array ottenuta da double* selectData(const double &, const double &). */
     vector< pair <int,double> > getDataVector();/*!< Restituisce un vettore STD il cui elemento è la coppia LB, valore limite. */
     int scaleNumber(vector< pair <int,double> > dataVector, double);/*!< Calcola e restituisce il numero di gradazione dei protettori assegnato
@@ -196,7 +196,7 @@ secondo i criteri illustrati di seguito:
     * \f[P_m=PRF \cdot Q\f] */
     int numberOfPulse();/*!< Imposta e restituisce il numero degli impulsi che si verseicano nel tempo base corrispondente. Se il funzionamento è
     ad impulsi multipli il numero di impulsi minimo è pari a 50*/
-    int* buildScaleNumbers();/*!< Costruisce e restituisce un array di interi con i valori 1, 2, 3, 4, 5, 6, 7, 8, 9 e 10 corrispondenti ai
+    array<int, TABLEROWS> buildScaleNumbers();/*!< Costruisce e restituisce un array di interi con i valori 1, 2, 3, 4, 5, 6, 7, 8, 9 e 10 corrispondenti ai
     * numeri di gradazione*/
     double laserIrrRadCorrected(double);/*!< Imposta e restitusce la radianza corretta del dispositivo nel caso di applicazione del criterio dell'impulso
     * moltiplicando il valore ottenuto della radianza con laserIrrRad(_laserOutput) per i fattori K e K<sub>i</sub>.*/
@@ -219,7 +219,7 @@ secondo i criteri illustrati di seguito:
 
 private:
     string printGoggleCode();/*!< Funzione membro impiegata per il calcolo della marcatura.*/
-    double *expositionData;
+    array<double, TABLEROWS> expositionData;
     vector<pair<int, double>> dataVector;
     double myExpositionValue;
     double thermicExpositionValue;
@@ -240,7 +240,7 @@ private:
     double ki;
     double k;
     int myScaleNumber;
-    int *LB_Scale;
+    array<int, TABLEROWS> LB_Scale;
     double Ti;
     double ni_max;
     string codeUnit;

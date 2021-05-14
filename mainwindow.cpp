@@ -112,13 +112,14 @@ MainWindow::MainWindow()
     externalFile=false;
     externalFile=(QCoreApplication::arguments().size()>1);
 
+    QString fileName;
     if (externalFile==true)
     {
-        externalFilename = QApplication::arguments().at(1);
+        fileName = QApplication::arguments().at(1);
         timer = new QTimer(this);
         timer->setSingleShot(true);
         timer->start(100);
-        loadFile(externalFilename);
+        loadFile(fileName);
         connect(timer, SIGNAL(timeout()), this, SLOT(makeSceneOfSavedItems()));
     }
 
@@ -1606,9 +1607,6 @@ void MainWindow::writeSettings()
 
 QString MainWindow::strippedName(const QString &fullFileName)
 {
-    if(externalFile)
-        return QFileInfo(externalFilename).fileName();
-    else
         return QFileInfo(fullFileName).fileName();
 }
 
@@ -3630,7 +3628,7 @@ void MainWindow::makeSceneOfSavedItems(){
     environmentModel->myDataHasChanged();
 
     laserWindow->myDockControls->updateGoggle();
-
+    laserWindow->myDockControls->updateAllCompositeControlsFunctions();
     setWindowModified(false);
     updateActions();
 }

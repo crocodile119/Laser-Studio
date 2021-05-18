@@ -77,10 +77,10 @@ void LaserClassMP::meanClassUpdate(const double& _timeBase, const double& _meanP
      * Correggo in calori di LEA per ottenerne quelli medi.                                                         *
      * Si ricorda a tal proposito che:                                                                              *
      *  - la potenza media in uscita dal laser è pari a Q*prf;                                                      *
-     *  - se il valore del LEA in timeBase è espresso in E allora il suo valore medio è pari a E/(prt*pulseWidth);  *
+     *  - se il valore del LEA in timeBase è espresso in E allora il suo valore medio è pari a E;  *
      *  - se il valore del LEA in timeBase è espresso in H allora il suo valore medio è pari a H/(prf*timeBase);    *
-     *  - se il valore del LEA in timeBase è espresso in W allora il suo valore medio è proprio a Q*prf;                *
-     *  - se il valore del LEA in timeBase è espresso in J allora il suo valore medio è pari Q*prf*pulseWidth.   *
+     *  - se il valore del LEA in timeBase è espresso in W allora il suo valore medio è proprio a P;                *
+     *  - se il valore del LEA in timeBase è espresso in J allora il suo valore medio è pari Q/(prf*timeBase).   *
     *****************************************************************************************************************/
 
     meanLEA_Corrected=computeMeanLEA_Corrected(meanLEA_formulaSort);
@@ -380,13 +380,13 @@ array<double, ComputeLEA::N_LEA> LaserClassMP::computeMeanLEA_Corrected(array<in
     for(size_t i=0; i<ComputeLEA::N_LEA; i++)
     {
     if(_meanLEA_formulaSort[i]==1)
-        meanLEACorrected[i]=myMeanLEA[i]/(prf*pulseWidth);
+        meanLEACorrected[i]=myMeanLEA[i];
     else if(_meanLEA_formulaSort[i]==2)
         meanLEACorrected[i]=myMeanLEA[i]/ceil(prf*timeBase);
     else if(_meanLEA_formulaSort[i]==3)
         meanLEACorrected[i]=myMeanLEA[i];
     else if(_meanLEA_formulaSort[i]==4)
-        meanLEACorrected[i]=myMeanLEA[i]*pulseWidth;
+        meanLEACorrected[i]=myMeanLEA[i]/ceil(prf*timeBase);
     }
 
     return meanLEACorrected;

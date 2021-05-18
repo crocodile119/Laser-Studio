@@ -98,7 +98,7 @@ void LaserSafetyMP::setPulseWidth(const double& _pulseWidth)
         if(powerFormulaSort=="H")
             meanPow_EMP_Result=powerEMP/ceil(exposureTime*PRF);// calcola l'H medio come il rapporo dell'H in Te con N.
         else if(powerFormulaSort=="E")
-            meanPow_EMP_Result=powerEMP/(PRF*pulseWidth);//calcola l'E medio come il rapporo dell'H medio con t.
+            meanPow_EMP_Result=powerEMP;//Nel caso in cui si considera l'irradianza l'irradianza media è proprio pari all'irradianza relativa la tempo di esposizione.
     }
     else
     meanPow_EMP_Result=powerEMP;//utile per evitare divisione per 0 quando la PRF si riduce a 0.
@@ -276,13 +276,13 @@ void LaserSafetyMP::equateMeanPowerEMP()
             meanPow_EMP_Equate=meanPow_EMP_Result;
 	//altrimenti trasformo l'EMP in esposizione radiante un irradianza dividendo per il tempo di esposizione.
         else if(powerFormulaSort=="E")
-            meanPow_EMP_Equate=meanPow_EMP_Result*pulseWidth;//ottengo il valore della radianza media da E
+            meanPow_EMP_Equate=meanPow_EMP_Result/PRF;//ottengo il valore della radianza media da E
     }
 	// viceversa se l'EMP del tempo di funzionamento è espresso in irradianza
     else if(formulaSort=="E")
     {
         if(powerFormulaSort=="H")
-            meanPow_EMP_Equate=meanPow_EMP_Result/pulseWidth;//calcolo E da H dividendo per t.
+            meanPow_EMP_Equate=meanPow_EMP_Result*PRF;//calcolo E da H dividendo per t.
         else if(powerFormulaSort=="E")
             meanPow_EMP_Equate=meanPow_EMP_Result;
     }
@@ -411,12 +411,29 @@ void LaserSafetyMP::computePulseTrain_NOHD()
     if((wavelength>=400)and(wavelength<=1.0e+06))
     {
         double ForNOHD;
-        formulaSort=getFormulaSort();
+        double pulseWidthMultiOperation;
+        string formulaSort=getFormulaSort();
 
-        if(formulaSort=="E")
-             ForNOHD=powerErg/pulseWidth;// se l'EMP è espresso in irradianza si considera la potenza (PowerErg è l'energia dell'impulso).
+        if(PRF<=(1/Tmin))
+            pulseWidthMultiOperation=pulseWidth;
         else
-             ForNOHD=powerErg;// altrimenti si considera l'energia dell'impulso
+            pulseWidthMultiOperation=Tmin;
+
+
+        if(PRF<=(1/Tmin))
+        {
+            if(formulaSort=="E")
+                 ForNOHD=powerErg/pulseWidthMultiOperation;// se l'EMP è espresso in irradianza si considera la potenza (PowerErg è l'energia dell'impulso).
+            else
+                 ForNOHD=powerErg;// altrimenti si considera l'energia dell'impulso
+        }
+        else
+        {
+            if(formulaSort=="E")
+                 ForNOHD=powerErg/Tmin;// se l'EMP è espresso in irradianza si considera la potenza (PowerErg è l'energia dell'impulso).
+            else
+                 ForNOHD=powerErg;// altrimenti si considera l'energia dell'impulso
+        }
 
         double underroot;
         //si applica la formula pe il calcolo della NOHD

@@ -643,7 +643,7 @@ void DockControls::fetchDDataVector()
 
     dLaserOutput=myDLaserGoggle->laserIrrRadCorrected(powerErg*myLaserGoggle->getFrequency());
     //Calcola e restituisce la marcatura memorizzandola in myNewGoggleMark
-    string myNewGoggleMark = myDLaserGoggle->goggleMark(wavelength, LaserGoggle::CONTINUOS_OPERATION, powerErg,
+    string myNewGoggleMark = myDLaserGoggle->goggleMark(wavelength, LaserGoggle::CONTINUOS_OPERATION, powerErg*prf,
                                                         beamDiameter, LaserGoggle::CONTINUOS_OPERATION);
     myDModel->setScaleNumber(myDLaserGoggle->getScaleNumber());
     frequencyDataVector=myDLaserGoggle->getDataVector();
@@ -692,7 +692,7 @@ void DockControls::fetchDLaserOutput()
     dLaserOutput= myDLaserGoggle->laserIrrRadCorrected(powerErg*myLaserGoggle->getFrequency());
     dChartView->setLaserOutput(dLaserOutput);
     //Calcola e restituisce la marcatura memorizzandola in myNewGoggleMark
-    string myNewGoggleMark = myDLaserGoggle->goggleMark(wavelength, LaserGoggle::CONTINUOS_OPERATION, powerErg,
+    string myNewGoggleMark = myDLaserGoggle->goggleMark(wavelength, LaserGoggle::CONTINUOS_OPERATION, powerErg*prf,
                                                         beamDiameter, LaserGoggle::CONTINUOS_OPERATION);
     dChartView->buildDataLaserOutput();
 }
@@ -917,7 +917,8 @@ void DockControls::displayDScaleNumber()
 {
     dComputeOpticalDensity();
 
-    QString scaleNumberDString = QString::fromStdString(myDLaserGoggle->goggleMark());
+    QString scaleNumberDString = QString::fromStdString(myDLaserGoggle->goggleMark(wavelength, LaserGoggle::CONTINUOS_OPERATION, powerErg*prf,
+                                                                                   beamDiameter, LaserGoggle::CONTINUOS_OPERATION));
     if(dOpticalDensity>0)
     {
         dockGoggle->ui->tScaleNumberDLabel->setText("LB");

@@ -12,7 +12,7 @@
   </property>
   <property name="font">
    <font>
-    <pointsize>7</pointsize>
+    <pointsize>8</pointsize>
    </font>
   </property>
   <property name="windowTitle">
@@ -53,7 +53,7 @@
     <widget class="QGroupBox" name="groupBox_2">
      <property name="font">
       <font>
-       <pointsize>7</pointsize>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="title">
@@ -64,7 +64,9 @@
        <widget class="QLabel" name="label_8">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -84,7 +86,9 @@ QLabel {margin-right: 10px}</string>
        <widget class="QLabel" name="label_5">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -104,7 +108,7 @@ QLabel {margin-right: 10px}</string>
        <widget class="QDoubleSpinBox" name="reflectionSpinBox">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
          </font>
         </property>
         <property name="styleSheet">
@@ -122,7 +126,9 @@ QLabel {margin-right: 10px}</string>
        <widget class="QLabel" name="label_3">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -170,7 +176,7 @@ QLabel {margin-right: 10px}</string>
        <widget class="QTextEdit" name="descriptionTextEdit">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
          </font>
         </property>
         <property name="styleSheet">
@@ -187,7 +193,7 @@ QTextEdit {margin-right: 10px}</string>
        <widget class="QLabel" name="reflectorKindLabel">
         <property name="font">
          <font>
-          <pointsize>6</pointsize>
+          <pointsize>8</pointsize>
          </font>
         </property>
         <property name="styleSheet">
@@ -207,7 +213,9 @@ QLabel {margin-right: 10px}</string>
        <widget class="QLabel" name="label_6">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -230,7 +238,9 @@ QLabel {margin-right: 10px}</string>
        <widget class="QLabel" name="label_4">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -256,7 +266,7 @@ QLabel {margin-right: 10px}</string>
         </property>
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
          </font>
         </property>
         <property name="styleSheet">
@@ -275,7 +285,9 @@ QLabel {padding: 3px}</string>
        <widget class="QLabel" name="label_7">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -295,7 +307,7 @@ QLabel {margin-right: 10px}</string>
        <widget class="QLabel" name="laserPhaseLabel">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
          </font>
         </property>
         <property name="styleSheet">
@@ -315,7 +327,7 @@ QLabel {margin-right: 10px}</string>
        <widget class="QLabel" name="actualPositioningLabel">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
          </font>
         </property>
         <property name="styleSheet">
@@ -338,7 +350,7 @@ QLabel {margin-right: 10px}</string>
     <widget class="QGroupBox" name="groupBox">
      <property name="font">
       <font>
-       <pointsize>7</pointsize>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="title">
@@ -364,7 +376,9 @@ QLabel {margin-right: 10px}</string>
        <widget class="QLabel" name="label">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -384,7 +398,7 @@ QLabel {margin-left: 10px}</string>
        <widget class="QDoubleSpinBox" name="xSpinBox">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
          </font>
         </property>
         <property name="styleSheet">
@@ -402,7 +416,9 @@ QLabel {margin-left: 10px}</string>
        <widget class="QLabel" name="label_2">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -422,7 +438,7 @@ QLabel {margin-left: 10px}</string>
        <widget class="QDoubleSpinBox" name="ySpinBox">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
          </font>
         </property>
         <property name="styleSheet">
@@ -446,7 +462,7 @@ QLabel {margin-left: 10px}</string>
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="font">
       <font>
-       <pointsize>7</pointsize>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="orientation">

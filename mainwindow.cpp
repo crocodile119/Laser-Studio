@@ -287,7 +287,7 @@ void MainWindow::newFile()
         laserWindow->graphicsView->centerOn(laserpoint->pos());
 
         QFont font;
-        font.setPointSize(7);
+        font.setPointSize(8);
         setFont(font);
 
         environmentModel->setState(false);
@@ -1506,7 +1506,7 @@ void MainWindow::createStatusBar()
 {
     statusLabel = new QLabel("Pronto");
     QFont font;
-    font.setPointSize(7);
+    font.setPointSize(8);
     statusLabel->setFont(font);
     statusLabel->setAlignment(Qt::AlignHCenter);
     statusLabel->setMinimumSize(statusLabel->sizeHint());

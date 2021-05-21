@@ -63,7 +63,7 @@
            <enum>QTabWidget::North</enum>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="tab">
            <attribute name="title">
@@ -239,7 +239,7 @@ QLabel {margin-right: 10px}</string>
                    <widget class="QLabel" name="tC5_Label">
                     <property name="font">
                      <font>
-                      <pointsize>7</pointsize>
+                      <pointsize>8</pointsize>
                       <weight>75</weight>
                       <bold>true</bold>
                      </font>
@@ -262,7 +262,7 @@ QLabel {margin-right: 10px}</string>
                     <property name="font">
                      <font>
                       <family>Verdana</family>
-                      <pointsize>7</pointsize>
+                      <pointsize>8</pointsize>
                       <weight>50</weight>
                       <bold>false</bold>
                      </font>
@@ -287,7 +287,7 @@ QLabel {margin-right: 10px}</string>
                    <widget class="QLabel" name="tPulseNumberLabel">
                     <property name="font">
                      <font>
-                      <pointsize>7</pointsize>
+                      <pointsize>8</pointsize>
                       <weight>75</weight>
                       <bold>true</bold>
                      </font>
@@ -310,7 +310,7 @@ QLabel {margin-right: 10px}</string>
                     <property name="font">
                      <font>
                       <family>Verdana</family>
-                      <pointsize>7</pointsize>
+                      <pointsize>8</pointsize>
                       <weight>50</weight>
                       <bold>false</bold>
                      </font>
@@ -332,7 +332,7 @@ QLabel {margin-right: 10px}</string>
                    <widget class="QLabel" name="tMeanPowerLabel">
                     <property name="font">
                      <font>
-                      <pointsize>7</pointsize>
+                      <pointsize>8</pointsize>
                       <weight>75</weight>
                       <bold>true</bold>
                      </font>
@@ -355,7 +355,7 @@ QLabel {margin-right: 10px}</string>
                     <property name="font">
                      <font>
                       <family>Verdana</family>
-                      <pointsize>7</pointsize>
+                      <pointsize>8</pointsize>
                       <weight>50</weight>
                       <bold>false</bold>
                      </font>
@@ -377,7 +377,7 @@ QLabel {margin-right: 10px}</string>
                    <widget class="QLabel" name="tCountingLabel">
                     <property name="font">
                      <font>
-                      <pointsize>7</pointsize>
+                      <pointsize>8</pointsize>
                       <weight>75</weight>
                       <bold>true</bold>
                      </font>
@@ -400,7 +400,7 @@ QLabel {margin-right: 10px}</string>
                     <property name="font">
                      <font>
                       <family>Verdana</family>
-                      <pointsize>7</pointsize>
+                      <pointsize>8</pointsize>
                       <weight>50</weight>
                       <bold>false</bold>
                      </font>
@@ -945,7 +945,7 @@ QLabel {margin-right: 10px}</string>
                     <property name="font">
                      <font>
                       <family>Verdana</family>
-                      <pointsize>7</pointsize>
+                      <pointsize>8</pointsize>
                      </font>
                     </property>
                     <property name="styleSheet">
@@ -965,7 +965,7 @@ QLabel {margin-right: 10px}</string>
                    <widget class="QLabel" name="tFormulaLEA_Label">
                     <property name="font">
                      <font>
-                      <pointsize>7</pointsize>
+                      <pointsize>8</pointsize>
                       <weight>75</weight>
                       <bold>true</bold>
                      </font>
@@ -1208,7 +1208,7 @@ QLabel {margin-right: 10px}</string>
                     <property name="font">
                      <font>
                       <family>Verdana</family>
-                      <pointsize>7</pointsize>
+                      <pointsize>8</pointsize>
                      </font>
                     </property>
                     <property name="styleSheet">
@@ -1228,7 +1228,7 @@ QLabel {margin-right: 10px}</string>
                    <widget class="QLabel" name="tFormulaLEA_Label_2">
                     <property name="font">
                      <font>
-                      <pointsize>7</pointsize>
+                      <pointsize>8</pointsize>
                       <weight>75</weight>
                       <bold>true</bold>
                      </font>
@@ -1769,7 +1769,7 @@ QLabel {margin-right: 10px}</string>
                     <property name="font">
                      <font>
                       <family>Verdana</family>
-                      <pointsize>7</pointsize>
+                      <pointsize>8</pointsize>
                      </font>
                     </property>
                     <property name="styleSheet">
@@ -1789,7 +1789,7 @@ QLabel {margin-right: 10px}</string>
                    <widget class="QLabel" name="tFormulaLEA_Label_3">
                     <property name="font">
                      <font>
-                      <pointsize>7</pointsize>
+                      <pointsize>8</pointsize>
                       <weight>75</weight>
                       <bold>true</bold>
                      </font>

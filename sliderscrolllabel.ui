@@ -44,7 +44,9 @@
       <widget class="QLabel" name="titleLabel">
        <property name="font">
         <font>
-         <pointsize>6</pointsize>
+         <pointsize>8</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
         </font>
        </property>
        <property name="styleSheet">
@@ -90,7 +92,9 @@ QLabel {margin-right: 10px}</string>
         <widget class="QLabel" name="textLabel">
          <property name="font">
           <font>
-           <pointsize>6</pointsize>
+           <pointsize>8</pointsize>
+           <weight>50</weight>
+           <bold>false</bold>
           </font>
          </property>
          <property name="styleSheet">

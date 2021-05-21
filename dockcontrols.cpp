@@ -1822,7 +1822,7 @@ void DockControls::setWidgets()
         if(MyLaserMP_Pr->getMeanPowerFormulaSort()=="H")
             formulaEMP=QString::fromStdString(MyLaserMP_Pr->getMeanPowerFormulaEMP()+"/N");
         else
-            formulaEMP=QString::fromStdString(MyLaserMP_Pr->getMeanPowerFormulaEMP()+"/(PRF &sdot; t)");
+            formulaEMP=QString::fromStdString(MyLaserMP_Pr->getMeanPowerFormulaEMP());
 
         QString secondCondition=QString(" %1 = %2 %3")
                                         .arg(formulaEMP)
@@ -2007,7 +2007,7 @@ void DockControls::setWidgets()
         if(MyLaserSkinMP_Pr->getMeanPowerFormulaSort()=="H")
             formulaSkinEMP=QString::fromStdString(MyLaserSkinMP_Pr->getMeanPowerFormulaEMP()+"/N");
         else
-            formulaSkinEMP=QString::fromStdString(MyLaserSkinMP_Pr->getMeanPowerFormulaEMP()+"/(PRF &sdot; t)");
+            formulaSkinEMP=QString::fromStdString(MyLaserSkinMP_Pr->getMeanPowerFormulaEMP());
 
         QString EMP_MP_Pulse=QString(" %1 = %2 %3")
                                             .arg(formulaSkinEMP)

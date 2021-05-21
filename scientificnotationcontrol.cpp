@@ -67,9 +67,11 @@ ScientificNotationControl::ScientificNotationControl(QWidget *parent)
     setScientificNumber();
 
     QFont font;
-    font.setPointSize(6);
-    titleLabel->setFont(font);
+    font.setPointSize(8);
     scientNotLabel->setFont(font);
+    font.setBold(true);
+    titleLabel->setFont(font);
+
 
     connect(dial, SIGNAL(valueChanged(int)), this, SLOT(on_dial_valueChanged(int)));
     connect(verticalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(on_verticalScrollBar_valueChanged(int)));

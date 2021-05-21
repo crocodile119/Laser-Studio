@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>480</width>
-    <height>405</height>
+    <width>500</width>
+    <height>406</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,19 +18,19 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>480</width>
-    <height>405</height>
+    <width>500</width>
+    <height>406</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>500</width>
+    <width>600</width>
     <height>490</height>
    </size>
   </property>
   <property name="font">
    <font>
-    <pointsize>6</pointsize>
+    <pointsize>8</pointsize>
    </font>
   </property>
   <property name="styleSheet">
@@ -84,7 +84,7 @@
          </property>
          <property name="font">
           <font>
-           <pointsize>6</pointsize>
+           <pointsize>8</pointsize>
           </font>
          </property>
         </widget>
@@ -120,7 +120,8 @@
         <widget class="QCheckBox" name="checkGaussianBeam">
          <property name="font">
           <font>
-           <pointsize>6</pointsize>
+           <family>Verdana</family>
+           <pointsize>8</pointsize>
           </font>
          </property>
          <property name="styleSheet">
@@ -138,7 +139,8 @@
         <widget class="QCheckBox" name="internalWaist_checkBox">
          <property name="font">
           <font>
-           <pointsize>6</pointsize>
+           <family>Verdana</family>
+           <pointsize>8</pointsize>
           </font>
          </property>
          <property name="styleSheet">
@@ -153,7 +155,8 @@
         <widget class="QCheckBox" name="enableTeCheckBox">
          <property name="font">
           <font>
-           <pointsize>6</pointsize>
+           <family>Verdana</family>
+           <pointsize>8</pointsize>
           </font>
          </property>
          <property name="styleSheet">
@@ -203,13 +206,13 @@
            </property>
            <property name="maximumSize">
             <size>
-             <width>113</width>
+             <width>16777215</width>
              <height>129</height>
             </size>
            </property>
            <property name="font">
             <font>
-             <pointsize>6</pointsize>
+             <pointsize>8</pointsize>
             </font>
            </property>
           </widget>
@@ -228,13 +231,13 @@
            </property>
            <property name="maximumSize">
             <size>
-             <width>113</width>
+             <width>16777215</width>
              <height>129</height>
             </size>
            </property>
            <property name="font">
             <font>
-             <pointsize>6</pointsize>
+             <pointsize>8</pointsize>
             </font>
            </property>
           </widget>
@@ -253,13 +256,13 @@
            </property>
            <property name="maximumSize">
             <size>
-             <width>113</width>
+             <width>16777215</width>
              <height>129</height>
             </size>
            </property>
            <property name="font">
             <font>
-             <pointsize>6</pointsize>
+             <pointsize>8</pointsize>
             </font>
            </property>
           </widget>
@@ -278,13 +281,13 @@
            </property>
            <property name="maximumSize">
             <size>
-             <width>113</width>
+             <width>16777215</width>
              <height>129</height>
             </size>
            </property>
            <property name="font">
             <font>
-             <pointsize>6</pointsize>
+             <pointsize>8</pointsize>
             </font>
            </property>
           </widget>
@@ -303,13 +306,13 @@
            </property>
            <property name="maximumSize">
             <size>
-             <width>113</width>
+             <width>16777215</width>
              <height>129</height>
             </size>
            </property>
            <property name="font">
             <font>
-             <pointsize>6</pointsize>
+             <pointsize>8</pointsize>
             </font>
            </property>
           </widget>
@@ -337,13 +340,13 @@
            </property>
            <property name="maximumSize">
             <size>
-             <width>113</width>
+             <width>16777215</width>
              <height>129</height>
             </size>
            </property>
            <property name="font">
             <font>
-             <pointsize>6</pointsize>
+             <pointsize>8</pointsize>
             </font>
            </property>
           </widget>
@@ -393,7 +396,7 @@
          </property>
          <property name="font">
           <font>
-           <pointsize>6</pointsize>
+           <pointsize>8</pointsize>
           </font>
          </property>
         </widget>
@@ -465,7 +468,9 @@
            <property name="font">
             <font>
              <family>Verdana</family>
-             <pointsize>7</pointsize>
+             <pointsize>8</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
             </font>
            </property>
            <property name="styleSheet">
@@ -545,7 +550,7 @@ QLabel {border-radius: 8px}
            </property>
            <property name="font">
             <font>
-             <pointsize>7</pointsize>
+             <pointsize>8</pointsize>
             </font>
            </property>
            <property name="styleSheet">
@@ -619,7 +624,9 @@ QLabel {border-radius: 8px}</string>
            <property name="font">
             <font>
              <family>Verdana</family>
-             <pointsize>7</pointsize>
+             <pointsize>8</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
             </font>
            </property>
            <property name="styleSheet">
@@ -662,7 +669,7 @@ QLabel {border-radius: 8px}
            </property>
            <property name="font">
             <font>
-             <pointsize>7</pointsize>
+             <pointsize>8</pointsize>
             </font>
            </property>
            <property name="styleSheet">
@@ -757,7 +764,9 @@ QLabel {border-radius: 8px}
            <property name="font">
             <font>
              <family>Verdana</family>
-             <pointsize>7</pointsize>
+             <pointsize>8</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
             </font>
            </property>
            <property name="styleSheet">
@@ -784,7 +793,7 @@ QLabel {border-radius: 8px}</string>
            </property>
            <property name="font">
             <font>
-             <pointsize>7</pointsize>
+             <pointsize>8</pointsize>
             </font>
            </property>
            <property name="styleSheet">

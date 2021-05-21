@@ -84,7 +84,7 @@ void LaserSkinSafetyMP::computeMeanPowerEMP()
         if(powerFormulaSort=="H")
             meanPow_EMP_Result=powerSkinEMP/ceil(exposureTime*PRF);// calcola l'H medio come il rapporo dell'H in Te con N.
         else if(powerFormulaSort=="E")
-            meanPow_EMP_Result=powerSkinEMP/(PRF*pulseWidth);//calcola l'E medio come il rapporo dell'H medio con t.
+            meanPow_EMP_Result=powerSkinEMP;//Nel caso in cui si considera l'irradianza l'irradianza media è proprio pari all'irradianza relativa la tempo di esposizione.
     }
         else
     meanPow_EMP_Result=powerSkinEMP;//utile per evitare divisione per 0 quando la PRF si riduce a 0.
@@ -118,13 +118,13 @@ void LaserSkinSafetyMP::equateMeanPowerEMP()
         if(powerFormulaSort=="H")
             meanPow_EMP_Equate=meanPow_EMP_Result;  
         else if(powerFormulaSort=="E")//altrimenti trasformo l'EMP in esposizione radiante un irradianza dividendo per il tempo di esposizione.
-            meanPow_EMP_Equate=meanPow_EMP_Result*pulseWidth;//ottengo il valore della radianza media da E
+            meanPow_EMP_Equate=meanPow_EMP_Result*PRF;//ottengo il valore della radianza media da E
     }
     // viceversa se l'EMP del tempo di funzionamento è espresso in irradianza
     else if(formulaSort=="E")
     {
         if(powerFormulaSort=="H")
-            meanPow_EMP_Equate=meanPow_EMP_Result/pulseWidth;//calcolo E da H dividendo per t.
+            meanPow_EMP_Equate=meanPow_EMP_Result/PRF;//calcolo E da H dividendo per t.
         else if(powerFormulaSort=="E")
             meanPow_EMP_Equate=meanPow_EMP_Result;
     }

@@ -12,7 +12,7 @@
   </property>
   <property name="font">
    <font>
-    <pointsize>7</pointsize>
+    <pointsize>8</pointsize>
    </font>
   </property>
   <property name="windowTitle">
@@ -26,7 +26,7 @@
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="font">
       <font>
-       <pointsize>7</pointsize>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="orientation">
@@ -47,7 +47,9 @@
        <widget class="QLabel" name="label_3">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -70,7 +72,7 @@ QLabel {margin-right: 10px}</string>
        <widget class="QTextEdit" name="descriptionTextEdit">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
          </font>
         </property>
         <property name="styleSheet">
@@ -90,7 +92,7 @@ QTextEdit {margin-right: 10px}</string>
     <widget class="QGroupBox" name="groupBox_2">
      <property name="font">
       <font>
-       <pointsize>7</pointsize>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="title">
@@ -101,7 +103,9 @@ QTextEdit {margin-right: 10px}</string>
        <widget class="QLabel" name="label_5">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -121,7 +125,9 @@ QLabel {margin-right: 10px}</string>
        <widget class="QLabel" name="label_4">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -141,7 +147,7 @@ QLabel {margin-right: 10px}</string>
        <widget class="QDoubleSpinBox" name="heightSpinBox">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
          </font>
         </property>
         <property name="styleSheet">
@@ -165,7 +171,7 @@ QLabel {margin-right: 10px}</string>
        <widget class="QDoubleSpinBox" name="widthSpinBox">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
          </font>
         </property>
         <property name="styleSheet">
@@ -192,7 +198,7 @@ QLabel {margin-right: 10px}</string>
     <widget class="QGroupBox" name="groupBox">
      <property name="font">
       <font>
-       <pointsize>7</pointsize>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="title">
@@ -203,7 +209,7 @@ QLabel {margin-right: 10px}</string>
        <widget class="QDoubleSpinBox" name="xSpinBox">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
          </font>
         </property>
         <property name="styleSheet">
@@ -227,7 +233,9 @@ QLabel {margin-right: 10px}</string>
        <widget class="QLabel" name="label_2">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -247,7 +255,7 @@ QLabel {margin-right: 10px}</string>
        <widget class="QDoubleSpinBox" name="ySpinBox">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
          </font>
         </property>
         <property name="styleSheet">
@@ -268,7 +276,9 @@ QLabel {margin-right: 10px}</string>
        <widget class="QLabel" name="label">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
          </font>
         </property>
         <property name="styleSheet">

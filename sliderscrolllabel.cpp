@@ -22,7 +22,7 @@ SliderScrollLabel::SliderScrollLabel(QWidget *parent) :
 
 
 
-    setMaximumSize(QSize(220, 75));
+    setMaximumSize(QSize(300, 75));
     gridLayout = new QGridLayout(this);
     gridLayout->setObjectName(tr("gridLayout"));
 
@@ -34,8 +34,8 @@ SliderScrollLabel::SliderScrollLabel(QWidget *parent) :
                                  "QLabel {border-radius: 8px}"
                                  "QLabel {border: 0px}"
                                  "QLabel {padding: 5px}"
-                                 "QLabel {margin-left: 55px}"
-                                 "QLabel {margin-right: 55px}"));
+                                 "QLabel {margin-left: 70px}"
+                                 "QLabel {margin-right: 70px}"));
 
 
     gridLayout->addWidget(titleLabel, 0, 1, 1, 3);
@@ -72,9 +72,11 @@ SliderScrollLabel::SliderScrollLabel(QWidget *parent) :
     setScientificNumber();
 
     QFont font;
-    font.setPointSize(6);
-    titleLabel->setFont(font);
+    font.setPointSize(8);
     scientNotLabel->setFont(font);
+    font.setBold(true);
+    titleLabel->setFont(font);
+
 
     connect(slider, SIGNAL(valueChanged(int)), this, SLOT(on_slider_valueChanged(int)));
     connect(scrollBar, SIGNAL(valueChanged(int)), this, SLOT(on_scrollBar_valueChanged(int)));

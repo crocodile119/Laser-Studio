@@ -46,7 +46,7 @@ CentralWidget::CentralWidget(QWidget *parent) :
     label->setObjectName(QString::fromUtf8("label"));
 
     QFont font;
-    font.setPointSize(7);
+    font.setPointSize(8);
     label->setFont(font);
 
     gridLayout->addWidget(label, 1, 0, 1, 1);

@@ -40,9 +40,10 @@ DialControl::DialControl(QWidget *parent)
         setDialNumber(10.0);
 
         QFont font;
-        font.setPointSize(6);
-        titleLabel->setFont(font);
+        font.setPointSize(8);
         dialNumberLabel->setFont(font);
+        font.setBold(true);
+        titleLabel->setFont(font);
 
         connect(dial, SIGNAL(valueChanged(int)), this, SLOT(on_dial_valueChanged(int)));
 }

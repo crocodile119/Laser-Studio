@@ -30,7 +30,7 @@
   </property>
   <property name="font">
    <font>
-    <pointsize>7</pointsize>
+    <pointsize>8</pointsize>
    </font>
   </property>
   <property name="styleSheet">
@@ -59,9 +59,9 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>0</y>
-         <width>172</width>
-         <height>515</height>
+         <y>-135</y>
+         <width>180</width>
+         <height>436</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout">
@@ -76,7 +76,7 @@
           <property name="font">
            <font>
             <family>Arial</family>
-            <pointsize>7</pointsize>
+            <pointsize>8</pointsize>
             <weight>75</weight>
             <bold>true</bold>
            </font>
@@ -582,7 +582,7 @@
           <property name="font">
            <font>
             <family>Arial</family>
-            <pointsize>7</pointsize>
+            <pointsize>8</pointsize>
             <weight>75</weight>
             <bold>true</bold>
            </font>
@@ -634,7 +634,7 @@
           <property name="font">
            <font>
             <family>Arial</family>
-            <pointsize>7</pointsize>
+            <pointsize>8</pointsize>
             <weight>75</weight>
             <bold>true</bold>
            </font>
@@ -697,7 +697,7 @@
          <widget class="QLabel" name="label">
           <property name="font">
            <font>
-            <pointsize>7</pointsize>
+            <pointsize>8</pointsize>
             <weight>75</weight>
             <bold>true</bold>
            </font>
@@ -724,7 +724,7 @@ QLabel {margin-right: 10px}</string>
          <widget class="QLabel" name="label_2">
           <property name="font">
            <font>
-            <pointsize>7</pointsize>
+            <pointsize>8</pointsize>
             <weight>75</weight>
             <bold>true</bold>
            </font>
@@ -751,7 +751,7 @@ QLabel {margin-right: 10px}</string>
          <widget class="QLabel" name="label_4">
           <property name="font">
            <font>
-            <pointsize>7</pointsize>
+            <pointsize>8</pointsize>
             <weight>75</weight>
             <bold>true</bold>
            </font>
@@ -778,7 +778,7 @@ QLabel {margin-right: 10px}</string>
          <widget class="QLabel" name="label_3">
           <property name="font">
            <font>
-            <pointsize>7</pointsize>
+            <pointsize>8</pointsize>
             <weight>75</weight>
             <bold>true</bold>
            </font>
@@ -819,7 +819,7 @@ QLabel {margin-right: 10px}</string>
           <property name="font">
            <font>
             <family>Arial</family>
-            <pointsize>7</pointsize>
+            <pointsize>8</pointsize>
             <weight>75</weight>
             <bold>true</bold>
            </font>

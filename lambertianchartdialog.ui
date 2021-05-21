@@ -13,7 +13,7 @@
   <property name="font">
    <font>
     <family>Verdana</family>
-    <pointsize>7</pointsize>
+    <pointsize>8</pointsize>
    </font>
   </property>
   <property name="windowTitle">
@@ -65,8 +65,8 @@
        <widget class="QLabel" name="label_2">
         <property name="font">
          <font>
-          <family>MS Shell Dlg 2</family>
-          <pointsize>7</pointsize>
+          <family>Verdana</family>
+          <pointsize>8</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -89,8 +89,8 @@ QLabel {margin-left: 10px}</string>
        <widget class="QLabel" name="label_36">
         <property name="font">
          <font>
-          <family>MS Shell Dlg 2</family>
-          <pointsize>7</pointsize>
+          <family>Verdana</family>
+          <pointsize>8</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -113,8 +113,8 @@ QLabel {margin-left: 10px}</string>
        <widget class="QLabel" name="label_34">
         <property name="font">
          <font>
-          <family>MS Shell Dlg 2</family>
-          <pointsize>7</pointsize>
+          <family>Verdana</family>
+          <pointsize>8</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -137,8 +137,8 @@ QLabel {margin-left: 10px}</string>
        <widget class="QLabel" name="label_40">
         <property name="font">
          <font>
-          <family>MS Shell Dlg 2</family>
-          <pointsize>7</pointsize>
+          <family>Verdana</family>
+          <pointsize>8</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -161,8 +161,8 @@ QLabel {margin-left: 10px}</string>
        <widget class="QLabel" name="label_41">
         <property name="font">
          <font>
-          <family>MS Shell Dlg 2</family>
-          <pointsize>7</pointsize>
+          <family>Verdana</family>
+          <pointsize>8</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -202,8 +202,8 @@ QLabel {margin-left: 10px}</string>
        <widget class="QLabel" name="distanceLabel">
         <property name="font">
          <font>
-          <family>MS Shell Dlg 2</family>
-          <pointsize>7</pointsize>
+          <family>Verdana</family>
+          <pointsize>8</pointsize>
          </font>
         </property>
         <property name="styleSheet">
@@ -223,8 +223,8 @@ QLabel {margin-right: 10px}</string>
        <widget class="QLabel" name="DNRO_Label">
         <property name="font">
          <font>
-          <family>MS Shell Dlg 2</family>
-          <pointsize>7</pointsize>
+          <family>Verdana</family>
+          <pointsize>8</pointsize>
          </font>
         </property>
         <property name="styleSheet">
@@ -244,8 +244,8 @@ QLabel {margin-right: 10px}</string>
        <widget class="QLabel" name="alphaLabel">
         <property name="font">
          <font>
-          <family>MS Shell Dlg 2</family>
-          <pointsize>7</pointsize>
+          <family>Verdana</family>
+          <pointsize>8</pointsize>
          </font>
         </property>
         <property name="styleSheet">
@@ -265,8 +265,8 @@ QLabel {margin-right: 10px}</string>
        <widget class="QLabel" name="surfaceLabel">
         <property name="font">
          <font>
-          <family>MS Shell Dlg 2</family>
-          <pointsize>7</pointsize>
+          <family>Verdana</family>
+          <pointsize>8</pointsize>
          </font>
         </property>
         <property name="styleSheet">
@@ -286,8 +286,8 @@ QLabel {margin-right: 10px}</string>
        <widget class="QLabel" name="CE_Label">
         <property name="font">
          <font>
-          <family>MS Shell Dlg 2</family>
-          <pointsize>7</pointsize>
+          <family>Verdana</family>
+          <pointsize>8</pointsize>
          </font>
         </property>
         <property name="styleSheet">
@@ -336,8 +336,8 @@ QLabel {margin-right: 10px}</string>
         </property>
         <property name="font">
          <font>
-          <family>MS Shell Dlg 2</family>
-          <pointsize>7</pointsize>
+          <family>Verdana</family>
+          <pointsize>8</pointsize>
           <weight>50</weight>
           <bold>false</bold>
          </font>
@@ -362,8 +362,8 @@ QLabel {margin-right: 10px}</string>
        <widget class="QLabel" name="spotDiameterLabel">
         <property name="font">
          <font>
-          <family>MS Shell Dlg 2</family>
-          <pointsize>7</pointsize>
+          <family>Verdana</family>
+          <pointsize>8</pointsize>
          </font>
         </property>
         <property name="styleSheet">
@@ -383,8 +383,8 @@ QLabel {margin-right: 10px}</string>
        <widget class="QLabel" name="constPosLabel">
         <property name="font">
          <font>
-          <family>MS Shell Dlg 2</family>
-          <pointsize>7</pointsize>
+          <family>Verdana</family>
+          <pointsize>8</pointsize>
          </font>
         </property>
         <property name="styleSheet">
@@ -404,8 +404,8 @@ QLabel {margin-right: 10px}</string>
        <widget class="QLabel" name="newRapLabel">
         <property name="font">
          <font>
-          <family>MS Shell Dlg 2</family>
-          <pointsize>7</pointsize>
+          <family>Verdana</family>
+          <pointsize>8</pointsize>
          </font>
         </property>
         <property name="styleSheet">
@@ -425,8 +425,8 @@ QLabel {margin-right: 10px}</string>
        <widget class="QLabel" name="indicatorLabel">
         <property name="font">
          <font>
-          <family>MS Shell Dlg 2</family>
-          <pointsize>7</pointsize>
+          <family>Verdana</family>
+          <pointsize>8</pointsize>
          </font>
         </property>
         <property name="styleSheet">
@@ -463,8 +463,8 @@ QLabel {margin-right: 10px}</string>
        <widget class="QLabel" name="label_35">
         <property name="font">
          <font>
-          <family>MS Shell Dlg 2</family>
-          <pointsize>7</pointsize>
+          <family>Verdana</family>
+          <pointsize>8</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -487,8 +487,8 @@ QLabel {margin-left: 10px}</string>
        <widget class="QLabel" name="label">
         <property name="font">
          <font>
-          <family>MS Shell Dlg 2</family>
-          <pointsize>7</pointsize>
+          <family>Verdana</family>
+          <pointsize>8</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -511,8 +511,8 @@ QLabel {margin-left: 10px}</string>
        <widget class="QLabel" name="label_37">
         <property name="font">
          <font>
-          <family>MS Shell Dlg 2</family>
-          <pointsize>7</pointsize>
+          <family>Verdana</family>
+          <pointsize>8</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -535,8 +535,8 @@ QLabel {margin-left: 10px}</string>
        <widget class="QLabel" name="label_39">
         <property name="font">
          <font>
-          <family>MS Shell Dlg 2</family>
-          <pointsize>7</pointsize>
+          <family>Verdana</family>
+          <pointsize>8</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -559,8 +559,8 @@ QLabel {margin-left: 10px}</string>
        <widget class="QLabel" name="label_38">
         <property name="font">
          <font>
-          <family>MS Shell Dlg 2</family>
-          <pointsize>7</pointsize>
+          <family>Verdana</family>
+          <pointsize>8</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>

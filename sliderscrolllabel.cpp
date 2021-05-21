@@ -33,7 +33,7 @@ SliderScrollLabel::SliderScrollLabel(QWidget *parent) :
                                  "QLabel {color: #fafafa}"
                                  "QLabel {border-radius: 8px}"
                                  "QLabel {border: 0px}"
-                                 "QLabel {padding: 5px}"
+                                 "QLabel {padding: 3px}"
                                  "QLabel {margin-left: 70px}"
                                  "QLabel {margin-right: 70px}"));
 

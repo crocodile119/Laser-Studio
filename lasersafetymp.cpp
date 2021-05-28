@@ -521,16 +521,26 @@ void LaserSafetyMP::computePulseTrainLambertianMax()
 {
     if((wavelength>=400)&&(wavelength<=1.0e+06))
     {
-   /*--------------------------------------------------------------------------------------------------------
-    |Calcolo dell'NOHD che deriverebbe dal solo dell'impulso singolo considerando gli effetti termici       |
-   ----------------------------------------------------------------------------------------------------------*/
-    double ForLambertianMax;
-    formulaSort=getFormulaSort();
+        double ForLambertianMax;
+        double pulseWidthMultiOperation;
+        string formulaSort;
+
+        if(PRF<=(1/Tmin))
+        {
+            formulaSort=myLaser.getFormulaSort();
+            pulseWidthMultiOperation=pulseWidth;
+        }
+        else
+        {
+            formulaSort=myTmin_Laser.getFormulaSort();
+            pulseWidthMultiOperation=Tmin;
+        }
 
     if(formulaSort=="E")
-         ForLambertianMax=powerErg/pulseWidth;// se l'EMP è espresso in irradianza si considera la potenza (PowerErg è l'energia dell'impulso).
+        ForLambertianMax=powerErg/pulseWidthMultiOperation;// se l'EMP è espresso in irradianza si considera la potenza (PowerErg è l'energia dell'impulso).
     else
-         ForLambertianMax=powerErg;// altrimenti si considera l'energia dell'impulso
+        ForLambertianMax=powerErg;// altrimenti si considera l'energia dell'impulso
+
 
     double underroot;
     //si applica la formula pe il calcolo della NOHD
@@ -540,6 +550,7 @@ void LaserSafetyMP::computePulseTrainLambertianMax()
     else
         pulseTrainLambertianMax=0;
 }
+
 
 void LaserSafetyMP::computeLambertianMax()
 {

@@ -85,7 +85,7 @@ public:
     LaserGoggle::material getGoggleMaterial()const;
     void updateAllCompositeControlsFunctions();
 
-    void setUVA();
+    void setUV();
     void setVIS();
     void setIRA_NIR();
     void setIRB_SWIR();

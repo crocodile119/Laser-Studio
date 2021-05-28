@@ -2047,13 +2047,6 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     if(n_laser==operation::CONTINUOS_WAVE)
     {
 		
-	/***********************************************************************************
-	* Range di variazione della potenza nella modalità di funzionamento CONTINUOS WAVE *
-	************************************************************************************/
-
-    ui->powerErgControl->setMinimumExponent(-1);
-    ui->powerErgControl->setMaximumExponent(6);
-		
    /*****************************************
     * Imposto il valore negli oggetti Laser *
     *****************************************/
@@ -2074,8 +2067,15 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     //Non è possibile impostare il valore della prf essendo non definita per l'oggetto MyLaserCW_Pr
     myLaserGoggle->setFrequency(LaserGoggle::CONTINUOS_OPERATION);
 
-    powerErg=LaserSafetyCW::POWER;//potenza
+    powerErg=LaserSafetyCW::POWER;
+    /***********************************************************************************
+    * Range di variazione della potenza nella modalità di funzionamento CONTINUOS WAVE *
+    ************************************************************************************/
+
     ui->powerErgControl->setValue(powerErg);
+    ui->powerErgControl->setMinimumExponent(-1);
+    ui->powerErgControl->setMaximumExponent(6);
+
     on_powerErgControl_valueChanged();
 
     T_Skin=LaserSkinSafety::EXPOSURE_TIME;
@@ -2138,14 +2138,6 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     * IMPULSATO *
     * ***********/
 	
-   /****************************************************************
-	* Range di variazione dell'energia dell'impulso nella modalità *
-	* di funzionamento IMPULSATO                                   *
-	****************************************************************/
-
-    ui->powerErgControl->setMinimumExponent(-12);
-    ui->powerErgControl->setMaximumExponent(1);
-	
    /*****************************************
     * Imposto il valore negli oggetti Laser *
     *****************************************/
@@ -2175,7 +2167,15 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     ui->pulseControl->setEnabled(true);
 
     powerErg=1.0e-03;
+
+    /****************************************************************
+     * Range di variazione dell'energia dell'impulso nella modalità *
+     * di funzionamento IMPULSATO                                   *
+     ****************************************************************/
     ui->powerErgControl->setValue(powerErg);
+    ui->powerErgControl->setMinimumExponent(-12);
+    ui->powerErgControl->setMaximumExponent(1);
+
     on_powerErgControl_valueChanged();
     ui->powerErgControl->setEnabled(true);
 
@@ -2205,14 +2205,6 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     * ******************/	
     if (n_laser==operation::MULTI_PULSE)
     {
-		
-   /****************************************************************
-	* Range di variazione dell'energia dell'impulso nella modalità *
-    * di funzionamento IMPULSI MULTIPLI.                            *
-	****************************************************************/
-
-    ui->powerErgControl->setMinimumExponent(-12);
-    ui->powerErgControl->setMaximumExponent(1);
 
    /*****************************************
     * Imposto il valore negli oggetti Laser *
@@ -2235,7 +2227,15 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     * il tempo di esposizione della cute a 10. 				 *
     ******************************************************************/
     powerErg=1.0e-03;
+
+    /****************************************************************
+     * Range di variazione dell'energia dell'impulso nella modalità *
+     * di funzionamento IMPULSI MULTIPLI.                            *
+     ****************************************************************/
     ui->powerErgControl->setValue(powerErg);
+    ui->powerErgControl->setMinimumExponent(-12);
+    ui->powerErgControl->setMaximumExponent(1);
+
     on_powerErgControl_valueChanged();
 
     //ogni volta cha passo al funzionamento ad impulsi multipli imposto la durata degli impulsi a 1.0e-06 s
@@ -2665,7 +2665,7 @@ void DockControls::setDialControls()
     ui->internalWaist_checkBox->setChecked(false);
 }
 
-void DockControls::setUVA()
+void DockControls::setUV()
 {
     ui->wavelengthScrollBar->setMinimum(181);
     ui->wavelengthScrollBar->setMaximum(399);
@@ -3930,7 +3930,7 @@ DockControls::~DockControls()
 void DockControls::on_comboBoxBands_currentIndexChanged(int index)
 {
     if(index==0)
-        setUVA();
+        setUV();
     else
     if(index==1)
         setVIS();

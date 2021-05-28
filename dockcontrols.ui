@@ -800,11 +800,11 @@ QLabel {border-radius: 8px}</string>
             <string notr="true"/>
            </property>
            <property name="currentText">
-            <string>UVA</string>
+            <string>UV</string>
            </property>
            <item>
             <property name="text">
-             <string>UVA</string>
+             <string>UV</string>
             </property>
            </item>
            <item>

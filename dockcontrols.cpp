@@ -1982,7 +1982,7 @@ void DockControls::setWidgets()
         dockSkin->ui->tMeanIrradianceSkinLabel->setText("E<sub>m</sub> [W/m<sup>2</sup>]");
         dockSkin->ui->MeanIrradianceSkinLabel->setText(QString::number(MyLaserSkinMP_Pr->getMeanIrradiance(),'e', 2));
 
-        dockSkin->ui->tPulseNumberSkinLabel->setText("Numero impulsi");
+        dockSkin->ui->tPulseNumberSkinLabel->setText("N<sub>cute</sub>");
         dockSkin->ui->PulseNumberSkinLabel->setText(QString::number(MyLaserSkinMP_Pr->getPulseNumber(),'e', 2));
 
         dockSkin->ui->tminEMP_SkinLabel->setText(minEMPSkin);

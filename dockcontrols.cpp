@@ -492,9 +492,9 @@ void DockControls::on_powerErgControl_valueChanged()
         * Imposto il valore negli oggetti Laser *
         *****************************************/
 
-        MyLaserCW_Pr->setPowerErg(powerErg*beamCorrection);
+        MyLaserCW_Pr->setPowerErg(beamCorrection*powerErg);
         MyLaserSkinSP_Pr->setPowerErg(powerErg);
-        MyLaserClassCW_Pr->setPowerErg(powerErg);
+        MyLaserClassCW_Pr->setPowerErg(beamCorrection*powerErg);
 
         modeLockedPeak();
     }
@@ -508,10 +508,10 @@ void DockControls::on_powerErgControl_valueChanged()
        /*****************************************
         * Imposto il valore negli oggetti Laser *
         *****************************************/
-        MyLaserSP_Pr->setPowerErg(powerErg*beamCorrection);
+        MyLaserSP_Pr->setPowerErg(beamCorrection*powerErg);
         MyLaserSkinSP_Pr->setPowerErg(powerErg);
 
-        MyLaserClassSP_Pr->setPowerErg(powerErg);
+        MyLaserClassSP_Pr->setPowerErg(beamCorrection*powerErg);
 
         modeLockedPeak();
     }
@@ -528,7 +528,7 @@ void DockControls::on_powerErgControl_valueChanged()
 
         MyLaserMP_Pr->setPowerErg(beamCorrection*powerErg);
         MyLaserSkinMP_Pr->setPowerErg(powerErg);
-        MyLaserClassMP_Pr->setPowerErg(powerErg);
+        MyLaserClassMP_Pr->setPowerErg(beamCorrection*powerErg);
 
         modeLockedPeak();
 

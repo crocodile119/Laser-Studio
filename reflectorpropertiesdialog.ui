@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>517</width>
-    <height>405</height>
+    <width>526</width>
+    <height>418</height>
    </rect>
   </property>
   <property name="font">
@@ -78,7 +78,7 @@ QLabel {padding: 3px}
 QLabel {margin-right: 10px}</string>
         </property>
         <property name="text">
-         <string>&amp;psi; &lt;sub&gt;r&lt;/sub&gt; [gradi]</string>
+         <string>&amp;psi;&lt;sub&gt;R&lt;/sub&gt; [gradi]</string>
         </property>
        </widget>
       </item>

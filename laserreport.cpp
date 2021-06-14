@@ -538,11 +538,11 @@ void LaserReport::firstPageReport()
     switch(installation)
     {
         case (0):
-        installationStr+="Installazione stable";
+        installationStr+="Installazione stabile";
         break;
 
         case (1):
-        installationStr+="Installazione poco stable";
+        installationStr+="Installazione poco stabile";
         break;
 
         case (2):

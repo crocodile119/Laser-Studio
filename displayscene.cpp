@@ -40,13 +40,15 @@ void DisplayScene::resizeEvent(QResizeEvent *event)
 bool DisplayScene::eventFilter(QObject *watched, QEvent *event)
 {
     if(watched==scene){
-        if (event->type() == QEvent::GraphicsSceneMouseMove) {
-        QGraphicsSceneMouseEvent *mouseSceneEvent;
-        mouseSceneEvent = static_cast<QGraphicsSceneMouseEvent *>(event);
-        setMousePosition(mouseSceneEvent->scenePos());
+        if (event->type() == QEvent::GraphicsSceneMouseMove)
+        {
+            QGraphicsSceneMouseEvent *mouseSceneEvent;
+            mouseSceneEvent = static_cast<QGraphicsSceneMouseEvent *>(event);
+            setMousePosition(mouseSceneEvent->scenePos());
         }
     }
-return QGraphicsView::eventFilter(watched, event);
+
+    return QGraphicsView::eventFilter(watched, event);
 }
 
 void DisplayScene::setMousePosition(QPointF _position)
@@ -65,17 +67,11 @@ DisplayScene::~DisplayScene()
 
 void DisplayScene::setNewScene()
 {
-    QGraphicsScene *sceneToDelete;
-    sceneToDelete=new QGraphicsScene();
-    /*Così sono certo che la vecchia scena graphica venga distrutta
-     anche se è probabile che lo facia da sè*/
-    sceneToDelete=scene;
+    deleteScene();
     scene= new GraphicsScene();
     scene->installEventFilter(this);
 
     setScene(scene);
-
-    delete sceneToDelete;
 }
 
 void DisplayScene::deleteScene()
@@ -85,18 +81,19 @@ void DisplayScene::deleteScene()
 
 void DisplayScene::mousePressEvent(QMouseEvent *event)
 {
-    if (event->button() == Qt::LeftButton) {
+    if (event->button() == Qt::LeftButton)
+    {
         pressPosition = event->pos();
         seqNumberList.clear();
         qDebug() << "pos in press: " << pressPosition;
     }
-          QGraphicsView::mousePressEvent(event);
+    QGraphicsView::mousePressEvent(event);
 }
 
 void DisplayScene::mouseMoveEvent(QMouseEvent *event)
 {
-    if (event->button() == Qt::LeftButton) {
-
+    if (event->button() == Qt::LeftButton)
+    {
         QRect rect(pressPosition, event->pos());
     }
     QGraphicsView::mouseMoveEvent(event);
@@ -104,21 +101,16 @@ void DisplayScene::mouseMoveEvent(QMouseEvent *event)
 
 void DisplayScene::mouseReleaseEvent(QMouseEvent *event)
 {
-    if (event->button() == Qt::LeftButton) {
+    if (event->button() == Qt::LeftButton)
+    {
         releasePosition = event->pos();
         QRect rect(pressPosition, releasePosition);
         selectionRect=rect.normalized();
         qDebug() << "QRectF in mouseReleaseEvent: " << selectionRect;
         emit mouseRelease();
     }
-        QGraphicsView::mouseReleaseEvent(event);
+    QGraphicsView::mouseReleaseEvent(event);
 }
-/*
-QGraphicsScene* DisplayScene::getScene()
-{
-    return scene;
-}
-*/
 
 QRect DisplayScene::getSelectionRect()
 {

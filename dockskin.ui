@@ -18,8 +18,8 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>346</width>
-    <height>111</height>
+    <width>366</width>
+    <height>112</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -30,7 +30,7 @@
   </property>
   <property name="font">
    <font>
-    <pointsize>7</pointsize>
+    <pointsize>8</pointsize>
    </font>
   </property>
   <property name="styleSheet">
@@ -57,7 +57,7 @@
         <widget class="QLabel" name="conditions_Label">
          <property name="font">
           <font>
-           <pointsize>7</pointsize>
+           <pointsize>8</pointsize>
            <weight>75</weight>
            <bold>true</bold>
           </font>
@@ -81,7 +81,7 @@ QLabel {margin-right: 10px}</string>
           <widget class="QLabel" name="tEMP_1st_Label">
            <property name="font">
             <font>
-             <pointsize>7</pointsize>
+             <pointsize>8</pointsize>
              <weight>75</weight>
              <bold>true</bold>
             </font>
@@ -103,7 +103,7 @@ QLabel {margin-right: 10px}</string>
           <widget class="QLabel" name="tEMP_2nd_Label">
            <property name="font">
             <font>
-             <pointsize>7</pointsize>
+             <pointsize>8</pointsize>
              <weight>75</weight>
              <bold>true</bold>
             </font>
@@ -143,7 +143,7 @@ QLabel {margin-right: 10px}</string>
            <property name="font">
             <font>
              <family>Verdana</family>
-             <pointsize>7</pointsize>
+             <pointsize>8</pointsize>
              <weight>50</weight>
              <bold>false</bold>
             </font>
@@ -169,7 +169,7 @@ QLabel {margin-right: 10px}</string>
            <property name="font">
             <font>
              <family>Verdana</family>
-             <pointsize>7</pointsize>
+             <pointsize>8</pointsize>
              <weight>50</weight>
              <bold>false</bold>
             </font>
@@ -234,8 +234,8 @@ QLabel {margin-right: 10px}</string>
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1327</width>
-         <height>92</height>
+         <width>1290</width>
+         <height>95</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout">
@@ -245,7 +245,7 @@ QLabel {margin-right: 10px}</string>
            <widget class="QLabel" name="tFormulaSkinLabel">
             <property name="font">
              <font>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -267,7 +267,7 @@ QLabel {margin-right: 10px}</string>
            <widget class="QLabel" name="tNSHDLabel">
             <property name="font">
              <font>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -289,7 +289,7 @@ QLabel {margin-right: 10px}</string>
            <widget class="QLabel" name="tminEMP_SkinLabel">
             <property name="font">
              <font>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -329,7 +329,7 @@ QLabel {margin-right: 10px}</string>
             <property name="font">
              <font>
               <family>Verdana</family>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
              </font>
             </property>
             <property name="styleSheet">
@@ -353,7 +353,7 @@ QLabel {margin-right: 10px}</string>
             <property name="font">
              <font>
               <family>Verdana</family>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
              </font>
             </property>
             <property name="styleSheet">
@@ -377,7 +377,7 @@ QLabel {margin-right: 10px}</string>
             <property name="font">
              <font>
               <family>Verdana</family>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
              </font>
             </property>
             <property name="styleSheet">
@@ -417,7 +417,7 @@ QLabel {margin-right: 10px}</string>
            <widget class="QLabel" name="tEMP_SkinLabel">
             <property name="font">
              <font>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -439,7 +439,7 @@ QLabel {margin-right: 10px}</string>
            <widget class="QLabel" name="tMeanIrradianceSkinLabel">
             <property name="font">
              <font>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -461,7 +461,7 @@ QLabel {margin-right: 10px}</string>
            <widget class="QLabel" name="tPulseNumberSkinLabel">
             <property name="font">
              <font>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -501,7 +501,7 @@ QLabel {margin-right: 10px}</string>
             <property name="font">
              <font>
               <family>Verdana</family>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
              </font>
             </property>
             <property name="styleSheet">
@@ -525,7 +525,7 @@ QLabel {margin-right: 10px}</string>
             <property name="font">
              <font>
               <family>Verdana</family>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
              </font>
             </property>
             <property name="styleSheet">
@@ -549,7 +549,7 @@ QLabel {margin-right: 10px}</string>
             <property name="font">
              <font>
               <family>Verdana</family>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
              </font>
             </property>
             <property name="styleSheet">
@@ -586,7 +586,7 @@ QLabel {margin-right: 10px}</string>
            <widget class="QLabel" name="tPowerErgSkinLabel">
             <property name="font">
              <font>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -608,7 +608,7 @@ QLabel {margin-right: 10px}</string>
            <widget class="QLabel" name="tFormulaSkinMP_Label">
             <property name="font">
              <font>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -647,7 +647,8 @@ QLabel {margin-right: 10px}</string>
            <widget class="QLabel" name="powerErgSkinLabel">
             <property name="font">
              <font>
-              <pointsize>7</pointsize>
+              <family>Verdana</family>
+              <pointsize>8</pointsize>
               <weight>50</weight>
               <bold>false</bold>
              </font>
@@ -673,7 +674,7 @@ QLabel {margin-right: 10px}</string>
             <property name="font">
              <font>
               <family>Verdana</family>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
              </font>
             </property>
             <property name="styleSheet">
@@ -713,7 +714,7 @@ QLabel {margin-right: 10px}</string>
            <widget class="QLabel" name="tMeanPowerSkinLabel">
             <property name="font">
              <font>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -735,7 +736,7 @@ QLabel {margin-right: 10px}</string>
            <widget class="QLabel" name="tEMP_MP_SkinLabel">
             <property name="font">
              <font>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -775,7 +776,7 @@ QLabel {margin-right: 10px}</string>
             <property name="font">
              <font>
               <family>Verdana</family>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
              </font>
             </property>
             <property name="styleSheet">
@@ -799,7 +800,7 @@ QLabel {margin-right: 10px}</string>
             <property name="font">
              <font>
               <family>Verdana</family>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
              </font>
             </property>
             <property name="styleSheet">

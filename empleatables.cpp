@@ -7,6 +7,11 @@
 #include <array>
 #include <algorithm>
 
+const double EmpLeaTables::HE_NE_WAVELENGTH=633;
+const double EmpLeaTables::NATURAL_AVERSION_TIME=0.25;
+const double EmpLeaTables::ALPHA_MIN=1.5;
+const double EmpLeaTables::ALPHA_MAX=100.0;
+
 EmpLeaTables::EmpLeaTables():empValues{},leaValues_1_1M{},leaValues_3R{},leaValues_3B{}
 {
     Q_INIT_RESOURCE(LaserStudio);

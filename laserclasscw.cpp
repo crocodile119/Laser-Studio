@@ -2,7 +2,12 @@
 #include <string>
 #include "laserclasscw.h"
 
-const double LaserClassCW::PI = 3.141592653589793;
+const double LaserClassCW::PI{3.141592653589793};
+const double LaserClassCW::PUPIL_DIAMETER{7.0};
+const double LaserClassCW::POWER{1.0};
+const double LaserClassCW::DIVERGENCE {1.5};
+const double LaserClassCW::TIME_BASE{0.25};
+const double LaserClassCW::ALPHA{1.5};
 
 LaserClassCW::LaserClassCW(double _beamDiameter, double _powerErg,  double _divergence, double _wavelength,
                            double _pulseWidth, double _alpha):myLaserClass( _wavelength,_pulseWidth, _alpha)
@@ -13,11 +18,6 @@ LaserClassCW::LaserClassCW(double _beamDiameter, double _powerErg,  double _dive
     setWavelength(_wavelength);
 
     setTimeBase();
-
-    powerErgEq=new double[n_lea];
-    powerErg_Cond_1=new double[n_lea];
-    powerErg_Cond_3=new double[n_lea];
-    classValutation=new bool[n_class];
 
     internalWaist=false;
     updateAll();
@@ -134,12 +134,13 @@ double LaserClassCW::getBeamArea() const
     return beamArea;
 }
 
-double* LaserClassCW::leaPowerErgUnit(laserOperation myOperation, int* _LEA_formulaSort, const double &_powerErg, const double &time)
+array<double, ComputeLEA::N_LEA> LaserClassCW::leaPowerErgUnit(laserOperation myOperation, array<int, ComputeLEA::N_LEA>
+                                                               _LEA_formulaSort, const double &_powerErg, const double &time)
 {
-    double* myPowerErgEq=new double[n_lea];
-    if(myOperation==CW)
+    array<double, ComputeLEA::N_LEA>myPowerErgEq;
+    if(myOperation==laserOperation::CW)
     {
-        for(int i=0; i<n_lea; i++)
+        for(size_t i=0; i<ComputeLEA::N_LEA; i++)
         {
         if(_LEA_formulaSort[i]==1)
             myPowerErgEq[i]=_powerErg/beamArea;
@@ -153,7 +154,7 @@ double* LaserClassCW::leaPowerErgUnit(laserOperation myOperation, int* _LEA_form
     }
     else
     {
-        for(int i=0; i<n_lea; i++)
+        for(size_t i=0; i<ComputeLEA::N_LEA; i++)
         {
         if(_LEA_formulaSort[i]==1)
             myPowerErgEq[i]=_powerErg/(time*beamArea);
@@ -168,15 +169,15 @@ double* LaserClassCW::leaPowerErgUnit(laserOperation myOperation, int* _LEA_form
     return myPowerErgEq;
 }
 
-double LaserClassCW::valuateBeamDiameterAtStop(double &condDistance,
-                                             double &divergence)
+double LaserClassCW::valuateBeamDiameterAtStop(const double &condDistance,
+                                             const double &divergence)
 {
     double diameterAtStop=beamDiameter+condDistance*divergence*1.0e-003;
     return diameterAtStop;
 }
 
-double LaserClassCW::valuateCouplingFactor(double &apertureDiameter,
-                                         double &beamDiameterAtStop)
+double LaserClassCW::valuateCouplingFactor(const double &apertureDiameter,
+                                         const double &beamDiameterAtStop)
 {
     double couplingFactor;
     double diametersPower;
@@ -192,18 +193,18 @@ double LaserClassCW::valuateCouplingFactor(double &apertureDiameter,
     return couplingFactor;
 }
 
-bool* LaserClassCW::valuateLEA_forClass(double* _powerErg_Cond_1, double* _powerErg_Cond_3,
-                                   double* _LEA_Value)
+array<bool, LaserClassCW::N_CLASS> LaserClassCW::valuateLEA_forClass(array<double, ComputeLEA::N_LEA> _powerErg_Cond_1, array<double, ComputeLEA::N_LEA> _powerErg_Cond_3,
+                                   array<double, ComputeLEA::N_LEA> _LEA_Value)
 {
-    double* myPowerErg_Cond_1=_powerErg_Cond_1;
-    double* myPowerErg_Cond_3=_powerErg_Cond_3;
-    double* myLEA_Value=_LEA_Value;
-    bool* myClassValutation=new bool[n_class];
+    array<double, ComputeLEA::N_LEA> myPowerErg_Cond_1=_powerErg_Cond_1;
+    array<double, ComputeLEA::N_LEA> myPowerErg_Cond_3=_powerErg_Cond_3;
+    array<double, ComputeLEA::N_LEA> myLEA_Value=_LEA_Value;
+    array<bool, LaserClassCW::N_CLASS> myClassValutation;
     /************
      * Classe 1 *
      ************/
 
-    for(int i=0; i<n_class; i++)
+    for(size_t i=0; i<LaserClassCW::N_CLASS; i++)
     {myClassValutation[i]=false;}
 
     if((wavelength<302.5)and(wavelength>4000))
@@ -301,33 +302,33 @@ bool* LaserClassCW::valuateLEA_forClass(double* _powerErg_Cond_1, double* _power
    return myClassValutation;
 }
 
-LaserClassCW::laserClass LaserClassCW::valuateClass(bool* myClassValuation)
+LaserClassCW::laserClass LaserClassCW::valuateClass(array<bool, LaserClassCW::N_CLASS> myClassValuation)
 {
     laserClass _laserClassAssigned;
     if(myClassValuation[0])
-        _laserClassAssigned=CLASSE_1;
+        _laserClassAssigned=laserClass::CLASSE_1;
     else if(myClassValuation[1])
-        _laserClassAssigned=CLASSE_1M;
+        _laserClassAssigned=laserClass::CLASSE_1M;
     else if(myClassValuation[2])
-        _laserClassAssigned=CLASSE_2;
+        _laserClassAssigned=laserClass::CLASSE_2;
     else if(myClassValuation[3])
-        _laserClassAssigned=CLASSE_2M;
+        _laserClassAssigned=laserClass::CLASSE_2M;
     else if(myClassValuation[4])
-        _laserClassAssigned=CLASSE_3R;
+        _laserClassAssigned=laserClass::CLASSE_3R;
     else if(myClassValuation[5])
-        _laserClassAssigned=CLASSE_3B;
+        _laserClassAssigned=laserClass::CLASSE_3B;
     else if(myClassValuation[6])
-        _laserClassAssigned=CLASSE_4;
+        _laserClassAssigned=laserClass::CLASSE_4;
     else
-        _laserClassAssigned=NON_CLASSIFICATO;
+        _laserClassAssigned=laserClass::NON_CLASSIFICATO;
 
     return _laserClassAssigned;
 }
 
-double* LaserClassCW::computePowerErgCond_1(double* _powerErgEq_1, const double &_couplingFactor_Cond_1)
+array<double, ComputeLEA::N_LEA> LaserClassCW::computePowerErgCond_1(array<double, ComputeLEA::N_LEA>_powerErgEq_1, const double &_couplingFactor_Cond_1)
 {
-    double* _myPowerErg=new double[n_lea];
-    for(int i=0; i<n_lea; i++)
+    array<double, ComputeLEA::N_LEA>_myPowerErg;
+    for(size_t i=0; i<ComputeLEA::N_LEA; i++)
     {
             if((i==1)and((wavelength<400)or(wavelength>700)))
                 _myPowerErg[i]=std::nan("N.A.");
@@ -337,10 +338,11 @@ double* LaserClassCW::computePowerErgCond_1(double* _powerErgEq_1, const double 
     return _myPowerErg;
 }
 
-double* LaserClassCW::computePowerErgCond_3(double* _powerErgEq_3, const double &_couplingFactor_Cond_3)
+array<double, ComputeLEA::N_LEA> LaserClassCW::computePowerErgCond_3(array<double, ComputeLEA::N_LEA>_powerErgEq_3,
+                                                                     const double &_couplingFactor_Cond_3)
 {
-    double* _myPowerErg=new double[n_lea];
-    for(int i=0; i<n_lea; i++)
+    array<double, ComputeLEA::N_LEA> _myPowerErg;
+    for(size_t i=0; i<ComputeLEA::N_LEA; i++)
     {
             if((i==1)and((wavelength<400)or(wavelength>700)))
                 _myPowerErg[i]=std::nan("N.A.");
@@ -428,51 +430,55 @@ void LaserClassCW::setBeamDiameter(const double& _beamDiameter)
     beamDiameter=_beamDiameter;
 }
 
-double* LaserClassCW::getLEA()const
+array<double, ComputeLEA::N_LEA> LaserClassCW::getLEA()const
 {
     return myLaserClass.getLEA();
 }
 
-string* LaserClassCW::getLEA_Formula()const
+array<string, ComputeLEA::N_LEA> LaserClassCW::getLEA_Formula()const
 {
     return myLaserClass.getLEA_Formula();
 }
 
-string* LaserClassCW::getLEA_FormulaTipo()const
+array<string, ComputeLEA::N_LEA> LaserClassCW::getLEA_FormulaTipo()const
 {
     return myLaserClass.getLEA_FormulaTipo();
 }
 
-string* LaserClassCW::getLEA_FormulaUnit()const
+array<string, ComputeLEA::N_LEA> LaserClassCW::getLEA_FormulaUnit()const
 {
     return myLaserClass.getLEA_FormulaUnit();
 }
 
-int* LaserClassCW::getLEA_FormulaSort()const
+array<int, ComputeLEA::N_LEA> LaserClassCW::getLEA_FormulaSort()const
 {
     return myLaserClass.getLEA_FormulaSort();
 }
 
-QString* LaserClassCW::getLEA_Expressions()const
+array<string, ComputeLEA::N_LEA> LaserClassCW::getLEA_Expressions()const
 {
-    QString* leaExpr=new QString[n_lea];
+    array<string, ComputeLEA::N_LEA> leaExpr;
 
-    for(int i=0; i<n_lea; i++)
+    std::string leaValue;
+
+    for(size_t i=0; i<ComputeLEA::N_LEA; i++)
     {
-        leaExpr[i]=QString::fromStdString(getLEA_FormulaTipo()[i])+" = "+
-                   QString::fromStdString(getLEA_Formula()[i]) +" = "
-        +          QString::number(getLEA()[i], 'e', 2) +" "+
-                   QString::fromStdString(getLEA_FormulaUnit()[i]);
+        leaValue=getLEA_Formula()[i].c_str();
+
+        leaExpr[i]=getLEA_FormulaTipo()[i]+" = "+
+                   getLEA_Formula()[i]+" = "+
+                   leaValue+" = "+
+                   getLEA_FormulaUnit()[i];
     }
     return leaExpr;
 }
 
-double* LaserClassCW::getPowerErg_Cond_1()const
+array<double, ComputeLEA::N_LEA> LaserClassCW::getPowerErg_Cond_1()const
 {
     return powerErg_Cond_1;
 }
 
-double* LaserClassCW::getPowerErg_Cond_3()const
+array<double, ComputeLEA::N_LEA> LaserClassCW::getPowerErg_Cond_3()const
 {
     return powerErg_Cond_3;
 }
@@ -587,5 +593,5 @@ void LaserClassCW::updateAll()
     //Calcolo i valori di LEA
     myLaserClass.calculate();
     computeBeamArea();
-    classUpdate(CW, timeBase, powerErg);
+    classUpdate(laserOperation::CW, timeBase, powerErg);
 }

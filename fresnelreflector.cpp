@@ -5,9 +5,8 @@
 
 const double FresnelReflector::radDeg = 3.1415926535897932384626433832795/180;
 
-FresnelReflector::FresnelReflector(double n_refraction)
+FresnelReflector::FresnelReflector(double n_refraction): n(n_refraction)
 {
-     n= n_refraction;
 }
 
 void FresnelReflector::computeTrigonometricReflection()
@@ -51,12 +50,11 @@ void FresnelReflector::printVector( vector< pair <double,double> > myVector)
 {
    vector< pair <double,double> >::const_iterator constIterator; // const_iterator
    // display vector elements using const_iterator
-   for ( constIterator = myVector.begin();
-        constIterator != myVector.end(); ++constIterator )
+   for ( constIterator = myVector.begin(); constIterator != myVector.end(); ++constIterator )
    {
         cout << "Angolo: " << constIterator->first << " Secondo elemento: " <<  constIterator->second << endl;
    }
-} // end function printVector
+}
 
 vector< pair <double,double> > FresnelReflector::getReflectionAngleVect()
 {
@@ -103,35 +101,37 @@ void FresnelReflector::computeZs(vector< pair <double,double> > myVector, double
     myZsVector.clear();
 
     // display vector elements using const_iterator
-    for (iterator = myVector.begin();
-         iterator != myVector.end(); ++iterator )
-      {
+    for (iterator = myVector.begin(); iterator != myVector.end(); ++iterator )
+    {
         myRho_s=iterator->second;
         myRho_s *=materialCoeff;
-                sqrt_myRho_s=pow(myRho_s, 0.5);
-                        myZsVector_second=sqrt_myRho_s*_dnro-_objectDistance;
-                                 myZsAngle=i;
+        sqrt_myRho_s=pow(myRho_s, 0.5);
+        myZsVector_second=sqrt_myRho_s*_dnro-_objectDistance;
+        myZsAngle=i;
+
         if(myZsVector_second>0)
             myZsVector.push_back(make_pair(myZsAngle, myZsVector_second));
-               else
-                   myZsVector.push_back(make_pair(myZsAngle, 0));
-         i++;
+        else
+            myZsVector.push_back(make_pair(myZsAngle, 0));
+
+        i++;
       }
-    for (reverse_iterator = myVector.rbegin()+1;
-         reverse_iterator != myVector.rend(); ++reverse_iterator )
-      {
+    for (reverse_iterator = myVector.rbegin()+1; reverse_iterator != myVector.rend(); ++reverse_iterator )
+    {
         myRho_s=reverse_iterator->second;
         myRho_s*=materialCoeff;
-                sqrt_myRho_s=pow(myRho_s, 0.5);
-                        myZsVector_second=sqrt_myRho_s*_dnro-_objectDistance;
-                                 myZsAngle=i;
+        sqrt_myRho_s=pow(myRho_s, 0.5);
+        myZsVector_second=sqrt_myRho_s*_dnro-_objectDistance;
+        myZsAngle=i;
+
         if(myZsVector_second>0)
             myZsVector.push_back(make_pair(myZsAngle, myZsVector_second));
-               else
-                   myZsVector.push_back(make_pair(myZsAngle, 0));
-         i++;
+        else
+            myZsVector.push_back(make_pair(myZsAngle, 0));
+
+        i++;
       }
-     printVector(myZsVector);
+    printVector(myZsVector);
 }
 
 vector< pair <double,double> > FresnelReflector::getZsVect()

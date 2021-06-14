@@ -30,14 +30,14 @@ QVariant EnvironmentListModel::data(const QModelIndex &index, int role) const
         QString meteoVisibilityStr=QString::number(meteoVisibility);
 
         if(state)
-        laserDescriptor=labroomList.at(index.row())->getTextLabel();
+            laserDescriptor=labroomList.at(index.row())->getTextLabel();
         else
         {
-         laserDescriptor=QString("Poligono di tiro militare. \nVisibilità meteorologica: %1 km")
-            .arg(meteoVisibilityStr);
+            laserDescriptor=QString("Poligono di tiro militare. \nVisibilità meteorologica: %1 km")
+                .arg(meteoVisibilityStr);
         }
 
-        return  laserDescriptor;
+    return  laserDescriptor;
     }
 
     if (role == Qt::DecorationRole)
@@ -45,14 +45,14 @@ QVariant EnvironmentListModel::data(const QModelIndex &index, int role) const
         QIcon environmentIcon;
 
         if(state)
-        environmentIcon=QIcon(":/images/room.png");
-            else
-        environmentIcon=QIcon(":/images/polygon.png");
+            environmentIcon=QIcon(":/images/room.png");
+        else
+            environmentIcon=QIcon(":/images/polygon.png");
 
         return environmentIcon;
     }
 
-     return QVariant();
+    return QVariant();
 }
 
 QVariant EnvironmentListModel::headerData(int section, Qt::Orientation orientation,

@@ -11,7 +11,6 @@ WetReflector::WetReflector(double n_refraction):FresnelReflector(n_refraction)
 
 void WetReflector::computeTrigonometricReflection()
 {
-
     reflectionAngleVect.clear();
     rho_sVect.clear();
 
@@ -47,38 +46,40 @@ void WetReflector::computeZs(vector< pair <double,double> > myVector, double _dn
     myZsVector.clear();
 
     // display vector elements using const_iterator
-    for (iterator = myVector.begin();
-         iterator != myVector.end(); ++iterator )
-      {
+    for (iterator = myVector.begin(); iterator != myVector.end(); ++iterator )
+    {
         myRho_s=iterator->second;
         myRho_s*=reflectionCoeff;
-                sqrt_myRho_s=pow(myRho_s, 0.5);
-                    double divergenceCorrection;
-                       divergenceCorrection=_divergence/(_divergence+phi_const);
-                        myZsVector_second=(sqrt_myRho_s*_dnro*divergenceCorrection)-(_objectDistance*divergenceCorrection);
-                                 myZsAngle=i;
+        sqrt_myRho_s=pow(myRho_s, 0.5);
+        double divergenceCorrection;
+        divergenceCorrection=_divergence/(_divergence+phi_const);
+        myZsVector_second=(sqrt_myRho_s*_dnro*divergenceCorrection)-(_objectDistance*divergenceCorrection);
+        myZsAngle=i;
+
         if(myZsVector_second>0)
             myZsVector.push_back(make_pair(myZsAngle, myZsVector_second));
-               else
-                   myZsVector.push_back(make_pair(myZsAngle, 0));
-         i++;
-      }
-    for (reverse_iterator = myVector.rbegin()+1;
-         reverse_iterator != myVector.rend(); ++reverse_iterator )
-      {
+        else
+            myZsVector.push_back(make_pair(myZsAngle, 0));
+
+        i++;
+    }
+    for (reverse_iterator = myVector.rbegin()+1; reverse_iterator != myVector.rend(); ++reverse_iterator )
+    {
         myRho_s=reverse_iterator->second;
         myRho_s*=reflectionCoeff;
-                sqrt_myRho_s=pow(myRho_s, 0.5);
-                 double divergenceCorrection;
-                    divergenceCorrection=_divergence/(_divergence+phi_const);
-                        myZsVector_second=(sqrt_myRho_s*_dnro*divergenceCorrection)-(_objectDistance*divergenceCorrection);
-                                 myZsAngle=i;
+        sqrt_myRho_s=pow(myRho_s, 0.5);
+        double divergenceCorrection;
+        divergenceCorrection=_divergence/(_divergence+phi_const);
+        myZsVector_second=(sqrt_myRho_s*_dnro*divergenceCorrection)-(_objectDistance*divergenceCorrection);
+        myZsAngle=i;
+
         if(myZsVector_second>0)
             myZsVector.push_back(make_pair(myZsAngle, myZsVector_second));
-               else
-                   myZsVector.push_back(make_pair(myZsAngle, 0));
-         i++;
-      }
+        else
+            myZsVector.push_back(make_pair(myZsAngle, 0));
+
+        i++;
+    }
 }
 
 double WetReflector::getDivergence()const

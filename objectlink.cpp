@@ -5,11 +5,8 @@
 #include "footprintobject.h"
 #include <cmath>
 
-ObjectLink::ObjectLink(LaserPoint *fromLaser, FootprintObject *toObject)
+ObjectLink::ObjectLink(LaserPoint *fromLaser, FootprintObject *toObject): fromMyLaser(fromLaser), toMyObject(toObject)
 {
-    fromMyLaser = fromLaser;
-    toMyObject = toObject;
-
     fromMyLaser->addObjectLink(this);
     toMyObject->addObjectLink(this);
 
@@ -72,7 +69,7 @@ double ObjectLink::objectLinkPhase()
 
     if(lenght!=0)
         phase=asin(myLine.dy()/myLine.length());
-            else
+    else
         phase=0;
 
     return phase;

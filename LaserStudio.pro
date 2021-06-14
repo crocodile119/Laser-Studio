@@ -1,16 +1,10 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2018-03-14T18:07:25
-#
-#-------------------------------------------------
-
-QT += widgets
-QT += charts
-QT += printsupport
+QT += core gui widgets charts printsupport
+CONFIG += c++14 thread
+TEMPLATE = app
+TARGET = LaserStudio
 
 qtHaveModule(printsupport): QT += printsupport
-RC_ICONS = LaserStudioIcon.ico
-CONFIG += c++11
+RC_ICONS = LaserStudioIcon.ico 
 
 SOURCES +=\
     atmosphericeffectsdialog.cpp \
@@ -46,6 +40,7 @@ SOURCES +=\
     lambertianchartdialog.cpp \
     lambertianchartview.cpp \
     lambertianreflector.cpp \
+    laserapplication.cpp \
     laserclasscw.cpp \
     laserclassmp.cpp \
     laserclasssp.cpp \
@@ -60,8 +55,8 @@ SOURCES +=\
     laserskinsafety.cpp \
     laserskinsafetymp.cpp \
     link.cpp \
-    mainwindow.cpp \
     main.cpp \
+    mainwindow.cpp \
     mychartview.cpp \
     objectlink.cpp \
     reflector.cpp \
@@ -111,6 +106,7 @@ HEADERS  += mainwindow.h \
     lambertianchartdialog.h \
     lambertianchartview.h \
     lambertianreflector.h \
+    laserapplication.h \
     laserclasscw.h \
     laserclassmp.h \
     laserclasssp.h \
@@ -132,7 +128,6 @@ HEADERS  += mainwindow.h \
     reflectorpropertiesdialog.h \
     reflectorslistmodel.h \
     reflectorsqlist.h \
-    saveutilities.h \
     scalenumbersmodelview.h \
     scientificnotationcontrol.h \
     sliderscrolllabel.h \
@@ -164,6 +159,8 @@ FORMS    += \
     sliderscrolllabel.ui \
     wetchartdialog.ui
 
+DISTFILES += \
+    ls_model.qmodel
 
-INCLUDEPATH += $$PWD/.
-DEPENDPATH += $$PWD/.
+STATECHARTS += \
+    LS_State_Chart.scxml

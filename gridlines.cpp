@@ -37,35 +37,36 @@ void GridLines::paint (QPainter *painter, const QStyleOptionGraphicsItem *option
         painter->drawLine(-x, 0, -x, -height/2);
         painter->drawLine(-x, 0, -x, height/2);
     }
-        update(boundingRect());
 
-        QTransform transform=painter->transform();
+    update(boundingRect());
 
-        double m13=transform.m13();
-        double m23=transform.m23();
-        double m32=transform.m32();
-        double m31=transform.m31();
-        double m21=transform.m21();
-        double m12=transform.m12();
+    QTransform transform=painter->transform();
 
-        painter->save();
-        painter->resetTransform();
-        QTransform myTransform=QTransform(1.0, m12, m13, m21, 1.0, m23, m31, m32, 1.0);
-        QRectF boundingRect=labelRect();
-        painter->setTransform(myTransform);
+    double m13=transform.m13();
+    double m23=transform.m23();
+    double m32=transform.m32();
+    double m31=transform.m31();
+    double m21=transform.m21();
+    double m12=transform.m12();
 
-        QPen textPen;
-        textPen.setColor(Qt::black);
-        painter->setPen(textPen);
-        painter->drawText(boundingRect, Qt::AlignLeft, textLabel, &boundingRect);
-        painter->drawRect(boundingRect.adjusted(-10, -10, 10, 10));
-        painter->drawRect(boundingRect.adjusted(-15, -15, 15, 15));
+    painter->save();
+    painter->resetTransform();
+    QTransform myTransform=QTransform(1.0, m12, m13, m21, 1.0, m23, m31, m32, 1.0);
+    QRectF boundingRect=labelRect();
+    painter->setTransform(myTransform);
 
-        painter->resetTransform();
-        painter->restore();
-        painter->setTransform(transform);
+    QPen textPen;
+    textPen.setColor(Qt::black);
+    painter->setPen(textPen);
+    painter->drawText(boundingRect, Qt::AlignLeft, textLabel, &boundingRect);
+    painter->drawRect(boundingRect.adjusted(-10, -10, 10, 10));
+    painter->drawRect(boundingRect.adjusted(-15, -15, 15, 15));
 
-        update();
+    painter->resetTransform();
+    painter->restore();
+    painter->setTransform(transform);
+
+    update();
 }
 
 QRectF GridLines::boundingRect() const
@@ -90,14 +91,14 @@ void GridLines::setGridLines(const double& _step)
 
 QRectF GridLines::labelRect()const
 {
-        const int Padding = 1;
-        QFontMetricsF metrics =(QFontMetricsF)qApp->font();
-        QRectF myTextRect = metrics.boundingRect(textLabel);
-        myTextRect.adjust(-Padding, -Padding, +Padding, +Padding);
-        const QPointF &myPoint=zeroViewportPoint;
+    const int Padding = 1;
+    QFontMetricsF metrics =(QFontMetricsF)qApp->font();
+    QRectF myTextRect = metrics.boundingRect(textLabel);
+    myTextRect.adjust(-Padding, -Padding, +Padding, +Padding);
+    const QPointF &myPoint=zeroViewportPoint;
+    myTextRect.moveBottomRight(myPoint);
 
-        myTextRect.moveBottomRight(myPoint);
-        return myTextRect;
+    return myTextRect;
 }
 
 void GridLines::setTopLeftViewport(const QPointF& _zeroViewportPoint)

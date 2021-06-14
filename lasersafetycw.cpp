@@ -2,8 +2,9 @@
 #include <string>
 #include "lasersafetycw.h"
 
-
 using namespace std;
+
+const double LaserSafetyCW::POWER=1.0;
 
 LaserSafetyCW::LaserSafetyCW(double _beamDiameter, double _powerErg,  double _divergence, double _wavelength,
                         double _exposureTime, double _alpha):LaserSafety(_beamDiameter, _powerErg, _divergence,
@@ -47,7 +48,7 @@ double LaserSafetyCW::getPowerErgForEMP()
 
     if(formulaSort=="E")
         powerErgForEMP=powerErg;
-            else
+    else
         powerErgForEMP=powerErg*exposureTime;
 
     return powerErgForEMP;
@@ -64,7 +65,7 @@ void LaserSafetyCW::computeLambertianMax()
 
     if(formulaSort=="E")
         ForLambertianMax=powerErg;
-            else
+    else
         ForLambertianMax=powerErg*exposureTime;
 
     double underroot;
@@ -87,15 +88,15 @@ void LaserSafetyCW::setExposureTime()
     {
         if ((wavelength>=400) and (wavelength<=700))
         {
-        exposureTime=0.25;
+            exposureTime=0.25;
         }
         else if((wavelength>=180)and (wavelength<400))
         {
-        exposureTime=30000;
+            exposureTime=30000;
         }
         else
         {
-        exposureTime=10;
+            exposureTime=10;
         }
     }
 }

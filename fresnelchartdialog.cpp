@@ -28,8 +28,6 @@ FresnelChartDialog::FresnelChartDialog(Reflector *reflector, QWidget *parent)
     ui->gridLayout->addWidget(polarChartView, 1, 0, Qt::AlignCenter);
 
     polarChartView->setRenderHint(QPainter::Antialiasing);
-    //polarChartView->setDistance(distance);
-    //polarChartView->distanceDataSerie();
 
     ui->gridLayout->addWidget(polarChartView, 1, 0, Qt::AlignCenter);
 

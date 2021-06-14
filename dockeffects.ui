@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1107</width>
-    <height>100</height>
+    <height>111</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,7 +19,7 @@
   <property name="minimumSize">
    <size>
     <width>89</width>
-    <height>100</height>
+    <height>111</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -36,7 +36,7 @@
   </property>
   <property name="font">
    <font>
-    <pointsize>7</pointsize>
+    <pointsize>8</pointsize>
    </font>
   </property>
   <property name="styleSheet">
@@ -58,7 +58,7 @@
          <x>0</x>
          <y>0</y>
          <width>1070</width>
-         <height>92</height>
+         <height>95</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout">
@@ -68,7 +68,7 @@
            <widget class="QLabel" name="tCA_Label">
             <property name="font">
              <font>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -90,7 +90,7 @@ margin-right: 10px}</string>
            <widget class="QLabel" name="tT1_Label">
             <property name="font">
              <font>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -112,7 +112,7 @@ QLabel {margin-right: 10px}</string>
            <widget class="QLabel" name="tRadiationLabel">
             <property name="font">
              <font>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -152,7 +152,7 @@ QLabel {margin-right: 10px}</string>
             <property name="font">
              <font>
               <family>Verdana</family>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
              </font>
             </property>
             <property name="styleSheet">
@@ -173,7 +173,7 @@ QLabel {margin-right: 10px}</string>
             <property name="font">
              <font>
               <family>Verdana</family>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
              </font>
             </property>
             <property name="styleSheet">
@@ -194,7 +194,7 @@ QLabel {margin-right: 10px}</string>
             <property name="font">
              <font>
               <family>Verdana</family>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
              </font>
             </property>
             <property name="styleSheet">
@@ -231,7 +231,7 @@ QLabel {margin-right: 10px}</string>
            <widget class="QLabel" name="tCB_Label">
             <property name="font">
              <font>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -253,7 +253,7 @@ QLabel {margin-right: 10px}</string>
            <widget class="QLabel" name="tT2_Label">
             <property name="font">
              <font>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -275,7 +275,7 @@ QLabel {margin-right: 10px}</string>
            <widget class="QLabel" name="tEyeDamageLabel">
             <property name="font">
              <font>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -315,7 +315,7 @@ QLabel {margin-right: 10px}</string>
             <property name="font">
              <font>
               <family>Verdana</family>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
              </font>
             </property>
             <property name="styleSheet">
@@ -336,7 +336,7 @@ QLabel {margin-right: 10px}</string>
             <property name="font">
              <font>
               <family>Verdana</family>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
              </font>
             </property>
             <property name="styleSheet">
@@ -357,7 +357,7 @@ QLabel {margin-right: 10px}</string>
             <property name="font">
              <font>
               <family>Verdana</family>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
              </font>
             </property>
             <property name="styleSheet">
@@ -394,7 +394,7 @@ QLabel {margin-right: 10px}</string>
            <widget class="QLabel" name="tCC_Label">
             <property name="font">
              <font>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -416,7 +416,7 @@ QLabel {margin-right: 10px}</string>
            <widget class="QLabel" name="tGammaLabel">
             <property name="font">
              <font>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -438,7 +438,7 @@ QLabel {margin-right: 10px}</string>
            <widget class="QLabel" name="tSkinDamageLabel">
             <property name="font">
              <font>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -478,7 +478,7 @@ QLabel {margin-right: 10px}</string>
             <property name="font">
              <font>
               <family>Verdana</family>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
              </font>
             </property>
             <property name="styleSheet">
@@ -499,7 +499,7 @@ QLabel {margin-right: 10px}</string>
             <property name="font">
              <font>
               <family>Verdana</family>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
              </font>
             </property>
             <property name="styleSheet">
@@ -520,7 +520,7 @@ QLabel {margin-right: 10px}</string>
             <property name="font">
              <font>
               <family>Verdana</family>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
              </font>
             </property>
             <property name="styleSheet">
@@ -557,7 +557,7 @@ QLabel {margin-right: 10px}</string>
            <widget class="QLabel" name="tCE_Label">
             <property name="font">
              <font>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -579,7 +579,7 @@ QLabel {margin-right: 10px}</string>
            <widget class="QLabel" name="tNoteLabel">
             <property name="font">
              <font>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -601,7 +601,7 @@ QLabel {margin-right: 10px}</string>
            <widget class="QLabel" name="tTminLabel">
             <property name="font">
              <font>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -641,7 +641,7 @@ QLabel {margin-right: 10px}</string>
             <property name="font">
              <font>
               <family>Verdana</family>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
              </font>
             </property>
             <property name="styleSheet">
@@ -662,7 +662,7 @@ QLabel {margin-right: 10px}</string>
             <property name="font">
              <font>
               <family>Verdana</family>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
              </font>
             </property>
             <property name="styleSheet">
@@ -683,7 +683,7 @@ QLabel {margin-right: 10px}</string>
             <property name="font">
              <font>
               <family>Verdana</family>
-              <pointsize>7</pointsize>
+              <pointsize>8</pointsize>
              </font>
             </property>
             <property name="styleSheet">

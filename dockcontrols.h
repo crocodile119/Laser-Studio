@@ -44,8 +44,8 @@ class DockControls : public QDockWidget
 
 
 public:
-    enum operation{CONTINUOS_WAVE, PULSE, MULTI_PULSE, NOT_WORKING};
-    explicit DockControls(QWidget *parent, DockResults *dockResults, DockEffects *dockEffects,
+    enum class operation{CONTINUOS_WAVE, PULSE, MULTI_PULSE, NOT_WORKING};
+    DockControls(QWidget *parent, DockResults *dockResults, DockEffects *dockEffects,
                           DockSkin *dockSkin, DockGoggle *dockGoggle, DockLea *dockLea);
     ~DockControls();
     Ui::DockControls *ui;
@@ -54,10 +54,13 @@ public:
     static const int DOCKGOGGLEMAXIMUN;
     static const double MODELOCKED_LIMIT;
 
+    void setUpGoggle();
     void fetchDataVector();
     void fetchDDataVector();
     void fetchLaserOutput();
     void fetchDLaserOutput();
+
+    void setLaserGoggleWidgets();
     void displayScaleNumber();
     void displayDScaleNumber();
     void displayLaserOutput();
@@ -80,12 +83,15 @@ public:
     void updateGoggle();
     void setGoggleMaterial(LaserGoggle::material);
     LaserGoggle::material getGoggleMaterial()const;
+    void updateAllCompositeControlsFunctions();
 
-    void setUVA();
+    void setUV();
     void setVIS();
-    void setIRA();
-    void setIRB();
-    void setIRC();
+    void setIRA_NIR();
+    void setIRB_SWIR();
+    void setIRC_MWIR();
+    void setIRC_LWIR();
+    void setIRC_FIR();
 
     double getEMP()const;
     double getBeamDiameter()const;
@@ -110,7 +116,7 @@ public:
     void dComputeOpticalDensity();
     double getOpticalDensity();
     double getDOpticalDensity();
-    int get_n_laser()const;
+    operation get_n_laser()const;
     bool isModeLocked();
     void modeLockedPeak();
     operation laserOperation()const;
@@ -136,12 +142,12 @@ public:
     void leaExpressions_MP();
     void leaExpressions_CW();
 
-    QString *getLeaExpressions_CW()const;
-    QString *getLeaExpressions_SP()const;
+    array<string, 4> getLeaExpressions_CW()const;
+    array<string, 4>getLeaExpressions_SP()const;
 
-    QString *getLeaExpressions_SP_MultiPulse()const;
-    QString *getLeaExpressions_Mean()const;
-    QString *getLeaExpressions_Thermal()const;
+    array<string, 4>getLeaExpressions_SP_MultiPulse()const;
+    array<string, 4>getLeaExpressions_Mean()const;
+    array<string, 4>getLeaExpressions_Thermal()const;
 
     bool isHF_LaserCLass();
     bool isThermal_LaserCLass();
@@ -157,14 +163,13 @@ private slots:
     void on_T_SkinControl_valueChanged();
     void on_teControl_valueChanged();
     void on_wavelengthScrollBar_valueChanged(int value);
-    void setBeamDiameter();
     void setEMP();
     void setPowerErgForEMP();
-    void on_comboBox_currentIndexChanged(const QString &arg1);
     void on_enableTeCheckBox_toggled(bool checked);   
-    void on_pushButton_toggled(bool checked);
+    void showGoggleCharts(bool checked);
     void on_checkGaussianBeam_clicked(bool checked);
     void on_internalWaist_checkBox_toggled(bool checked);
+    void on_comboBoxBands_currentIndexChanged(int index);
 
 signals:
     void modified();
@@ -183,23 +188,22 @@ signals:
 private:
     //Variabili membro riguardanti i controlli
     int operationCombo;
-    double powerErg;
     bool gaussianBeam;
     bool internalWaist;
     double beamCorrection;
-    double alpha;
+
+    double powerErg;
+    double wavelength;
     double pulseWidth;
+    double alpha;
     double divergence;
     double beamDiameter;
     double prf;
     double T_Skin;
-    double wavelength;
-    double powerErgPeak;
 
     double effectivePowerErg;
     double myEMP;
     double powerErgForEMP;
-    double myTimeBase;
     double NOHD;
     double NSHD;
     double lambertianMax;
@@ -215,9 +219,8 @@ private:
     DockLea *dockLea;
     ReflectorsQList *dockReflectorsList;
 
-    int n_laser;
+    operation n_laser;
     MyPolarChartView *polarChartView;
-    enum {MagicNumber = 0x7E51D683, RowCount = 10, RowCountMPE=11, ColumnCountMPE=6, RowCountData=17, ColumnCountData=1};
     ScaleNumbersModelView *myModel;
     ScaleNumbersModelView *myDModel;
     LaserGoggle *myLaserGoggle;
@@ -247,12 +250,12 @@ private:
 
     LaserGoggle::material goggleMaterial;
 
-    QString* LEA_CW;
-    QString* LEA_SP;
-    QString* LEA_SP_MultiPulse;
-    QString* LEA_Mean;
-    QString* LEA_Thermal;
-    QString* LEA_Ti;
+    array<string, 4> LEA_CW;
+    array<string, 4> LEA_SP;
+    array<string, 4> LEA_SP_MultiPulse;
+    array<string, 4> LEA_Mean;
+    array<string, 4> LEA_Thermal;
+    array<string, 4> LEA_Ti;
 };
 
 #endif // DOCKCONTROLS_H

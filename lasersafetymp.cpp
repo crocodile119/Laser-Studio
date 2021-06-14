@@ -3,6 +3,8 @@
 
 using namespace std;
 
+const double LaserSafetyMP::PULSE_REPETITION_FREQUENCY=10.0;
+
 LaserSafetyMP::LaserSafetyMP(double _PRF, double _beamDiameter, double _powerErg,  double _divergence, double _wavelength,
                         double _pulseWidth, double _alpha):LaserSafetyCW(_beamDiameter, _powerErg, _divergence, _wavelength,
                         _pulseWidth, _alpha)
@@ -91,33 +93,29 @@ void LaserSafetyMP::setPulseWidth(const double& _pulseWidth)
     powerFormulaSort=myMeanPower_Laser.getFormulaSort();
     powerEMP=myMeanPower_Laser.getEMP();
 
-        if(PRF!=0)
-        {
-            if(powerFormulaSort=="H")
-                meanPow_EMP_Result=powerEMP/ceil(exposureTime*PRF);// calcola l'H medio come il rapporo dell'H in Te con N.
-            else if(powerFormulaSort=="E")
-                meanPow_EMP_Result=powerEMP/(PRF*pulseWidth);//calcola l'E medio come il rapporo dell'H medio con t.
-        }
-        else
-        {
+    if(PRF!=0)
+    {
+        if(powerFormulaSort=="H")
+            meanPow_EMP_Result=powerEMP/ceil(exposureTime*PRF);// calcola l'H medio come il rapporo dell'H in Te con N.
+        else if(powerFormulaSort=="E")
+            meanPow_EMP_Result=powerEMP;//Nel caso in cui si considera l'irradianza l'irradianza media è proprio pari all'irradianza relativa la tempo di esposizione.
+    }
+    else
         meanPow_EMP_Result=powerEMP;//utile per evitare divisione per 0 quando la PRF si riduce a 0.
-        }
- }
+}
 
 void LaserSafetyMP::computePulseNumber()
 {	
 	/*La funzione calcola il numero degli impulsi del treno come prodotto del Pulse Repetition Frequency e del tempo di esposizione.*/
     if((wavelength>=400)and(wavelength<=1.0e+06))
-        {
+    {
         if(PRF> (1/Tmin))
-            pulseNumber=ceil((int)(0.5+(1/Tmin)*Te));//se il conteggio non è regolare il numero di impulsi è pari al rapporto del tempo di esposizione minimo tra T2 exposureTime con Tmin
-            else
+            pulseNumber=ceil(static_cast<int>(0.5+(1/Tmin)*Te));//se il conteggio non è regolare il numero di impulsi è pari al rapporto del tempo di esposizione minimo tra T2 exposureTime con Tmin
+        else
             pulseNumber=ceil(PRF*Te);//altrimenti è pari al prodotto della PRF con exposureTime.
-         }
+    }
     else
-        {
-         pulseNumber=ceil(PRF*exposureTime);
-        }
+        pulseNumber=ceil(PRF*exposureTime);
     /****************************************************************************************************
      *                                              ATTENZIONE                                          *
      * PulseNumber è un intero quindi risulta nullo se il prodotto di PRF*ExposureTime è minore di 1    *
@@ -130,23 +128,21 @@ void LaserSafetyMP::computeCP()
     *La funzione calcola il coefficiente CP secondo la nota formula Cp=N^(-0-25)                                           *
     ************************************************************************************************************************/
     if((wavelength>=400)and(wavelength<=1.0e+06))
-        {
+    {
         if(pulseNumber!=0)
             CP=pow(pulseNumber, (-0.25));
-            else
+        else
             CP=1;
-        }
+    }
     else
-        {
-         CP=1;
-        }
+        CP=1;
 }
 
 void LaserSafetyMP::setTe()
 {
     if(PRF>(1/Tmin))
         T2=myTmin_Laser.getT2();
-           else
+    else
         T2=myLaser.getT2();
 
     Te=std::min(exposureTime, T2);
@@ -165,24 +161,18 @@ void LaserSafetyMP::computeTmin()
 	
     if((wavelength>315) and (wavelength<=400))
         Tmin=1.0e-09;
-	else
-    if((wavelength>400) and (wavelength<=1050))
+    else if((wavelength>400) and (wavelength<=1050))
         Tmin=18e-06;
-	else
-    if((wavelength>1050) and (wavelength<=1400))
+    else if((wavelength>1050) and (wavelength<=1400))
 		Tmin=0.00005;
-	else
-    if((wavelength>1400) and (wavelength<=1500))
+    else if((wavelength>1400) and (wavelength<=1500))
 		Tmin=0.001;
-	else
-    if((wavelength>1500) and (wavelength<=1800))
+    else if((wavelength>1500) and (wavelength<=1800))
 		Tmin=10;	
-		else
-    if((wavelength>1800) and (wavelength<=2600))
+    else if((wavelength>1800) and (wavelength<=2600))
 		Tmin=0.001;
-		else
-    if((wavelength>2600) and (wavelength<=1.0e+06))
-        Tmin=1.0e-07;;
+    else if((wavelength>2600) and (wavelength<=1.0e+06))
+        Tmin=1.0e-07;
 }
 
 string LaserSafetyMP::valutateCounting()
@@ -196,16 +186,15 @@ string LaserSafetyMP::valutateCounting()
 
     if((wavelength>=400)and(wavelength<=1.0e+06))
     {
-         if(PRF> (1/Tmin))
-          _Counting="non regolare";
-          else
-          _Counting="regolare";
-     }else
-        {
-           _Counting="regolare";
-        }
+        if(PRF> (1/Tmin))
+            _Counting="non regolare";
+        else
+            _Counting="regolare";
+    }
+    else
+        _Counting="regolare";
 
-	return _Counting;
+    return _Counting;
 }
 
 double LaserSafetyMP::getTmin() const
@@ -229,9 +218,9 @@ void LaserSafetyMP::computeSP_CP_EMP()
     SP_EMP_Result=myLaser.getEMP();// calcolo l'EMP del singolo impulso
 
     if((wavelength>=400)and(wavelength<=1.0e+06))
-        {
+    {
         if(PRF>(1/Tmin))
-            {
+        {
             myTmin_Laser.EMP();// calcolo l'EMP per il singolo impulso
             formula_Tmin=myTmin_Laser.getFormulaEMP();
             formulaSort_Tmin=myTmin_Laser.getFormulaSort();
@@ -241,22 +230,19 @@ void LaserSafetyMP::computeSP_CP_EMP()
             {
                 if(formulaSort_Tmin=="H")
                     SP_EMP_forCP=SP_EMP_forCP/Tmin;
-
-            // calcolo l'EMP del singolo impulso che ha energia più elevata e quindi EMP più basso
+                    // calcolo l'EMP del singolo impulso che ha energia più elevata e quindi EMP più basso
             }
         }
         else
-            {
-            SP_EMP_forCP=SP_EMP_Result;// calcolo l'EMP del singolo impulso
-            }
-            setTe();
-            computePulseNumber();
-            computeCP();
-            CP_EMP_Result=CP*SP_EMP_forCP;// calcolo l'EMP per considerare gli effetti termici del treno.
-        }
-    else{
-    CP_EMP_Result=0;
+           SP_EMP_forCP=SP_EMP_Result;// calcolo l'EMP del singolo impulso
+
+        setTe();
+        computePulseNumber();
+        computeCP();
+        CP_EMP_Result=CP*SP_EMP_forCP;// calcolo l'EMP per considerare gli effetti termici del treno.
     }
+    else
+        CP_EMP_Result=0;
 }
     /***********************************************************************************************************************
      * La funzione calcola l'irradianza media del treno di impulsi  utilizzando la funzione getBeamArea (si convertono i   *
@@ -283,30 +269,23 @@ void LaserSafetyMP::equateMeanPowerEMP()
     **********************************************************************************************************************************/
 	//se l'EMP del funzionamento ad impulso è espresso in esposizione radiante
     //MeanPow_EMP_Result è la H o la E media in Te
-        if(formulaSort=="H")
-		{
+    if(formulaSort=="H")
+    {
 	//se l'EMP calcolato per il tempo di funzionamento è espresso in esposizione radiante esprimo l'emissione radiante in esposizione radiante 
-            if(powerFormulaSort=="H")
-                meanPow_EMP_Equate=meanPow_EMP_Result;
-			else
-	//altrimenti trasformo l'EMP in esposizione radiante un irradianza dividendo per il tempo di esposizione.
-            if(powerFormulaSort=="E")
-            {
-                meanPow_EMP_Equate=meanPow_EMP_Result*pulseWidth;//ottengo il valore della radianza media da E
-            }
-		}
-	// viceversa se l'EMP del tempo di funzionamento è espresso in irradianza
-		else
-        if(formulaSort=="E")
-		{
-            if(powerFormulaSort=="H")
-            {
-                meanPow_EMP_Equate=meanPow_EMP_Result/pulseWidth;//calcolo E da H dividendo per t.
-            }
-            else
-            if(powerFormulaSort=="E")
+        if(powerFormulaSort=="H")
             meanPow_EMP_Equate=meanPow_EMP_Result;
-		}
+	//altrimenti trasformo l'EMP in esposizione radiante un irradianza dividendo per il tempo di esposizione.
+        else if(powerFormulaSort=="E")
+            meanPow_EMP_Equate=meanPow_EMP_Result/PRF;//ottengo il valore della radianza media da E
+    }
+	// viceversa se l'EMP del tempo di funzionamento è espresso in irradianza
+    else if(formulaSort=="E")
+    {
+        if(powerFormulaSort=="H")
+            meanPow_EMP_Equate=meanPow_EMP_Result*PRF;//calcolo E da H dividendo per t.
+        else if(powerFormulaSort=="E")
+            meanPow_EMP_Equate=meanPow_EMP_Result;
+    }
 }
 
 double LaserSafetyMP::getMeanPower_EMP_Equate() const
@@ -324,7 +303,7 @@ double LaserSafetyMP::returnMultiPulse_EMP()
     * L'EMP minimo sarà sempre omogeneo all'EMP dell'impulso singolo																 *					     |
     **********************************************************************************************************************************/
     if((wavelength>=400)and(wavelength<=1.0e+06))
-        {
+    {
         double m1;
         double m2;
         m1=fmin(SP_EMP_Result, CP_EMP_Result);
@@ -332,7 +311,8 @@ double LaserSafetyMP::returnMultiPulse_EMP()
         EMP_Result=fmin(m1, m2);
         return EMP_Result;
     }
-    else{
+    else
+    {
         EMP_Result=fmin(SP_EMP_Result, meanPow_EMP_Equate);
         return EMP_Result;
     }
@@ -371,9 +351,9 @@ double LaserSafetyMP::getPowerErgForEMP()
         else
             {
                 if(formulaSort=="E")//MeanPow_EMP_Equate è omogenea a SP o CP
-                powerErgForEMP=meanPow_EMP_Equate;
+                    powerErgForEMP=meanPow_EMP_Equate;
                 else
-                powerErgForEMP=meanPow_EMP_Equate*exposureTime;
+                    powerErgForEMP=meanPow_EMP_Equate*exposureTime;
             }
 
     return powerErgForEMP;
@@ -390,15 +370,16 @@ void LaserSafetyMP::computeMeanPower_NOHD()
 	
     if(powerFormulaSort=="E")
         ForNOHD=meanPower;// se l'EMP è espresso in irradianza si considera la potenza media
-            else
+    else
         ForNOHD=meanPower*exposureTime;// altrimenti si ricava l'energia
 
-		double underroot;
+    double underroot;
 	//si applica la formula pe il calcolo della NOHD
-        underroot=(4*ForNOHD)/(PI*powerEMP);//si impiega l'EMP per gli effetti medi
-        meanPower_NOHD=(sqrt(underroot)-(beamDiameter/1000))/(divergence/1000);
-        if (meanPower_NOHD<0)// se il risultato è minore di zero allora la NOHD viene impostato a zero.
-            meanPower_NOHD=0;
+    underroot=(4*ForNOHD)/(PI*powerEMP);//si impiega l'EMP per gli effetti medi
+    meanPower_NOHD=(sqrt(underroot)-(beamDiameter/1000))/(divergence/1000);
+
+    if (meanPower_NOHD<0)// se il risultato è minore di zero allora la NOHD viene impostato a zero.
+        meanPower_NOHD=0;
 }
 
 void LaserSafetyMP::computeSinglePulse_NOHD()
@@ -410,16 +391,16 @@ void LaserSafetyMP::computeSinglePulse_NOHD()
     formulaSort=getFormulaSort();
 	
     if(formulaSort=="E")
-           ForNOHD=powerErg/pulseWidth;// se l'EMP è espresso in irradianza si considera la potenza (PowerErg è l'energia dell'impulso).
-             else
-           ForNOHD=powerErg;// altrimenti si considera l'energia dell'impulso
+        ForNOHD=powerErg/pulseWidth;// se l'EMP è espresso in irradianza si considera la potenza (PowerErg è l'energia dell'impulso).
+    else
+        ForNOHD=powerErg;// altrimenti si considera l'energia dell'impulso
 
-		double underroot;
+    double underroot;
 	//si applica la formula pe il calcolo della NOHD		
-		underroot=(4*ForNOHD)/(PI*SP_EMP_Result);//si impiega l'EMP del singolo impulso
-        singlePulse_NOHD=(sqrt(underroot)-(beamDiameter/1000))/(divergence/1000);
-        if (singlePulse_NOHD<0)// se il risultato è minore di zero allora la NOHD viene impostato a zero.
-            singlePulse_NOHD=0;
+    underroot=(4*ForNOHD)/(PI*SP_EMP_Result);//si impiega l'EMP del singolo impulso
+    singlePulse_NOHD=(sqrt(underroot)-(beamDiameter/1000))/(divergence/1000);
+    if(singlePulse_NOHD<0)// se il risultato è minore di zero allora la NOHD viene impostato a zero.
+        singlePulse_NOHD=0;
 }
 
 void LaserSafetyMP::computePulseTrain_NOHD()
@@ -428,25 +409,36 @@ void LaserSafetyMP::computePulseTrain_NOHD()
    ----------------------------------------------------------------------------------------------------------*/
 {
     if((wavelength>=400)and(wavelength<=1.0e+06))
-        {
+    {
         double ForNOHD;
-        formulaSort=getFormulaSort();
+        double pulseWidthMultiOperation;
+        string formulaSort;
+
+        if(PRF<=(1/Tmin))
+        {
+            formulaSort=myLaser.getFormulaSort();
+            pulseWidthMultiOperation=pulseWidth;
+        }
+        else
+        {
+            formulaSort=myTmin_Laser.getFormulaSort();
+            pulseWidthMultiOperation=Tmin;
+        }
 
         if(formulaSort=="E")
-             ForNOHD=powerErg/pulseWidth;// se l'EMP è espresso in irradianza si considera la potenza (PowerErg è l'energia dell'impulso).
-             else
-             ForNOHD=powerErg;// altrimenti si considera l'energia dell'impulso
+            ForNOHD=powerErg/pulseWidthMultiOperation;// se l'EMP è espresso in irradianza si considera la potenza (PowerErg è l'energia dell'impulso).
+        else
+            ForNOHD=powerErg;// altrimenti si considera l'energia dell'impulso
 
-            double underroot;
+        double underroot;
         //si applica la formula pe il calcolo della NOHD
-            underroot=(4*ForNOHD)/(PI*CP_EMP_Result);//si impiega l'EMP per gli effetti termici
-            pulseTrain_NOHD=(sqrt(underroot)-(beamDiameter/1000))/(divergence/1000);
-            if (pulseTrain_NOHD<0)// se il risultato è minore di zero allora la NOHD viene impostato a zero.
-                pulseTrain_NOHD=0;
+        underroot=(4*ForNOHD)/(PI*CP_EMP_Result);//si impiega l'EMP per gli effetti termici
+        pulseTrain_NOHD=(sqrt(underroot)-(beamDiameter/1000))/(divergence/1000);
+        if (pulseTrain_NOHD<0)// se il risultato è minore di zero allora la NOHD viene impostato a zero.
+            pulseTrain_NOHD=0;
     }
-    else{
+    else
         pulseTrain_NOHD=0;
-    }
 }
 
 void LaserSafetyMP::computeNOHD()
@@ -460,7 +452,7 @@ void LaserSafetyMP::computeNOHD()
 	double M1;
 	double M2;
 
-if((wavelength>=400)and(wavelength<=1.0e+06))
+    if((wavelength>=400)and(wavelength<=1.0e+06))
     {
         M1=fmax(meanPower_NOHD, singlePulse_NOHD);
         M2=fmax(singlePulse_NOHD, pulseTrain_NOHD);
@@ -474,9 +466,7 @@ if((wavelength>=400)and(wavelength<=1.0e+06))
         qDebug()<<"NOHD: "<<NOHD;
     }
     else
-    {
-        NOHD=fmax(meanPower_NOHD, singlePulse_NOHD);;
-    }
+        NOHD=fmax(meanPower_NOHD, singlePulse_NOHD);
 }
 
 	/*--------------------------------------------------------------------------------------------------------
@@ -497,13 +487,13 @@ void LaserSafetyMP::computeMeanPowerLambertianMax()
 
     if(powerFormulaSort=="E")
         forLambertianMax=powerErg*PRF;// se l'EMP è espresso in irradianza si considera la potenza di picco
-            else
+    else
         forLambertianMax=powerErg;// altrimenti si ricava l'esposizione radiante per la durata dell'impulso medio
 
-        double underroot;
+    double underroot;
     //si applica la formula pe il calcolo della NOHD
-        underroot=(forLambertianMax)/(PI*meanPow_EMP_Result);//si impiega l'EMP per gli effetti medi
-        meanPowerLambertianMax=(sqrt(underroot));
+    underroot=(forLambertianMax)/(PI*meanPow_EMP_Result);//si impiega l'EMP per gli effetti medi
+    meanPowerLambertianMax=(sqrt(underroot));
 }
 
 void LaserSafetyMP::computeSinglePulseLambertianMax()
@@ -517,34 +507,50 @@ void LaserSafetyMP::computeSinglePulseLambertianMax()
     formulaSort=getFormulaSort();
 
     if(formulaSort=="E")
-           ForLambertianMax=powerErg/pulseWidth;// se l'EMP è espresso in irradianza si considera la potenza (PowerErg è l'energia dell'impulso).
-             else
-           ForLambertianMax=powerErg;// altrimenti si considera l'energia dell'impulso
+        ForLambertianMax=powerErg/pulseWidth;// se l'EMP è espresso in irradianza si considera la potenza (PowerErg è l'energia dell'impulso).
+    else
+        ForLambertianMax=powerErg;// altrimenti si considera l'energia dell'impulso
 
-        double underroot;
+    double underroot;
     //si applica la formula pe il calcolo della NOHD
-        underroot=(ForLambertianMax)/(PI*SP_EMP_Result);//si impiega l'EMP del singolo impulso
-        singlePulseLambertianMax=(sqrt(underroot));
+    underroot=(ForLambertianMax)/(PI*SP_EMP_Result);//si impiega l'EMP del singolo impulso
+    singlePulseLambertianMax=(sqrt(underroot));
 }
 
 void LaserSafetyMP::computePulseTrainLambertianMax()
-   /*--------------------------------------------------------------------------------------------------------
-    |Calcolo dell'NOHD che deriverebbe dal solo dell'impulso singolo considerando gli effetti termici       |
-   ----------------------------------------------------------------------------------------------------------*/
 {
-    double ForLambertianMax;
-    formulaSort=getFormulaSort();
+    if((wavelength>=400)&&(wavelength<=1.0e+06))
+    {
+        double ForLambertianMax;
+        double pulseWidthMultiOperation;
+        string formulaSort;
+
+        if(PRF<=(1/Tmin))
+        {
+            formulaSort=myLaser.getFormulaSort();
+            pulseWidthMultiOperation=pulseWidth;
+        }
+        else
+        {
+            formulaSort=myTmin_Laser.getFormulaSort();
+            pulseWidthMultiOperation=Tmin;
+        }
 
     if(formulaSort=="E")
-         ForLambertianMax=powerErg/pulseWidth;// se l'EMP è espresso in irradianza si considera la potenza (PowerErg è l'energia dell'impulso).
-         else
-         ForLambertianMax=powerErg;// altrimenti si considera l'energia dell'impulso
+        ForLambertianMax=powerErg/pulseWidthMultiOperation;// se l'EMP è espresso in irradianza si considera la potenza (PowerErg è l'energia dell'impulso).
+    else
+        ForLambertianMax=powerErg;// altrimenti si considera l'energia dell'impulso
 
-        double underroot;
+
+    double underroot;
     //si applica la formula pe il calcolo della NOHD
-        underroot=(ForLambertianMax)/(PI*CP_EMP_Result);//si impiega l'EMP per gli effetti termici
-        pulseTrainLambertianMax=(sqrt(underroot));
+    underroot=(ForLambertianMax)/(PI*CP_EMP_Result);//si impiega l'EMP per gli effetti termici
+    pulseTrainLambertianMax=(sqrt(underroot));
+    }
+    else
+        pulseTrainLambertianMax=0;
 }
+
 
 void LaserSafetyMP::computeLambertianMax()
 {
@@ -583,7 +589,6 @@ void LaserSafetyMP::laserUpdate()
     computePulseTrainLambertianMax();
 	
 	computeNOHD();
-
     computeLambertianMax();
 }
 
@@ -662,7 +667,7 @@ double LaserSafetyMP::getEMP_MP()
     return myMeanPower_Laser.getEMP();
 }
 
-void LaserSafetyMP::setPRF(const int& _PRF)
+void LaserSafetyMP::setPRF(const double& _PRF)
 {
 	PRF=_PRF;
 }
@@ -716,9 +721,9 @@ double LaserSafetyMP::getEMP_3rdCondition()const
 {
     double SP_EMP_forCP;
     if(PRF>(1/Tmin))
-    SP_EMP_forCP=myTmin_Laser.getEMP()*CP/(PRF*Tmin);
+        SP_EMP_forCP=myTmin_Laser.getEMP()*CP/(PRF*Tmin);
     else
-    SP_EMP_forCP=myLaser.getEMP()*CP;
+        SP_EMP_forCP=myLaser.getEMP()*CP;
 
     return SP_EMP_forCP;
 }

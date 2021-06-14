@@ -28,27 +28,15 @@
     const double CentralWidget::NEPERO_N=2.7182818284590452353602874713527;
 
 CentralWidget::CentralWidget(QWidget *parent) :
-    QWidget(parent)
+    QWidget(parent), myDockResults(new DockResults(this)), myDockEffects(new DockEffects(this)),
+    myDockSkin(new DockSkin(this)), myDockLea(new DockLea(this)), myDockGoggle(new DockGoggle(this)),
+    myDockReflectorsList(new ReflectorsQList(this))
 {
-    setStyleSheet(tr("QWidget {background-color: #555555;}\n"
-                     "QLabel {background: none;}\n"
-                     "QMenu::item:selected{background-color:#00c800;}"
-                     "QMenu::item:selected{color:#f0f0f0;}"
-                     "QGraphicsView {background-color:#f0f0f0;}"
-                     ));
-
-    myDockResults= new DockResults();
-    myDockEffects =new DockEffects();
-    myDockSkin = new DockSkin();
-    myDockGoggle = new DockGoggle();
-    myDockLea= new DockLea();
-    myDockReflectorsList=new ReflectorsQList();
-
     clearInstallationDesription();
     scale=1;
     scaleIndex=4;
     myLabRoomInserted=false;
-    myDockControls= new DockControls(nullptr, myDockResults, myDockEffects, myDockSkin, myDockGoggle, myDockLea);
+    myDockControls= new DockControls(this, myDockResults, myDockEffects, myDockSkin, myDockGoggle, myDockLea);
 
     gridLayout = new QGridLayout(this);
     graphicsView =new DisplayScene();
@@ -58,7 +46,7 @@ CentralWidget::CentralWidget(QWidget *parent) :
     label->setObjectName(QString::fromUtf8("label"));
 
     QFont font;
-    font.setPointSize(7);
+    font.setPointSize(8);
     label->setFont(font);
 
     gridLayout->addWidget(label, 1, 0, 1, 1);
@@ -70,16 +58,10 @@ CentralWidget::CentralWidget(QWidget *parent) :
 
     scintillationBool=false;
     atmEffectsBool=false;
-    meteoRange=23000;
+    meteoRange=CentralWidget::STANDARD_VISIBILITY_DISTANCE;
     a_coefficient=0.06*powf(meteoRange, 0.33);
 
     atmoshericEffectsCoefficient=3.91/(meteoRange)*powf(550.0/(632.0), a_coefficient);
-
-}
-
-CentralWidget::~CentralWidget()
-{
-
 }
 
 void CentralWidget::setNewScene()
@@ -217,7 +199,7 @@ bool CentralWidget::writeFile(const QString &fileName)
         << myDockControls->ui->pulseControl->getScientificNumber() << myDockControls->ui->divergenceControl->getScientificNumber()
         << myDockControls->ui->beamDiameterControl->getScientificNumber() << myDockControls->ui->prfControl->getScientificNumber()
         << myDockControls->ui->wavelengthScrollBar->value() << myDockControls->ui->operationCombo->currentIndex()
-        << myDockControls->ui->checkGaussianBeam->isChecked() << myDockControls->ui->comboBox->currentIndex()
+        << myDockControls->ui->checkGaussianBeam->isChecked() << myDockControls->ui->comboBoxBands->currentIndex()
         << myDockControls->ui->T_SkinControl->getScientificNumber() << myDockControls->ui->teControl->getDialNumber()
         << myDockControls->ui->enableTeCheckBox->isChecked() << myDockControls->ui->internalWaist_checkBox->isChecked()
         << myDockControls->getLambertianMax() << myDockControls->getEMP()
@@ -292,7 +274,7 @@ bool CentralWidget::readFile(const QString &fileName)
 
      myDockControls->ui->operationCombo->setCurrentIndex(operationCombo);
      myDockControls->ui->enableTeCheckBox->setChecked(isTeChecked);
-     myDockControls->ui->comboBox->setCurrentIndex(comboBox);
+     myDockControls->ui->comboBoxBands->setCurrentIndex(comboBox);
      myDockControls->ui->powerErgControl->setValue(powerErgControl);
      myDockControls->ui->alphaControl->setValue(alphaControl);
      myDockControls->ui->pulseControl->setValue(pulseControl);
@@ -637,4 +619,9 @@ QVector <QRectF> CentralWidget::getFootprintRectVect()
 QVector <QString> CentralWidget::getFootprintDescriptionVect()
 {
     return footprintDescriptionVect;
+}
+
+CentralWidget::~CentralWidget()
+{
+
 }

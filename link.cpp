@@ -7,11 +7,8 @@
 
 const double Link::degRad = 180/3.1415926535897932384626433832795;
 
-Link::Link(LaserPoint *fromLaser, Reflector *toReflector)
+Link::Link(LaserPoint *fromLaser, Reflector *toReflector): fromMyLaser(fromLaser), toMyReflector(toReflector)
 {
-    fromMyLaser = fromLaser;
-    toMyReflector = toReflector;
-
     fromMyLaser->addLink(this);
     toMyReflector->addLink(this);
 
@@ -75,7 +72,7 @@ double Link::LinkPhase()
 
     if(lenght!=0)
         phase=degRad*std::asin(myLine.dy()/myLine.length());
-        else
+    else
         phase=0;
 
     return phase;

@@ -30,7 +30,7 @@
   </property>
   <property name="font">
    <font>
-    <pointsize>7</pointsize>
+    <pointsize>8</pointsize>
    </font>
   </property>
   <property name="styleSheet">
@@ -51,14 +51,14 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>7</pointsize>
+        <pointsize>8</pointsize>
        </font>
       </property>
       <property name="styleSheet">
        <string notr="true"/>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_1">
        <attribute name="title">
@@ -81,11 +81,14 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>293</width>
-             <height>446</height>
+             <width>320</width>
+             <height>460</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_6">
+            <item row="0" column="1">
+             <layout class="QGridLayout" name="gridLayout_5"/>
+            </item>
             <item row="0" column="0">
              <widget class="QTableView" name="tableView">
               <property name="sizePolicy">
@@ -114,7 +117,7 @@
               </property>
               <property name="font">
                <font>
-                <pointsize>7</pointsize>
+                <pointsize>8</pointsize>
                </font>
               </property>
               <property name="styleSheet">
@@ -165,8 +168,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>662</width>
-                 <height>113</height>
+                 <width>610</width>
+                 <height>117</height>
                 </rect>
                </property>
                <layout class="QGridLayout" name="gridLayout">
@@ -187,7 +190,7 @@
                  <widget class="QLabel" name="scaleNumberLabel">
                   <property name="font">
                    <font>
-                    <pointsize>7</pointsize>
+                    <pointsize>8</pointsize>
                    </font>
                   </property>
                   <property name="styleSheet">
@@ -207,7 +210,7 @@ QLabel {margin-right: 10px}</string>
                  <widget class="QLabel" name="coefficient_kiLabel">
                   <property name="font">
                    <font>
-                    <pointsize>7</pointsize>
+                    <pointsize>8</pointsize>
                    </font>
                   </property>
                   <property name="styleSheet">
@@ -227,7 +230,7 @@ QLabel {margin-right: 10px}</string>
                  <widget class="QLabel" name="tTimeBaseLabel">
                   <property name="font">
                    <font>
-                    <pointsize>7</pointsize>
+                    <pointsize>8</pointsize>
                     <weight>75</weight>
                     <bold>true</bold>
                    </font>
@@ -266,7 +269,7 @@ QLabel  {padding: 2px}</string>
                   </property>
                   <property name="font">
                    <font>
-                    <pointsize>7</pointsize>
+                    <pointsize>8</pointsize>
                     <weight>75</weight>
                     <bold>true</bold>
                    </font>
@@ -290,7 +293,7 @@ QLabel  {padding: 2px}</string>
                  <widget class="QLabel" name="tNumberOfPulseLabel">
                   <property name="font">
                    <font>
-                    <pointsize>7</pointsize>
+                    <pointsize>8</pointsize>
                     <weight>75</weight>
                     <bold>true</bold>
                    </font>
@@ -311,7 +314,7 @@ QLabel  {padding: 2px}</string>
                  <widget class="QLabel" name="tn_maxLabel">
                   <property name="font">
                    <font>
-                    <pointsize>7</pointsize>
+                    <pointsize>8</pointsize>
                     <weight>75</weight>
                     <bold>true</bold>
                    </font>
@@ -332,7 +335,7 @@ QLabel  {padding: 2px}</string>
                  <widget class="QLabel" name="numberOfPulseLabel">
                   <property name="font">
                    <font>
-                    <pointsize>7</pointsize>
+                    <pointsize>8</pointsize>
                    </font>
                   </property>
                   <property name="styleSheet">
@@ -352,7 +355,7 @@ QLabel {margin-right: 10px}</string>
                  <widget class="QLabel" name="tLaserOutputLabel">
                   <property name="font">
                    <font>
-                    <pointsize>7</pointsize>
+                    <pointsize>8</pointsize>
                     <weight>75</weight>
                     <bold>true</bold>
                    </font>
@@ -373,7 +376,7 @@ QLabel  {padding: 2px}</string>
                  <widget class="QLabel" name="coefficient_kLabel">
                   <property name="font">
                    <font>
-                    <pointsize>7</pointsize>
+                    <pointsize>8</pointsize>
                    </font>
                   </property>
                   <property name="styleSheet">
@@ -393,7 +396,7 @@ QLabel {margin-right: 10px}</string>
                  <widget class="QLabel" name="timeBaseLabel">
                   <property name="font">
                    <font>
-                    <pointsize>7</pointsize>
+                    <pointsize>8</pointsize>
                    </font>
                   </property>
                   <property name="styleSheet">
@@ -413,7 +416,7 @@ QLabel {margin-right: 10px}</string>
                  <widget class="QLabel" name="tCoefficient_kLabel">
                   <property name="font">
                    <font>
-                    <pointsize>7</pointsize>
+                    <pointsize>8</pointsize>
                     <weight>75</weight>
                     <bold>true</bold>
                    </font>
@@ -434,7 +437,7 @@ QLabel  {padding: 2px}</string>
                  <widget class="QLabel" name="tCoefficient_kiLabel">
                   <property name="font">
                    <font>
-                    <pointsize>7</pointsize>
+                    <pointsize>8</pointsize>
                     <weight>75</weight>
                     <bold>true</bold>
                    </font>
@@ -455,7 +458,7 @@ QLabel  {padding: 2px}</string>
                  <widget class="QLabel" name="n_maxLabel">
                   <property name="font">
                    <font>
-                    <pointsize>7</pointsize>
+                    <pointsize>8</pointsize>
                    </font>
                   </property>
                   <property name="styleSheet">
@@ -488,7 +491,7 @@ QLabel {margin-right: 10px}</string>
                  <widget class="QLabel" name="laserOutputLabel">
                   <property name="font">
                    <font>
-                    <pointsize>7</pointsize>
+                    <pointsize>8</pointsize>
                    </font>
                   </property>
                   <property name="styleSheet">
@@ -512,8 +515,13 @@ QLabel {margin-right: 10px}</string>
                     <height>30</height>
                    </size>
                   </property>
+                  <property name="font">
+                   <font>
+                    <pointsize>8</pointsize>
+                   </font>
+                  </property>
                   <property name="styleSheet">
-                   <string notr="true">QLabel {color: #fafafa}</string>
+                   <string notr="true"/>
                   </property>
                   <property name="text">
                    <string>TextLabel</string>
@@ -526,9 +534,6 @@ QLabel {margin-right: 10px}</string>
                </layout>
               </widget>
              </widget>
-            </item>
-            <item row="0" column="1">
-             <layout class="QGridLayout" name="gridLayout_5"/>
             </item>
            </layout>
           </widget>
@@ -557,8 +562,8 @@ QLabel {margin-right: 10px}</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>293</width>
-             <height>446</height>
+             <width>320</width>
+             <height>460</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_4">
@@ -597,7 +602,7 @@ QLabel {margin-right: 10px}</string>
               </property>
               <property name="font">
                <font>
-                <pointsize>7</pointsize>
+                <pointsize>8</pointsize>
                </font>
               </property>
               <property name="styleSheet">
@@ -646,10 +651,10 @@ QLabel {margin-right: 10px}</string>
               <widget class="QWidget" name="scrollAreaWidgetContents_2">
                <property name="geometry">
                 <rect>
-                 <x>0</x>
+                 <x>-14</x>
                  <y>0</y>
-                 <width>342</width>
-                 <height>94</height>
+                 <width>314</width>
+                 <height>117</height>
                 </rect>
                </property>
                <layout class="QGridLayout" name="gridLayout_2">
@@ -657,7 +662,7 @@ QLabel {margin-right: 10px}</string>
                  <widget class="QLabel" name="meanPowerLabel">
                   <property name="font">
                    <font>
-                    <pointsize>7</pointsize>
+                    <pointsize>8</pointsize>
                    </font>
                   </property>
                   <property name="styleSheet">
@@ -683,7 +688,7 @@ QLabel {margin-right: 10px}</string>
                   </property>
                   <property name="font">
                    <font>
-                    <pointsize>7</pointsize>
+                    <pointsize>8</pointsize>
                     <weight>75</weight>
                     <bold>true</bold>
                     <stylestrategy>PreferAntialias</stylestrategy>
@@ -727,7 +732,7 @@ QLabel  {padding: 2px}</string>
                   </property>
                   <property name="font">
                    <font>
-                    <pointsize>7</pointsize>
+                    <pointsize>8</pointsize>
                     <weight>75</weight>
                     <bold>true</bold>
                     <stylestrategy>PreferAntialias</stylestrategy>
@@ -752,7 +757,7 @@ QLabel  {padding: 2px}</string>
                  <widget class="QLabel" name="scaleNumberDLabel">
                   <property name="font">
                    <font>
-                    <pointsize>7</pointsize>
+                    <pointsize>8</pointsize>
                    </font>
                   </property>
                   <property name="styleSheet">
@@ -772,7 +777,7 @@ QLabel {margin-right: 10px}</string>
                  <widget class="QLabel" name="dTimeBaseLabel">
                   <property name="font">
                    <font>
-                    <pointsize>7</pointsize>
+                    <pointsize>8</pointsize>
                    </font>
                   </property>
                   <property name="styleSheet">
@@ -798,7 +803,7 @@ QLabel {margin-right: 10px}</string>
                   </property>
                   <property name="font">
                    <font>
-                    <pointsize>7</pointsize>
+                    <pointsize>8</pointsize>
                     <weight>75</weight>
                     <bold>true</bold>
                     <stylestrategy>PreferAntialias</stylestrategy>
@@ -842,7 +847,7 @@ QLabel  {padding: 2px}</string>
                   </property>
                   <property name="font">
                    <font>
-                    <pointsize>7</pointsize>
+                    <pointsize>8</pointsize>
                     <weight>75</weight>
                     <bold>true</bold>
                     <stylestrategy>PreferAntialias</stylestrategy>
@@ -867,7 +872,7 @@ QLabel  {padding: 2px}</string>
                  <widget class="QLabel" name="dLaserOutputLabel">
                   <property name="font">
                    <font>
-                    <pointsize>7</pointsize>
+                    <pointsize>8</pointsize>
                    </font>
                   </property>
                   <property name="styleSheet">
@@ -896,7 +901,7 @@ QLabel {margin-right: 10px}</string>
      </widget>
     </item>
     <item row="0" column="0" rowspan="2">
-     <widget class="QPushButton" name="pushButton">
+     <widget class="QPushButton" name="showGoggleCharts">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
         <horstretch>1</horstretch>

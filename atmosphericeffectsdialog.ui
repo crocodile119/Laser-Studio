@@ -17,16 +17,16 @@
    <bool>false</bool>
   </property>
   <property name="styleSheet">
-   <string notr="true">QDialog{background-color:#555555;}
-QFrame{background-color:#555555;}
-QDialog{color:#f0f0f0;}</string>
+   <string notr="true"/>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
     <widget class="QLabel" name="label_4">
      <property name="font">
       <font>
-       <pointsize>7</pointsize>
+       <pointsize>8</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
       </font>
      </property>
      <property name="styleSheet">
@@ -62,7 +62,7 @@ QLabel {margin-right: 10px}</string>
     <widget class="QLabel" name="meteoRangeLabel">
      <property name="font">
       <font>
-       <pointsize>7</pointsize>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="styleSheet">
@@ -95,7 +95,7 @@ QLabel {margin-right: 10px}</string>
      </property>
      <property name="font">
       <font>
-       <pointsize>7</pointsize>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="styleSheet">
@@ -115,7 +115,7 @@ QLabel {margin-right: 10px}</string>
        <widget class="QLabel" name="A_Label">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
          </font>
         </property>
         <property name="styleSheet">
@@ -135,7 +135,9 @@ QLabel {margin-right: 10px}</string>
        <widget class="QLabel" name="label_5">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -168,7 +170,9 @@ QLabel {margin-right: 10px}</string>
        <widget class="QLabel" name="label_2">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -188,7 +192,7 @@ QLabel {margin-right: 10px}</string>
        <widget class="QLabel" name="atmosphericCoeffLabel">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
          </font>
         </property>
         <property name="styleSheet">

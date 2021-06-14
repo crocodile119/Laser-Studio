@@ -10,12 +10,11 @@ class AtmosphericEffectsDialog : public QDialog, private Ui::AtmosphericEffectsD
     Q_OBJECT
 
 public:
-    AtmosphericEffectsDialog(CentralWidget *_laserWindow, double, QWidget *parent = 0);
+    AtmosphericEffectsDialog(QWidget *parent, CentralWidget *_laserWindow, double);
     ~AtmosphericEffectsDialog();
 
 private slots:
     void on_buttonBox_accepted();
-
     void on_meteoRangeSlider_valueChanged(int value);
 
 private:

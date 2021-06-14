@@ -51,6 +51,7 @@ class MainWindow : public QMainWindow
 public:
     enum htmlConfig{REPORT, PDF};
     MainWindow();
+    ~MainWindow();
     bool eventFilter (QObject *watched, QEvent *event)override;
     int seqNumerCount()const;
 
@@ -79,6 +80,7 @@ private slots:
     bool save();
     bool saveAs();
     void open();
+    void setCurrentDirectory();
     void newFile();
     void openRecentFile();
     void about();
@@ -112,6 +114,9 @@ private slots:
     void addReflector(const target& target);
     void addBinocular();
     void addFootprint();
+    void setGuiDarkTheme();
+    void changeGuiTheme();
+    void setThemeOnStart();
     void addLabList();
     void addBinocularList();
     void addBinocularLink();
@@ -246,7 +251,7 @@ private:
     QItemSelectionModel *environmentSelectionModel;
 
     QString curFile;
-    QString FILENAME;
+    QString curDirectoryFile;
     bool externalFile;
     QStringList recentFiles;
     double reflectorDistance;
@@ -268,6 +273,7 @@ private:
     double myEMP;
     double powerErg;
     double scale;
+    bool theme;
 
     enum { MaxRecentFiles = 5 };
     enum { nScales = 20 };
@@ -312,6 +318,7 @@ private:
     QStringList scales;
     QAction *zoomActions[nScales];
     QAction *selectAct;
+    QAction *darkThemeAct;
     QAction *separatorAction;
     QAction *showDockWidgetEffects;
     QAction *showDockWidgetResults;

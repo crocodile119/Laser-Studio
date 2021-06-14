@@ -18,7 +18,7 @@
   </property>
   <property name="font">
    <font>
-    <pointsize>7</pointsize>
+    <pointsize>8</pointsize>
    </font>
   </property>
   <property name="windowTitle">
@@ -34,7 +34,7 @@ QFrame{border solid 1px #f0f0f0}</string>
     <widget class="QGroupBox" name="groupBox">
      <property name="font">
       <font>
-       <pointsize>7</pointsize>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="title">
@@ -60,7 +60,9 @@ QFrame{border solid 1px #f0f0f0}</string>
        <widget class="QLabel" name="label">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -80,7 +82,7 @@ QLabel {margin-left: 10px}</string>
        <widget class="QDoubleSpinBox" name="xSpinBox">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
          </font>
         </property>
         <property name="styleSheet">
@@ -98,7 +100,9 @@ QLabel {margin-left: 10px}</string>
        <widget class="QLabel" name="label_2">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -118,7 +122,7 @@ QLabel {margin-left: 10px}</string>
        <widget class="QDoubleSpinBox" name="ySpinBox">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
          </font>
         </property>
         <property name="styleSheet">
@@ -152,7 +156,7 @@ QLabel {margin-left: 10px}</string>
     <widget class="QGroupBox" name="groupBox_2">
      <property name="font">
       <font>
-       <pointsize>7</pointsize>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="title">
@@ -163,7 +167,9 @@ QLabel {margin-left: 10px}</string>
        <widget class="QLabel" name="label_5">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -189,7 +195,7 @@ QLabel {margin-right: 10px}</string>
         </property>
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
          </font>
         </property>
         <property name="styleSheet">
@@ -204,7 +210,9 @@ QLabel {margin-right: 10px}</string>
        <widget class="QLabel" name="label_4">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -230,7 +238,7 @@ QLabel {margin-right: 10px}</string>
         </property>
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
          </font>
         </property>
         <item>
@@ -257,6 +265,12 @@ QLabel {margin-right: 10px}</string>
       </item>
       <item row="2" column="0">
        <widget class="QLabel" name="label_6">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
         <property name="styleSheet">
          <string notr="true">QLabel {background-color: #00c800}
 QLabel {color: #fafafa}
@@ -272,6 +286,11 @@ QLabel {margin-right: 10px}</string>
       </item>
       <item row="2" column="1">
        <widget class="QLabel" name="pillowLabel">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
         <property name="styleSheet">
          <string notr="true">QLabel {background-color: #fafafa}
 QLabel {color: #000000}
@@ -292,7 +311,7 @@ QLabel {margin-right: 10px}</string>
     <widget class="QGroupBox" name="groupBox_3">
      <property name="font">
       <font>
-       <pointsize>7</pointsize>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="title">
@@ -309,7 +328,7 @@ QLabel {margin-right: 10px}</string>
         </property>
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
          </font>
         </property>
         <property name="styleSheet">
@@ -335,7 +354,7 @@ QLabel {margin-right: 10px}</string>
         </property>
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
          </font>
         </property>
         <property name="styleSheet">
@@ -359,7 +378,7 @@ QLabel {margin-right: 10px}</string>
        <widget class="QCheckBox" name="filterCheckBox">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
          </font>
         </property>
         <property name="text">
@@ -390,7 +409,7 @@ QLabel {margin-right: 10px}</string>
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="font">
       <font>
-       <pointsize>7</pointsize>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="orientation">

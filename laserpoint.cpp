@@ -127,33 +127,24 @@ QRectF LaserPoint::boundingRect() const
     QRectF myRect=unitedBounding();
 
     if(opticalDiameter>=skinDiameter)
-        {
+    {
         if(opticalDiameter>=myRect.width())
-            {
             rect=selectionOpticalRect();
-            }
-                else
-                    if(opticalDiameter<myRect.width())
-                    {
-                        rect=myRect;
-                    }
-        }
+        else if(opticalDiameter<myRect.width())
+            rect=myRect;
+    }
     else
     {
-    if(skinDiameter>=myRect.width())
-                rect=selectionSkinRect();
-                else
-                    if(skinDiameter<myRect.height())
-                    {
-                        rect=myRect;
-                    }
+        if(skinDiameter>=myRect.width())
+            rect=selectionSkinRect();
+        else if(skinDiameter<myRect.height())
+            rect=myRect;
     }
-    //return rect.adjusted(-Margin, -Margin, +Margin, +Margin);
-    //return rect.adjusted(-1000, -1000, 1000, 1000);
+
     if(myRect.width()>enhacedPathBoudingRect.width())
-            return rect.adjusted(-Margin, -Margin, +Margin, +Margin);
-        else
-            return enhacedPathBoudingRect.adjusted(-Margin, -Margin, +Margin, +Margin);
+        return rect.adjusted(-Margin, -Margin, +Margin, +Margin);
+    else
+        return enhacedPathBoudingRect.adjusted(-Margin, -Margin, +Margin, +Margin);
 }
 
 QPainterPath LaserPoint::shape() const
@@ -193,17 +184,17 @@ void LaserPoint::paint(QPainter *painter,
     if(opticalDiameter>skinDiameter)
     {
         painter->setBrush(QColor(245,250,250, 127));
-            painter->drawPie(selectionOpticalRect(), firstPie, secondPie);
-                painter->setBrush(QColor(240,240,240, 127));
-                    painter->drawPie(selectionSkinRect(), firstPie, secondPie);
-        }
-        else
-        {
+        painter->drawPie(selectionOpticalRect(), firstPie, secondPie);
         painter->setBrush(QColor(240,240,240, 127));
-            painter->drawPie(selectionSkinRect(), firstPie, secondPie);
-                painter->setBrush(QColor(245,250,250, 127));
-                    painter->drawPie(selectionSkinRect(), firstPie, secondPie);
-        }
+        painter->drawPie(selectionSkinRect(), firstPie, secondPie);
+    }
+    else
+    {
+        painter->setBrush(QColor(240,240,240, 127));
+        painter->drawPie(selectionSkinRect(), firstPie, secondPie);
+        painter->setBrush(QColor(245,250,250, 127));
+        painter->drawPie(selectionSkinRect(), firstPie, secondPie);
+    }
 
     painter->setPen(Qt::transparent);
     painter->setBrush(QColor(80, 255, 80, 200));
@@ -255,11 +246,11 @@ void LaserPoint::paint(QPainter *painter,
 QVariant LaserPoint::itemChange(GraphicsItemChange change,
                           const QVariant &value)
 {
-    if (change == ItemPositionHasChanged && scene()) {
+    if (change == ItemPositionHasChanged && scene())
+    {
         foreach (Link *link, myLinks)
-        {
-        link->trackNodes();
-        }
+            link->trackNodes();
+
         setStrings();
         return pos();
     }
@@ -303,8 +294,8 @@ int LaserPoint::roundness(double size) const
 
 void LaserPoint::setOpticalDiameter(double newRadius)
 {
-   if(2*newRadius==opticalDiameter)
-       return;
+    if(2*newRadius==opticalDiameter)
+        return;
 
     prepareGeometryChange();
     opticalDiameter=2*newRadius;
@@ -312,11 +303,11 @@ void LaserPoint::setOpticalDiameter(double newRadius)
 
 void LaserPoint::setSkinDistance(double newRadius)
 {
-   if(2*newRadius==skinDiameter)
-       return;
+    if(2*newRadius==skinDiameter)
+        return;
 
-   prepareGeometryChange();
-   skinDiameter=2*newRadius;
+    prepareGeometryChange();
+    skinDiameter=2*newRadius;
 }
 
 void LaserPoint::setStringPosition()
@@ -443,24 +434,28 @@ QString LaserPoint::getLaserInstallation()
     QString installationIndexString;
 
     switch(installationIndex)
-        {
-            case(0):
-            installationIndexString="Stabile";
-                break;
-            case(1):
-            installationIndexString="Poco stabile";
-                break;
-            case(2):
-            installationIndexString="Mobile";
-                break;
-            case(3):
-            installationIndexString="Assenza di piattaforma";
-                break;
-            default:
-            installationIndexString="Assenza di piattaforma";
-                break;
+    {
+        case(0):
+        installationIndexString="Stabile";
+        break;
+
+        case(1):
+        installationIndexString="Poco stabile";
+        break;
+
+        case(2):
+        installationIndexString="Mobile";
+        break;
+
+        case(3):
+        installationIndexString="Assenza di piattaforma";
+        break;
+
+        default:
+        installationIndexString="Assenza di piattaforma";
+        break;
         }
-        return installationIndexString;
+    return installationIndexString;
 }
 
 QPainterPath LaserPoint::shapePath()
@@ -511,15 +506,16 @@ bool LaserPoint::shapeEnhacedPathContainsPoint(const QPointF &point, const doubl
 
 QRectF LaserPoint::labelRect()
 {
-        const int Padding = 10;
-        QFontMetricsF metrics =(QFontMetricsF)qApp->font();
-        myTextRect = metrics.boundingRect(textLabel);
-        myTextRect.adjust(-Padding, -Padding, +Padding, +Padding);
-        QRectF pixRect=QRectF(0, 0, 60.0, 60.0);
+    const int Padding = 10;
+    QFontMetricsF metrics =(QFontMetricsF)qApp->font();
+    myTextRect = metrics.boundingRect(textLabel);
+    myTextRect.adjust(-Padding, -Padding, +Padding, +Padding);
+    QRectF pixRect=QRectF(0, 0, 60.0, 60.0);
 
-        QPointF rectPoint(-pixRect.width()/2+Padding, pixRect.height()/2+myTextRect.height()/2+Padding);
-        myTextRect.translate(rectPoint);
-        return myTextRect;
+    QPointF rectPoint(-pixRect.width()/2+Padding, pixRect.height()/2+myTextRect.height()/2+Padding);
+    myTextRect.translate(rectPoint);
+
+    return myTextRect;
 }
 
 QRectF LaserPoint::unitedBounding() const

@@ -46,77 +46,74 @@ WetChartView::WetChartView(QWidget *parent, std::vector<std::pair<double, double
 }
 
 
-  QtCharts::QLineSeries* WetChartView::buildDataSerie()
-  {
-         series->clear();
-         for (std::vector<std::pair<double, double>>::iterator it = dataVector.begin() ; it != dataVector.end(); ++it)
-           {
-           std::pair<double, double> myPair=*it;
-             series->append(myPair.first, myPair.second);
-          }
-         return series;
-  }
+QtCharts::QLineSeries* WetChartView::buildDataSerie()
+{
+    series->clear();
+    for (std::vector<std::pair<double, double>>::iterator it = dataVector.begin() ; it != dataVector.end(); ++it)
+    {
+        std::pair<double, double> myPair=*it;
+        series->append(myPair.first, myPair.second);
+    }
+    return series;
+}
 
-  double WetChartView::getDistance()const
-  {
-      return distance;
-  }
+double WetChartView::getDistance()const
+{
+    return distance;
+}
 
-  void WetChartView::setDistance(const double& _distance)
-  {
-      distance=_distance;
-  }
+void WetChartView::setDistance(const double& _distance)
+{
+    distance=_distance;
+}
 
+void WetChartView::setRadialAxis()
+{
+    radialAxis = new QValueAxis();
+    radialAxis->setTickCount(9);
+    radialAxis->setLabelFormat("%d");
+    radialAxis->setRange(radialMin, radialMax);
+    chart->addAxis(radialAxis, QPolarChart::PolarOrientationRadial);
+    series->attachAxis(radialAxis);
+    positioningSeries->attachAxis(radialAxis);
+}
 
-  void WetChartView::setRadialAxis()
-  {
-      radialAxis = new QValueAxis();
-      radialAxis->setTickCount(9);
-      radialAxis->setLabelFormat("%d");
-      radialAxis->setRange(radialMin, radialMax);
-      chart->addAxis(radialAxis, QPolarChart::PolarOrientationRadial);
-      series->attachAxis(radialAxis);
-      positioningSeries->attachAxis(radialAxis);
-  }
+void WetChartView::setAngularAxis()
+{
+    angularAxis = new QValueAxis();
+    angularAxis->setTickCount(9); // First and last ticks are co-located on 0/360 angle.
+    angularAxis->setLabelFormat("%.1f");
+    angularAxis->setShadesVisible(true);
+    angularAxis->setShadesBrush(QBrush(QColor(249, 249, 255)));
+    angularAxis->setRange(angularMin, angularMax);
+    chart->addAxis(angularAxis, QPolarChart::PolarOrientationAngular);
+    series->attachAxis(angularAxis);
+    positioningSeries->attachAxis(angularAxis);
+}
 
-  void WetChartView::setAngularAxis()
-  {
-      angularAxis = new QValueAxis();
-      angularAxis->setTickCount(9); // First and last ticks are co-located on 0/360 angle.
-      angularAxis->setLabelFormat("%.1f");
-      angularAxis->setShadesVisible(true);
-      angularAxis->setShadesBrush(QBrush(QColor(249, 249, 255)));
-      angularAxis->setRange(angularMin, angularMax);
-      chart->addAxis(angularAxis, QPolarChart::PolarOrientationAngular);
-      series->attachAxis(angularAxis);
-      positioningSeries->attachAxis(angularAxis);
-  }
+void WetChartView::updateChart(double _maxValue)
+{
+    chart->removeAxis(radialAxis);
+    chart->removeAxis(angularAxis);
+    setRadialMax(_maxValue);
+    setRadialAxis();
+    setAngularAxis();
+}
 
-  void WetChartView::updateChart(double _maxValue)
-  {
-      chart->removeAxis(radialAxis);
-      chart->removeAxis(angularAxis);
-      setRadialMax(_maxValue);
-      setRadialAxis();
-      setAngularAxis();
-  }
+void WetChartView::setTableSeries(std::vector<std::pair<double, double>> myVector)
+{
+    dataVector=myVector;
+}
 
-  void WetChartView::setTableSeries(std::vector<std::pair<double, double>> myVector)
-  {
-      dataVector=myVector;
-
-  }
-
-  void WetChartView::setRadialMax(const double _maxElement)
-  {
-      if(radialMax<_maxElement)
-            radialMax=_maxElement*1.2;
-      else
-         if(radialMax>1.5*_maxElement)
-             radialMax=_maxElement/1.2;
-      else
-             radialMax=_maxElement*1.1;
-  }
+void WetChartView::setRadialMax(const double _maxElement)
+{
+    if(radialMax<_maxElement)
+        radialMax=_maxElement*1.2;
+    else if(radialMax>1.5*_maxElement)
+        radialMax=_maxElement/1.2;
+    else
+        radialMax=_maxElement*1.1;
+}
 
 double WetChartView::getRadialMax()const
 {

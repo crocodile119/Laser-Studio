@@ -3,13 +3,11 @@
 
 #include "binocularpropertiesdialog.h"
 
-BinocularPropertiesDialog::BinocularPropertiesDialog(Binocular *binocular, double _wavelength, QWidget *parent)
-    : QDialog(parent)
+BinocularPropertiesDialog::BinocularPropertiesDialog(Binocular *_binocular, double _wavelength, QWidget *parent)
+    : QDialog(parent), binocular(_binocular), wavelength(_wavelength)
 {
     setupUi(this);
 
-    this->binocular = binocular;
-    wavelength=_wavelength;
     xSpinBox->setValue(int(binocular->x()));
     ySpinBox->setValue(int(binocular->y()));
 

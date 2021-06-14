@@ -36,13 +36,12 @@ QVariant ScaleNumbersModelView::data(const QModelIndex &index, int role) const
     else if (role == Qt::DisplayRole)
     {
         QString tableElement;
-            if(index.column()==0)
-                tableElement= QString("LB%1").arg(pointAt(index.row()).first);
-                else
-                    if(index.column()==1)
-                        tableElement = QString::number(pointAt(index.row()).second);
+        if(index.column()==0)
+            tableElement= QString("LB%1").arg(pointAt(index.row()).first);
+        else if(index.column()==1)
+            tableElement = QString::number(pointAt(index.row()).second);
 
-            return tableElement;
+        return tableElement;
     }
 
     else if (role == Qt::BackgroundRole)
@@ -57,7 +56,7 @@ QVariant ScaleNumbersModelView::data(const QModelIndex &index, int role) const
         {
             QFont boldFont;
             boldFont.setBold(true);
-           return boldFont;
+            return boldFont;
         }
     }
     else if (role == Qt::ForegroundRole)
@@ -65,8 +64,7 @@ QVariant ScaleNumbersModelView::data(const QModelIndex &index, int role) const
         if (index.row()==scaleNumber-1)
             return QBrush(Qt::black);
     }
-
-        return QVariant();
+    return QVariant();
 }
 
 void ScaleNumbersModelView::setTableList(vector<pair<int, double>> myVector)
@@ -86,11 +84,12 @@ pair<int, double> ScaleNumbersModelView::pointAt(int offset) const
 QVariant ScaleNumbersModelView::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (role == Qt::DisplayRole && orientation == Qt::Horizontal) {
-        switch (section) {
-        case 0:
-            return QString("Numero di scala");
-        case 1:
-            return QString("Valore limite");
+        switch (section)
+        {
+            case 0:
+                return QString("Numero di scala");
+            case 1:
+                return QString("Valore limite");
         }
     }
     return QVariant();

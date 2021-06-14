@@ -16,38 +16,37 @@ ScientificNotationControl::ScientificNotationControl(QWidget *parent)
                                   "QLabel {border-radius: 8px}\n"
                                   "QLabel {color: #a0a0a0}";
 
-        setMaximumSize(QSize(100, 110));
-        gridLayout = new QGridLayout(this);
-        gridLayout->setObjectName(tr("gridLayout"));
-        dial = new QDial(this);
-        dial->setObjectName(tr("dial"));
-        dial->setMinimum(1);
-        dial->setMaximum(999);
+    setMaximumSize(QSize(100, 110));
+    gridLayout = new QGridLayout(this);
+    gridLayout->setObjectName(tr("gridLayout"));
+    dial = new QDial(this);
+    dial->setObjectName(tr("dial"));
+    dial->setMinimum(1);
+    dial->setMaximum(999);
 
-        gridLayout->addWidget(dial, 1, 0, 1, 2);
+    gridLayout->addWidget(dial, 1, 0, 1, 2);
 
-        scientNotLabel = new QLabel(this);
-        scientNotLabel->setObjectName(tr("scientNotLabel"));
-        scientNotLabel->setAlignment(Qt::AlignCenter);
-        scientNotLabel->setStyleSheet(scientNotLabelSyle);
+    scientNotLabel = new QLabel(this);
+    scientNotLabel->setObjectName(tr("scientNotLabel"));
+    scientNotLabel->setAlignment(Qt::AlignCenter);
+    scientNotLabel->setStyleSheet(scientNotLabelSyle);
 
-        gridLayout->addWidget(scientNotLabel, 2, 0, 1, 1);
+    gridLayout->addWidget(scientNotLabel, 2, 0, 1, 1);
 
-        verticalScrollBar = new QScrollBar(this);
-        verticalScrollBar->setObjectName(tr("verticalScrollBar"));
-        verticalScrollBar->setMinimumSize(QSize(0, 25));
-        verticalScrollBar->setMinimum(-13);
-        verticalScrollBar->setMaximum(11);
-        verticalScrollBar->setValue(0);
-        verticalScrollBar->setSliderPosition(0);
-        verticalScrollBar->setOrientation(Qt::Vertical);
+    verticalScrollBar = new QScrollBar(this);
+    verticalScrollBar->setObjectName(tr("verticalScrollBar"));
+    verticalScrollBar->setMinimumSize(QSize(0, 25));
+    verticalScrollBar->setMinimum(-13);
+    verticalScrollBar->setMaximum(11);
+    verticalScrollBar->setValue(0);
+    verticalScrollBar->setSliderPosition(0);
+    verticalScrollBar->setOrientation(Qt::Vertical);
 
-        gridLayout->addWidget(verticalScrollBar, 2, 1, 1, 1);
+    gridLayout->addWidget(verticalScrollBar, 2, 1, 1, 1);
 
-
-        titleLabel = new QLabel(this);
-        titleLabel->setObjectName(tr("label"));
-        titleLabel->setStyleSheet(tr("QLabel {background-color: #00c800}"
+    titleLabel = new QLabel(this);
+    titleLabel->setObjectName(tr("label"));
+    titleLabel->setStyleSheet(tr("QLabel {background-color: #00c800}"
                                      "QLabel {color: #fafafa}"
                                      "QLabel {border-radius: 8px}"
                                      "QLabel {border: 0px}"
@@ -55,25 +54,27 @@ ScientificNotationControl::ScientificNotationControl(QWidget *parent)
                                      "QLabel {margin-left: 4px}"
                                      "QLabel {margin-right: 4px}"));
 
-        titleLabel->setAlignment(Qt::AlignCenter);
-        titleLabel->setText(tr("title"));
+    titleLabel->setAlignment(Qt::AlignCenter);
+    titleLabel->setText(tr("title"));
 
-        gridLayout->addWidget(titleLabel, 0, 0, 1, 2);
+    gridLayout->addWidget(titleLabel, 0, 0, 1, 2);
 
-        dial->setValue(10);
-        verticalScrollBar->setValue(-1);
+    dial->setValue(10);
+    verticalScrollBar->setValue(-1);
 
-        mantissa=0.1;
-        exponent=1;
-        setScientificNumber();
+    mantissa=0.1;
+    exponent=1;
+    setScientificNumber();
 
-        QFont font;
-        font.setPointSize(6);
-        titleLabel->setFont(font);
-        scientNotLabel->setFont(font);
+    QFont font;
+    font.setPointSize(8);
+    scientNotLabel->setFont(font);
+    font.setBold(true);
+    titleLabel->setFont(font);
 
-        connect(dial, SIGNAL(valueChanged(int)), this, SLOT(on_dial_valueChanged(int)));
-        connect(verticalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(on_verticalScrollBar_valueChanged(int)));
+
+    connect(dial, SIGNAL(valueChanged(int)), this, SLOT(on_dial_valueChanged(int)));
+    connect(verticalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(on_verticalScrollBar_valueChanged(int)));
 }
 
 ScientificNotationControl::~ScientificNotationControl()
@@ -111,20 +112,26 @@ void ScientificNotationControl::setValue(const double& _value)
     int minimumExponent=getMinimumExponent();
     int maximumExponent=getMaximumExponent();
 
-    if(value>=1){
+    if(value>=1)
+    {
         exponent=+QString::number(value, 'e', 2).rightRef(2).toInt();
-            if(exponent>maximumExponent){
-                mantissa=mantissa*pow(10, exponent-maximumExponent);
-                exponent=maximumExponent;}
+        if(exponent>maximumExponent)
+        {
+            mantissa=mantissa*pow(10, exponent-maximumExponent);
+            exponent=maximumExponent;
+        }
     }
-        else{
+    else
+    {
         exponent=-(QString::number(value, 'e', 2).rightRef(2).toInt());
-            if(exponent<minimumExponent){
-                mantissa=mantissa*pow(10, exponent-minimumExponent);
-                    exponent=minimumExponent;}
+        if(exponent<minimumExponent)
+        {
+            mantissa=mantissa*pow(10, exponent-minimumExponent);
+            exponent=minimumExponent;
+        }
     }
 
-    dial->setValue((int)(mantissa*100));
+    dial->setValue(static_cast<int>(mantissa*100));
     verticalScrollBar->setValue(-exponent);
 
     scientificNumber=mantissa*std::pow(10, exponent);
@@ -192,7 +199,7 @@ void ScientificNotationControl::setExponent(const int _exponent)
 
 void ScientificNotationControl::setMantissa(const double _mantissa)
 {
-    dial->setValue((int)(_mantissa*100));
+    dial->setValue(static_cast<int>(_mantissa*100));
     mantissa=_mantissa;
 }
 
@@ -202,22 +209,18 @@ void ScientificNotationControl::setEnabled(bool _enabled)
     verticalScrollBar->setEnabled(_enabled);
 
     if(_enabled)
-    {
-    scientNotLabel->setStyleSheet(scientNotLabelSyle);
-    }
+        scientNotLabel->setStyleSheet(scientNotLabelSyle);
     else
-    {
-    scientNotLabel->setStyleSheet(scientNotLabelSyleOff);
-    }
+        scientNotLabel->setStyleSheet(scientNotLabelSyleOff);
 }
 
 void ScientificNotationControl::setBackgroundColor(QString htmlColor)
 {
-setStyleSheet("QDial {background-color:"+ htmlColor +";\n}"
-              "QScrollBar {background-color:"+ htmlColor +";\n}");
+    setStyleSheet("QDial {background-color:"+ htmlColor +";\n}"
+                "QScrollBar {background-color:"+ htmlColor +";\n}");
 }
 
 void ScientificNotationControl::setStatusTipHelp(QString whatThis)
 {
-setStatusTip(whatThis);
+    setStatusTip(whatThis);
 }

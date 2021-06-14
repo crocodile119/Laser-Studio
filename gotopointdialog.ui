@@ -12,7 +12,7 @@
   </property>
   <property name="font">
    <font>
-    <pointsize>7</pointsize>
+    <pointsize>8</pointsize>
    </font>
   </property>
   <property name="windowTitle">
@@ -41,7 +41,9 @@
     <widget class="QGroupBox" name="groupBox">
      <property name="font">
       <font>
-       <pointsize>7</pointsize>
+       <pointsize>8</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
       </font>
      </property>
      <property name="title">
@@ -67,7 +69,9 @@
        <widget class="QLabel" name="label">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -90,7 +94,7 @@ QLabel {margin-right: 10px}</string>
        <widget class="QSpinBox" name="xSpinBox">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
          </font>
         </property>
         <property name="styleSheet">
@@ -124,7 +128,9 @@ QLabel {margin-right: 10px}</string>
        <widget class="QLabel" name="label_2">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -147,7 +153,7 @@ QLabel {margin-right: 10px}</string>
        <widget class="QSpinBox" name="ySpinBox">
         <property name="font">
          <font>
-          <pointsize>7</pointsize>
+          <pointsize>8</pointsize>
          </font>
         </property>
         <property name="styleSheet">
@@ -201,7 +207,7 @@ QLabel {margin-right: 10px}</string>
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="font">
       <font>
-       <pointsize>7</pointsize>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="orientation">

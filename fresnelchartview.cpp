@@ -8,16 +8,16 @@ const qreal FresnelChartView::radialMin = 0;
 
 
   FresnelChartView::FresnelChartView(QWidget *parent, std::vector<std::pair<double, double>> _dataVector,
-                                     double _radialMax, int _correctPositioning): QGraphicsView(new QGraphicsScene, parent)
+                                     double _radialMax, int _correctPositioning): QGraphicsView(new QGraphicsScene, parent),
+                                     dataVector(_dataVector), radialMax(_radialMax),
+                                     correctPositioning(static_cast<double>(_correctPositioning))
 {
     setDragMode(QGraphicsView::NoDrag);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    radialMax=_radialMax;
-    dataVector=_dataVector;
     setDistance(getDistance());
-    correctPositioning=double(_correctPositioning);
+
 
     series = new QLineSeries();
     series->setName("Distanza di rischio riflessione su superficie di vetro [m]");

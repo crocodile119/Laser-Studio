@@ -40,7 +40,7 @@ LambertianChartDialog::LambertianChartDialog(Reflector *reflector, QWidget *pare
     setLabelDNRO();
 
     if(!reflector->isExendedDiffusion())
-     {
+    {
         setPointDiffusionChart();
         ui->kindLabel->setText("Puntiforme");
 
@@ -59,44 +59,44 @@ LambertianChartDialog::LambertianChartDialog(Reflector *reflector, QWidget *pare
         ui->label_34->setText("Posizionamento [gradi]");
 
         setWidgetsVisible(false);
-        }
-            else
-            {
-            ui->kindLabel->setText("Estesa");
+    }
+    else
+    {
+        ui->kindLabel->setText("Estesa");
+        bool DNRO_scientNot;
 
-            bool DNRO_scientNot;
-            DNRO_scientNot=reflector->getOpticalDiameter()>1.0e+03;
-            if(DNRO_scientNot)
-                ui->DNRO_Label->setText(QString::number(reflector->getOpticalDiameter(),'e', 2));
-            else
-                ui->DNRO_Label->setText(QString::number(reflector->getOpticalDiameter(),'f', 1));
+        DNRO_scientNot=reflector->getOpticalDiameter()>1.0e+03;
+        if(DNRO_scientNot)
+            ui->DNRO_Label->setText(QString::number(reflector->getOpticalDiameter(),'e', 2));
+        else
+            ui->DNRO_Label->setText(QString::number(reflector->getOpticalDiameter(),'f', 1));
 
-            ui->distanceLabel->setText(QString::number(reflector->getReflectorHazardDistance(),'e', 2));
+        ui->distanceLabel->setText(QString::number(reflector->getReflectorHazardDistance(),'e', 2));
 
-            setWidgetsVisible(true);
-            ui->constPosLabel->setText(QString::number(reflector->getConstant(),'e', 2));
-            ui->label_34->setText("costante:");
+        setWidgetsVisible(true);
+        ui->constPosLabel->setText(QString::number(reflector->getConstant(),'e', 2));
+        ui->label_34->setText("costante:");
 
-            ui->spotDiameterLabel->setText(QString::number(reflector->getSpotDiameter(),'e', 2));
-            ui->label_36->setText("Diametro spot [mm]");            
+        ui->spotDiameterLabel->setText(QString::number(reflector->getSpotDiameter(),'e', 2));
+        ui->label_36->setText("Diametro spot [mm]");
 
-            ui->alphaLabel->setText(QString::number(reflector->getAlpha(),'e', 2));
-            ui->label_37->setText("α [mrad]");
+        ui->alphaLabel->setText(QString::number(reflector->getAlpha(),'e', 2));
+        ui->label_37->setText("α [mrad]");
 
-            ui->CE_Label->setText(QString::number(reflector->getCE()));
-            ui->label_38->setText("CE");
+        ui->CE_Label->setText(QString::number(reflector->getCE()));
+        ui->label_38->setText("CE");
 
-            ui->surfaceLabel->setText(reflector->getKindOfSurface());          
-            ui->label_39->setText("Tipo di superficie");
+        ui->surfaceLabel->setText(reflector->getKindOfSurface());
+        ui->label_39->setText("Tipo di superficie");
 
-            ui->newRapLabel->setText(QString::number(reflector->getNewRapSolution()));
-            ui->label_40->setText("Risultato NewRap");
+        ui->newRapLabel->setText(QString::number(reflector->getNewRapSolution()));
+        ui->label_40->setText("Risultato NewRap");
 
-            ui->indicatorLabel->setText(QString::number(reflector->getAlphaIndicator()));
-            ui->label_41->setText("Indicatore α");
-            //Per questo grafico non occore una nuova classe basta una funzione
-            setExendedDiffusionChart();
-            }
+        ui->indicatorLabel->setText(QString::number(reflector->getAlphaIndicator()));
+        ui->label_41->setText("Indicatore α");
+        //Per questo grafico non occore una nuova classe basta una funzione
+        setExendedDiffusionChart();
+    }
 }
 
 LambertianChartDialog::~LambertianChartDialog()
@@ -222,10 +222,7 @@ void LambertianChartDialog::setWidgetsVisible(bool visible)
 {
     ui->indicatorLabel->setVisible(visible);
     ui->label_38->setVisible(visible);
-/*
-    ui->spotDiameterLabel->setVisible(visible);
-    ui->label_36->setVisible(visible);
-*/
+
     ui->alphaLabel->setVisible(visible);
     ui->label_37->setVisible(visible);
 

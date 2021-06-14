@@ -13,7 +13,7 @@ void LambertianReflector::computeTrigonometricReflection()
 {
     reflectionAngleVect.clear();
 
-    for(int i=0; i<90; i++)
+    for(int i{0}; i<90; i++)
         {
         myAngle=i;    
         myReflectionAngle=cos(myAngle*radDeg);
@@ -21,7 +21,7 @@ void LambertianReflector::computeTrigonometricReflection()
         reflectionAngleVect.push_back(make_pair(myAngle, myReflectionAngle));
         }
 
-        for(int i=90; i<270; i++)
+    for(int i{90}; i<270; i++)
         {
         myAngle=i;
         myReflectionAngle=0;
@@ -29,7 +29,7 @@ void LambertianReflector::computeTrigonometricReflection()
         reflectionAngleVect.push_back(make_pair(myAngle, myReflectionAngle));
         }
 
-        for(int i=270; i<360; i++)
+        for(int i{270}; i<360; i++)
         {
         myAngle=i;
         myReflectionAngle=cos(myAngle*radDeg);
@@ -56,7 +56,7 @@ void LambertianReflector::computeZs(double _lambertianMax, double reflectionCoef
     double myRho_s;
     double sqrt_myRho_s;
     double myZsVector_second;
-    int i=0;
+    int i{0};
 
     myZsVector.clear();
 
@@ -83,7 +83,7 @@ bool LambertianReflector::evaluateDiffusionDistance()
     qDebug()<< "Potenza/enegia del laser" << laserPowerErg;
     qDebug()<< "Distanza dal laser" << laserDistance;
 
-    myDiffusionHazard->setKindOfSurface(DiffusionHazard::MEDIUM);
+    myDiffusionHazard->setKindOfSurface(DiffusionHazard::kindOfSurface::MEDIUM);
     myDiffusionHazard->computeConstant();
     myDiffusionHazard->computeSpotDiameter();
 
@@ -106,35 +106,37 @@ bool LambertianReflector::evaluateDiffusionDistance()
     ***************************************************************************************************************************/
 
     if(myConst<DiffusionHazard::PI_GRECO)
-        {
+    {
         return false;
-        }
-        else
-        {
-            myDiffusionHazard->computeExendedReflection(1.0e-02);            //1.0e-02 è la eps
-        }
-            myDiffusionHazard->computeAlpha();
-            qDebug()<<"Alpha: "<< myDiffusionHazard->getAlpha();
-            qDebug()<<"Alpha indicator: "<< myDiffusionHazard->getAlphaIndicator();
+    }
+    else
+    {
+       myDiffusionHazard->computeExendedReflection(1.0e-02);            //1.0e-02 è la eps
+    }
 
-            if(myDiffusionHazard->getAlphaIndicator()<1)
-            {
-                return false;
-            }
-            else
-            {
-                constant=myDiffusionHazard->getConstant();
-                reflectorDistance=myDiffusionHazard->getReflectorDistance();
-                spotDiameter=myDiffusionHazard->getSpotDiameter();
-                qDebug()<<"Diametro dello spot: " << spotDiameter;
-                CE=myDiffusionHazard->getCE();
-                kindOfSurface=myDiffusionHazard->getKindOfSurface();
-                newRapSolution=myDiffusionHazard->getNewRapSolution();
-                alpha=myDiffusionHazard->getAlpha();
-                alphaIndicator=myDiffusionHazard->getAlphaIndicator();
-                reflectorHazardDistance=myDiffusionHazard->getReflectorHazardDistance();
-                return true;
-            }
+    myDiffusionHazard->computeAlpha();
+    qDebug()<<"Alpha: "<< myDiffusionHazard->getAlpha();
+    qDebug()<<"Alpha indicator: "<< myDiffusionHazard->getAlphaIndicator();
+
+    if(myDiffusionHazard->getAlphaIndicator()<1)
+    {
+        return false;
+    }
+    else
+    {
+        constant=myDiffusionHazard->getConstant();
+        reflectorDistance=myDiffusionHazard->getReflectorDistance();
+        spotDiameter=myDiffusionHazard->getSpotDiameter();
+        qDebug()<<"Diametro dello spot: " << spotDiameter;
+        CE=myDiffusionHazard->getCE();
+        kindOfSurface=myDiffusionHazard->getKindOfSurface();
+        newRapSolution=myDiffusionHazard->getNewRapSolution();
+        alpha=myDiffusionHazard->getAlpha();
+        alphaIndicator=myDiffusionHazard->getAlphaIndicator();
+        reflectorHazardDistance=myDiffusionHazard->getReflectorHazardDistance();
+
+        return true;
+    }
 }
 
 double LambertianReflector::getLaserBeamDiameter()const

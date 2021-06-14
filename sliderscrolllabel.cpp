@@ -22,68 +22,64 @@ SliderScrollLabel::SliderScrollLabel(QWidget *parent) :
 
 
 
-        setMaximumSize(QSize(220, 75));
-        gridLayout = new QGridLayout(this);
-        gridLayout->setObjectName(tr("gridLayout"));
+    setMaximumSize(QSize(300, 75));
+    gridLayout = new QGridLayout(this);
+    gridLayout->setObjectName(tr("gridLayout"));
 
-        titleLabel = new QLabel(this);
-        titleLabel->setObjectName(tr("titleLabel"));
-        titleLabel->setAlignment(Qt::AlignCenter);
-        titleLabel->setStyleSheet(tr("QLabel {background-color: #00c800}"
-                                     "QLabel {color: #fafafa}"
-                                     "QLabel {border-radius: 8px}"
-                                     "QLabel {border: 0px}"
-                                     "QLabel {padding: 5px}"
-                                     "QLabel {margin-left: 55px}"
-                                     "QLabel {margin-right: 55px}"));
-
-
-        gridLayout->addWidget(titleLabel, 0, 1, 1, 3);
-
-        slider = new QSlider(this);
-        slider->setObjectName(tr("slider"));
-        slider->setMinimum(1);
-        slider->setMaximum(999);
-        slider->setObjectName(tr("slider"));
-        slider->setOrientation(Qt::Horizontal);
-        slider->setStyleSheet(tr("QSlider::handle:horizontal {background-color: #e0e0e0}\n"
-                                 "QSlider::sub-page:horizontal{background: #00c800}"));
-
-        gridLayout->addWidget(slider, 1, 1, 1, 1);
-
-        scientNotLabel = new QLabel(this);
-        scientNotLabel->setObjectName(tr("title"));
-        scientNotLabel->setAlignment(Qt::AlignCenter);
-        scientNotLabel->setStyleSheet(scientNotLabelStyle);
+    titleLabel = new QLabel(this);
+    titleLabel->setObjectName(tr("titleLabel"));
+    titleLabel->setAlignment(Qt::AlignCenter);
+    titleLabel->setStyleSheet(tr("QLabel {background-color: #00c800}"
+                                 "QLabel {color: #fafafa}"
+                                 "QLabel {border-radius: 8px}"
+                                 "QLabel {border: 0px}"
+                                 "QLabel {padding: 3px}"
+                                 "QLabel {margin-left: 70px}"
+                                 "QLabel {margin-right: 70px}"));
 
 
-        gridLayout->addWidget(scientNotLabel, 1, 2, 1, 1);
+    gridLayout->addWidget(titleLabel, 0, 1, 1, 3);
 
-        scrollBar = new QScrollBar(this);
-        scrollBar->setObjectName(tr("scrollBar"));
-        scrollBar->setMinimumSize(QSize(0, 25));
-        scrollBar->setOrientation(Qt::Vertical);
-        scrollBar->setMinimum(-13);
-        scrollBar->setMaximum(11);
-        scrollBar->setValue(0);
-        scrollBar->setSliderPosition(0);
+    slider = new QSlider(this);
+    slider->setObjectName(tr("slider"));
+    slider->setMinimum(1);
+    slider->setMaximum(999);
+    slider->setObjectName(tr("slider"));
+    slider->setOrientation(Qt::Horizontal);
+    slider->setStyleSheet(tr("QSlider::handle:horizontal {background-color: #e0e0e0}\n"
+                             "QSlider::sub-page:horizontal{background: #00c800}"));
 
-        gridLayout->addWidget(scrollBar, 1, 3, 1, 1);
+    gridLayout->addWidget(slider, 1, 1, 1, 1);
+    scientNotLabel = new QLabel(this);
+    scientNotLabel->setObjectName(tr("title"));
+    scientNotLabel->setAlignment(Qt::AlignCenter);
+    scientNotLabel->setStyleSheet(scientNotLabelStyle);
+    gridLayout->addWidget(scientNotLabel, 1, 2, 1, 1);
 
-        slider->setValue(10);
-        scrollBar->setValue(-1);
+    scrollBar = new QScrollBar(this);
+    scrollBar->setObjectName(tr("scrollBar"));
+    scrollBar->setMinimumSize(QSize(0, 25));
+    scrollBar->setOrientation(Qt::Vertical);
+    scrollBar->setMinimum(-13);
+    scrollBar->setMaximum(11);
+    scrollBar->setValue(0);
+    scrollBar->setSliderPosition(0);
+    gridLayout->addWidget(scrollBar, 1, 3, 1, 1);
+    slider->setValue(10);
+    scrollBar->setValue(-1);
+    mantissa=0.1;
+    exponent=1;
+    setScientificNumber();
 
-        mantissa=0.1;
-        exponent=1;
-        setScientificNumber();
+    QFont font;
+    font.setPointSize(8);
+    scientNotLabel->setFont(font);
+    font.setBold(true);
+    titleLabel->setFont(font);
 
-        QFont font;
-        font.setPointSize(6);
-        titleLabel->setFont(font);
-        scientNotLabel->setFont(font);
 
-        connect(slider, SIGNAL(valueChanged(int)), this, SLOT(on_slider_valueChanged(int)));
-        connect(scrollBar, SIGNAL(valueChanged(int)), this, SLOT(on_scrollBar_valueChanged(int)));
+    connect(slider, SIGNAL(valueChanged(int)), this, SLOT(on_slider_valueChanged(int)));
+    connect(scrollBar, SIGNAL(valueChanged(int)), this, SLOT(on_scrollBar_valueChanged(int)));
 }
 
 SliderScrollLabel::~SliderScrollLabel()
@@ -115,14 +111,14 @@ void SliderScrollLabel::setValue(const double& _value)
 {
     double value=_value;
     scientNotLabel->setText(QString::number(value, 'e', 2));
-    mantissa=QString::number(value, 'e', 2).left(4).toDouble();
+    mantissa=QString::number(value, 'e', 2).leftRef(4).toDouble();
     qDebug()<< "Mantissa: " << mantissa;
-    slider->setValue((int)(mantissa*100));
+    slider->setValue(static_cast<int>(mantissa*100));
 
     if(value>=1)
-        exponent=+QString::number(value, 'e', 2).right(2).toInt();
-        else
-        exponent=-(QString::number(value, 'e', 2).right(2).toInt());
+        exponent=+QString::number(value, 'e', 2).rightRef(2).toInt();
+    else
+        exponent=-(QString::number(value, 'e', 2).rightRef(2).toInt());
 
     scrollBar->setValue(-exponent);
 
@@ -191,24 +187,19 @@ void SliderScrollLabel::setExponent(const int _exponent)
 
 void SliderScrollLabel::setMantissa(const double _mantissa)
 {
-    slider->setValue((int)(_mantissa*100));
+    slider->setValue(static_cast<int>(_mantissa*100));
     mantissa=_mantissa;
 }
 
 void SliderScrollLabel::setEnabled(bool _enabled)
 {
-    {
-        slider->setEnabled(_enabled);
-        scrollBar->setEnabled(_enabled);
+    slider->setEnabled(_enabled);
+    scrollBar->setEnabled(_enabled);
 
-        if(_enabled)
-        {
+    if(_enabled)
         scientNotLabel->setStyleSheet(scientNotLabelStyle);
-        }
-        else
-        {
+    else
         scientNotLabel->setStyleSheet(scientNotLabelStyleOff);
-        }
-    }
+
 }
 

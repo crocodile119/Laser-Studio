@@ -5,11 +5,9 @@
 #include "binocular.h"
 #include <cmath>
 
-BinocularLink::BinocularLink(LaserPoint *fromLaser, Binocular *toBinocular)
+BinocularLink::BinocularLink(LaserPoint *fromLaser, Binocular *toBinocular): fromMyLaser(fromLaser),
+                toMyBinocular(toBinocular)
 {
-    fromMyLaser = fromLaser;
-    toMyBinocular = toBinocular;
-
     fromMyLaser->addBinocularLink(this);
     toMyBinocular->addBinocularLink(this);
 

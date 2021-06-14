@@ -19,24 +19,13 @@
 const double Binocular::radDeg = 3.1415926535897932384626433832795/180;
 const double Binocular::g= 7.0;
 
-Binocular::Binocular(double DNRO, double _binocularDistance, double _wavelength, double _divergence, double _beamDiameter): QGraphicsObject(), binocularPix(":/images/binocularpix.png")
+Binocular::Binocular(double DNRO, double _binocularDistance, double _wavelength, double _divergence, double _beamDiameter): QGraphicsObject(),
+     opticalDiameter(2*DNRO), myTextColor(Qt::black), myBackgroundColor(Qt::white), myOutlineColor(Qt::transparent), myBeamColor(Qt::darkGray),
+     scale(1.0), binocularDistance(_binocularDistance), wavelength(_wavelength), divergence(_divergence), beamDiameter(_beamDiameter), D0(50),
+     magnification(5), transmissionCoeff(0.90), binocularPix(":/images/binocularpix.png")
 {
-    myTextColor = Qt::black;
-    myOutlineColor = Qt::transparent;
-    myBeamColor = Qt::darkGray;
-    myBackgroundColor = Qt::white;
-    opticalDiameter=2*DNRO;
-    wavelength=_wavelength;
-    binocularDistance=_binocularDistance;
-    magnification=5;
-    transmissionCoeff=0.90;
-    divergence=_divergence;
-    beamDiameter=_beamDiameter;
-    D0=50;
     computeOpticalGain();
     exendedOpticalDiameter=DNRO*sqrtf(opticalGain);
-
-    scale=1.0;
 
     if(exendedOpticalDiameter>binocularDistance)
         dangerous=true;

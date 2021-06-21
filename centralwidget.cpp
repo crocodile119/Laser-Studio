@@ -287,7 +287,6 @@ bool CentralWidget::readFile(const QString &fileName)
      myDockControls->ui->T_SkinControl->setValue(T_SkinSpinBox);
      myDockControls->ui->checkGaussianBeam->setChecked(isGaussianBeamChecked);
 
-
      myDockControls->enableTeEdtiting(isTeChecked);
      myDockControls->setGoggleMaterial(goggleMaterial);
 
@@ -619,6 +618,11 @@ QVector <QRectF> CentralWidget::getFootprintRectVect()
 QVector <QString> CentralWidget::getFootprintDescriptionVect()
 {
     return footprintDescriptionVect;
+}
+
+void CentralWidget::setUndoStack(QUndoStack* _undoStack)
+{
+    myDockControls->setUndoStack(_undoStack);
 }
 
 CentralWidget::~CentralWidget()

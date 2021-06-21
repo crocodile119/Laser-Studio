@@ -2,6 +2,7 @@
 #define CENTRALWIDGET_H
 
 #include <QWidget>
+#include <QUndoStack>
 #include <QGraphicsScene>
 #include <QGraphicsEllipseItem>
 #include "dockresults.h"
@@ -59,6 +60,7 @@ public:
     int getMeteoRange() const;
 
     void clearInstallationDesription();
+    void setUndoStack(QUndoStack*);
 
     QString getForce()const;
     QString getCustomer()const;
@@ -68,6 +70,7 @@ public:
     QString getPlaceDescription()const;
 
     DockControls *myDockControls;
+    DockControls *outDockControls;
     DockResults *myDockResults;
     DockEffects *myDockEffects;
     DockSkin *myDockSkin;
@@ -128,8 +131,6 @@ public:
     void setGridState(const bool&);
 
     bool isLabRoomInserted();
-
-private slots:
 
 signals:
     void modified();

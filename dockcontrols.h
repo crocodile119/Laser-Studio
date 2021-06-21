@@ -58,7 +58,9 @@ public:
     void fetchDataVector();
     void fetchDDataVector();
     void fetchLaserOutput();
-    void fetchDLaserOutput();
+    void fetchDLaserOutput();  
+    void setUndoStack(QUndoStack*);
+    void resetHistory();
 
     void setLaserGoggleWidgets();
     void displayScaleNumber();
@@ -218,6 +220,7 @@ private:
     DockGoggle *dockGoggle;
     DockLea *dockLea;
     ReflectorsQList *dockReflectorsList;
+    QUndoStack* undoStack;
 
     operation n_laser;
     MyPolarChartView *polarChartView;

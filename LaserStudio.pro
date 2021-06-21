@@ -7,6 +7,7 @@ qtHaveModule(printsupport): QT += printsupport
 RC_ICONS = LaserStudioIcon.ico 
 
 SOURCES +=\
+    addcontrolvaluecommand.cpp \
     atmosphericeffectsdialog.cpp \
     binocular.cpp \
     binocularlink.cpp \
@@ -22,6 +23,7 @@ SOURCES +=\
     dockcontrols.cpp \
     dockeffects.cpp \
     dockgoggle.cpp \
+    dockhistory.cpp \
     docklea.cpp \
     dockresults.cpp \
     dockskin.cpp \
@@ -72,6 +74,7 @@ SOURCES +=\
     wetreflector.cpp
 
 HEADERS  += mainwindow.h \
+    addcontrolvaluecommand.h \
     atmosphericeffectsdialog.h \
     binocular.h \
     binocularlink.h \
@@ -87,6 +90,7 @@ HEADERS  += mainwindow.h \
     dockcontrols.h \
     dockeffects.h \
     dockgoggle.h \
+    dockhistory.h \
     docklea.h \
     dockresults.h \
     dockskin.h \
@@ -145,6 +149,7 @@ FORMS    += \
     dockcontrols.ui \
     dockeffects.ui \
     dockgoggle.ui \
+    dockhistory.ui \
     docklea.ui \
     dockresults.ui \
     dockskin.ui \

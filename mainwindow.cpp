@@ -52,6 +52,9 @@ MainWindow::MainWindow()
     setFont(font);
 
     setThemeOnStart();
+
+    undoStack = new QUndoStack(this);
+    laserWindow->setUndoStack(undoStack);
     setCentralWidget(laserWindow);
 
     setWindowTitle(tr("Laser Studio"));
@@ -67,6 +70,7 @@ MainWindow::MainWindow()
     scale=1;
     dragModeState=false;
 
+    createUndoView();
     createActions();
     createStatusBar();
     createToolBars();
@@ -960,6 +964,25 @@ void MainWindow::createActions()
     reflectorsEditMenu = menuBar()->addMenu(tr("&Dettagli scena"));
     reflectorsEditMenu ->setFont(font);
 
+    undoAction = undoStack->createUndoAction(this, tr("&Undo"));
+    undoAction->setShortcuts(QKeySequence::Undo);
+    undoAction->setIcon(QIcon(":/images/undo.png"));
+
+    reflectorsEditMenu->addAction(undoAction);
+
+    redoAction = undoStack->createRedoAction(this, tr("&Redo"));
+    redoAction->setShortcuts(QKeySequence::Redo);
+    redoAction->setIcon(QIcon(":/images/redo.png"));
+
+    reflectorsEditMenu->addAction(redoAction);
+
+    addDockWidget(Qt::RightDockWidgetArea, myDockHistory);
+    showDockHistory = new QAction(tr("Visualizza la cronologia dei comandi"), this);
+    showDockHistory = myDockHistory->toggleViewAction();
+    showDockHistory->setIcon(QIcon(":/images/history.png"));
+    showDockHistory->setStatusTip(tr("Visualizza la cronologia dei comandi"));
+    reflectorsEditMenu->addAction(showDockHistory);
+
     changeMeteoAct= new QAction(tr("Specifica meteo"), this);
     changeMeteoAct->setIcon(QIcon(":/images/meteo.png"));
     changeMeteoAct->setStatusTip(tr("Consente di specificare le condizioni meteo"));
@@ -1206,6 +1229,16 @@ void MainWindow::createActions()
 
     aboutQtAct = helpMenu->addAction(tr("Informazioni su &Qt"), qApp, &QApplication::aboutQt);
     aboutQtAct->setStatusTip(tr("Ambiente di sviluppo per applicazioni C++ con licenza GPL"));
+}
+
+void MainWindow::createUndoView()
+{
+    undoView = new QUndoView(undoStack);
+    myDockHistory=new DockHistory();
+    myDockHistory->ui->scrollArea->setWidget(undoView);
+    undoView->setWindowTitle(tr("Command List"));
+    undoView->show();
+    undoView->setAttribute(Qt::WA_QuitOnClose, false);
 }
 
 void MainWindow::backgroundGrid()
@@ -2809,6 +2842,9 @@ void MainWindow::createToolBars()
     sceneToolBar->addAction(sendToBackAction);
     sceneToolBar->addAction(bringToFrontAction);
     sceneToolBar->addAction(changeMeteoAct);
+    sceneToolBar->addAction(undoAction);
+    sceneToolBar->addAction(redoAction);
+    sceneToolBar->addAction(showDockHistory);
 
     environmentToolBar = addToolBar(tr("Ambiente"));
     environmentToolBar->setObjectName(tr("Ambiente"));
@@ -4296,6 +4332,21 @@ void MainWindow::setThemeOnStart()
     settings.endGroup();
 
     setGuiDarkTheme();
+}
+
+void MainWindow::undo()
+{
+    statusBar()->showMessage(tr("Ripristino immagine"), 2000);
+}
+
+void MainWindow::redo()
+{
+    statusBar()->showMessage(tr("Rielaborazione "), 2000);
+}
+
+void MainWindow::controlsModified()
+{
+    setWindowModified(true);
 }
 
 MainWindow::~MainWindow()

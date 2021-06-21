@@ -1,6 +1,7 @@
 #include "scientificnotationcontrol.h"
 #include <cmath>
 #include <QDebug>
+#include "addcontrolvaluecommand.h"
 
 ScientificNotationControl::ScientificNotationControl(QWidget *parent)
     : QWidget(parent)
@@ -72,15 +73,20 @@ ScientificNotationControl::ScientificNotationControl(QWidget *parent)
     font.setBold(true);
     titleLabel->setFont(font);
 
-
     connect(dial, SIGNAL(valueChanged(int)), this, SLOT(on_dial_valueChanged(int)));
     connect(verticalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(on_verticalScrollBar_valueChanged(int)));
+    connect(verticalScrollBar, SIGNAL(actionTriggered(int)), this, SLOT(on_verticalScrollBar_actionTriggered(int)));
+    connect(dial, SIGNAL(actionTriggered(int)), this, SLOT(on_dial_actionTriggered(int)));
+    connect(dial, SIGNAL(sliderMoved(int)), this, SLOT(on_dial_sliderMoved(int)));
+    connect(dial, SIGNAL(sliderPressed()), this, SLOT(on_dial_sliderPressed()));
+    connect(dial, SIGNAL(sliderReleased()), this, SLOT(on_dial_sliderReleased()));
+    //connect(verticalScrollBar, SIGNAL(sliderPressed()), this, SLOT(on_verticalScrollBar_sliderPressed()));
+    //connect(verticalScrollBar, SIGNAL(sliderReleased()), this, SLOT(on_verticalScrollBar_sliderReleased()));
 }
 
 ScientificNotationControl::~ScientificNotationControl()
 {
 }
-
 
 void ScientificNotationControl::on_dial_valueChanged(int value)
 {
@@ -94,6 +100,8 @@ void ScientificNotationControl::on_verticalScrollBar_valueChanged(int value)
     exponent=-value;
     setScientificNumber();
     emit valueChanged(value);
+
+    qDebug()<<"on_scrollBar_valueChanged: "<<scrollBarOldValue;
 }
 
 void ScientificNotationControl::setScientificNumber()
@@ -223,4 +231,105 @@ void ScientificNotationControl::setBackgroundColor(QString htmlColor)
 void ScientificNotationControl::setStatusTipHelp(QString whatThis)
 {
     setStatusTip(whatThis);
+}
+
+void ScientificNotationControl::on_verticalScrollBar_actionTriggered(int action)
+{
+    if((action==1)||(action==2))
+    {      
+        QUndoCommand *scrollCommand = new AddControlValueCommand(dial, verticalScrollBar, dialOldValue, scrollBarOldValue,
+                                                                 titleLabel->text(), AddControlValueCommand::movement::TRIGGER_ACTION,
+                                                                 AddControlValueCommand::command::SCROLL_BAR);
+
+
+        undoStack->push(scrollCommand);
+        scrollBarOldValue=verticalScrollBar->sliderPosition();
+        dialOldValue=dial->sliderPosition();
+    }
+}
+
+/*
+void ScientificNotationControl::on_verticalScrollBar_sliderPressed()
+{
+    scrollBarCommandPressed = new AddScrollBarValueCommand(scrollBarOldValue, dial, verticalScrollBar, AddScrollBarValueCommand::movement::TRIGGER_ACTION);
+    scrollBarPressedValue=verticalScrollBar->sliderPosition();
+    undoStack->push(scrollBarCommandPressed);
+    qDebug()<<"valore della scrollbar: "<<verticalScrollBar->sliderPosition();
+}
+
+void ScientificNotationControl::on_verticalScrollBar_sliderReleased()
+{
+    if(scrollBarPressedValue-verticalScrollBar->sliderPosition()==0)
+    {
+        scrollBarCommandPressed->undo();
+        scrollBarCommandPressed->setObsolete(true);
+        undoStack->undo();
+    }
+}
+*/
+void ScientificNotationControl::on_dial_actionTriggered(int action)
+{
+    if((action==1)||(action==2)||(action==3)||(action==4))
+    {
+        QUndoCommand *scrollCommand = new AddControlValueCommand(dial, verticalScrollBar, dialOldValue, scrollBarOldValue,
+                                                                 titleLabel->text(), AddControlValueCommand::movement::TRIGGER_ACTION,
+                                                                 AddControlValueCommand::command::DIAL);
+        undoStack->push(scrollCommand);
+        dialOldValue=dial->sliderPosition();
+        scrollBarOldValue=verticalScrollBar->sliderPosition();
+        qDebug()<<"valore del dial: "<<dial->sliderPosition();
+    }
+}
+
+void ScientificNotationControl::on_dial_sliderMoved(int position)
+{
+    Q_UNUSED(position);
+    QUndoCommand *scrollCommand = new AddControlValueCommand(dial, verticalScrollBar, dialOldValue, scrollBarOldValue,
+                                                             titleLabel->text(), AddControlValueCommand::movement::SLIDER_MOVED,
+                                                             AddControlValueCommand::command::DIAL);
+    undoStack->push(scrollCommand);
+    dialOldValue=dial->sliderPosition();
+    scrollBarOldValue=verticalScrollBar->sliderPosition();
+}
+
+void ScientificNotationControl::on_dial_sliderPressed()
+{ 
+    dialCommandPressed= new AddControlValueCommand(dial, verticalScrollBar, dialOldValue, scrollBarOldValue,
+                                                   titleLabel->text(), AddControlValueCommand::movement::TRIGGER_ACTION,
+                                                   AddControlValueCommand::command::DIAL);
+    dialPressedValue=dial->sliderPosition();
+    undoStack->push(dialCommandPressed);
+    qDebug()<<"valore del dial: "<<dial->sliderPosition();
+}
+
+void ScientificNotationControl::on_dial_sliderReleased()
+{
+    if((dialPressedValue-dial->sliderPosition()==0))
+    {
+        dialCommandPressed->undo();
+        dialCommandPressed->setObsolete(true);
+        undoStack->undo();
+    }
+}
+
+void ScientificNotationControl::setUndoStack(QUndoStack* _undoStack)
+{
+    undoStack=_undoStack; 
+    connect(undoStack, SIGNAL(indexChanged(int)), this, SLOT(on_undoStack_indexChanged()));
+}
+
+void ScientificNotationControl::setDialInitialValue()
+{
+    dialOldValue=dial->value();
+}
+
+void ScientificNotationControl::setScrollBarInitialValue()
+{
+    scrollBarOldValue=verticalScrollBar->value();
+}
+
+void ScientificNotationControl::on_undoStack_indexChanged()
+{
+    scrollBarOldValue=verticalScrollBar->sliderPosition();
+    dialOldValue=dial->sliderPosition();
 }

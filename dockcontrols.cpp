@@ -3953,3 +3953,37 @@ void DockControls::on_comboBoxBands_currentIndexChanged(int index)
     setWidgets();
         emit modified();
 }
+
+void DockControls::setUndoStack(QUndoStack* _undoStack)
+{
+    undoStack=_undoStack;
+    ui->powerErgControl->setUndoStack(undoStack);
+    ui->alphaControl->setUndoStack(undoStack);
+    ui->pulseControl->setUndoStack(undoStack);
+    ui->divergenceControl->setUndoStack(undoStack);
+    ui->beamDiameterControl->setUndoStack(undoStack);
+    ui->prfControl->setUndoStack(undoStack);
+
+    resetHistory();
+}
+
+void DockControls::resetHistory()
+{
+        ui->powerErgControl->setDialInitialValue();
+        ui->powerErgControl->setScrollBarInitialValue();
+
+        ui->alphaControl->setDialInitialValue();
+        ui->alphaControl->setScrollBarInitialValue();
+
+        ui->pulseControl->setDialInitialValue();
+        ui->pulseControl->setScrollBarInitialValue();
+
+        ui->divergenceControl->setDialInitialValue();
+        ui->divergenceControl->setScrollBarInitialValue();
+
+        ui->beamDiameterControl->setDialInitialValue();
+        ui->beamDiameterControl->setScrollBarInitialValue();
+
+        ui->prfControl->setDialInitialValue();
+        ui->prfControl->setScrollBarInitialValue();
+}

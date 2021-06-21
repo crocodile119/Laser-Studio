@@ -10,7 +10,11 @@
 #include <QLabel>
 #include <QMouseEvent>
 #include <QComboBox>
+#include <QUndoStack>
+#include <QUndoView>
 #include "centralwidget.h"
+#include "dockhistory.h"
+#include "ui_dockhistory.h"
 
 //Scene
 #include <QPair>
@@ -162,6 +166,9 @@ private slots:
     void setViewportRect();
     void setSceneRect();
     QString installationKind()const;
+    void controlsModified();
+    void undo();
+    void redo();
 
     void setReflectorEMP_ForDiffusion();
     void setReflectorPowerErgForDiffusion();
@@ -207,6 +214,7 @@ private:
     void createMenus();
     void createToolBars();
     void createContextMenu();
+    void createUndoView();
     void clearScene();
     void setZValue(int z);
     Reflector *selectedReflector() const;
@@ -275,6 +283,8 @@ private:
     double scale;
     bool theme;
 
+    DockHistory* myDockHistory;
+
     enum { MaxRecentFiles = 5 };
     enum { nScales = 20 };
 
@@ -308,6 +318,9 @@ private:
     QAction *descriptionAct;
     QAction *exitAction;
     QAction *quitAct;
+    QAction *undoAction;
+    QAction *redoAction;
+    QAction *showDockHistory;
     QAction *laserSettingsAction;
     QAction *fieldSettingsAction;
     QAction *classifierSettingsAction;
@@ -335,6 +348,9 @@ private:
     QAction *aboutAct;
     QAction *aboutQtAct;
     QAction *onLineHelpAct;
+
+    QUndoStack *undoStack=nullptr;
+    QUndoView *undoView=nullptr;
 
     LaserPoint *laserpoint;
     Reflector *reflector;

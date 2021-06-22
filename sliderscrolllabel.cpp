@@ -80,6 +80,12 @@ SliderScrollLabel::SliderScrollLabel(QWidget *parent) :
 
     connect(slider, SIGNAL(valueChanged(int)), this, SLOT(on_slider_valueChanged(int)));
     connect(scrollBar, SIGNAL(valueChanged(int)), this, SLOT(on_scrollBar_valueChanged(int)));
+    connect(scrollBar, SIGNAL(actionTriggered(int)), this, SLOT(on_scrollBar_actionTriggered(int)));
+    connect(slider, SIGNAL(actionTriggered(int)), this, SLOT(on_slider_actionTriggered(int)));
+    connect(slider, SIGNAL(sliderMoved(int)), this, SLOT(on_slider_sliderMoved(int)));
+    connect(slider, SIGNAL(sliderPressed()), this, SLOT(on_slider_sliderPressed()));
+    connect(slider, SIGNAL(sliderReleased()), this, SLOT(on_slider_sliderReleased()));
+
 }
 
 SliderScrollLabel::~SliderScrollLabel()
@@ -203,3 +209,84 @@ void SliderScrollLabel::setEnabled(bool _enabled)
 
 }
 
+void SliderScrollLabel::on_scrollBar_actionTriggered(int action)
+{
+    if((action==1)||(action==2))
+    {
+        QUndoCommand *scrollCommand = new AddScrollSliderValueCommand(slider, scrollBar, sliderOldValue, scrollBarOldValue,
+                                                                 "Tcute[s]", AddScrollSliderValueCommand::movement::TRIGGER_ACTION,
+                                                                 AddScrollSliderValueCommand::command::SCROLL_BAR);
+
+
+        undoStack->push(scrollCommand);
+        scrollBarOldValue=scrollBar->sliderPosition();
+        sliderOldValue=slider->sliderPosition();
+    }
+}
+
+void SliderScrollLabel::on_slider_actionTriggered(int action)
+{
+    if((action==1)||(action==2)||(action==3)||(action==4))
+    {
+        QUndoCommand *scrollCommand = new AddScrollSliderValueCommand(slider, scrollBar, sliderOldValue, scrollBarOldValue,
+                                                                 "Tcute[s]", AddScrollSliderValueCommand::movement::TRIGGER_ACTION,
+                                                                 AddScrollSliderValueCommand::command::SLIDER);
+        undoStack->push(scrollCommand);
+        sliderOldValue=slider->sliderPosition();
+        scrollBarOldValue=scrollBar->sliderPosition();
+        qDebug()<<"valore del dial: "<<slider->sliderPosition();
+    }
+}
+
+void SliderScrollLabel::on_slider_sliderMoved(int position)
+{
+    Q_UNUSED(position);
+    QUndoCommand *scrollCommand = new AddScrollSliderValueCommand(slider, scrollBar, sliderOldValue, scrollBarOldValue,
+                                                             "Tcute[s]", AddScrollSliderValueCommand::movement::SLIDER_MOVED,
+                                                             AddScrollSliderValueCommand::command::SLIDER);
+    undoStack->push(scrollCommand);
+    sliderOldValue=slider->sliderPosition();
+    scrollBarOldValue=scrollBar->sliderPosition();
+}
+
+void SliderScrollLabel::on_slider_sliderPressed()
+{
+    sliderCommandPressed= new AddScrollSliderValueCommand(slider, scrollBar, sliderOldValue, scrollBarOldValue,
+                                                   "Tcute[s]", AddScrollSliderValueCommand::movement::TRIGGER_ACTION,
+                                                   AddScrollSliderValueCommand::command::SLIDER);
+    sliderPressedValue=slider->sliderPosition();
+    undoStack->push(sliderCommandPressed);
+    qDebug()<<"valore del dial: "<<slider->sliderPosition();
+}
+
+void SliderScrollLabel::on_slider_sliderReleased()
+{
+    if((sliderPressedValue-slider->sliderPosition()==0))
+    {
+        sliderCommandPressed->undo();
+        sliderCommandPressed->setObsolete(true);
+        undoStack->undo();
+    }
+}
+
+void SliderScrollLabel::setUndoStack(QUndoStack* _undoStack)
+{
+    undoStack=_undoStack;
+    connect(undoStack, SIGNAL(indexChanged(int)), this, SLOT(on_undoStack_indexChanged()));
+}
+
+void SliderScrollLabel::setSliderInitialValue()
+{
+    sliderOldValue=slider->value();
+}
+
+void SliderScrollLabel::setScrollBarInitialValue()
+{
+    scrollBarOldValue=scrollBar->value();
+}
+
+void SliderScrollLabel::on_undoStack_indexChanged()
+{
+    scrollBarOldValue=scrollBar->sliderPosition();
+    sliderOldValue=slider->sliderPosition();
+}

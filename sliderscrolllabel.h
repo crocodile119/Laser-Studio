@@ -11,6 +11,9 @@
 #include <QtWidgets/QSlider>
 #include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QWidget>
+#include <QUndoStack>
+#include <QUndoCommand>
+#include "undo_commands/addscrollslidervaluecommand.h"
 
 class SliderScrollLabel : public QWidget
 {
@@ -35,10 +38,20 @@ public:
     void setMantissa(const double);
     void setEnabled(bool _enabled);
     void setStatusTipHelp(QString);
+    void setUndoStack(QUndoStack*);
+    void setPhysicalDimension();
+    void setSliderInitialValue();
+    void setScrollBarInitialValue();
 
 private slots:
     void on_slider_valueChanged(int value);
     void on_scrollBar_valueChanged(int value);
+    void on_slider_actionTriggered(int action);
+    void on_slider_sliderPressed();
+    void on_slider_sliderReleased();
+    void on_slider_sliderMoved(int position);
+    void on_scrollBar_actionTriggered(int action);
+    void on_undoStack_indexChanged();
 
 signals:
     void valueChanged(int);
@@ -55,6 +68,12 @@ private:
     QScrollBar *scrollBar;
     QString scientNotLabelStyle;
     QString scientNotLabelStyleOff;
+
+    QUndoStack *undoStack = nullptr;
+    int scrollBarOldValue;
+    int sliderOldValue;
+    int sliderPressedValue;
+    QUndoCommand *sliderCommandPressed;
 };
 
 #endif // SLIDERSCROLLLABEL_H

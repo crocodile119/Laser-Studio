@@ -1,7 +1,6 @@
 #include "scientificnotationcontrol.h"
 #include <cmath>
 #include <QDebug>
-#include "addcontrolvaluecommand.h"
 
 ScientificNotationControl::ScientificNotationControl(QWidget *parent)
     : QWidget(parent)
@@ -80,8 +79,6 @@ ScientificNotationControl::ScientificNotationControl(QWidget *parent)
     connect(dial, SIGNAL(sliderMoved(int)), this, SLOT(on_dial_sliderMoved(int)));
     connect(dial, SIGNAL(sliderPressed()), this, SLOT(on_dial_sliderPressed()));
     connect(dial, SIGNAL(sliderReleased()), this, SLOT(on_dial_sliderReleased()));
-    //connect(verticalScrollBar, SIGNAL(sliderPressed()), this, SLOT(on_verticalScrollBar_sliderPressed()));
-    //connect(verticalScrollBar, SIGNAL(sliderReleased()), this, SLOT(on_verticalScrollBar_sliderReleased()));
 }
 
 ScientificNotationControl::~ScientificNotationControl()
@@ -248,25 +245,6 @@ void ScientificNotationControl::on_verticalScrollBar_actionTriggered(int action)
     }
 }
 
-/*
-void ScientificNotationControl::on_verticalScrollBar_sliderPressed()
-{
-    scrollBarCommandPressed = new AddScrollBarValueCommand(scrollBarOldValue, dial, verticalScrollBar, AddScrollBarValueCommand::movement::TRIGGER_ACTION);
-    scrollBarPressedValue=verticalScrollBar->sliderPosition();
-    undoStack->push(scrollBarCommandPressed);
-    qDebug()<<"valore della scrollbar: "<<verticalScrollBar->sliderPosition();
-}
-
-void ScientificNotationControl::on_verticalScrollBar_sliderReleased()
-{
-    if(scrollBarPressedValue-verticalScrollBar->sliderPosition()==0)
-    {
-        scrollBarCommandPressed->undo();
-        scrollBarCommandPressed->setObsolete(true);
-        undoStack->undo();
-    }
-}
-*/
 void ScientificNotationControl::on_dial_actionTriggered(int action)
 {
     if((action==1)||(action==2)||(action==3)||(action==4))

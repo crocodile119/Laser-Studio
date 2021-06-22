@@ -181,12 +181,6 @@ void DockControls::on_wavelengthScrollBar_valueChanged(int value)
 
     wavelength=static_cast<double>(value);
 
-    /******************************************************************************
-    * Imposto il valore per la visualizzazione nella label associata al controllo *
-    *******************************************************************************/
-
-    ui->wavelengthLabel->setText(QString::number(wavelength));
-
     /*****************
     * CONTINUOS WAVE *
     ******************/
@@ -3963,7 +3957,9 @@ void DockControls::setUndoStack(QUndoStack* _undoStack)
     ui->divergenceControl->setUndoStack(undoStack);
     ui->beamDiameterControl->setUndoStack(undoStack);
     ui->prfControl->setUndoStack(undoStack);
-
+    ui->T_SkinControl->setUndoStack(undoStack);
+    ui->teControl->setUndoStack(undoStack);
+    ui->wavelengthScrollBar->setUndoStack(undoStack);
     resetHistory();
 }
 
@@ -3986,4 +3982,11 @@ void DockControls::resetHistory()
 
         ui->prfControl->setDialInitialValue();
         ui->prfControl->setScrollBarInitialValue();
+
+        ui->T_SkinControl->setSliderInitialValue();
+        ui->T_SkinControl->setScrollBarInitialValue();
+
+        ui->teControl->setDialInitialValue();
+
+        ui->wavelengthScrollBar->setScrollBarInitialValue();
 }

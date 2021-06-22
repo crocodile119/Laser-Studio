@@ -7,7 +7,6 @@ qtHaveModule(printsupport): QT += printsupport
 RC_ICONS = LaserStudioIcon.ico 
 
 SOURCES +=\
-    addcontrolvaluecommand.cpp \
     atmosphericeffectsdialog.cpp \
     binocular.cpp \
     binocularlink.cpp \
@@ -67,14 +66,18 @@ SOURCES +=\
     reflectorsqlist.cpp \
     scalenumbersmodelview.cpp \
     scientificnotationcontrol.cpp \
+    scrollbarcontrol.cpp \
     sliderscrolllabel.cpp \
     tablescontroller.cpp \
+    undo_commands/addcontrolvaluecommand.cpp \
+    undo_commands/adddialvaluecommand.cpp \
+    undo_commands/addscrollbarvaluecommand.cpp \
+    undo_commands/addscrollslidervaluecommand.cpp \
     wetchartdialog.cpp \
     wetchartview.cpp \
     wetreflector.cpp
 
 HEADERS  += mainwindow.h \
-    addcontrolvaluecommand.h \
     atmosphericeffectsdialog.h \
     binocular.h \
     binocularlink.h \
@@ -134,8 +137,13 @@ HEADERS  += mainwindow.h \
     reflectorsqlist.h \
     scalenumbersmodelview.h \
     scientificnotationcontrol.h \
+    scrollbarcontrol.h \
     sliderscrolllabel.h \
     tablescontroller.h \
+    undo_commands/addcontrolvaluecommand.h \
+    undo_commands/adddialvaluecommand.h \
+    undo_commands/addscrollbarvaluecommand.h \
+    undo_commands/addscrollslidervaluecommand.h \
     wetchartdialog.h \
     wetchartview.h \
     wetreflector.h
@@ -161,7 +169,6 @@ FORMS    += \
     laserpropertiesdialog.ui \
     reflectorpropertiesdialog.ui \
     reflectorsqlist.ui \
-    sliderscrolllabel.ui \
     wetchartdialog.ui
 
 DISTFILES += \

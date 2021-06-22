@@ -32,7 +32,7 @@
 #include "ui_docklea.h"
 #include "ui_dockcontrols.h"
 #include "ui_reflectorsqlist.h"
-
+#include "undo_commands/addscrollbarvaluecommand.h"
 
 namespace Ui {
 class DockControls;
@@ -259,6 +259,11 @@ private:
     array<string, 4> LEA_Mean;
     array<string, 4> LEA_Thermal;
     array<string, 4> LEA_Ti;
+
+    QScrollBar *scrollBar;
+    int scrollBarOldValue;
+    int scrollBarPressedValue;
+    QUndoCommand *scrollBarCommandPressed;
 };
 
 #endif // DOCKCONTROLS_H

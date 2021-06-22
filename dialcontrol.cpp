@@ -46,6 +46,10 @@ DialControl::DialControl(QWidget *parent)
         titleLabel->setFont(font);
 
         connect(dial, SIGNAL(valueChanged(int)), this, SLOT(on_dial_valueChanged(int)));
+        connect(dial, SIGNAL(actionTriggered(int)), this, SLOT(on_dial_actionTriggered(int)));
+        connect(dial, SIGNAL(sliderMoved(int)), this, SLOT(on_dial_sliderMoved(int)));
+        connect(dial, SIGNAL(sliderPressed()), this, SLOT(on_dial_sliderPressed()));
+        connect(dial, SIGNAL(sliderReleased()), this, SLOT(on_dial_sliderReleased()));
 }
 
 DialControl::~DialControl()
@@ -96,4 +100,60 @@ bool DialControl::isEnabled()
 void DialControl::setBackgroundColor(QString htmlColor)
 {
     setStyleSheet("QDial {background-color:"+ htmlColor +";\n}");
+}
+
+void DialControl::on_dial_actionTriggered(int action)
+{
+    if((action==1)||(action==2)||(action==3)||(action==4))
+    {
+        QUndoCommand *scrollCommand = new AddDialValueCommand(dial, dialOldValue, "Te[s]",
+                                                              AddDialValueCommand::movement::TRIGGER_ACTION);
+        undoStack->push(scrollCommand);
+        dialOldValue=dial->sliderPosition();
+        qDebug()<<"valore del dial: "<<dial->sliderPosition();
+    }
+}
+
+void DialControl::on_dial_sliderMoved(int position)
+{
+    Q_UNUSED(position);
+    QUndoCommand *scrollCommand = new AddDialValueCommand(dial, dialOldValue, "Te[s]",
+                                                               AddDialValueCommand::movement::SLIDER_MOVED);
+    undoStack->push(scrollCommand);
+    dialOldValue=dial->sliderPosition();
+}
+
+void DialControl::on_dial_sliderPressed()
+{
+    dialCommandPressed= new AddDialValueCommand(dial, dialOldValue, "Te[s]",
+                                                               AddDialValueCommand::movement::TRIGGER_ACTION);
+    dialPressedValue=dial->sliderPosition();
+    undoStack->push(dialCommandPressed);
+    qDebug()<<"valore del dial: "<<dial->sliderPosition();
+}
+
+void DialControl::on_dial_sliderReleased()
+{
+    if((dialPressedValue-dial->sliderPosition()==0))
+    {
+        dialCommandPressed->undo();
+        dialCommandPressed->setObsolete(true);
+        undoStack->undo();
+    }
+}
+
+void DialControl::setUndoStack(QUndoStack* _undoStack)
+{
+    undoStack=_undoStack;
+    connect(undoStack, SIGNAL(indexChanged(int)), this, SLOT(on_undoStack_indexChanged()));
+}
+
+void DialControl::setDialInitialValue()
+{
+    dialOldValue=dial->value();
+}
+
+void DialControl::on_undoStack_indexChanged()
+{
+    dialOldValue=dial->sliderPosition();
 }

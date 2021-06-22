@@ -5,8 +5,8 @@
 #include <QGridLayout>
 #include <QDial>
 #include <QLabel>
-#include <QScrollBar>
-
+#include <QUndoStack>
+#include "undo_commands/adddialvaluecommand.h"
 
 class DialControl : public QWidget
 {
@@ -22,9 +22,17 @@ public:
     void setEnabled(bool);
     bool isEnabled();
     void setBackgroundColor(QString);
+    void setUndoStack(QUndoStack*);
+    void setPhysicalDimension();
+    void setDialInitialValue();
 
 private slots:
     void on_dial_valueChanged(int value);
+    void on_dial_actionTriggered(int action);
+    void on_dial_sliderPressed();
+    void on_dial_sliderReleased();
+    void on_dial_sliderMoved(int position);
+    void on_undoStack_indexChanged();
 
 signals:
     void valueChanged(int);
@@ -37,5 +45,11 @@ private:
     QDial *dial;
     QLabel *dialNumberLabel;
     QLabel *titleLabel;
+    QWidget *scientificNotationWidget;
+
+    QUndoStack *undoStack = nullptr;
+    int dialOldValue;
+    int dialPressedValue;
+    QUndoCommand *dialCommandPressed;
 };
 #endif // DIALCONTROL_H

@@ -7,9 +7,7 @@
 #include <QLabel>
 #include <QScrollBar>
 #include <QUndoStack>
-#include <QUndoView>
-#include "addcontrolvaluecommand.h"
-#include "addcontrolvaluecommand.h"
+#include "undo_commands/addcontrolvaluecommand.h"
 
 class ScientificNotationControl : public QWidget
 {
@@ -49,9 +47,6 @@ private slots:
     void on_verticalScrollBar_actionTriggered(int action);
     void on_undoStack_indexChanged();
 
-    //void on_verticalScrollBar_sliderPressed();
-    //void on_verticalScrollBar_sliderReleased();
-
 signals:
     void valueChanged(int);
 
@@ -70,12 +65,9 @@ private:
     QString scientNotLabelSyleOff;
 
     QUndoStack *undoStack = nullptr;
-    QUndoView *undoView = nullptr;
     int scrollBarOldValue;
-    int scrollBarPressedValue;
     int dialOldValue;
     int dialPressedValue;
-    QUndoCommand *scrollBarCommandPressed;
     QUndoCommand *dialCommandPressed;
 
 };

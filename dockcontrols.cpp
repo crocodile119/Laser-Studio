@@ -54,6 +54,7 @@ DockControls::DockControls(QWidget *parent, DockResults *_dockResults, DockEffec
 
     ui->comboBoxBands->setCurrentIndex(1);
     setDialControls();
+
     displayScaleNumber();
     displayLaserOutput();
 
@@ -2030,6 +2031,7 @@ DockControls::operation DockControls::get_n_laser()const
 
 void DockControls::on_operationCombo_currentIndexChanged(int index)
 {
+    undoStack->clear();
 	/******************************************
 	* L'indice scelto della casella combinata *
 	*******************************************/
@@ -2710,6 +2712,8 @@ void DockControls::setIRC_FIR()
 
 void DockControls::on_enableTeCheckBox_toggled(bool checked)
 {
+    undoStack->clear();
+
     enableTeEditing=checked;
     ui->teControl->setEnabled(checked);
 
@@ -2942,6 +2946,8 @@ void DockControls::modeLockedPeak()
 
 void DockControls::on_checkGaussianBeam_clicked(bool checked)
 {
+    undoStack->clear();
+
     gaussianBeam=checked;
     if(checked)
         beamCorrection=1.0;
@@ -3705,6 +3711,8 @@ void DockControls::setWidgetsForThermalTi()
 
 void DockControls::on_internalWaist_checkBox_toggled(bool checked)
 {
+    undoStack->clear();
+
     if(n_laser==operation::CONTINUOS_WAVE)
         MyLaserClassCW_Pr->setInternalWaist(checked);
     if(n_laser==operation::PULSE)

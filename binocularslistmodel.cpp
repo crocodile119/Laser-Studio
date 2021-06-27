@@ -52,11 +52,14 @@ QVariant BinocularsListModel::headerData(int section, Qt::Orientation orientatio
         return QStringLiteral("Row %1").arg(section);
 }
 
-void BinocularsListModel::addElement(Binocular& _binocular)
+int BinocularsListModel::addElement(Binocular& _binocular)
 {
     beginInsertRows(QModelIndex(), rowCount(), rowCount()+1);
+    int index = rowCount();
     myBinoculars.append(std::make_pair(&_binocular, rowCount()));
     endInsertRows();
+
+    return index;
 }
 
 void BinocularsListModel::deleteElement(int& index)

@@ -46,12 +46,17 @@ Binocular::~Binocular()
 
 void Binocular::addBinocularLink(BinocularLink *binocularlink)
 {
-    myBinocularLinks.insert(binocularlink);
+    myBinocularLinks.push_back(binocularlink);
 }
 
-void Binocular::removeBinocularLink(BinocularLink *binocularlink)
+void Binocular::removeBinocularLink()
 {
-    myBinocularLinks.remove(binocularlink);
+    myBinocularLinks.clear();
+}
+
+BinocularLink* Binocular::getBinocularLink()
+{
+    return myBinocularLinks.first();
 }
 
 int Binocular::type() const

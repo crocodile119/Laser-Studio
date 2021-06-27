@@ -31,7 +31,7 @@ Link::Link(LaserPoint *fromLaser, Reflector *toReflector): fromMyLaser(fromLaser
 Link::~Link()
 {
     fromMyLaser->removeLink(this);
-    toMyReflector->removeLink(this);
+    toMyReflector->removeLink();
 }
 
 int Link::type() const

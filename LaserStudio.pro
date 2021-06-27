@@ -69,10 +69,17 @@ SOURCES +=\
     scrollbarcontrol.cpp \
     sliderscrolllabel.cpp \
     tablescontroller.cpp \
+    undo_commands/addbinocularcommand.cpp \
     undo_commands/addcontrolvaluecommand.cpp \
     undo_commands/adddialvaluecommand.cpp \
+    undo_commands/addfootprintcommand.cpp \
+    undo_commands/addreflectorcommand.cpp \
     undo_commands/addscrollbarvaluecommand.cpp \
     undo_commands/addscrollslidervaluecommand.cpp \
+    undo_commands/deletebinocularcommand.cpp \
+    undo_commands/deletefootprintcommand.cpp \
+    undo_commands/deletereflectorcommand.cpp \
+    undo_commands/movecommand.cpp \
     wetchartdialog.cpp \
     wetchartview.cpp \
     wetreflector.cpp
@@ -140,10 +147,17 @@ HEADERS  += mainwindow.h \
     scrollbarcontrol.h \
     sliderscrolllabel.h \
     tablescontroller.h \
+    undo_commands/addbinocularcommand.h \
     undo_commands/addcontrolvaluecommand.h \
     undo_commands/adddialvaluecommand.h \
+    undo_commands/addfootprintcommand.h \
+    undo_commands/addreflectorcommand.h \
     undo_commands/addscrollbarvaluecommand.h \
     undo_commands/addscrollslidervaluecommand.h \
+    undo_commands/deletebinocularcommand.h \
+    undo_commands/deletefootprintcommand.h \
+    undo_commands/deletereflectorcommand.h \
+    undo_commands/movecommand.h \
     wetchartdialog.h \
     wetchartview.h \
     wetreflector.h

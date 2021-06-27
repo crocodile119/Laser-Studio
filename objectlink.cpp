@@ -23,7 +23,7 @@ ObjectLink::ObjectLink(LaserPoint *fromLaser, FootprintObject *toObject): fromMy
 ObjectLink::~ObjectLink()
 {
     fromMyLaser->removeObjectLink(this);
-    toMyObject->removeObjectLink(this);
+    toMyObject->removeObjectLink();
 }
 
 int ObjectLink::type() const

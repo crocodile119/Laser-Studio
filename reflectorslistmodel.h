@@ -17,7 +17,7 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation,
                         int role = Qt::DisplayRole) const;
 
-    void addElement(Reflector&);
+    int addElement(Reflector&);
     void deleteElement(int&);
     void setElementList(QList <pair<Reflector *, int>>);
     void deleteList();

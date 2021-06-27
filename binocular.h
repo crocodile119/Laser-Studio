@@ -35,7 +35,8 @@ public:
     double getOpticalGain()const;
     void setPixScale(const double &);
     void addBinocularLink(BinocularLink *binocularlink);
-    void removeBinocularLink(BinocularLink *binocularlink);
+    void removeBinocularLink();
+    BinocularLink *getBinocularLink();
     void setBinSeqNumber(const int&);
     int  getBinSeqNumber() const;
     QString getOpticalGainFormula()const;
@@ -93,7 +94,7 @@ protected:
                         const QVariant &value)override;
 
 private:
-    QSet<BinocularLink *> myBinocularLinks;
+    QList<BinocularLink *> myBinocularLinks;
     QRectF outlineRect() const;
     QRectF labelRect();
     QRectF unitedBounding() const;

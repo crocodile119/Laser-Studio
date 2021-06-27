@@ -28,7 +28,7 @@ BinocularLink::BinocularLink(LaserPoint *fromLaser, Binocular *toBinocular): fro
 BinocularLink::~BinocularLink()
 {
     fromMyLaser->removeBinocularLink(this);
-    toMyBinocular->removeBinocularLink(this);
+    toMyBinocular->removeBinocularLink();
 }
 
 int BinocularLink::type() const

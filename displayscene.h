@@ -7,6 +7,7 @@
 #include <QGraphicsView>
 #include <QGraphicsSceneMouseEvent>
 #include <QMouseEvent>
+#include <QUndoStack>
 
 class DisplayScene : public QGraphicsView{
 
@@ -22,9 +23,13 @@ void deleteScene();
 QRect getSelectionRect();
 QList<int> getSeqNumberList();
 QRectF getViewportRect()const;
+void setUndoStack(QUndoStack* _undoStack);
 
 QPointF getMousePosition();
 GraphicsScene *scene;
+
+public slots:
+void graphicItemMoveToStack(QGraphicsItem *movingItem, const QPointF &oldPosition);
 
 private:
 QPointF cursorPosition;
@@ -33,6 +38,7 @@ QPoint releasePosition;
 QRect selectionRect;
 QList <int> seqNumberList;
 QRectF viewportRect;
+QUndoStack *undoStack=nullptr;
 
 QRubberBand *rubberBand;
 

@@ -69,11 +69,14 @@ QVariant ReflectorsListModel::headerData(int section, Qt::Orientation orientatio
         return QStringLiteral("Row %1").arg(section);
 }
 
-void ReflectorsListModel::addElement(Reflector& _reflector)
+int ReflectorsListModel::addElement(Reflector& _reflector)
 {
     beginInsertRows(QModelIndex(), rowCount(), rowCount()+1);
+    int index=rowCount();
     myReflectors.append(make_pair(&_reflector, rowCount()));
     endInsertRows();
+
+    return index;
 }
 
 void ReflectorsListModel::deleteElement(int& index)

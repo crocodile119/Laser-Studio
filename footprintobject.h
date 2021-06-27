@@ -44,7 +44,8 @@ public:
     static const double radDeg;
     int type() const override;
     void addObjectLink(ObjectLink *objectlink);
-    void removeObjectLink(ObjectLink *objectlink);
+    void removeObjectLink();
+    ObjectLink* getObjectLink();
     double topCornerAngle(const QPointF&, const QRectF &);
     double bottomCornerAngle(const QPointF&, const QRectF &);
     QPointF topCorner(const QPointF&, const QRectF &);
@@ -99,7 +100,7 @@ protected:
 
 private:
     QRectF handle_rect;
-    QSet<ObjectLink *> myObjectLinks;
+    QList<ObjectLink *> myObjectLinks;
     bool m_resizeHandlePressed = false;
     bool m_resizeHandleHover=false;
     QPointF m_mousePressOffset;

@@ -7,6 +7,7 @@
 #include <QPixmap>
 #include <QSet>
 #include <QGraphicsEllipseItem>
+#include <QUndoStack>
 
 class Link;
 class BinocularLink;
@@ -62,6 +63,7 @@ public:
     QPainterPath getShapeEnhacedPath();
 
     void setPixScale(const double &);
+    void setUndoStack(QUndoStack *);
 
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
@@ -119,6 +121,7 @@ private:
     QRectF enhacedPathBoudingRect;
     bool filterOn;
     double transmittance;
+    QUndoStack *undoStack=nullptr;
 };
 
 #endif

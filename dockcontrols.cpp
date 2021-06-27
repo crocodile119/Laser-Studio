@@ -3973,28 +3973,28 @@ void DockControls::setUndoStack(QUndoStack* _undoStack)
 
 void DockControls::resetHistory()
 {
-        ui->powerErgControl->setDialInitialValue();
-        ui->powerErgControl->setScrollBarInitialValue();
+    ui->powerErgControl->setDialInitialValue();
+    ui->powerErgControl->setScrollBarInitialValue();
 
-        ui->alphaControl->setDialInitialValue();
-        ui->alphaControl->setScrollBarInitialValue();
+    ui->alphaControl->setDialInitialValue();
+    ui->alphaControl->setScrollBarInitialValue();
 
-        ui->pulseControl->setDialInitialValue();
-        ui->pulseControl->setScrollBarInitialValue();
+    ui->pulseControl->setDialInitialValue();
+    ui->pulseControl->setScrollBarInitialValue();
 
-        ui->divergenceControl->setDialInitialValue();
-        ui->divergenceControl->setScrollBarInitialValue();
+    ui->divergenceControl->setDialInitialValue();
+    ui->divergenceControl->setScrollBarInitialValue();
 
-        ui->beamDiameterControl->setDialInitialValue();
-        ui->beamDiameterControl->setScrollBarInitialValue();
+    ui->beamDiameterControl->setDialInitialValue();
+    ui->beamDiameterControl->setScrollBarInitialValue();
 
-        ui->prfControl->setDialInitialValue();
-        ui->prfControl->setScrollBarInitialValue();
+    ui->prfControl->setDialInitialValue();
+    ui->prfControl->setScrollBarInitialValue();
 
-        ui->T_SkinControl->setSliderInitialValue();
-        ui->T_SkinControl->setScrollBarInitialValue();
+    ui->T_SkinControl->setSliderInitialValue();
+    ui->T_SkinControl->setScrollBarInitialValue();
 
-        ui->teControl->setDialInitialValue();
+    ui->teControl->setDialInitialValue();
 
-        ui->wavelengthScrollBar->setScrollBarInitialValue();
+    ui->wavelengthScrollBar->setScrollBarInitialValue();
 }

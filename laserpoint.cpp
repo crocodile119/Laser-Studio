@@ -17,7 +17,6 @@
 #include "link.h"
 #include "laserpoint.h"
 
-
 const double LaserPoint::radDeg = 3.1415926535897932384626433832795/180;
 
 LaserPoint::LaserPoint():QGraphicsObject(), laserPix(":/images/laserpix.png")
@@ -578,4 +577,9 @@ bool LaserPoint::isFilterOn()
 void LaserPoint::setFilterOn(bool filter)
 {
     filterOn=filter;
+}
+
+void LaserPoint::setUndoStack(QUndoStack *_undoStack)
+{
+    undoStack=_undoStack;
 }

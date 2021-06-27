@@ -9,6 +9,7 @@
 #include <vector>
 #include <QObject>
 #include <QGraphicsObject>
+#include <QUndoStack>
 
 #include "fresnelreflector.h"
 #include "wetreflector.h"
@@ -40,7 +41,8 @@ public:
     void setReflectorColor();
     void setPixmap();
     void addLink(Link *link);
-    void removeLink(Link *link);
+    void removeLink();
+    Link* getLink();
     double getRefractionIndex();
     void setRefractionIndex(const double);
     void setOpticalDiameter(double);
@@ -125,6 +127,8 @@ public:
     double getLaserPhase()const;
     void setCorrectPositioning();
 
+    void setUndoStack(QUndoStack *);
+
     std::vector< std::pair <double,double> >getZsVect();
     std::vector< std::pair <double,double> >getRho_sVect();
 
@@ -144,7 +148,7 @@ private:
     QRectF unitedBounding() const;
     int roundness(double size) const;
 
-    QSet<Link *> myLinks;
+    QList<Link *> myLinks;
     double reflectorDistance; //la distanza di un probabile esposto dal riflettore
     QColor myTextColor;
     QColor myBackgroundColor;
@@ -191,6 +195,7 @@ private:
     double scale;    
     double atmoshericEffectsCoefficient;
     double phaseAngle;
+    QUndoStack *undoStack=nullptr;
 
     FresnelReflector* MyFresnelReflector_ptr;
     WetReflector* MyWetReflector_ptr;

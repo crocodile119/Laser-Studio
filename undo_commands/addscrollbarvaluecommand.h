@@ -8,7 +8,7 @@ class AddScrollBarValueCommand : public QUndoCommand
 {
 public:
     enum movement{SLIDER_MOVED, TRIGGER_ACTION};
-    const int Id=2;
+    const int Id=4;
     AddScrollBarValueCommand(QScrollBar *_myScrollBar, int _scrollBarValueOld, QString _title, movement _movementType,
                         QUndoCommand *parent = 0);
     virtual ~AddScrollBarValueCommand();

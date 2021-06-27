@@ -64,12 +64,17 @@ int FootprintObject::type() const
 
 void FootprintObject::addObjectLink(ObjectLink *objectlink)
 {
-    myObjectLinks.insert(objectlink);
+    myObjectLinks.push_back(objectlink);
 }
 
-void FootprintObject::removeObjectLink(ObjectLink *objectlink)
+void FootprintObject::removeObjectLink()
 {
-    myObjectLinks.remove(objectlink);
+    myObjectLinks.clear();
+}
+
+ObjectLink* FootprintObject::getObjectLink()
+{
+    return myObjectLinks.first();
 }
 
 QRectF FootprintObject::boundingRect() const

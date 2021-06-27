@@ -27,6 +27,13 @@
 #include "ui_description.h"
 #include "atmosphericeffectsdialog.h"
 #include "ui_atmosphericeffectsdialog.h"
+#include "undo_commands/addreflectorcommand.h"
+#include "undo_commands/addbinocularcommand.h"
+#include "undo_commands/addfootprintcommand.h"
+#include "undo_commands/deletereflectorcommand.h"
+#include "undo_commands/deletebinocularcommand.h"
+#include "undo_commands/deletefootprintcommand.h"
+#include "undo_commands/movecommand.h"
 
 #include <QtWidgets>
 #include <iterator>
@@ -55,6 +62,7 @@ MainWindow::MainWindow()
 
     undoStack = new QUndoStack(this);
     laserWindow->setUndoStack(undoStack);
+    laserWindow->graphicsView->setUndoStack(undoStack);
     setCentralWidget(laserWindow);
 
     setWindowTitle(tr("Laser Studio"));
@@ -198,6 +206,7 @@ void MainWindow::setLaserPoint()
     laserpoint = new LaserPoint();
 
     laserpoint->setPos(QPoint(0, 0));
+    laserpoint->setUndoStack(undoStack);
     laserpoint->setSelected(true);
     laserpoint->setStringPosition();
 
@@ -966,13 +975,15 @@ void MainWindow::createActions()
 
     undoAction = undoStack->createUndoAction(this, tr("&Undo"));
     undoAction->setShortcuts(QKeySequence::Undo);
-    undoAction->setIcon(QIcon(":/images/undo.png"));
+    undoAction->setIcon(QIcon(":/images/undo.png"));   
+    connect(undoAction, SIGNAL(triggered()), this, SLOT(setShadowZone()));
 
     reflectorsEditMenu->addAction(undoAction);
 
     redoAction = undoStack->createRedoAction(this, tr("&Redo"));
     redoAction->setShortcuts(QKeySequence::Redo);
     redoAction->setIcon(QIcon(":/images/redo.png"));
+    connect(redoAction, SIGNAL(triggered()), this, SLOT(setShadowZone()));
 
     reflectorsEditMenu->addAction(redoAction);
 
@@ -1010,6 +1021,7 @@ void MainWindow::createActions()
     deleteAction->setShortcut(tr("Del"));
 
     connect(deleteAction, SIGNAL(triggered()), this, SLOT(del()));
+    connect(deleteAction, SIGNAL(triggered()), this, SLOT(shadowZoneForLaser()));
     reflectorsEditMenu->addAction(deleteAction);
 
     wetTargetAction = new QAction(tr("Dettagli riflettore bagnato..."), this);
@@ -2279,11 +2291,6 @@ Link *MainWindow::selectedLink() const
         return 0;
 }
 
-MainWindow::NodePair MainWindow::selectedNodePair() const
-{
-    return NodePair(laserpoint, reflector);
-}
-
 MainWindow::BinocularNodePair MainWindow::selectedBinocularNodePair() const
 {
     return BinocularNodePair(laserpoint, binocular);
@@ -2296,8 +2303,8 @@ MainWindow::ObjectNodePair MainWindow::selectedObjectNodePair() const
 
 void MainWindow::addBinocular()
 {
-    QPointF binocularPos=QPointF(laserpoint->pos().x()+ (100.0/scale * ((binSeqNumber+1) % 5)),
-                        laserpoint->pos().y()+(50.0/scale * (((binSeqNumber+1) / 5) % 7)));
+    QPointF binocularPos=QPointF(laserpoint->pos().x()+ (150.0/scale * ((binSeqNumber+1) % 5)),
+                        laserpoint->pos().y()+(50.0/scale * (((binSeqNumber+1) / 5) % 11)));
 
     double binocularPosX=binocularPos.x();
     double binocularPosY=binocularPos.y();
@@ -2306,37 +2313,23 @@ void MainWindow::addBinocular()
     double laserPosY=laserpoint->pos().y();
 
     double binocularDistance=sqrtf(powf((binocularPosX-laserPosX), 2)+powf((binocularPosY-laserPosY), 2));
-
-    double wavelength=laserWindow->myDockControls->getWavelength();
     double attenuatedDNRO= attenuatedDistance(laserWindow->myDockControls->getOpticalDistance());
-    double divergence=laserWindow->myDockControls->getDivergence();
 
     //Costruttore DNRO, binocularDistance, wavelength, divergence, beamDiameter
-    binocular=new Binocular(attenuatedDNRO, binocularDistance, wavelength, divergence, getBeamDiameter());
+    QUndoCommand *addBinocularCommand = new AddBinocularCommand(attenuatedDNRO, binocularDistance, scale,
+                                                            binSeqNumber, laserWindow, laserpoint,
+                                                            &myBinoculars, binocularsModel,
+                                                            binocularPos);
 
-    binocular->setPixScale(scale);
-    binocular->setPos(binocularPos);
+    undoStack->push(addBinocularCommand);
 
-
-    laserWindow->graphicsView->scene->addItem(binocular);
-
-    addBinocularLink();
-
-    double exendedOpticalDiameter=binocular->getExendedOpticalDiameter();
-    bool binocularInZone=laserpoint->shapeEnhacedPathContainsPoint(laserpoint->mapFromScene(binocular->pos()), exendedOpticalDiameter);
-    binocular->setInZone(binocularInZone);
-
-    binocular->setTextLabel();
-    binocular->setStringPosition();
-    binocular->setBinSeqNumber(binSeqNumber);
-
-    myBinoculars.append(make_pair(binocular, binSeqNumber));
-
-    qDebug()<<"Binocular count: "<<myBinoculars.count();
-    binSeqNumber=myBinoculars.count();
+    QGraphicsItem *item =laserWindow->graphicsView->scene->itemAt(binocularPos, QTransform());
+    binocular= qgraphicsitem_cast<Binocular*>(item);
 
     setMaxEhnacedOpticalDiameter();
     binocular->laserParametersChanged();
+
+    binSeqNumber++;
 
     if(footprint!=nullptr)
     {
@@ -2359,7 +2352,7 @@ void MainWindow::addBinocular()
     connect(binocular, SIGNAL(xChanged()), this, SLOT(setLaserpointShapePathForBinoculars()));
     connect(binocular, SIGNAL(yChanged()), this, SLOT(setLaserpointShapePathForBinoculars()));
 
-    emit binocularListChanged();
+    //emit binocularListChanged();
 }
 
 void MainWindow::addReflector(const target &target)
@@ -2375,57 +2368,31 @@ void MainWindow::addReflector(const target &target)
     double laserPosY=laserpoint->pos().y();
 
     double reflectorDistance=sqrtf(powf((reflectorPosX-laserPosX), 2)+powf((reflectorPosY-laserPosY), 2));
-
     double attenuatedDNRO= attenuatedDistance(laserWindow->myDockControls->getOpticalDistance());
-
-    reflector = new Reflector(attenuatedDNRO,
-                              laserWindow->myDockControls->getDivergence(),
-                              reflectorDistance,
-                              laserWindow->myDockControls->getBeamDiameter(),
-                              laserWindow->myDockControls->getEMP(),
-                              laserWindow->myDockControls->getPowerErgForEMP(),
-                              laserWindow->myDockControls->getLambertianMax(),
-                               target);
-
-    reflector->setPixmap();
-    reflector->setPixScale(scale);
-
     double attenuatedDNRC= attenuatedDistance(laserWindow->myDockControls->getSkinDistances());
-    reflector->setSkinDistance(attenuatedDNRC);
-    reflector->setReflectorColor();
-    reflector->setBackgroundColor(QColor(247, 247, 247, 170));
 
-    reflector->setPos(reflectorPos);
+    QUndoCommand *addReflectorCommand = new AddReflectorCommand(attenuatedDNRO, attenuatedDNRC, reflectorDistance, scale,
+                                                            seqNumber, target, laserWindow, laserpoint,
+                                                            &myReflectors, reflectorsModel,
+                                                            QPointF(reflectorPosX, reflectorPosY));
+    undoStack->push(addReflectorCommand);
+    //int index=undoStack->index();
+    //const AddCommand* command=dynamic_cast<const AddCommand*>(undoStack->command(index-1));
+    //reflector=command->getReflector();
+    QGraphicsItem *item =laserWindow->graphicsView->scene->itemAt(reflectorPos, QTransform());
+    reflector= qgraphicsitem_cast<Reflector*>(item);
 
-    laserWindow->graphicsView->scene->addItem(reflector);
-
-    laserWindow->graphicsView->scene->clearSelection();
-
-    addLink();
-    reflector->setTextLabel();
-    reflector->setStringDetails();
-
-    reflector->setSeqNumber(seqNumber);
-
-    myReflectors.append(make_pair(reflector, seqNumber));
-
-    laserpoint->setSelected(false);
-    seqNumber=myReflectors.count();
-
-    laserWindow->graphicsView->scene->clearSelection();
-    //imposto la NOHD del punto laser
-    laserpoint->setOpticalDiameter(laserWindow->myDockControls->getOpticalDistance());
     setMaxEhnacedOpticalDiameter();
-    reflector->setSelected(true);
     setLaserpointShapePathForReflectors();
-    reflector->update();
+
+    seqNumber++;
 
     connect(reflector, SIGNAL(xChanged()), this, SLOT(updateList()));
     connect(reflector, SIGNAL(yChanged()), this, SLOT(updateList()));
     connect(reflector, SIGNAL(xChanged()), this, SLOT(setLaserpointShapePathForReflectors()));
     connect(reflector, SIGNAL(yChanged()), this, SLOT(setLaserpointShapePathForReflectors()));
 
-    emit reflectorListChanged();
+    //emit reflectorListChanged();
 }
 
 void MainWindow::addLink()
@@ -2436,6 +2403,11 @@ void MainWindow::addLink()
 
     Link *link = new Link(nodes.first, nodes.second);
     laserWindow->graphicsView->scene->addItem(link);
+}
+
+MainWindow::NodePair MainWindow::selectedNodePair() const
+{
+    return NodePair(laserpoint, reflector);
 }
 
 void MainWindow::addBinocularLink()
@@ -2450,6 +2422,7 @@ void MainWindow::addBinocularLink()
 
 void MainWindow::del()
 {
+/*
     QList<QGraphicsItem *> items = laserWindow->graphicsView->scene->selectedItems();
     QMutableListIterator<QGraphicsItem *> i(items);
     while (i.hasNext())
@@ -2467,43 +2440,45 @@ void MainWindow::del()
     }
 
     items = laserWindow->graphicsView->scene->selectedItems();
-    QMutableListIterator<QGraphicsItem *> j(items);
-    while (j.hasNext())
-    {
-        Link *link = dynamic_cast<Link *>(j.next());
-        if (link)
-        {
-            delete link;
-            j.remove();
-        }
-    }
-    items = laserWindow->graphicsView->scene->selectedItems();
+*/
+    QList<QGraphicsItem *> list = laserWindow->graphicsView->scene->selectedItems();
+    list.first()->setSelected(false);
 
-    QMutableListIterator<QGraphicsItem *> k(items);
-    while (k.hasNext())
+    Reflector *reflector= qgraphicsitem_cast<Reflector*>(list.first());
+    Binocular *binocular= qgraphicsitem_cast<Binocular*>(list.first());
+    FootprintObject *footprint= qgraphicsitem_cast<FootprintObject*>(list.first());
+    LabRoom *myLabRoom= qgraphicsitem_cast<LabRoom*>(list.first());
+
+    if (reflector)
     {
-        Reflector *reflector = dynamic_cast<Reflector *>(k.next());
-        if (reflector)
-        {
-            int seqNumber = reflector->getSeqNumber();
-            delete reflector;
-            k.remove();
-            myReflectors.removeOne(make_pair(reflector, seqNumber));
-            reflectorsModel->myDataHasChanged();
-        }
+        QPointF deleletePosition=reflector->pos();
+        Link *link=reflector->getLink();
+        QUndoCommand *deleteReflectorCommand = new DeleteReflectorCommand(reflector, link, scale, laserWindow,
+            laserpoint, &myReflectors, reflectorsModel, deleletePosition);
+
+    undoStack->push(deleteReflectorCommand);
     }
 
-    items = laserWindow->graphicsView->scene->selectedItems();
-    QMutableListIterator<QGraphicsItem *> m(items);
-    while (m.hasNext())
+     else if (binocular)
     {
-        BinocularLink *binocularlink = dynamic_cast<BinocularLink *>(m.next());
-        if(binocularlink)
-        {
-            delete binocularlink;
-            m.remove();
-        }
+        QPointF deleletePosition=binocular->pos();
+        BinocularLink *binocularLink=binocular->getBinocularLink();
+        QUndoCommand *deleteBinocularCommand = new DeleteBinocularCommand(binocular, binocularLink, scale, laserWindow,
+            laserpoint, &myBinoculars, binocularsModel, deleletePosition);
+
+    undoStack->push(deleteBinocularCommand);
     }
+
+    else if (footprint)
+   {
+       QPointF deleletePosition=footprint->pos();
+       ObjectLink *objectLink=footprint->getObjectLink();
+       QUndoCommand *deleteFootprintCommand = new DeleteFootprintCommand(footprint, objectLink, scale, laserWindow,
+           laserpoint, &myFootprints, deleletePosition);
+
+       undoStack->push(deleteFootprintCommand);
+   }
+/*
     items = laserWindow->graphicsView->scene->selectedItems();
 
     QMutableListIterator<QGraphicsItem *> n(items);
@@ -2518,18 +2493,6 @@ void MainWindow::del()
             myBinoculars.removeOne(make_pair(binocular, binSeqNumber));
             binocularsModel->myDataHasChanged();
             setMaxEhnacedOpticalDiameter();
-        }
-    }
-
-    items = laserWindow->graphicsView->scene->selectedItems();
-    QMutableListIterator<QGraphicsItem *> b(items);
-    while (b.hasNext())
-    {
-        ObjectLink *objectlink = dynamic_cast<ObjectLink *>(b.next());
-        if(objectlink)
-        {
-            delete objectlink;
-            b.remove();
         }
     }
 
@@ -2608,7 +2571,7 @@ void MainWindow::del()
     myFootprints=swapFootprintList;
     footprintSeqNumber=myFootprints.count();
 
-    shadowZoneForLaser();
+    */
 }
 
 void MainWindow::cut()
@@ -2810,7 +2773,6 @@ void MainWindow::createToolBars()
     fileToolBar->addAction(exportImageAct);
     fileToolBar->addAction(setPreviewAct);
     fileToolBar->addAction(printAct);
-
 
     viewToolBar = addToolBar(tr("Visualizza"));  
     viewToolBar->setObjectName(tr("Visualizza"));
@@ -3719,7 +3681,7 @@ void MainWindow::goToPoint()
 
 void MainWindow::addElementList()
 {
-    reflectorsModel->addElement(*reflector);
+//    reflectorsModel->addElement(*reflector);
 }
 
 void MainWindow::addBinocularList()
@@ -3750,6 +3712,7 @@ void MainWindow::goToSelectedReflector()
     binocularsSelectionModel->clear();   
     environmentSelectionModel->clear();
     index=reflectorsSelectionModel->currentIndex();
+    qDebug()<< "Numero di riflettori della lista: " << myReflectors.count();
     reflector=myReflectors.at(index.row()).first;
     laserWindow->graphicsView->centerOn(reflector->pos());
     laserWindow->graphicsView->scene->clearSelection();
@@ -4089,27 +4052,17 @@ void MainWindow::addFootprint()
 
     double attenuatedDNRO= attenuatedDistance(laserWindow->myDockControls->getOpticalDistance());
 
-    //Costruttore scale
-    footprint= new FootprintObject(scale);
+    QUndoCommand *addFootprintCommand = new AddFootprintCommand(attenuatedDNRO, scale, footprintSeqNumber, laserWindow,
+                        laserpoint, &myFootprints, footprintPos);
 
-    footprint->setPos(footprintPos);
-    footprint->rectangle().setRect(-20, -20, 40, 40);
+    undoStack->push(addFootprintCommand);
+    //int index=undoStack->index();
+    //const AddCommand* command=dynamic_cast<const AddCommand*>(undoStack->command(index-1));
+    //reflector=command->getReflector();
+    QGraphicsItem *item =laserWindow->graphicsView->scene->itemAt(footprintPos, QTransform());
+    footprint= qgraphicsitem_cast<FootprintObject*>(item);
 
-    footprint->setDNRO_Diameter(attenuatedDNRO);
-    footprint->setLaserBeamPath(laserpoint->mapToItem(footprint, laserpoint->shapePath()));
-
-    footprint->setItemScale(scale);
-    laserWindow->graphicsView->scene->addItem(footprint);
-
-    addObjectLink();
-
-    footprint->updateTipString();
-    footprint->setFootprintSeqNumber(footprintSeqNumber);
-    footprint->setLaserPosition();
-    myFootprints.append(make_pair(footprint, footprintSeqNumber));
-
-    footprintSeqNumber=myFootprints.count();
-
+//addFootprintCommand finisce qui
     setMaxEhnacedOpticalDiameter();
     footprint->laserParameterChanged();
     setShadowZone();
@@ -4352,3 +4305,4 @@ void MainWindow::controlsModified()
 MainWindow::~MainWindow()
 {
 }
+

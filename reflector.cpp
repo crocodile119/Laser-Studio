@@ -143,12 +143,17 @@ QColor Reflector::backgroundColor() const
 
 void Reflector::addLink(Link *link)
 {
-    myLinks.insert(link);
+    myLinks.push_back(link);
 }
 
-void Reflector::removeLink(Link *link)
+void Reflector::removeLink()
 {
-    myLinks.remove(link);
+    myLinks.clear();
+}
+
+Link* Reflector::getLink()
+{
+    return myLinks.first();
 }
 
 QRectF Reflector::boundingRect() const
@@ -954,4 +959,9 @@ int Reflector::getCorrectPositioning()const
 void Reflector::setCorrectPositioning()
 {
 
+}
+
+void Reflector::setUndoStack(QUndoStack *_undoStack)
+{
+    undoStack=_undoStack;
 }

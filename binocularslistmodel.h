@@ -17,7 +17,7 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation,
                         int role = Qt::DisplayRole) const;
 
-    void addElement(Binocular&);
+    int addElement(Binocular&);
     void deleteElement(int&);
     void setElementList(QList <std::pair<Binocular *, int>>);
     void myDataHasChanged();

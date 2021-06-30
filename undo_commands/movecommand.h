@@ -6,6 +6,7 @@
 #include "../reflector.h"
 #include "../binocular.h"
 #include "../laserpoint.h"
+#include "../labroom.h"
 #include "../footprintobject.h"
 
 class MoveCommand : public QUndoCommand

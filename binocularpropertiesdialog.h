@@ -4,6 +4,9 @@
 #include "ui_binocularpropertiesdialog.h"
 #include "binocular.h"
 
+namespace Ui {
+class BinocularPropertiesDialog;
+}
 
 class BinocularPropertiesDialog : public QDialog, private Ui::BinocularPropertiesDialog
 {
@@ -11,15 +14,15 @@ class BinocularPropertiesDialog : public QDialog, private Ui::BinocularPropertie
 
 public:
     BinocularPropertiesDialog(Binocular *binocular, double, QWidget *parent = 0);
-
+    Ui::BinocularPropertiesDialog *ui;
 private slots:
-    void on_buttonBox_accepted();
+
 
 private:
     Binocular *binocular;
     double wavelength;
     bool thermicWavelength;
-    bool ampOpticWavelenght;
+    bool ampOpticWavelength;
 };
 
 #endif

@@ -4,6 +4,9 @@
 #include "ui_footprintdialog.h"
 #include "footprintobject.h"
 
+namespace Ui {
+class FootprintDialog;
+}
 
 class FootprintDialog : public QDialog, private Ui::FootprintDialog
 {
@@ -12,9 +15,9 @@ class FootprintDialog : public QDialog, private Ui::FootprintDialog
 public:
     FootprintDialog(FootprintObject *,QWidget *parent = 0);
     ~FootprintDialog();
+    Ui::FootprintDialog *ui;
 
 private slots:
-    void on_buttonBox_accepted();
 
 private:
 

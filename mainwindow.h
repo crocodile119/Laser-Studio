@@ -103,6 +103,7 @@ private slots:
     void setSceneArea(QRect) const;
     void dragMode();
     void addRoom();
+    void createRoom();
     void selectionMode();
     void noFeasibleInputFunction();
     double attenuatedDistance(const double&);
@@ -201,7 +202,7 @@ private slots:
     void setDistanceForFootprint();
     void shadowZoneForLaser();
     void meteoWidgets(bool, bool, bool);
-
+    void graphicItemMoveToStack(QGraphicsItem *movingItem, const QPointF& oldPosition);
     //scene
 
 private:
@@ -394,6 +395,9 @@ private:
     QAction *glassGoggleAction;
     QAction *plasticGoggleAction;
 
+    QUndoCommand *deleteReflectorCommand;
+    QUndoCommand *deleteFootprintCommand;
+    QUndoCommand *addFootprintCommand;
     QGraphicsView *view;
     QList <pair<Reflector *, int>> myReflectors;
     QList <pair<Binocular *, int>> myBinoculars;

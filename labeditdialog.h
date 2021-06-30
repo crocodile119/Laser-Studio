@@ -5,6 +5,9 @@
 #include "labroom.h"
 #include <QGraphicsRectItem>
 
+namespace Ui {
+class LabEditDialog;
+}
 
 class LabEditDialog : public QDialog, private Ui::LabEditDialog
 {
@@ -13,9 +16,9 @@ class LabEditDialog : public QDialog, private Ui::LabEditDialog
 public:
     LabEditDialog(LabRoom *,QWidget *parent = 0);
     ~LabEditDialog();
+    Ui::LabEditDialog *ui;
 
 private slots:
-    void on_buttonBox_accepted();
 
 private:
 

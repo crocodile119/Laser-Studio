@@ -44,6 +44,7 @@ QString createCommandString(QGraphicsItem *movingItem, const QPointF &pos)
     Reflector *reflector=qgraphicsitem_cast<Reflector*>(movingItem);
     Binocular *binocular=qgraphicsitem_cast<Binocular*>(movingItem);
     LaserPoint *laserpoint=qgraphicsitem_cast<LaserPoint*>(movingItem);
+    LabRoom *myLabRoom=qgraphicsitem_cast<LabRoom*>(movingItem);
     FootprintObject *footprint=qgraphicsitem_cast<FootprintObject*>(movingItem);
 
     QString targetString;
@@ -78,7 +79,7 @@ QString createCommandString(QGraphicsItem *movingItem, const QPointF &pos)
     else if(laserpoint)
     {
         QString laserString;
-        laserString="laser";
+        laserString="il laser";
 
         undoViewString=QObject::tr("%1 in (%2, %3)")
             .arg(laserString)
@@ -93,5 +94,16 @@ QString createCommandString(QGraphicsItem *movingItem, const QPointF &pos)
             .arg(footprintString)
             .arg(pos.x()).arg(pos.y());
     }
+
+    else if(myLabRoom)
+    {
+        QString myLabRoomString;
+        myLabRoomString="laboratorio";
+
+        undoViewString=QObject::tr("%1 in (%2, %3)")
+            .arg(myLabRoomString)
+            .arg(pos.x()).arg(pos.y());
+    }
+
     return undoViewString;
 }

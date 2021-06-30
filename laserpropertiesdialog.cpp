@@ -3,16 +3,16 @@
 
 #include "laserpropertiesdialog.h"
 
-LaserPropertiesDialog::LaserPropertiesDialog(LaserPoint *laserpoint, QWidget *parent)
-    : QDialog(parent), laserpoint(laserpoint)
+LaserPropertiesDialog::LaserPropertiesDialog(LaserPoint *_laserpoint, QWidget *parent)
+    : QDialog(parent), ui(new Ui::LaserPropertiesDialog), laserpoint(_laserpoint)
 {
-    setupUi(this);
+    ui->setupUi(this);
 
-    xSpinBox->setValue(int(laserpoint->x()));
-    ySpinBox->setValue(int(laserpoint->y()));
-    areaSpinBox->setValue(laserpoint->getAperture());
-    installationComboBox->setCurrentIndex(laserpoint->getInstallationIndex());
-    pillowLabel->setText(QString::number(laserpoint->getPillow()));
+    ui->xSpinBox->setValue(laserpoint->x());
+    ui->ySpinBox->setValue(laserpoint->y());
+    ui->areaSpinBox->setValue(laserpoint->getAperture());
+    ui->installationComboBox->setCurrentIndex(laserpoint->getInstallationIndex());
+    ui->pillowLabel->setText(QString::number(laserpoint->getPillow()));
 
     int checkState;
     if(laserpoint->isFilterOn())
@@ -20,33 +20,19 @@ LaserPropertiesDialog::LaserPropertiesDialog(LaserPoint *laserpoint, QWidget *pa
     else
         checkState=0;
 
-    filterCheckBox->setCheckState(Qt::CheckState(checkState));
-    transmittanceSpinBox->setValue(laserpoint->getTransmittance());
-    transmittanceSpinBox->setEnabled(filterCheckBox->checkState());
-
-}
-
-void LaserPropertiesDialog::on_buttonBox_accepted()
-{
-    laserpoint->setPos(xSpinBox->value(), ySpinBox->value());
-    laserpoint->setInstallationIndex(installationComboBox->currentIndex());
-    laserpoint->setAperture(areaSpinBox->value());
-    laserpoint->computePillowAreas();
-    laserpoint->setFilterOn(filterCheckBox->checkState());
-    laserpoint->setTrasmittance(transmittanceSpinBox->value());
-    laserpoint->update();
-
-    QDialog::accept();
+    ui->filterCheckBox->setCheckState(Qt::CheckState(checkState));
+    ui->transmittanceSpinBox->setValue(laserpoint->getTransmittance());
+    ui->transmittanceSpinBox->setEnabled(ui->filterCheckBox->checkState());
 }
 
 void LaserPropertiesDialog::on_filterCheckBox_stateChanged(int arg1)
 {
-    transmittanceSpinBox->setEnabled(arg1);
+    ui->transmittanceSpinBox->setEnabled(arg1);
 }
 
 void LaserPropertiesDialog::on_installationComboBox_currentIndexChanged(int index)
 {
-    pillowLabel->setText(QString::number(computePillowAreas(index)));
+    ui->pillowLabel->setText(QString::number(computePillowAreas(index)));
 }
 
 double LaserPropertiesDialog::computePillowAreas(const int & index)
@@ -75,4 +61,9 @@ double LaserPropertiesDialog::computePillowAreas(const int & index)
        break;
     }
     return pillow;
+}
+
+LaserPropertiesDialog::~LaserPropertiesDialog()
+{
+    delete ui;
 }

@@ -5,6 +5,10 @@
 #include <QGraphicsRectItem>
 #include "centralwidget.h"
 
+namespace Ui {
+class AtmosphericEffectsDialog;
+}
+
 class AtmosphericEffectsDialog : public QDialog, private Ui::AtmosphericEffectsDialog
 {
     Q_OBJECT
@@ -12,9 +16,12 @@ class AtmosphericEffectsDialog : public QDialog, private Ui::AtmosphericEffectsD
 public:
     AtmosphericEffectsDialog(QWidget *parent, CentralWidget *_laserWindow, double);
     ~AtmosphericEffectsDialog();
+    Ui::AtmosphericEffectsDialog *ui;
+    double getAtmAttCoeff()const;
+    double getA()const;
+    double getV()const;
 
 private slots:
-    void on_buttonBox_accepted();
     void on_meteoRangeSlider_valueChanged(int value);
 
 private:

@@ -19,7 +19,8 @@
    <string>Modifica l'ambiente</string>
   </property>
   <property name="styleSheet">
-   <string notr="true"/>
+   <string notr="true">QDoubleSpinBox{background: none}
+QSpinBox{background: none}</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
    <item row="1" column="0" colspan="2">

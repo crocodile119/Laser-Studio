@@ -13,6 +13,7 @@ SOURCES +=\
     binocularpropertiesdialog.cpp \
     binocularslistmodel.cpp \
     centralwidget.cpp \
+    comboboxbands.cpp \
     computeemp.cpp \
     computelea.cpp \
     description.cpp \
@@ -59,6 +60,7 @@ SOURCES +=\
     main.cpp \
     mainwindow.cpp \
     mychartview.cpp \
+    mycombobox.cpp \
     objectlink.cpp \
     reflector.cpp \
     reflectorpropertiesdialog.cpp \
@@ -70,10 +72,17 @@ SOURCES +=\
     sliderscrolllabel.cpp \
     tablescontroller.cpp \
     undo_commands/addbinocularcommand.cpp \
+    undo_commands/addbinocularpropertycommand.cpp \
+    undo_commands/addcomboboxvaluecommand.cpp \
     undo_commands/addcontrolvaluecommand.cpp \
     undo_commands/adddialvaluecommand.cpp \
     undo_commands/addfootprintcommand.cpp \
+    undo_commands/addfootprintpropertycommand.cpp \
+    undo_commands/addlabpropertycommand.cpp \
+    undo_commands/addlaserpropertycommand.cpp \
+    undo_commands/addmeteocommand.cpp \
     undo_commands/addreflectorcommand.cpp \
+    undo_commands/addreflectorpropertycommand.cpp \
     undo_commands/addscrollbarvaluecommand.cpp \
     undo_commands/addscrollslidervaluecommand.cpp \
     undo_commands/deletebinocularcommand.cpp \
@@ -91,6 +100,7 @@ HEADERS  += mainwindow.h \
     binocularpropertiesdialog.h \
     binocularslistmodel.h \
     centralwidget.h \
+    comboboxbands.h \
     computeemp.h \
     computelea.h \
     description.h \
@@ -137,6 +147,7 @@ HEADERS  += mainwindow.h \
     leadata.h \
     link.h \
     mychartview.h \
+    mycombobox.h \
     objectlink.h \
     reflector.h \
     reflectorpropertiesdialog.h \
@@ -148,10 +159,17 @@ HEADERS  += mainwindow.h \
     sliderscrolllabel.h \
     tablescontroller.h \
     undo_commands/addbinocularcommand.h \
+    undo_commands/addbinocularpropertycommand.h \
+    undo_commands/addcomboboxvaluecommand.h \
     undo_commands/addcontrolvaluecommand.h \
     undo_commands/adddialvaluecommand.h \
     undo_commands/addfootprintcommand.h \
+    undo_commands/addfootprintpropertycommand.h \
+    undo_commands/addlabpropertycommand.h \
+    undo_commands/addlaserpropertycommand.h \
+    undo_commands/addmeteocommand.h \
     undo_commands/addreflectorcommand.h \
+    undo_commands/addreflectorpropertycommand.h \
     undo_commands/addscrollbarvaluecommand.h \
     undo_commands/addscrollslidervaluecommand.h \
     undo_commands/deletebinocularcommand.h \

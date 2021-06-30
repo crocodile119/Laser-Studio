@@ -58,7 +58,7 @@ void GraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             emit binocularSelected();
         }
 
-        if(footprint)
+        else if(footprint)
         {
             qDebug()<<"Ho selezionato il punto laser: ";
             clearSelection();
@@ -71,11 +71,12 @@ void GraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             qDebug()<<"Ho selezionato il laboratorio: ";
             clearSelection();
             myLabRoom->setSelected(true);
+            oldPos=myLabRoom->pos();
             emit labroomSelected();
         }
+        else
+            emit deselected();
     }
-    else
-    emit deselected();
 
     QGraphicsScene::mousePressEvent(mouseEvent);
 }
@@ -127,6 +128,15 @@ void GraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
             }
         }
 
+        LabRoom *myLabRoom=qgraphicsitem_cast<LabRoom*>(movingItem);
+        if(myLabRoom)
+        {
+            if(oldPos!= movingItem->pos())
+            {
+                emit graphicItemMoved(movingItem, oldPos);
+                qDebug()<<"Laboratorio spostato: ";
+            }
+        }
         QGraphicsScene::mouseReleaseEvent(mouseEvent);
     }
 }

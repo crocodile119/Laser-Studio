@@ -117,7 +117,7 @@ void ScrollBarControl::setBackgroundColor(QString htmlColor)
 
 void ScrollBarControl::setMinimum(int value)
 {
-    scrollBar->setMaximum(value);
+    scrollBar->setMinimum(value);
 }
 
 void ScrollBarControl::setMaximum(int value)

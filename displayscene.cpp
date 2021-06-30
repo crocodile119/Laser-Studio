@@ -20,9 +20,6 @@ DisplayScene::DisplayScene(QWidget* parent) : QGraphicsView(parent)
         setRenderHints(QPainter::Antialiasing
                              | QPainter::TextAntialiasing);
         setContextMenuPolicy(Qt::ActionsContextMenu);
-
-        connect(scene, &GraphicsScene::graphicItemMoved,
-                    this, &DisplayScene::graphicItemMoveToStack);
 }
 
 void DisplayScene::resizeEvent(QResizeEvent *event)
@@ -99,6 +96,7 @@ void DisplayScene::mouseMoveEvent(QMouseEvent *event)
     if (event->button() == Qt::LeftButton)
     {
         QRect rect(pressPosition, event->pos());
+        selectionRect=rect;
     }
     QGraphicsView::mouseMoveEvent(event);
 }
@@ -131,12 +129,4 @@ QRectF DisplayScene::getViewportRect()const
     return viewportRect;
 }
 
-void DisplayScene::setUndoStack(QUndoStack* _undoStack)
-{
-    undoStack=_undoStack;
-}
 
-void DisplayScene::graphicItemMoveToStack(QGraphicsItem *movingItem, const QPointF& oldPosition)
-{
-    undoStack->push(new MoveCommand(movingItem, oldPosition));
-}

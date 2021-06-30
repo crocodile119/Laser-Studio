@@ -4,16 +4,20 @@
 #include "ui_laserpropertiesdialog.h"
 #include "laserpoint.h"
 
+namespace Ui {
+class LaserPropertiesDialog;
+}
 
 class LaserPropertiesDialog : public QDialog, private Ui::LaserPropertiesDialog
 {
     Q_OBJECT
 
 public:
-    LaserPropertiesDialog(LaserPoint *laserpoint, QWidget *parent = 0);
+    LaserPropertiesDialog(LaserPoint *_laserpoint, QWidget *parent = 0);
+    ~LaserPropertiesDialog();
+    Ui::LaserPropertiesDialog *ui;
 
 private slots:
-    void on_buttonBox_accepted();
     void on_filterCheckBox_stateChanged(int arg1);
     double computePillowAreas(const int &);
     void on_installationComboBox_currentIndexChanged(int index);

@@ -52,7 +52,6 @@ DockControls::DockControls(QWidget *parent, DockResults *_dockResults, DockEffec
     MyLaserClassMP_Pr=nullptr;
     MyLaserClassCW_Pr=MyLaserClassMP;
 
-    ui->comboBoxBands->setCurrentIndex(1);
     setDialControls();
 
     displayScaleNumber();
@@ -2032,6 +2031,7 @@ DockControls::operation DockControls::get_n_laser()const
 void DockControls::on_operationCombo_currentIndexChanged(int index)
 {
     undoStack->clear();
+    resetHistory();
 	/******************************************
 	* L'indice scelto della casella combinata *
 	*******************************************/
@@ -2653,6 +2653,10 @@ void DockControls::setDialControls()
     ui->teControl->setDialNumber(10);
     ui->teControl->setEnabled(false);
 
+    ui->wavelengthScrollBar->setMinimum(400);
+    ui->wavelengthScrollBar->setMaximum(700);
+    ui->wavelengthScrollBar->setValue(633);
+
     ui->enableTeCheckBox->setEnabled(true);
     ui->enableTeCheckBox->setChecked(false);
 
@@ -2713,6 +2717,7 @@ void DockControls::setIRC_FIR()
 void DockControls::on_enableTeCheckBox_toggled(bool checked)
 {
     undoStack->clear();
+    resetHistory();
 
     enableTeEditing=checked;
     ui->teControl->setEnabled(checked);
@@ -2947,6 +2952,7 @@ void DockControls::modeLockedPeak()
 void DockControls::on_checkGaussianBeam_clicked(bool checked)
 {
     undoStack->clear();
+    resetHistory();
 
     gaussianBeam=checked;
     if(checked)
@@ -3712,6 +3718,7 @@ void DockControls::setWidgetsForThermalTi()
 void DockControls::on_internalWaist_checkBox_toggled(bool checked)
 {
     undoStack->clear();
+    resetHistory();
 
     if(n_laser==operation::CONTINUOS_WAVE)
         MyLaserClassCW_Pr->setInternalWaist(checked);
@@ -3968,6 +3975,7 @@ void DockControls::setUndoStack(QUndoStack* _undoStack)
     ui->T_SkinControl->setUndoStack(undoStack);
     ui->teControl->setUndoStack(undoStack);
     ui->wavelengthScrollBar->setUndoStack(undoStack);
+    ui->comboBoxBands->setUndoStack(undoStack);
     resetHistory();
 }
 
@@ -3997,4 +4005,6 @@ void DockControls::resetHistory()
     ui->teControl->setDialInitialValue();
 
     ui->wavelengthScrollBar->setScrollBarInitialValue();
+
+    ui->comboBoxBands->setComboBoxInitialValue();
 }

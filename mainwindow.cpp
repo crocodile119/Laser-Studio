@@ -29,7 +29,13 @@
 #include "ui_atmosphericeffectsdialog.h"
 #include "undo_commands/addreflectorcommand.h"
 #include "undo_commands/addbinocularcommand.h"
+#include "undo_commands/addmeteocommand.h"
 #include "undo_commands/addfootprintcommand.h"
+#include "undo_commands/addfootprintpropertycommand.h"
+#include "undo_commands/addlabpropertycommand.h"
+#include "undo_commands/addlaserpropertycommand.h"
+#include "undo_commands/addbinocularpropertycommand.h"
+#include "undo_commands/addreflectorpropertycommand.h"
 #include "undo_commands/deletereflectorcommand.h"
 #include "undo_commands/deletebinocularcommand.h"
 #include "undo_commands/deletefootprintcommand.h"
@@ -62,7 +68,6 @@ MainWindow::MainWindow()
 
     undoStack = new QUndoStack(this);
     laserWindow->setUndoStack(undoStack);
-    laserWindow->graphicsView->setUndoStack(undoStack);
     setCentralWidget(laserWindow);
 
     setWindowTitle(tr("Laser Studio"));
@@ -91,6 +96,7 @@ MainWindow::MainWindow()
     qApp->installEventFilter(this);
 
     setLaserPoint();
+    createRoom();
 
     previewRect=laserWindow->graphicsView->viewport()->rect();
     qDebug()<<"Rettangolo anteprima di stampa" << previewRect;
@@ -174,6 +180,7 @@ MainWindow::MainWindow()
     connect(this, SIGNAL(binocularListChanged()), this, SLOT(addBinocularList()));
     connect(laserWindow->graphicsView->scene, SIGNAL(changed(const QList<QRectF> &)),this, SLOT(setViewportRect()));
     connect(laserWindow->graphicsView, SIGNAL(viewportChanged()),this, SLOT(setViewportRect()));
+    connect(laserWindow->graphicsView->scene, &GraphicsScene::graphicItemMoved, this, &MainWindow::graphicItemMoveToStack);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -313,6 +320,8 @@ void MainWindow::newFile()
         setupLaserProspective();
         laserSettingsAction->setChecked(true);
 
+        undoStack->clear();
+
         connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(updateActions()));
         connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(laserModified()));
         connect(laserWindow->graphicsView->scene, SIGNAL(laserSelected()), this, SLOT(laserpointSelectionFromGraphics()));
@@ -322,6 +331,7 @@ void MainWindow::newFile()
         connect(laserWindow->graphicsView->scene, SIGNAL(deselected()), this, SLOT(listDeselectionFromGraphics()));
         connect(laserWindow->graphicsView->scene, SIGNAL(footprintRelease()), this, SLOT(shadowZoneForLaser()));
         connect(laserWindow->graphicsView->scene, SIGNAL(changed(const QList<QRectF> &)),this, SLOT(setViewportRect()));
+        connect(laserWindow->graphicsView->scene, &GraphicsScene::graphicItemMoved, this, &MainWindow::graphicItemMoveToStack);
     }
 }
 
@@ -355,6 +365,8 @@ void MainWindow::open()
             makeSceneOfSavedItems();
             setupLaserProspective();
             laserSettingsAction->setChecked(true);
+            undoStack->clear();
+            laserWindow->setUndoStack(undoStack);
 
             connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(updateActions()));
             connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(laserModified()));
@@ -380,6 +392,7 @@ void MainWindow::open()
             connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setDistanceForFootprint()));
             connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setShadowZone()));
             connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setShadowZone()));
+            connect(laserWindow->graphicsView->scene, &GraphicsScene::graphicItemMoved, this, &MainWindow::graphicItemMoveToStack);
 
             laserpoint->setPos(laserpoint->pos()+QPointF(-1,-1));
             laserpoint->setPos(laserpoint->pos()+QPointF(1,1));
@@ -578,10 +591,18 @@ void MainWindow::environmentFromList()
 
 void MainWindow::setCondMeteo()
 {
-    AtmosphericEffectsDialog dialog(this, laserWindow, laserWindow->myDockControls->getWavelength());
+    double wavelength=laserWindow->myDockControls->getWavelength();
+    AtmosphericEffectsDialog dialog(this, laserWindow, wavelength);
     dialog.exec();
     if(dialog.result()==QDialog::Accepted)       
     {
+        double A = dialog.getA();
+        double V = dialog.getV();
+        double atmAttCoeff = dialog.getAtmAttCoeff();
+        QUndoCommand *addMeteoCommand = new AddMeteoCommand(laserWindow, wavelength, A,
+                                        V, atmAttCoeff);
+        undoStack->push(addMeteoCommand);
+
         updateForCondMeteo();
         environmentModel->setMeteoVisibility(laserWindow->getMeteoRange());
         environmentModel->myDataHasChanged();
@@ -655,12 +676,37 @@ void MainWindow::properties()
         LaserPropertiesDialog dialog(laserpoint, this);
         dialog.exec();
         if(dialog.result()==QDialog::Accepted)
+        {
+            QPointF position=QPointF(dialog.ui->xSpinBox->value(), dialog.ui->ySpinBox->value());
+            int installationIndex=dialog.ui->installationComboBox->currentIndex();
+            double apertureAngle=dialog.ui->areaSpinBox->value();
+            bool filterOn=dialog.ui->filterCheckBox->checkState();
+            double transmittance=dialog.ui->transmittanceSpinBox->value();
+
+            QUndoCommand* addLaserPropertyCommand= new AddLaserPropertyCommand(laserpoint, position, installationIndex,
+                                     apertureAngle, filterOn, transmittance);
+
+            undoStack->push(addLaserPropertyCommand);
+
             updateForCondMeteo();
+        }
     }
     else if(reflector)
     {
         ReflectorPropertiesDialog dialog(reflector, this);
         dialog.exec();
+        if(dialog.result()==QDialog::Accepted)
+        {
+            QPointF position=QPointF(dialog.ui->xSpinBox->value(), dialog.ui->ySpinBox->value());
+            double reflection=dialog.ui->reflectionSpinBox->value();
+            int positioning =dialog.ui->positioningLabel->text().toInt();
+            QString descriptionTextEdit=dialog.ui->descriptionTextEdit->toPlainText();
+
+            QUndoCommand* addReflectorPropertyCommand = new AddReflectorPropertyCommand(reflector, position, reflection, positioning, descriptionTextEdit);
+
+            undoStack->push(addReflectorPropertyCommand);
+        }
+
     }
     else if(binocular)
     {
@@ -668,6 +714,19 @@ void MainWindow::properties()
         dialog.exec();
         if(dialog.result()==QDialog::Accepted)
         {
+            QPointF position = QPointF(dialog.ui->xSpinBox->value(), dialog.ui->ySpinBox->value());
+            double amplification=dialog.ui->ampSpinBox->value();
+            double transmittance=dialog.ui->transmittanceSpinBox->value();
+            QString descriptionText=dialog.ui->descriptionTextEdit->toPlainText();
+            double D0Value=dialog.ui->D0_SpinBox->value();
+            double wavelength=laserWindow->myDockControls->getWavelength();
+
+            QUndoCommand *addBinocularPropertyCommand=new AddBinocularPropertyCommand(binocular, wavelength, position,
+                                        amplification, transmittance, descriptionText,
+                                        D0Value);
+
+            undoStack->push(addBinocularPropertyCommand);
+
             double exendedOpticalDiameter=binocular->getExendedOpticalDiameter();
             bool binocularInZone=this->laserpoint->shapeEnhacedPathContainsPoint(this->laserpoint->mapFromScene(binocular->pos()), exendedOpticalDiameter);
             binocular->setInZone(binocularInZone);
@@ -694,6 +753,19 @@ void MainWindow::properties()
     {
         LabEditDialog dialog(myLabRoom, this);
         dialog.exec();
+
+        if(dialog.result()==QDialog::Accepted)
+        {
+            double lab_x=dialog.ui->xSpinBox->value();
+            double lab_y=dialog.ui->ySpinBox->value();
+            double rectWidth=dialog.ui->widthSpinBox->value();
+            double rectHeight=dialog.ui->heightSpinBox->value();
+
+            QUndoCommand * addLabPropertyCommand=new AddLabPropertyCommand(myLabRoom,
+                        lab_x, lab_y, rectWidth, rectHeight);
+            undoStack->push(addLabPropertyCommand);
+        }
+
     }
     else if(footprint)
     {
@@ -701,6 +773,17 @@ void MainWindow::properties()
         dialog.exec();
 
         if(dialog.result()==QDialog::Accepted)
+        {
+            double rectWidth=dialog.ui->widthSpinBox->value();
+            double rectHeight=dialog.ui->heightSpinBox->value();
+            double x=dialog.ui->xSpinBox->value();
+            double y=dialog.ui->ySpinBox->value();
+            QString description=dialog.ui->descriptionTextEdit->toPlainText();
+
+            QUndoCommand* addFootprintPropertyCommand= new AddFootprintPropertyCommand(footprint,
+                               x, y, rectWidth, rectHeight, description);
+            undoStack->push(addFootprintPropertyCommand);
+        }
             shadowZoneForLaser();
     }
     else
@@ -975,7 +1058,7 @@ void MainWindow::createActions()
 
     undoAction = undoStack->createUndoAction(this, tr("&Undo"));
     undoAction->setShortcuts(QKeySequence::Undo);
-    undoAction->setIcon(QIcon(":/images/undo.png"));   
+    undoAction->setIcon(QIcon(":/images/undo.png"));
     connect(undoAction, SIGNAL(triggered()), this, SLOT(setShadowZone()));
 
     reflectorsEditMenu->addAction(undoAction);
@@ -2422,38 +2505,18 @@ void MainWindow::addBinocularLink()
 
 void MainWindow::del()
 {
-/*
-    QList<QGraphicsItem *> items = laserWindow->graphicsView->scene->selectedItems();
-    QMutableListIterator<QGraphicsItem *> i(items);
-    while (i.hasNext())
-    {
-        LabRoom *myLabRoom = dynamic_cast<LabRoom *>(i.next());
-        if ((myLabRoom)&&(environmentModel->getState()))
-        {
-            delete myLabRoom;
-            i.remove();
-            environmentModel->setState(false);
-            environmentModel->addDescriptor(*myFakeRoom);
-            environmentModel->myDataHasChanged();
-            labroomList.clear();
-        }
-    }
-
-    items = laserWindow->graphicsView->scene->selectedItems();
-*/
     QList<QGraphicsItem *> list = laserWindow->graphicsView->scene->selectedItems();
     list.first()->setSelected(false);
 
     Reflector *reflector= qgraphicsitem_cast<Reflector*>(list.first());
     Binocular *binocular= qgraphicsitem_cast<Binocular*>(list.first());
     FootprintObject *footprint= qgraphicsitem_cast<FootprintObject*>(list.first());
-    LabRoom *myLabRoom= qgraphicsitem_cast<LabRoom*>(list.first());
 
     if (reflector)
     {
         QPointF deleletePosition=reflector->pos();
         Link *link=reflector->getLink();
-        QUndoCommand *deleteReflectorCommand = new DeleteReflectorCommand(reflector, link, scale, laserWindow,
+        deleteReflectorCommand = new DeleteReflectorCommand(reflector, link, scale, laserWindow,
             laserpoint, &myReflectors, reflectorsModel, deleletePosition);
 
     undoStack->push(deleteReflectorCommand);
@@ -2473,7 +2536,7 @@ void MainWindow::del()
    {
        QPointF deleletePosition=footprint->pos();
        ObjectLink *objectLink=footprint->getObjectLink();
-       QUndoCommand *deleteFootprintCommand = new DeleteFootprintCommand(footprint, objectLink, scale, laserWindow,
+       deleteFootprintCommand = new DeleteFootprintCommand(footprint, objectLink, scale, laserWindow,
            laserpoint, &myFootprints, deleletePosition);
 
        undoStack->push(deleteFootprintCommand);
@@ -3942,27 +4005,22 @@ void MainWindow::deletedViewCenter()
 
 void MainWindow::setPolygon()
 {
-    QList<QGraphicsItem *> items = laserWindow->graphicsView->scene->items();
-    QMutableListIterator<QGraphicsItem *> i(items);
-    while(i.hasNext())
+    if ((myLabRoom)&&(environmentModel->getState()))
     {
-    LabRoom *myLabRoom = dynamic_cast<LabRoom *>(i.next());
-        if ((myLabRoom)&&(environmentModel->getState()))
-        {
-            delete myLabRoom;
-            i.remove();
-            environmentModel->setState(false);
-            environmentModel->setMeteoVisibility(laserWindow->getMeteoRange());
-            environmentModel->addDescriptor(*myFakeRoom);
-            environmentModel->myDataHasChanged();
-            labroomList.clear();
-            addScintillationAct->setEnabled(true);
-            addAtmosphericEffectsAct->setEnabled(true);
-            changeMeteoAct->setEnabled(true);
-            menuSceneScaleChanged("100%", 4);
-        }
-    }   
-    setWindowModified(true);
+        laserWindow->graphicsView->scene->removeItem(myLabRoom);
+        environmentModel->setState(false);
+        environmentModel->setMeteoVisibility(laserWindow->getMeteoRange());
+        environmentModel->addDescriptor(*myFakeRoom);
+        environmentModel->myDataHasChanged();
+        labroomList.clear();
+        addScintillationAct->setEnabled(true);
+        addAtmosphericEffectsAct->setEnabled(true);
+        changeMeteoAct->setEnabled(true);
+        menuSceneScaleChanged("100%", 4);
+        setWindowModified(true);
+        undoStack->clear();
+        laserWindow->setUndoStack(undoStack);
+    }
 }
 
 void MainWindow::addRoom()
@@ -3974,16 +4032,10 @@ void MainWindow::addRoom()
     }
 
     menuSceneScaleChanged("8000%", 15);
-    QPen pen;
-    pen.setCosmetic(true);
-    pen.setColor(QColor::fromRgb(0, 200, 0));
-
-    QRectF labRect(0.0, 0.0, 10, 6);
-    QPointF center= QPointF(labRect.width()/2, labRect.height()/2);
-    labRect.translate(-center);
 
     environmentModel->setState(true);
-    myLabRoom=new LabRoom(labRect);
+    laserWindow->graphicsView->scene->addItem(myLabRoom);
+    labroomList.append(myLabRoom);
     myLabRoom->setPos(laserpoint->pos().x(), laserpoint->pos().y());
 
     if(dragModeState)
@@ -3997,15 +4049,9 @@ void MainWindow::addRoom()
         myLabRoom->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
     }
 
-    laserWindow->graphicsView->scene->addItem(myLabRoom);
-    labroomList.append(myLabRoom);
-
     bool meteoWidgetsON=false;
     meteoWidgets(meteoWidgetsON, meteoWidgetsON, meteoWidgetsON);
     updateForCondMeteo();
-
-    connect(myLabRoom, SIGNAL(xChanged()), this, SLOT(updateLabList()));
-    connect(myLabRoom, SIGNAL(xChanged()), this, SLOT(updateLabList()));
 
     setWindowModified(true);
 
@@ -4013,7 +4059,26 @@ void MainWindow::addRoom()
     laserWindow->graphicsView->centerOn(myLabRoom->pos());
     sendToBack();   
 
+    undoStack->clear();
+    laserWindow->setUndoStack(undoStack);
+
     emit myLabRoomListChanged();
+}
+
+void MainWindow::createRoom()
+{
+    QPen pen;
+    pen.setCosmetic(true);
+    pen.setColor(QColor::fromRgb(0, 200, 0));
+
+    QRectF labRect(0.0, 0.0, 10, 6);
+    QPointF center= QPointF(labRect.width()/2, labRect.height()/2);
+    labRect.translate(-center);
+
+    myLabRoom=new LabRoom(labRect);
+
+    connect(myLabRoom, SIGNAL(xChanged()), this, SLOT(updateLabList()));
+    connect(myLabRoom, SIGNAL(xChanged()), this, SLOT(updateLabList()));
 }
 
 void MainWindow::atmosphericEffectsOn(bool _atmEffectsBool)
@@ -4052,7 +4117,7 @@ void MainWindow::addFootprint()
 
     double attenuatedDNRO= attenuatedDistance(laserWindow->myDockControls->getOpticalDistance());
 
-    QUndoCommand *addFootprintCommand = new AddFootprintCommand(attenuatedDNRO, scale, footprintSeqNumber, laserWindow,
+    addFootprintCommand = new AddFootprintCommand(attenuatedDNRO, scale, footprintSeqNumber, laserWindow,
                         laserpoint, &myFootprints, footprintPos);
 
     undoStack->push(addFootprintCommand);
@@ -4300,6 +4365,11 @@ void MainWindow::redo()
 void MainWindow::controlsModified()
 {
     setWindowModified(true);
+}
+
+void MainWindow::graphicItemMoveToStack(QGraphicsItem *movingItem, const QPointF& oldPosition)
+{
+    undoStack->push(new MoveCommand(movingItem, oldPosition));
 }
 
 MainWindow::~MainWindow()

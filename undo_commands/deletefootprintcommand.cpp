@@ -17,23 +17,23 @@ DeleteFootprintCommand::~DeleteFootprintCommand()
 
 void DeleteFootprintCommand::undo()
 {
+    laserpoint->setOpticalDiameter(laserWindow->myDockControls->getOpticalDistance());
+    footprintOnScene->setLaserBeamPath(laserpoint->mapToItem(footprintOnScene, laserpoint->shapePath()));
     laserWindow->graphicsView->scene->addItem(objectLink);
     laserWindow->graphicsView->scene->addItem(footprintOnScene);
     footprintOnScene->setPos(deletePosition);
     laserWindow->graphicsView->scene->clearSelection();
     laserWindow->graphicsView->scene->update();
     //imposto la NOHD del punto laser
-    laserpoint->setOpticalDiameter(laserWindow->myDockControls->getOpticalDistance());
     footprintOnScene->setSelected(true);
 
-    footprintOnScene->setLaserBeamPath(laserpoint->mapToItem(footprintOnScene, laserpoint->shapePath()));
-    footprintOnScene->update();
+    footprintOnScene->update();    
 }
 
 void DeleteFootprintCommand::redo()
 {
-    laserWindow->graphicsView->scene->removeItem(footprintOnScene);
     laserWindow->graphicsView->scene->removeItem(objectLink);
+    laserWindow->graphicsView->scene->removeItem(footprintOnScene);
 
     myFootprints->clear();
 

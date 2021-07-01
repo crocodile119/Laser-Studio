@@ -34,7 +34,7 @@ void AddComboBoxValueCommand::undo()
     comboBox->setCurrentIndex(comboIndexOldValue);
     comboBox->setProgrammaticallyOperation(false);
     comboBox->blockSignals(false);
-    setText(QString("Lunghezza d'onda a %1 nm")
+    setText(QString("Cambio tipo di laser λ[nm]: %1")
            .arg(createComboBoxCommandString(comboIndexNewValue)));
 
 }
@@ -43,19 +43,19 @@ QString createComboBoxCommandString(int index)
 {
     QString wavelengthString;
     if(index==0)
-        wavelengthString="380";
+        wavelengthString="380 (UV)";
     else if(index==1)
-        wavelengthString="633";
+        wavelengthString="633 (VIS)";
     else if(index==2)
-        wavelengthString="1064";
+        wavelengthString="1064 (IRA-NIR)";
     else if(index==3)
-        wavelengthString="1583";
+        wavelengthString="1583 (IRB-SWIR)";
     else if(index==4)
-        wavelengthString="3391";
+        wavelengthString="3391 (IRC-MWIR)";
     else if(index==5)
-        wavelengthString="10600";
+        wavelengthString="10600 (IRC-LWIR)";
     else if(index==6)
-        wavelengthString="571699";
+        wavelengthString="571699 (IRC-FIR";
 
     return QObject::tr("%1")
         .arg(wavelengthString);

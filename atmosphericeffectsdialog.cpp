@@ -8,13 +8,16 @@ AtmosphericEffectsDialog::AtmosphericEffectsDialog(QWidget *parent, CentralWidge
 {
     ui->setupUi(this);
 
+    /*V è la distanza di visibilità espressa in metri
+    la slider riporta la distanza di visibilità in km V/1000 */
+
     A=laserWindow->getA_Coefficient();
     V=laserWindow->getMeteoRange();
     atmAttCoeff=3.91/V*powf(550/wavelength, A);
-    int V_int =V/1000;
+    int V_km =V/1000;
     ui->A_Label->setText(QString::number(A, 'e', 2));
-    ui->meteoRangeSlider->setValue(V_int);
-    ui->meteoRangeLabel->setText(QString::number(V_int));
+    ui->meteoRangeSlider->setValue(V_km);
+    ui->meteoRangeLabel->setText(QString::number(V_km));
     ui->atmosphericCoeffLabel->setText(QString::number(atmAttCoeff, 'e', 2));
 }
 
@@ -25,12 +28,13 @@ AtmosphericEffectsDialog::~AtmosphericEffectsDialog()
 
 void AtmosphericEffectsDialog::on_meteoRangeSlider_valueChanged(int value)
 {
-    V=value;
-    A=0.06*powf(1000*V, 0.33);
+    int V_km=value;
+    V=1000*V_km;
+    A=0.06*powf(V, 0.33);
 
-    ui->meteoRangeLabel->setText(QString::number(V));
+    ui->meteoRangeLabel->setText(QString::number(V_km));
     ui->A_Label->setText(QString::number(A, 'e', 2));
-    atmAttCoeff=3.91/(1000*V)*powf(550.0/(wavelength), A);
+    atmAttCoeff=3.91/(V)*powf(550.0/(wavelength), A);
     ui->atmosphericCoeffLabel->setText(QString::number(atmAttCoeff, 'e', 2));
 }
 

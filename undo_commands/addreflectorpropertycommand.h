@@ -28,8 +28,12 @@ QPointF oldPosition;
 double oldReflection;
 int oldPositioning;
 QString oldDescriptionTextEdit;
-
-
 };
 
+QString redoReflectorPropertyString(Reflector *reflector, QPointF position, int positioning,
+                                    QString description);
+
+QString undoReflectorPropertyString(QPointF position, int positioning,
+                                    QString description, QPointF oldPosition, int oldPositioning,
+                                    QString oldDescription);
 #endif

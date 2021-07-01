@@ -457,6 +457,36 @@ QString LaserPoint::getLaserInstallation()
     return installationIndexString;
 }
 
+QString LaserPoint::getInstallationforIndex(const int &installationIndex)
+{
+    QString installationIndexString;
+
+    switch(installationIndex)
+    {
+        case(0):
+        installationIndexString="Stabile";
+        break;
+
+        case(1):
+        installationIndexString="Poco stabile";
+        break;
+
+        case(2):
+        installationIndexString="Mobile";
+        break;
+
+        case(3):
+        installationIndexString="Assenza di piattaforma";
+        break;
+
+        default:
+        installationIndexString="Assenza di piattaforma";
+        break;
+        }
+    return installationIndexString;
+}
+
+
 QPainterPath LaserPoint::shapePath()
 {
     QPainterPath myPie;

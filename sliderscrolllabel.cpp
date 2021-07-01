@@ -214,7 +214,7 @@ void SliderScrollLabel::on_scrollBar_actionTriggered(int action)
     if((action==1)||(action==2))
     {
         QUndoCommand *scrollCommand = new AddScrollSliderValueCommand(slider, scrollBar, sliderOldValue, scrollBarOldValue,
-                                                                 "Tcute[s]", AddScrollSliderValueCommand::movement::TRIGGER_ACTION,
+                                                                 "T cute[s]", AddScrollSliderValueCommand::movement::TRIGGER_ACTION,
                                                                  AddScrollSliderValueCommand::command::SCROLL_BAR);
 
 
@@ -229,7 +229,7 @@ void SliderScrollLabel::on_slider_actionTriggered(int action)
     if((action==1)||(action==2)||(action==3)||(action==4))
     {
         QUndoCommand *scrollCommand = new AddScrollSliderValueCommand(slider, scrollBar, sliderOldValue, scrollBarOldValue,
-                                                                 "Tcute[s]", AddScrollSliderValueCommand::movement::TRIGGER_ACTION,
+                                                                 "T cute[s]", AddScrollSliderValueCommand::movement::TRIGGER_ACTION,
                                                                  AddScrollSliderValueCommand::command::SLIDER);
         undoStack->push(scrollCommand);
         sliderOldValue=slider->sliderPosition();
@@ -242,7 +242,7 @@ void SliderScrollLabel::on_slider_sliderMoved(int position)
 {
     Q_UNUSED(position);
     QUndoCommand *scrollCommand = new AddScrollSliderValueCommand(slider, scrollBar, sliderOldValue, scrollBarOldValue,
-                                                             "Tcute[s]", AddScrollSliderValueCommand::movement::SLIDER_MOVED,
+                                                             "T cute[s]", AddScrollSliderValueCommand::movement::SLIDER_MOVED,
                                                              AddScrollSliderValueCommand::command::SLIDER);
     undoStack->push(scrollCommand);
     sliderOldValue=slider->sliderPosition();
@@ -252,7 +252,7 @@ void SliderScrollLabel::on_slider_sliderMoved(int position)
 void SliderScrollLabel::on_slider_sliderPressed()
 {
     sliderCommandPressed= new AddScrollSliderValueCommand(slider, scrollBar, sliderOldValue, scrollBarOldValue,
-                                                   "Tcute[s]", AddScrollSliderValueCommand::movement::TRIGGER_ACTION,
+                                                   "T cute[s]", AddScrollSliderValueCommand::movement::TRIGGER_ACTION,
                                                    AddScrollSliderValueCommand::command::SLIDER);
     sliderPressedValue=slider->sliderPosition();
     undoStack->push(sliderCommandPressed);

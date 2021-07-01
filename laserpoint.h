@@ -72,6 +72,7 @@ public:
 
     QString getStringPosition()const;
     QString getLaserInstallation();
+    static QString getInstallationforIndex(const int&);
     void setTextLabel();
     void setStrings();   
     void setShadowZone(const QPainterPath&);

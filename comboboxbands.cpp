@@ -55,6 +55,5 @@ void ComboBoxBands::setUndoStack(QUndoStack* _undoStack)
 
 void ComboBoxBands::setComboBoxInitialValue()
 {
-    comboBox->setCurrentIndex(1);
+    comboBoxOldValue=comboBox->currentIndex();
 }
-

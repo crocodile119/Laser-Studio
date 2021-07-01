@@ -26,6 +26,7 @@ double old_A;
 double old_V;
 double old_atmAttCoeff;
 
+double old_wavelength;
 };
 
 

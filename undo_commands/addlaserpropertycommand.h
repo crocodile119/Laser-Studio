@@ -32,4 +32,12 @@ double oldTransmittance;
 
 };
 
+QString redoLaserPointPropertyString(LaserPoint *laserpoint, QPointF oldPosition, int oldInstallationIndex,
+                                     double oldApertureAngle, bool oldFilterOn, double oldTransmittance);
+
+QString undoLaserPointPropertyString(QPointF position, int installationIndex, double apertureAngle,
+                                     bool filterOn, double transmittance, QPointF oldPosition,
+                                     int oldInstallationIndex, double oldApertureAngle, bool oldFilterOn,
+                                     double oldTransmittance);
+
 #endif

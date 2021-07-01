@@ -11,8 +11,6 @@ AddLabPropertyCommand::AddLabPropertyCommand(LabRoom* _myLabRoom, double _x, dou
     QRectF myLabRect= myLabRoom->getRoomRect();
     old_rectWidth=myLabRect.width();
     old_rectHeight=myLabRect.height();
-
-    setText(QObject::tr("Modifico le proprietà dell laboratorio"));
 }
 
 void AddLabPropertyCommand::undo()
@@ -25,6 +23,8 @@ void AddLabPropertyCommand::undo()
 
     myLabRoom->setRoomRect(labRect);
     myLabRoom->setPos(labRectPos);
+    setText(undoLabPropertyString(x, y, rectWidth, rectHeight,
+                                  old_x, old_y,old_rectWidth, old_rectHeight));
 }
 
 void AddLabPropertyCommand::redo()
@@ -37,6 +37,8 @@ void AddLabPropertyCommand::redo()
 
     myLabRoom->setRoomRect(labRect);
     myLabRoom->setPos(labRectPos);
+    setText(redoLabPropertyString(myLabRoom, old_x, old_y,
+                                  old_rectWidth, old_rectHeight));
 }
 
 AddLabPropertyCommand::~AddLabPropertyCommand()
@@ -44,3 +46,61 @@ AddLabPropertyCommand::~AddLabPropertyCommand()
 
 }
 
+QString redoLabPropertyString(LabRoom *myLabRoom, double old_x, double old_y,
+                              double old_rectWidth, double old_rectHeight)
+{
+    QPointF position= myLabRoom->pos();
+    QRectF myLabRect= myLabRoom->getRoomRect();
+    double rectWidth=myLabRect.width();
+    double rectHeight=myLabRect.height();
+
+    QString positionString;
+    QString dimensionString;
+    QString actionString;
+
+    if((position.x()!=old_x)||(position.x()!=old_x))
+        positionString=QString(" Posizione (%1, %2)" )
+                .arg(position.x())
+                .arg(position.y());
+
+    if ((old_rectWidth!=rectWidth)||(old_rectHeight!=rectHeight))
+        dimensionString=QString("Dimensioni (larghezza= %1, altezza=%2)")
+                .arg(rectWidth)
+                .arg(rectHeight);
+
+    if((old_x==position.x())&&(old_y==position.y())&&(rectWidth==old_rectWidth)
+        &&(rectHeight==old_rectHeight))
+        actionString="nessuna modifica eseguita";
+
+    return QObject::tr("Modifico il laboratorio: %1%2%3")
+        .arg(positionString)
+        .arg(dimensionString)
+        .arg(actionString);
+}
+
+QString undoLabPropertyString(double x, double y, double rectWidth, double rectHeight,
+                              double old_x, double old_y, double old_rectWidth, double old_rectHeight)
+{
+    QString positionString;
+    QString dimensionString;
+    QString actionString;
+
+    if((x!=old_x)||(x!=old_x))
+        positionString=QString(" Posizione (%1, %2)" )
+                .arg(x)
+                .arg(y);
+
+    if ((old_rectWidth!=rectWidth)||(old_rectHeight!=rectHeight))
+        dimensionString=QString("Dimensioni (larghezza= %1, altezza=%2)")
+                .arg(rectWidth)
+                .arg(rectHeight);
+
+    if((old_x==x)&&(old_y==y)&&(rectWidth==old_rectWidth)
+        &&(rectHeight==old_rectHeight))
+        actionString="nessuna modifica eseguita";
+
+    return QObject::tr("Modifico il laboratorio: %1%2%3")
+        .arg(positionString)
+        .arg(dimensionString)
+        .arg(actionString);
+}

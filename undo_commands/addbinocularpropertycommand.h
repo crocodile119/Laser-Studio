@@ -37,4 +37,14 @@ double oldD0Value;
 
 };
 
+QString redoBinocularPropertyString(Binocular *binocular, QPointF oldPosition, double oldAmplification,
+                                    double oldTransmittance, QString oldDescription, double oldD0Value);
+
+QString undoBinocularPropertyString(QPointF position, double amplification,
+                                    double transmittance, QString description, double D0Value,
+                                    QPointF oldPosition, double oldAmplification,
+                                    double oldTransmittance, QString oldDescription, double oldD0Value);
+
+
+
 #endif

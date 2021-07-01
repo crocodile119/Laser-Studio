@@ -32,3 +32,10 @@ QString old_description;
 };
 
 #endif
+
+QString redoFootprintPropertyString(FootprintObject *footprint, double old_x, double old_y,
+                                    double old_rectWidth, double old_rectHeight, QString oldDescription);
+
+QString undoFootprintPropertyString(double old_x, double old_y, double old_rectWidth, double old_rectHeight,
+                                    QString oldDescription, double x, double y, double rectWidth,
+                                    double rectHeight, QString description);

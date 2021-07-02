@@ -36,6 +36,7 @@
 #include "undo_commands/addlaserpropertycommand.h"
 #include "undo_commands/addbinocularpropertycommand.h"
 #include "undo_commands/addreflectorpropertycommand.h"
+#include "undo_commands/boxredimensioncommand.h"
 #include "undo_commands/deletereflectorcommand.h"
 #include "undo_commands/deletebinocularcommand.h"
 #include "undo_commands/deletefootprintcommand.h"
@@ -172,7 +173,7 @@ MainWindow::MainWindow()
     connect(laserWindow->graphicsView->scene, SIGNAL(reflectorSelected()), this, SLOT(listSelectionFromGraphics()));
     connect(laserWindow->graphicsView->scene, SIGNAL(binocularSelected()), this, SLOT(binocularListSelectionFromGraphics()));
     connect(laserWindow->graphicsView->scene, SIGNAL(labroomSelected()), this, SLOT(labroomSelectionFromGraphics()));
-    connect(laserWindow->graphicsView->scene, SIGNAL(deselected()), this, SLOT(listDeselectionFromGraphics()));
+    connect(laserWindow->graphicsView->scene, SIGNAL(deselected()), this, SLOT(listDlectedeselectionFromGraphics()));
     connect(laserWindow->graphicsView->scene, SIGNAL(footprintRelease()), this, SLOT(shadowZoneForLaser()));
     connect(laserWindow->graphicsView, SIGNAL(mouseRelease()), this, SLOT(listMultipleSelectionFromGraphics()));
     connect(laserWindow->myDockControls, SIGNAL(noFeasibleInput()), this, SLOT(noFeasibleInputFunction()));
@@ -181,6 +182,7 @@ MainWindow::MainWindow()
     connect(laserWindow->graphicsView->scene, SIGNAL(changed(const QList<QRectF> &)),this, SLOT(setViewportRect()));
     connect(laserWindow->graphicsView, SIGNAL(viewportChanged()),this, SLOT(setViewportRect()));
     connect(laserWindow->graphicsView->scene, &GraphicsScene::graphicItemMoved, this, &MainWindow::graphicItemMoveToStack);
+    connect(laserWindow->graphicsView->scene, &GraphicsScene::footprintDimensionEdit, this, &MainWindow::footprintRedimensioning);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -2462,8 +2464,10 @@ void MainWindow::addReflector(const target &target)
     //int index=undoStack->index();
     //const AddCommand* command=dynamic_cast<const AddCommand*>(undoStack->command(index-1));
     //reflector=command->getReflector();
+
     QGraphicsItem *item =laserWindow->graphicsView->scene->itemAt(reflectorPos, QTransform());
     reflector= qgraphicsitem_cast<Reflector*>(item);
+    reflector->setUndoStack(undoStack);
 
     setMaxEhnacedOpticalDiameter();
     setLaserpointShapePathForReflectors();
@@ -4370,6 +4374,13 @@ void MainWindow::controlsModified()
 void MainWindow::graphicItemMoveToStack(QGraphicsItem *movingItem, const QPointF& oldPosition)
 {
     undoStack->push(new MoveCommand(movingItem, oldPosition));
+}
+
+void MainWindow::footprintRedimensioning(FootprintObject *footprint, QRectF oldRectangle)
+{
+    QUndoCommand* boxRedimensionCommand =new BoxRedimensionCommand(footprint, oldRectangle);
+
+    undoStack->push(boxRedimensionCommand);
 }
 
 MainWindow::~MainWindow()

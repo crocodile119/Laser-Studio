@@ -81,10 +81,12 @@ SOURCES +=\
     undo_commands/addlabpropertycommand.cpp \
     undo_commands/addlaserpropertycommand.cpp \
     undo_commands/addmeteocommand.cpp \
+    undo_commands/addnindexcommand.cpp \
     undo_commands/addreflectorcommand.cpp \
     undo_commands/addreflectorpropertycommand.cpp \
     undo_commands/addscrollbarvaluecommand.cpp \
     undo_commands/addscrollslidervaluecommand.cpp \
+    undo_commands/boxredimensioncommand.cpp \
     undo_commands/deletebinocularcommand.cpp \
     undo_commands/deletefootprintcommand.cpp \
     undo_commands/deletereflectorcommand.cpp \
@@ -168,10 +170,12 @@ HEADERS  += mainwindow.h \
     undo_commands/addlabpropertycommand.h \
     undo_commands/addlaserpropertycommand.h \
     undo_commands/addmeteocommand.h \
+    undo_commands/addnindexcommand.h \
     undo_commands/addreflectorcommand.h \
     undo_commands/addreflectorpropertycommand.h \
     undo_commands/addscrollbarvaluecommand.h \
     undo_commands/addscrollslidervaluecommand.h \
+    undo_commands/boxredimensioncommand.h \
     undo_commands/deletebinocularcommand.h \
     undo_commands/deletefootprintcommand.h \
     undo_commands/deletereflectorcommand.h \

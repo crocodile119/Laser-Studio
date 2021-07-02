@@ -170,8 +170,6 @@ void FootprintObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
     painter->setTransform(transform);
 
     update();
-
-
 }
 
 QVariant FootprintObject::itemChange(GraphicsItemChange change,
@@ -208,6 +206,7 @@ QVariant FootprintObject::itemChange(GraphicsItemChange change,
 void FootprintObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
         const Rectangle &rectangle = myGraphicsRect;
+
         m_resizeHandlePressed = rectangle.resizeHandle().contains(event->pos());
 
         qDebug()<<"rectangle.resizeHandle()"<<rectangle.resizeHandle();
@@ -254,6 +253,7 @@ void FootprintObject::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 void FootprintObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     updateTipString();
+
     QGraphicsItem::mouseReleaseEvent(event);
 }
 
@@ -667,7 +667,6 @@ Rectangle FootprintObject::getRectangle()const
 {
     return myGraphicsRect;
 }
-
 
 void FootprintObject::setTransform(QTransform &_transform)
 {

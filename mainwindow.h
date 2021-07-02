@@ -203,6 +203,7 @@ private slots:
     void shadowZoneForLaser();
     void meteoWidgets(bool, bool, bool);
     void graphicItemMoveToStack(QGraphicsItem *movingItem, const QPointF& oldPosition);
+    void footprintRedimensioning(FootprintObject *footprint, QRectF rect);
     //scene
 
 private:

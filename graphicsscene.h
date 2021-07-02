@@ -6,6 +6,7 @@
 #include <QMouseEvent>
 #include <QRubberBand>
 #include "reflector.h"
+#include "footprintobject.h"
 
 class GraphicsScene: public QGraphicsScene
 {
@@ -17,9 +18,14 @@ protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent);
 
+signals:
+    void footprintDimensionEdit(FootprintObject *footprint, QRectF oldRect);
+
 private:
     QPointF oldPos;
     QGraphicsItem *movingItem=nullptr;
+    QRectF oldRectangle;
+    class Rectangle myGraphicRect;
 
 signals:
     void reflectorSelected();

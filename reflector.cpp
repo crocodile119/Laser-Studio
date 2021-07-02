@@ -14,6 +14,7 @@
 
 #include "link.h"
 #include "reflector.h"
+#include "undo_commands/addnindexcommand.h"
 
 #include <cmath>
 #include <iostream>
@@ -279,8 +280,8 @@ void Reflector::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
                                        getRefration_n(), 1.200, 1.900, 3, &ok,Qt::WindowFlags() ,0.1);
         if (ok)
         {
-            setRefraction_n(n);
-            setStringDetails();
+            QUndoCommand* addNIndexCommand=new AddNIndexCommand(this, n);
+            undoStack->push(addNIndexCommand);
         }
     }
 }

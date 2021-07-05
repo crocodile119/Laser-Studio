@@ -4,38 +4,8 @@ AddFootprintCommand::AddFootprintCommand(double _attenuatedDNRO, double _scale, 
                     LaserPoint *_laserpoint, QList<FootprintObject *> *_myFootprints, QPointF _initialPosition,
                     QUndoCommand *parent)
                     : QUndoCommand(parent), attenuatedDNRO(_attenuatedDNRO), scale(_scale),
-                      laserWindow(_laserWindow), laserpoint(_laserpoint), myFootprints(_myFootprints), initialPosition(_initialPosition)
-{
-    setText(QObject::tr("Aggiungo %1")
-        .arg(createAddFootprintCommandString(initialPosition)));
-}
-
-void AddFootprintCommand::undo()
-{
-    laserWindow->graphicsView->scene->removeItem(footprint);
-    laserWindow->graphicsView->scene->removeItem(objectLink);
-    delete objectLink;
-    delete footprintOnScene;
-
-//E' necessario cancellare la forma dell'ombra dell'ingombro
-    QPainterPath nullShadowZonePath;
-    laserpoint->setShadowZone(nullShadowZonePath);
-    laserpoint->setEhnacedShadowZone(nullShadowZonePath);
-
-    myFootprints->clear();
-
-    QList<QGraphicsItem *> items = laserWindow->graphicsView->scene->items();
-
-    QMutableListIterator<QGraphicsItem *> k(items);
-    while (k.hasNext())
-    {
-        FootprintObject *undoFootprints = dynamic_cast<FootprintObject*>(k.next());
-        if (undoFootprints)
-            myFootprints->push_back(undoFootprints);
-    }
-}
-
-void AddFootprintCommand::redo()
+                      laserWindow(_laserWindow), laserpoint(_laserpoint), myFootprints(_myFootprints),
+                      initialPosition(_initialPosition)
 {
     footprint= new FootprintObject(scale);
 
@@ -54,13 +24,52 @@ void AddFootprintCommand::redo()
     footprint->setLaserPosition();
     myFootprints->append(footprint);
 
-    laserWindow->graphicsView->scene->addItem(objectLink);
-    laserWindow->graphicsView->scene->addItem(footprintOnScene);
 
-    laserWindow->graphicsView->scene->clearSelection();
+    setText(QObject::tr("Aggiungo %1")
+        .arg(createAddFootprintCommandString(initialPosition)));
+}
+
+void AddFootprintCommand::undo()
+{
+    laserWindow->graphicsView->scene->removeItem(footprint);
+    laserWindow->graphicsView->scene->removeItem(objectLink);
     laserWindow->graphicsView->scene->update();
 
-    footprint->update();
+    myFootprints->clear();
+
+    QList<QGraphicsItem *> items = laserWindow->graphicsView->scene->items();
+
+    QMutableListIterator<QGraphicsItem *> k(items);
+    while (k.hasNext())
+    {
+        FootprintObject *undoFootprints = dynamic_cast<FootprintObject *>(k.next());
+        if (undoFootprints)
+            myFootprints->push_back(undoFootprints);
+    }
+    laserWindow->graphicsView->scene->update();
+}
+
+void AddFootprintCommand::redo()
+{
+    laserWindow->graphicsView->scene->addItem(footprint);
+    laserWindow->graphicsView->scene->clearSelection();
+
+    laserWindow->graphicsView->scene->addItem(objectLink);
+
+    QGraphicsItem *item =laserWindow->graphicsView->scene->itemAt(initialPosition, QTransform());
+    footprintOnScene= qgraphicsitem_cast<FootprintObject*>(item);
+
+    myFootprints->append(footprintOnScene);
+
+
+    laserpoint->setSelected(false);
+
+    laserWindow->graphicsView->scene->clearSelection();
+    //imposto la NOHD del punto laser
+    laserpoint->setOpticalDiameter(laserWindow->myDockControls->getOpticalDistance());
+    footprint->setSelected(true);
+
+    footprintOnScene->update();
 }
 
 AddFootprintCommand::~AddFootprintCommand()

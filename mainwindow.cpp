@@ -82,6 +82,7 @@ MainWindow::MainWindow()
            << tr("20000%") << tr("25000%");
 
     scale=1;
+    footprintsCount=0;
     dragModeState=false;
 
     createUndoView();
@@ -1106,6 +1107,7 @@ void MainWindow::createActions()
     deleteAction->setShortcut(tr("Del"));
 
     connect(deleteAction, SIGNAL(triggered()), this, SLOT(del()));
+    connect(deleteAction, SIGNAL(triggered()), this, SLOT(shadowZoneForLaser()));
     reflectorsEditMenu->addAction(deleteAction);
 
     wetTargetAction = new QAction(tr("Dettagli riflettore bagnato..."), this);
@@ -2463,10 +2465,8 @@ void MainWindow::addReflector(const target &target)
     //int index=undoStack->index();
     //const AddCommand* command=dynamic_cast<const AddCommand*>(undoStack->command(index-1));
     //reflector=command->getReflector();
-
     QGraphicsItem *item =laserWindow->graphicsView->scene->itemAt(reflectorPos, QTransform());
     reflector= qgraphicsitem_cast<Reflector*>(item);
-    reflector->setUndoStack(undoStack);
 
     setMaxEhnacedOpticalDiameter();
     setLaserpointShapePathForReflectors();
@@ -2541,6 +2541,7 @@ void MainWindow::del()
        ObjectLink *objectLink=footprint->getObjectLink();
        deleteFootprintCommand = new DeleteFootprintCommand(footprint, objectLink, scale, laserWindow,
            laserpoint, &myFootprints, deleletePosition);
+       footprintsCount--;
 
        undoStack->push(deleteFootprintCommand);
    }
@@ -3621,11 +3622,13 @@ void MainWindow::makeSceneOfSavedItems(){
         footprint->setDescription(myFootprintDescription);
         qDebug()<< "myFootprintDescription: "<< myFootprintDescription;
 
+        footprint->setFootprintSeqNumber(footprintSeqNumber);
         footprint->setDNRO_Diameter(attenuatedDNRO);
         footprint->setLaserBeamPath(laserpoint->mapToItem(footprint, laserpoint->shapePath()));
         laserWindow->graphicsView->scene->addItem(footprint);
 
         addObjectLink();
+        footprint->setFootprintSeqNumber(footprintSeqNumber);
         footprint->setLaserPosition();
         myFootprints.append(footprint);
 
@@ -4037,7 +4040,6 @@ void MainWindow::addRoom()
     environmentModel->setState(true);
     laserWindow->graphicsView->scene->addItem(myLabRoom);
     labroomList.append(myLabRoom);
-
     myLabRoom->setPos(laserpoint->pos().x(), laserpoint->pos().y());
 
     if(dragModeState)
@@ -4114,8 +4116,8 @@ void MainWindow::addObjectLink()
 
 void MainWindow::addFootprint()
 {
-    QPointF footprintPos=QPointF(laserpoint->pos().x()+ (100.0/scale * ((footprintSeqNumber+1) % 5)),
-                        laserpoint->pos().y()+(50.0/scale * (((footprintSeqNumber+1) / 5) % 7)));
+    QPointF footprintPos=QPointF(laserpoint->pos().x()+ (100.0/scale * ((footprintsCount+1) % 5)),
+                        laserpoint->pos().y()+(50.0/scale * (((footprintsCount+1) / 5) % 7)));
 
     double attenuatedDNRO= attenuatedDistance(laserWindow->myDockControls->getOpticalDistance());
 
@@ -4126,14 +4128,17 @@ void MainWindow::addFootprint()
     //int index=undoStack->index();
     //const AddCommand* command=dynamic_cast<const AddCommand*>(undoStack->command(index-1));
     //reflector=command->getReflector();
+    QGraphicsItem *item =laserWindow->graphicsView->scene->itemAt(footprintPos, QTransform());
+    footprint= qgraphicsitem_cast<FootprintObject*>(item);
 
-    footprint=myFootprints.last();
+//addFootprintCommand finisce qui
     setMaxEhnacedOpticalDiameter();
     footprint->laserParameterChanged();
     setShadowZone();
 
+    footprintsCount++;
+
     setWindowModified(true);
-    footprintSeqNumber++;
 
     connect(footprint, SIGNAL(xChanged()), this, SLOT(setShadowZone()));
     connect(footprint, SIGNAL(yChanged()), this, SLOT(setShadowZone()));
@@ -4158,6 +4163,7 @@ void MainWindow::setShadowZone()
         QPainterPath shadowPathIem=footprint->getShadowPath();
         QPainterPath ehnacedShadowPath=footprint->getEhnacedShadowPath();
 
+        qDebug()<<"shadowPathIem (di footprint): "<< shadowPathIem;
         myPath=footprint->mapToItem(laserpoint, footprint->getShadowPath());
         shadowPathZone=shadowPathZone.united(myPath);
 
@@ -4364,32 +4370,41 @@ void MainWindow::undo()
     * con le slot di aggiornamento.
     */
     int index=undoStack->index();
-    bool command=undoStack->command(index)==addFootprintCommand;
-    qDebug()<<"undoStack->command(index)==addFootprintCommand: "<<command;
-    if(undoStack->command(index)==addFootprintCommand)
+    bool addCommand=undoStack->command(index)==addFootprintCommand;
+    bool deleteCommand=undoStack->command(index)==deleteFootprintCommand;
+    qDebug()<<"undoStack->command(index)==addFootprintCommand: "<<addCommand;
+    qDebug()<<"undoStack->command(index)==deleteFootprintCommand: "<<deleteCommand;
+    if(addCommand)
     {
-    if(myFootprints.count()>footprintsCount)
+        if(myFootprints.count()<footprintsCount)
+        {
+            if(!myFootprints.isEmpty())
+            {
+                footprint=myFootprints.last();
+                setMaxEhnacedOpticalDiameter();
+                footprint->laserParameterChanged();
+            }
+            setShadowZone();
+            setWindowModified(true);
+        }
+        footprintsCount=myFootprints.count();
+    }
+    else if(deleteCommand)
     {
-        footprint=myFootprints.last();
-        //addFootprintCommand finisce qui
-        setMaxEhnacedOpticalDiameter();
-        footprint->laserParameterChanged();
-        setShadowZone();
-
-        setWindowModified(true);
-
-        connect(footprint, SIGNAL(xChanged()), this, SLOT(setShadowZone()));
-        connect(footprint, SIGNAL(yChanged()), this, SLOT(setShadowZone()));
-
-        qDebug()<<"Connesso! ";
+        if(myFootprints.count()>footprintsCount)
+        {
+            if(!myFootprints.isEmpty())
+            {
+                footprint=myFootprints.last();
+                setMaxEhnacedOpticalDiameter();
+                footprint->laserParameterChanged();
+            }
+            setShadowZone();
+            setWindowModified(true);
+        }
+        footprintsCount=myFootprints.count();
     }
-    //Annullato una operazione di aggiunta id un nuovo imgombro
-    if(myFootprints.count()<footprintsCount)
-        footprint=myFootprints.last();
-
-    footprintsCount=myFootprints.count();
-    }
-    else
+    if((!addCommand)&&(!deleteCommand))
         setShadowZone();
 }
 
@@ -4403,34 +4418,48 @@ void MainWindow::redo()
     * In questo caso è necessario connettere il nuovo ingombro
     * con le slot di aggiornamento.
     */
+
     int index=undoStack->index();
-    bool command=undoStack->command(index-1)==addFootprintCommand;
-    qDebug()<<"undoStack->command(index-1)==addFootprintCommand: "<<command;
-    if(undoStack->command(index-1)==addFootprintCommand)
+    bool addCommand=undoStack->command(index-1)==addFootprintCommand;
+    bool deleteCommand=undoStack->command(index-1)==deleteFootprintCommand;
+    qDebug()<<"undoStack->command(index-1)==addFootprintCommand: "<<addCommand;
+    qDebug()<<"undoStack->command(index-1)==deleteFootprintCommand: "<<deleteCommand;
+    if(addCommand)
     {
-    if(myFootprints.count()>footprintsCount)
+        if(myFootprints.count()>footprintsCount)
+        {
+            if(!myFootprints.isEmpty())
+            {
+                footprint=myFootprints.last();
+                setShadowZone();
+                setMaxEhnacedOpticalDiameter();
+                footprint->laserParameterChanged();
+            }
+            setWindowModified(true);
+        }
+        footprintsCount=myFootprints.count();
+    }
+    else if(deleteCommand)
     {
-        footprint=myFootprints.last();
-        setShadowZone();
-        setMaxEhnacedOpticalDiameter();
-        footprint->laserParameterChanged();
-        setWindowModified(true);
-
-        connect(footprint, SIGNAL(xChanged()), this, SLOT(setShadowZone()));
-        connect(footprint, SIGNAL(yChanged()), this, SLOT(setShadowZone()));
-
-        qDebug()<<"Connesso! ";
+        if(myFootprints.count()<footprintsCount)
+        {
+            if(!myFootprints.isEmpty())
+            {
+                footprint=myFootprints.last();
+                setShadowZone();
+                setMaxEhnacedOpticalDiameter();
+                footprint->laserParameterChanged();
+            }
+            setShadowZone();
+            setWindowModified(true);
+        }
+        footprintsCount=myFootprints.count();
     }
 
-    //Annullato una operazione di aggiunta id un nuovo imgombro
-    if(myFootprints.count()<footprintsCount)
-        footprint=myFootprints.last();
-
-    footprintsCount=myFootprints.count();
-    }
-    else
+    if((!addCommand)&&(!deleteCommand))
         setShadowZone();
 }
+
 
 void MainWindow::controlsModified()
 {

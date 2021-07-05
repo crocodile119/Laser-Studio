@@ -52,7 +52,7 @@ public:
     bool isIndoor();
 
     void setReflectorsList(const QList<pair<Reflector *, int> > &);
-    void setFootprintsList(const QList<pair<FootprintObject*, int>> &);
+    void setFootprintsList(const QList<FootprintObject *> &);
     void setBinocularsList(const QList<pair<Binocular*, int>> &);
     void setReflectorsFilenameList(const QStringList &);
     void setReflectorsGraphImageList(const QList<QImage> &);
@@ -88,7 +88,7 @@ private:
 
     QList<pair<Reflector*, int>> myReflectors;
     QList<pair<Binocular*, int>> myBinoculars;
-    QList<pair<FootprintObject*, int>> myFootprints;
+    QList<FootprintObject*> myFootprints;
 
     bool indoor;
     typeOfReport myTypeOfReport;

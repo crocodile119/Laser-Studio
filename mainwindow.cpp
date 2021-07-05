@@ -553,12 +553,12 @@ void MainWindow::selectBinocularFromList()
 
         if(footprint!=nullptr)
         {
-            QList<pair<FootprintObject*, int>>::iterator myIterator; // iterator
+            QList<FootprintObject*>::iterator myIterator; // iterator
             myIterator = myFootprints.begin();
 
             while (myIterator != myFootprints.end() )
             {
-                footprint=myIterator->first;
+                footprint=*myIterator;
                 footprint->laserParameterChanged();
                 ++myIterator;
             }
@@ -629,12 +629,12 @@ void MainWindow::atmosphericEffects()
 
     if(footprint!=nullptr)
     {
-        QList<pair<FootprintObject*, int>>::iterator myIterator; // iterator
+        QList<FootprintObject*>::iterator myIterator; // iterator
         myIterator = myFootprints.begin();
 
         while (myIterator != myFootprints.end() )
         {
-        footprint=myIterator->first;
+        footprint=*myIterator;
         footprint->laserParameterChanged();
         ++myIterator;
         }
@@ -651,12 +651,12 @@ void MainWindow::scintillation()
 
     if(footprint!=nullptr)
     {
-        QList<pair<FootprintObject*, int>>::iterator myIterator; // iterator
+        QList<FootprintObject*>::iterator myIterator; // iterator
         myIterator = myFootprints.begin();
 
         while (myIterator != myFootprints.end() )
         {
-            footprint=myIterator->first;
+            footprint=*myIterator;
             footprint->laserParameterChanged();
             ++myIterator;
         }
@@ -738,12 +738,12 @@ void MainWindow::properties()
 
             if(footprint!=nullptr)
             {
-                QList<pair<FootprintObject*, int>>::iterator myIterator; // iterator
+                QList<FootprintObject*>::iterator myIterator; // iterator
                 myIterator = myFootprints.begin();
 
                 while (myIterator != myFootprints.end() )
                 {
-                    footprint=myIterator->first;
+                    footprint=*myIterator;
                     footprint->laserParameterChanged();
                     ++myIterator;
                 }
@@ -1061,14 +1061,14 @@ void MainWindow::createActions()
     undoAction = undoStack->createUndoAction(this, tr("&Undo"));
     undoAction->setShortcuts(QKeySequence::Undo);
     undoAction->setIcon(QIcon(":/images/undo.png"));
-    connect(undoAction, SIGNAL(triggered()), this, SLOT(setShadowZone()));
+    connect(undoAction, SIGNAL(triggered()), this, SLOT(undo()));
 
     reflectorsEditMenu->addAction(undoAction);
 
     redoAction = undoStack->createRedoAction(this, tr("&Redo"));
     redoAction->setShortcuts(QKeySequence::Redo);
     redoAction->setIcon(QIcon(":/images/redo.png"));
-    connect(redoAction, SIGNAL(triggered()), this, SLOT(setShadowZone()));
+    connect(redoAction, SIGNAL(triggered()), this, SLOT(redo()));
 
     reflectorsEditMenu->addAction(redoAction);
 
@@ -1106,7 +1106,6 @@ void MainWindow::createActions()
     deleteAction->setShortcut(tr("Del"));
 
     connect(deleteAction, SIGNAL(triggered()), this, SLOT(del()));
-    connect(deleteAction, SIGNAL(triggered()), this, SLOT(shadowZoneForLaser()));
     reflectorsEditMenu->addAction(deleteAction);
 
     wetTargetAction = new QAction(tr("Dettagli riflettore bagnato..."), this);
@@ -2119,11 +2118,11 @@ void MainWindow::updateScale()
 
     if(footprint)
     {
-        QList<pair<FootprintObject*, int>>::iterator myIterator; // iterator
+        QList<FootprintObject*>::iterator myIterator; // iterator
         myIterator = myFootprints.begin();
         while (myIterator != myFootprints.end() )
         {
-            footprint=myIterator->first;
+            footprint=*myIterator;
             footprint->setItemScale(scale);
             footprint->setTransform(myTransform);
             ++myIterator;
@@ -2418,12 +2417,12 @@ void MainWindow::addBinocular()
 
     if(footprint!=nullptr)
     {
-        QList<pair<FootprintObject*, int>>::iterator myIterator; // iterator
+        QList<FootprintObject*>::iterator myIterator; // iterator
         myIterator = myFootprints.begin();
 
         while (myIterator != myFootprints.end() )
         {
-            footprint=myIterator->first;
+            footprint=*myIterator;
             footprint->laserParameterChanged();
             ++myIterator;
         }
@@ -3030,12 +3029,12 @@ void MainWindow::setDNRO_ForFootprint()
 
     double attenuatedDNRO=attenuatedDistance(laserWindow->myDockControls->getOpticalDistance());
 
-    QList<pair<FootprintObject*, int>>::iterator myIterator; // iterator
+    QList<FootprintObject*>::iterator myIterator; // iterator
     myIterator = myFootprints.begin();
 
     while (myIterator != myFootprints.end() )
     {
-        footprint=myIterator->first;
+        footprint=*myIterator;
         //opticalDistance è la NOHD che viene moltiplicata per 2 da setDNRO_Diameter
         footprint->setDNRO_Diameter(attenuatedDNRO);
         footprint->laserParameterChanged();
@@ -3186,11 +3185,11 @@ void MainWindow::setDistanceForFootprint()
     if(footprint==0)
         return;
 
-    QList<pair<FootprintObject*, int>>::iterator myIterator; // iterator
+    QList<FootprintObject*>::iterator myIterator; // iterator
     myIterator = myFootprints.begin();
     while (myIterator != myFootprints.end() )
     {
-        footprint=myIterator->first;
+        footprint=*myIterator;
         footprint->laserPositionChanged();
         ++myIterator;
     }
@@ -3622,15 +3621,13 @@ void MainWindow::makeSceneOfSavedItems(){
         footprint->setDescription(myFootprintDescription);
         qDebug()<< "myFootprintDescription: "<< myFootprintDescription;
 
-        footprint->setFootprintSeqNumber(footprintSeqNumber);
         footprint->setDNRO_Diameter(attenuatedDNRO);
         footprint->setLaserBeamPath(laserpoint->mapToItem(footprint, laserpoint->shapePath()));
         laserWindow->graphicsView->scene->addItem(footprint);
 
         addObjectLink();
-        footprint->setFootprintSeqNumber(footprintSeqNumber);
         footprint->setLaserPosition();
-        myFootprints.append(make_pair(footprint, footprintSeqNumber));
+        myFootprints.append(footprint);
 
         setMaxEhnacedOpticalDiameter();
         footprint->laserParameterChanged();
@@ -4040,6 +4037,7 @@ void MainWindow::addRoom()
     environmentModel->setState(true);
     laserWindow->graphicsView->scene->addItem(myLabRoom);
     labroomList.append(myLabRoom);
+
     myLabRoom->setPos(laserpoint->pos().x(), laserpoint->pos().y());
 
     if(dragModeState)
@@ -4121,22 +4119,21 @@ void MainWindow::addFootprint()
 
     double attenuatedDNRO= attenuatedDistance(laserWindow->myDockControls->getOpticalDistance());
 
-    addFootprintCommand = new AddFootprintCommand(attenuatedDNRO, scale, footprintSeqNumber, laserWindow,
+    addFootprintCommand = new AddFootprintCommand(attenuatedDNRO, scale, laserWindow,
                         laserpoint, &myFootprints, footprintPos);
 
     undoStack->push(addFootprintCommand);
     //int index=undoStack->index();
     //const AddCommand* command=dynamic_cast<const AddCommand*>(undoStack->command(index-1));
     //reflector=command->getReflector();
-    QGraphicsItem *item =laserWindow->graphicsView->scene->itemAt(footprintPos, QTransform());
-    footprint= qgraphicsitem_cast<FootprintObject*>(item);
 
-//addFootprintCommand finisce qui
+    footprint=myFootprints.last();
     setMaxEhnacedOpticalDiameter();
     footprint->laserParameterChanged();
     setShadowZone();
 
     setWindowModified(true);
+    footprintSeqNumber++;
 
     connect(footprint, SIGNAL(xChanged()), this, SLOT(setShadowZone()));
     connect(footprint, SIGNAL(yChanged()), this, SLOT(setShadowZone()));
@@ -4149,12 +4146,12 @@ void MainWindow::setShadowZone()
 
     shadowPathZone.clear();
     ehnacedPathZone.clear();
-    QList<pair<FootprintObject*, int>>::iterator myIterator; // iterator
+    QList<FootprintObject*>::iterator myIterator; // iterator
     myIterator = myFootprints.begin();
 
     while (myIterator != myFootprints.end() )
     {
-        footprint=myIterator->first;
+        footprint=*myIterator;
         footprint->setTipString();
         QPainterPath myPath;
         QPainterPath myEhnacedPath;
@@ -4200,11 +4197,11 @@ void MainWindow::setMaxEhnacedOpticalDiameter()
     }
     maxEhnacedOpticalDiameter = *max_element(ExendedOpticalDiameterVect.begin(), ExendedOpticalDiameterVect.end());
 
-    QList<pair<FootprintObject*, int>>::iterator footprintIterator; // iterator
+    QList<FootprintObject*>::iterator footprintIterator; // iterator
     footprintIterator = myFootprints.begin();
     while (footprintIterator != myFootprints.end() )
     {
-        footprint=footprintIterator->first;
+        footprint=*footprintIterator;
         footprint->setEhnacedDiameter(maxEhnacedOpticalDiameter);
         footprint->laserParameterChanged();
         ++footprintIterator;
@@ -4358,12 +4355,81 @@ void MainWindow::setThemeOnStart()
 
 void MainWindow::undo()
 {
-    statusBar()->showMessage(tr("Ripristino immagine"), 2000);
+    statusBar()->showMessage(tr("Comando annullato"), 2000);
+
+   /*
+    * Ripristinata un'operazione di cancellazione il numero effettivo
+    * di ingombri risulta maggiore di quello calcolato.
+    * In questo caso è necessario connettere il nuovo ingombro
+    * con le slot di aggiornamento.
+    */
+    int index=undoStack->index();
+    bool command=undoStack->command(index)==addFootprintCommand;
+    qDebug()<<"undoStack->command(index)==addFootprintCommand: "<<command;
+    if(undoStack->command(index)==addFootprintCommand)
+    {
+    if(myFootprints.count()>footprintsCount)
+    {
+        footprint=myFootprints.last();
+        //addFootprintCommand finisce qui
+        setMaxEhnacedOpticalDiameter();
+        footprint->laserParameterChanged();
+        setShadowZone();
+
+        setWindowModified(true);
+
+        connect(footprint, SIGNAL(xChanged()), this, SLOT(setShadowZone()));
+        connect(footprint, SIGNAL(yChanged()), this, SLOT(setShadowZone()));
+
+        qDebug()<<"Connesso! ";
+    }
+    //Annullato una operazione di aggiunta id un nuovo imgombro
+    if(myFootprints.count()<footprintsCount)
+        footprint=myFootprints.last();
+
+    footprintsCount=myFootprints.count();
+    }
+    else
+        setShadowZone();
 }
 
 void MainWindow::redo()
 {
-    statusBar()->showMessage(tr("Rielaborazione "), 2000);
+    statusBar()->showMessage(tr("Comando ripristinato "), 2000);
+
+   /*
+    * Ripristinata un'operazione di aggiunta di un nuovo ingombro
+    * il numero effettivo risulta maggiore di quello calcolato.
+    * In questo caso è necessario connettere il nuovo ingombro
+    * con le slot di aggiornamento.
+    */
+    int index=undoStack->index();
+    bool command=undoStack->command(index-1)==addFootprintCommand;
+    qDebug()<<"undoStack->command(index-1)==addFootprintCommand: "<<command;
+    if(undoStack->command(index-1)==addFootprintCommand)
+    {
+    if(myFootprints.count()>footprintsCount)
+    {
+        footprint=myFootprints.last();
+        setShadowZone();
+        setMaxEhnacedOpticalDiameter();
+        footprint->laserParameterChanged();
+        setWindowModified(true);
+
+        connect(footprint, SIGNAL(xChanged()), this, SLOT(setShadowZone()));
+        connect(footprint, SIGNAL(yChanged()), this, SLOT(setShadowZone()));
+
+        qDebug()<<"Connesso! ";
+    }
+
+    //Annullato una operazione di aggiunta id un nuovo imgombro
+    if(myFootprints.count()<footprintsCount)
+        footprint=myFootprints.last();
+
+    footprintsCount=myFootprints.count();
+    }
+    else
+        setShadowZone();
 }
 
 void MainWindow::controlsModified()

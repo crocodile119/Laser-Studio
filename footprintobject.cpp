@@ -253,7 +253,8 @@ void FootprintObject::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 void FootprintObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     updateTipString();
-
+    setFlag(ItemIsMovable, true);
+    m_resizeHandlePressed=false;
     QGraphicsItem::mouseReleaseEvent(event);
 }
 
@@ -278,7 +279,6 @@ void FootprintObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
     handleBrush = Qt::white;
     const Rectangle &rectangle = myGraphicsRect;
     this->update(rectangle.resizeHandle());
-
     QGraphicsItem::hoverLeaveEvent(event);
 }
 
@@ -609,11 +609,11 @@ void FootprintObject::setShadowPath(QPainterPath path)
     {
         if(itemlink->objectLinkPhase_x()>=0)
         {
-        shadowPathItem=laserBeamPath.intersected(path);
+            shadowPathItem=laserBeamPath.intersected(path);
         }
         else
         {
-        shadowPathItem.clear();
+            shadowPathItem.clear();
         }
     }
 }

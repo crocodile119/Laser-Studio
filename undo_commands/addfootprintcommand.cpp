@@ -1,10 +1,41 @@
 #include "addfootprintcommand.h"
 
-AddFootprintCommand::AddFootprintCommand(double _attenuatedDNRO, double _scale, int _footprintSeqNumber, CentralWidget *_laserWindow,
-                    LaserPoint *_laserpoint, QList<pair<FootprintObject *, int> > *_myFootprints, QPointF _initialPosition,
+AddFootprintCommand::AddFootprintCommand(double _attenuatedDNRO, double _scale, CentralWidget *_laserWindow,
+                    LaserPoint *_laserpoint, QList<FootprintObject *> *_myFootprints, QPointF _initialPosition,
                     QUndoCommand *parent)
-                    : QUndoCommand(parent), attenuatedDNRO(_attenuatedDNRO), scale(_scale), footprintSeqNumber(_footprintSeqNumber),
+                    : QUndoCommand(parent), attenuatedDNRO(_attenuatedDNRO), scale(_scale),
                       laserWindow(_laserWindow), laserpoint(_laserpoint), myFootprints(_myFootprints), initialPosition(_initialPosition)
+{
+    setText(QObject::tr("Aggiungo %1")
+        .arg(createAddFootprintCommandString(initialPosition)));
+}
+
+void AddFootprintCommand::undo()
+{
+    laserWindow->graphicsView->scene->removeItem(footprint);
+    laserWindow->graphicsView->scene->removeItem(objectLink);
+    delete objectLink;
+    delete footprintOnScene;
+
+//E' necessario cancellare la forma dell'ombra dell'ingombro
+    QPainterPath nullShadowZonePath;
+    laserpoint->setShadowZone(nullShadowZonePath);
+    laserpoint->setEhnacedShadowZone(nullShadowZonePath);
+
+    myFootprints->clear();
+
+    QList<QGraphicsItem *> items = laserWindow->graphicsView->scene->items();
+
+    QMutableListIterator<QGraphicsItem *> k(items);
+    while (k.hasNext())
+    {
+        FootprintObject *undoFootprints = dynamic_cast<FootprintObject*>(k.next());
+        if (undoFootprints)
+            myFootprints->push_back(undoFootprints);
+    }
+}
+
+void AddFootprintCommand::redo()
 {
     footprint= new FootprintObject(scale);
 
@@ -20,64 +51,16 @@ AddFootprintCommand::AddFootprintCommand(double _attenuatedDNRO, double _scale, 
     objectLink =addObjectLink();
 
     footprint->updateTipString();
-    footprint->setFootprintSeqNumber(footprintSeqNumber);
     footprint->setLaserPosition();
-    myFootprints->append(make_pair(footprint, footprintSeqNumber));
-
-    footprintSeqNumber=myFootprints->count();
-
-
-    setText(QObject::tr("Aggiungo %1")
-        .arg(createAddFootprintCommandString(initialPosition)));
-}
-
-void AddFootprintCommand::undo()
-{
-    laserWindow->graphicsView->scene->removeItem(footprint);
-    laserWindow->graphicsView->scene->removeItem(objectLink);
-    laserWindow->graphicsView->scene->update();
-
-    myFootprints->clear();
-
-    QList<QGraphicsItem *> items = laserWindow->graphicsView->scene->items();
-
-    int index;
-
-    QMutableListIterator<QGraphicsItem *> k(items);
-    while (k.hasNext())
-    {
-        FootprintObject *undoFootprints = dynamic_cast<FootprintObject *>(k.next());
-        if (undoFootprints)
-        {
-        index=undoFootprints->getFootprintSeqNumber();
-        myFootprints->push_back(make_pair(undoFootprints, index));
-        }
-    }
-    laserWindow->graphicsView->scene->update();
-}
-
-void AddFootprintCommand::redo()
-{
-    laserWindow->graphicsView->scene->addItem(footprint);
-    laserWindow->graphicsView->scene->clearSelection();
+    myFootprints->append(footprint);
 
     laserWindow->graphicsView->scene->addItem(objectLink);
-
-    QGraphicsItem *item =laserWindow->graphicsView->scene->itemAt(initialPosition, QTransform());
-    footprintOnScene= qgraphicsitem_cast<FootprintObject*>(item);
-
-    int index=footprintOnScene->getFootprintSeqNumber();
-    myFootprints->append(make_pair(footprintOnScene, index));
-
-
-    laserpoint->setSelected(false);
+    laserWindow->graphicsView->scene->addItem(footprintOnScene);
 
     laserWindow->graphicsView->scene->clearSelection();
-    //imposto la NOHD del punto laser
-    laserpoint->setOpticalDiameter(laserWindow->myDockControls->getOpticalDistance());
-    footprint->setSelected(true);
+    laserWindow->graphicsView->scene->update();
 
-    footprintOnScene->update();
+    footprint->update();
 }
 
 AddFootprintCommand::~AddFootprintCommand()

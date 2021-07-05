@@ -1118,12 +1118,12 @@ QString LaserReport::htmlFootprints()
     {
         html +="<br><h2>Ingombri presenti nell'area</h2>";
 
-        QList<pair<FootprintObject*, int>>::iterator myIterator; // iterator
+        QList<FootprintObject*>::iterator myIterator; // iterator
         myIterator = myFootprints.begin();
         int i =1;
         while(myIterator != myFootprints.end())
         {
-            footprint=myIterator->first;
+            footprint=*myIterator;
             footprints.clear();
             footprintsValuation();
 
@@ -1277,7 +1277,7 @@ void LaserReport::setReflectorsList(const QList<pair<Reflector*, int>> &_myRefle
     myReflectors=_myReflectors;
 }
 
-void LaserReport::setFootprintsList(const QList<pair<FootprintObject*, int>> &_myFootprints)
+void LaserReport::setFootprintsList(const QList<FootprintObject*> &_myFootprints)
 {
    myFootprints=_myFootprints;
 }

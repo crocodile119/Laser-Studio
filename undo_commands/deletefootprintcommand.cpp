@@ -1,8 +1,8 @@
 #include "deletefootprintcommand.h"
 
-DeleteFootprintCommand::DeleteFootprintCommand(FootprintObject *_footprintOnScene, ObjectLink *_objectLink, double _scale, CentralWidget *_laserWindow, LaserPoint *_laserpoint,
-                        QList <pair<FootprintObject *, int>>*_myFootprints, QPointF _deletePosition, QUndoCommand *parent)
-          : QUndoCommand(parent), footprintOnScene(_footprintOnScene), objectLink(_objectLink), scale(_scale), laserWindow(_laserWindow), laserpoint(_laserpoint),
+DeleteFootprintCommand::DeleteFootprintCommand(FootprintObject *_footprint, ObjectLink *_objectLink, double _scale, CentralWidget *_laserWindow, LaserPoint *_laserpoint,
+                        QList <FootprintObject *>*_myFootprints, QPointF _deletePosition, QUndoCommand *parent)
+          : QUndoCommand(parent), footprint(_footprint), objectLink(_objectLink), scale(_scale), laserWindow(_laserWindow), laserpoint(_laserpoint),
             myFootprints(_myFootprints), deletePosition(_deletePosition)
 {
     setText(QObject::tr("Elimino %1")
@@ -12,45 +12,62 @@ DeleteFootprintCommand::DeleteFootprintCommand(FootprintObject *_footprintOnScen
 
 DeleteFootprintCommand::~DeleteFootprintCommand()
 {
-
+    footprintOnScene=new FootprintObject(scale);
+    footprintOnScene->setPos(deletePosition);
 }
 
 void DeleteFootprintCommand::undo()
 {
-    laserpoint->setOpticalDiameter(laserWindow->myDockControls->getOpticalDistance());
-    footprintOnScene->setLaserBeamPath(laserpoint->mapToItem(footprintOnScene, laserpoint->shapePath()));
+    objectLink=addObjectLink();
     laserWindow->graphicsView->scene->addItem(objectLink);
-    laserWindow->graphicsView->scene->addItem(footprintOnScene);
-    footprintOnScene->setPos(deletePosition);
+    laserWindow->graphicsView->scene->addItem(footprint);
+
     laserWindow->graphicsView->scene->clearSelection();
     laserWindow->graphicsView->scene->update();
-    //imposto la NOHD del punto laser
-    footprintOnScene->setSelected(true);
-
-    footprintOnScene->update();    
 }
 
 void DeleteFootprintCommand::redo()
 {
     laserWindow->graphicsView->scene->removeItem(objectLink);
-    laserWindow->graphicsView->scene->removeItem(footprintOnScene);
+    laserWindow->graphicsView->scene->removeItem(footprint);
+
+    delete objectLink;
+    delete footprint;
+    footprint=new FootprintObject(scale);
+    footprint->setPos(deletePosition);
+
+//E' necessario cancellare la forma dell'ombra dell'ingombro
+    QPainterPath nullShadowZonePath;
+    laserpoint->setShadowZone(nullShadowZonePath);
+    laserpoint->setEhnacedShadowZone(nullShadowZonePath);
 
     myFootprints->clear();
 
     QList<QGraphicsItem *> items = laserWindow->graphicsView->scene->items();
-
-    int index;
 
     QMutableListIterator<QGraphicsItem *> k(items);
     while (k.hasNext())
     {
         FootprintObject *undoFootprints = dynamic_cast<FootprintObject*>(k.next());
         if (undoFootprints)
-        {
-            index=undoFootprints->getFootprintSeqNumber();
-            myFootprints->push_back(make_pair(undoFootprints, index));
-        }
+            myFootprints->push_back(undoFootprints);
     }
+}
+
+ObjectLink *DeleteFootprintCommand::addObjectLink()
+{
+    ObjectNodePair objectNodes = selectedObjectNodePair();
+    if (objectNodes == ObjectNodePair())
+        return nullptr;
+
+    ObjectLink *objectlink = new ObjectLink(objectNodes.first, objectNodes.second);
+
+    return objectlink;
+}
+
+DeleteFootprintCommand::ObjectNodePair DeleteFootprintCommand::selectedObjectNodePair() const
+{
+    return ObjectNodePair(laserpoint, footprint);
 }
 
 QString createDeleteFootprintCommandString(const QPointF &pos)

@@ -538,14 +538,12 @@ void Binocular::computeOpticalGain()
     else if(((wavelength>=320)&&(wavelength<400))||((wavelength>1400)&&(wavelength<=4500)))
         {
         computeSpotDiameter();
-        D0=0;
         opticalGain=transmissionCoeff*magnification;
         opticalGainFormula="τ M<sup>2</sup>";
         }
     else
         {
         computeSpotDiameter();
-        D0=0;
         opticalGain=1;
         opticalGainFormula="1";
         }

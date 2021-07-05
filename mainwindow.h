@@ -402,13 +402,15 @@ private:
     QGraphicsView *view;
     QList <pair<Reflector *, int>> myReflectors;
     QList <pair<Binocular *, int>> myBinoculars;
-    QList<pair<FootprintObject*, int>> myFootprints;
+    QList <FootprintObject*> myFootprints;
     QList <LaserPoint*> laserPointList;
     QList <LabRoom*> labroomList;
     QPointF pointPosition;
 
     QFont sceneFont;
     QTransform myTransform;
+
+    int footprintsCount=0;
 };
 
 #endif

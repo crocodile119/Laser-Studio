@@ -36,6 +36,7 @@ void GraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             qDebug()<<"Ho selezionato il punto laser: ";
             clearSelection();
             laserpoint->setSelected(true);
+            oldPos=laserpoint->pos();
             emit laserSelected();
         }
 

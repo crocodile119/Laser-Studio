@@ -7,6 +7,8 @@
 #include "../laserpoint.h"
 #include "centralwidget.h"
 
+
+
 class AddFootprintCommand : public QUndoCommand
 {
 public:

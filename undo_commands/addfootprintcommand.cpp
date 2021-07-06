@@ -16,11 +16,14 @@ AddFootprintCommand::AddFootprintCommand(double _attenuatedDNRO, double _scale, 
     footprint->setLaserBeamPath(laserpoint->mapToItem(footprint, laserpoint->shapePath()));
 
     footprint->setItemScale(scale);
+    laserWindow->graphicsView->scene->addItem(footprint);
 
     objectLink =addObjectLink();
 
     footprint->updateTipString();
     footprint->setLaserPosition();
+    myFootprints->append(footprint);
+
 
     setText(QObject::tr("Aggiungo %1")
         .arg(createAddFootprintCommandString(initialPosition)));

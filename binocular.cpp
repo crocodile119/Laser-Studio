@@ -25,7 +25,7 @@ Binocular::Binocular(double DNRO, double _binocularDistance, double _wavelength,
      magnification(5), transmissionCoeff(0.90), binocularPix(":/images/binocularpix.png")
 {
     computeOpticalGain();
-    exendedOpticalDiameter=2*DNRO*sqrtf(opticalGain);
+    exendedOpticalDiameter=DNRO*sqrtf(opticalGain);
 
     if(exendedOpticalDiameter>binocularDistance)
         dangerous=true;

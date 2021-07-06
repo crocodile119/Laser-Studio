@@ -247,6 +247,8 @@ private:
     void printReport(QPrinter* painter);
     void saveReportImages();
     void printHtml(const QString&);
+    QString commandUndoTriggered()const;
+    QString commandRedoTriggered()const;
 
 
     QPainterPath laserpointShapePath();
@@ -396,9 +398,13 @@ private:
     QAction *glassGoggleAction;
     QAction *plasticGoggleAction;
 
-    QUndoCommand *deleteReflectorCommand;
-    QUndoCommand *deleteFootprintCommand;
     QUndoCommand *addFootprintCommand;
+    QUndoCommand *addReflectorCommand;
+    QUndoCommand *addBinocularCommand;
+    QUndoCommand *deleteFootprintCommand;
+    QUndoCommand *deleteReflectorCommand;
+    QUndoCommand *deleteBinocularCommand;
+
     QGraphicsView *view;
     QList <pair<Reflector *, int>> myReflectors;
     QList <pair<Binocular *, int>> myBinoculars;

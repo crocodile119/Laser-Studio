@@ -16,14 +16,11 @@ AddFootprintCommand::AddFootprintCommand(double _attenuatedDNRO, double _scale, 
     footprint->setLaserBeamPath(laserpoint->mapToItem(footprint, laserpoint->shapePath()));
 
     footprint->setItemScale(scale);
-    laserWindow->graphicsView->scene->addItem(footprint);
 
     objectLink =addObjectLink();
 
     footprint->updateTipString();
     footprint->setLaserPosition();
-    myFootprints->append(footprint);
-
 
     setText(QObject::tr("Aggiungo %1")
         .arg(createAddFootprintCommandString(initialPosition)));
@@ -31,9 +28,11 @@ AddFootprintCommand::AddFootprintCommand(double _attenuatedDNRO, double _scale, 
 
 void AddFootprintCommand::undo()
 {
+    QRectF boundingRects=laserWindow->graphicsView->scene->itemsBoundingRect();
     laserWindow->graphicsView->scene->removeItem(footprint);
     laserWindow->graphicsView->scene->removeItem(objectLink);
-    laserWindow->graphicsView->scene->update();
+    laserWindow->graphicsView->scene->update(boundingRects);
+
 
     myFootprints->clear();
 
@@ -46,7 +45,6 @@ void AddFootprintCommand::undo()
         if (undoFootprints)
             myFootprints->push_back(undoFootprints);
     }
-    laserWindow->graphicsView->scene->update();
 }
 
 void AddFootprintCommand::redo()

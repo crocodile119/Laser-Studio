@@ -39,8 +39,8 @@ void DeleteFootprintCommand::undo()
 void DeleteFootprintCommand::redo()
 {
     laserWindow->graphicsView->scene->removeItem(objectLink);
-    laserWindow->graphicsView->scene->removeItem(footprintOnScene);
-    laserWindow->graphicsView->scene->update();
+    laserWindow->graphicsView->scene->removeItem(footprintOnScene);   
+    laserWindow->graphicsView->scene->update(laserWindow->graphicsView->viewport()->rect());
 
     myFootprints->clear();
 

@@ -4331,6 +4331,8 @@ void MainWindow::undo()
 
     if((!addFootprintCmd)&&(!deleteFootprintCmd))
         setShadowZone();
+
+    laserWindow->graphicsView->scene->update();
 }
 
 void MainWindow::redo()
@@ -4424,6 +4426,8 @@ void MainWindow::redo()
 
     if((!addFootprintCmd)&&(!deleteFootprintCmd))
         setShadowZone();
+
+    laserWindow->graphicsView->scene->update();
 }
 
 

@@ -174,7 +174,7 @@ MainWindow::MainWindow()
     connect(laserWindow->graphicsView->scene, SIGNAL(reflectorSelected()), this, SLOT(listSelectionFromGraphics()));
     connect(laserWindow->graphicsView->scene, SIGNAL(binocularSelected()), this, SLOT(binocularListSelectionFromGraphics()));
     connect(laserWindow->graphicsView->scene, SIGNAL(labroomSelected()), this, SLOT(labroomSelectionFromGraphics()));
-    connect(laserWindow->graphicsView->scene, SIGNAL(deselected()), this, SLOT(listDlectedeselectionFromGraphics()));
+    connect(laserWindow->graphicsView->scene, SIGNAL(deselected()), this, SLOT(listDeselectionFromGraphics()));
     connect(laserWindow->graphicsView->scene, SIGNAL(footprintRelease()), this, SLOT(shadowZoneForLaser()));
     connect(laserWindow->graphicsView, SIGNAL(mouseRelease()), this, SLOT(listMultipleSelectionFromGraphics()));
     connect(laserWindow->myDockControls, SIGNAL(noFeasibleInput()), this, SLOT(noFeasibleInputFunction()));
@@ -2401,8 +2401,8 @@ void MainWindow::addBinocular()
     double binocularDistance=sqrtf(powf((binocularPosX-laserPosX), 2)+powf((binocularPosY-laserPosY), 2));
     double attenuatedDNRO= attenuatedDistance(laserWindow->myDockControls->getOpticalDistance());
 
-    //Costruttore DNRO, binocularDistance, wavelength, divergence, beamDiameter
-    QUndoCommand *addBinocularCommand = new AddBinocularCommand(attenuatedDNRO, binocularDistance, scale,
+
+    addBinocularCommand = new AddBinocularCommand(attenuatedDNRO, binocularDistance, scale,
                                                             binSeqNumber, laserWindow, laserpoint,
                                                             &myBinoculars, binocularsModel,
                                                             binocularPos);
@@ -2457,7 +2457,7 @@ void MainWindow::addReflector(const target &target)
     double attenuatedDNRO= attenuatedDistance(laserWindow->myDockControls->getOpticalDistance());
     double attenuatedDNRC= attenuatedDistance(laserWindow->myDockControls->getSkinDistances());
 
-    QUndoCommand *addReflectorCommand = new AddReflectorCommand(attenuatedDNRO, attenuatedDNRC, reflectorDistance, scale,
+    addReflectorCommand = new AddReflectorCommand(attenuatedDNRO, attenuatedDNRC, reflectorDistance, scale,
                                                             seqNumber, target, laserWindow, laserpoint,
                                                             &myReflectors, reflectorsModel,
                                                             QPointF(reflectorPosX, reflectorPosY));
@@ -2529,10 +2529,11 @@ void MainWindow::del()
     {
         QPointF deleletePosition=binocular->pos();
         BinocularLink *binocularLink=binocular->getBinocularLink();
-        QUndoCommand *deleteBinocularCommand = new DeleteBinocularCommand(binocular, binocularLink, scale, laserWindow,
+        deleteBinocularCommand = new DeleteBinocularCommand(binocular, binocularLink, scale, laserWindow,
             laserpoint, &myBinoculars, binocularsModel, deleletePosition);
 
     undoStack->push(deleteBinocularCommand);
+    setMaxEhnacedOpticalDiameter();
     }
 
     else if (footprint)
@@ -2545,100 +2546,6 @@ void MainWindow::del()
 
        undoStack->push(deleteFootprintCommand);
    }
-/*
-    items = laserWindow->graphicsView->scene->selectedItems();
-
-    QMutableListIterator<QGraphicsItem *> n(items);
-    while (n.hasNext())
-    {
-        Binocular *binocular = dynamic_cast<Binocular *>(n.next());
-        if(binocular)
-        {
-            int binSeqNumber = binocular->getBinSeqNumber();
-            delete binocular;
-            n.remove();
-            myBinoculars.removeOne(make_pair(binocular, binSeqNumber));
-            binocularsModel->myDataHasChanged();
-            setMaxEhnacedOpticalDiameter();
-        }
-    }
-
-    items = laserWindow->graphicsView->scene->selectedItems();
-    QMutableListIterator<QGraphicsItem *> p(items);
-    while(p.hasNext())
-    {
-        FootprintObject *footprint = dynamic_cast<FootprintObject *>(p.next());
-        if(footprint)
-        {
-            int footprintSeqNumber = footprint->getFootprintSeqNumber();
-            delete footprint;
-            p.remove();
-            myFootprints.removeOne(make_pair(footprint, footprintSeqNumber));
-        }
-    }
-
-    laserWindow->graphicsView->scene->clearSelection();
-
-    QList <pair<Reflector *, int>> swapList;
-    swapList.clear();
-    QList<pair<Reflector*, int>>::iterator myIterator; // iterator
-    myIterator = myReflectors.begin();
-
-    int index=0;
-    while(myIterator != myReflectors.end())
-    {
-        reflector=myIterator->first;
-        reflector->setSeqNumber(index);
-        swapList.push_back(make_pair(reflector, index));
-        ++myIterator;
-        ++index;
-    }
-    myReflectors=swapList;
-    seqNumber=myReflectors.count();
-
-    reflectorsModel->setElementList(myReflectors);
-    reflectorsModel->myDataHasChanged();
-
-    QList <pair<Binocular *, int>> swapBinList;
-    swapBinList.clear();
-    QList<pair<Binocular*, int>>::iterator myBinIterator; // iterator
-    myBinIterator = myBinoculars.begin();
-
-    index=0;
-
-    while (myBinIterator != myBinoculars.end() )
-    {
-        binocular=myBinIterator->first;
-        binocular->setBinSeqNumber(index);
-        swapBinList.push_back(make_pair(binocular, index));
-        ++myBinIterator;
-        ++index;
-    }
-
-    myBinoculars=swapBinList;
-    binSeqNumber=myBinoculars.count();
-
-    binocularsModel->setElementList(myBinoculars);
-    binocularsModel->myDataHasChanged();
-
-    QList <pair<FootprintObject *, int>> swapFootprintList;
-    swapFootprintList.clear();
-    QList<pair<FootprintObject*, int>>::iterator myFootprintIterator; // iterator
-    myFootprintIterator = myFootprints.begin();
-
-    index=0;
-    while (myFootprintIterator != myFootprints.end() )
-    {
-        footprint=myFootprintIterator->first;
-        footprint->setFootprintSeqNumber(index);
-        swapFootprintList.push_back(make_pair(footprint, index));
-        ++myFootprintIterator;
-        ++index;
-    }
-    myFootprints=swapFootprintList;
-    footprintSeqNumber=myFootprints.count();
-
-    */
 }
 
 void MainWindow::cut()
@@ -4125,9 +4032,7 @@ void MainWindow::addFootprint()
                         laserpoint, &myFootprints, footprintPos);
 
     undoStack->push(addFootprintCommand);
-    //int index=undoStack->index();
-    //const AddCommand* command=dynamic_cast<const AddCommand*>(undoStack->command(index-1));
-    //reflector=command->getReflector();
+
     QGraphicsItem *item =laserWindow->graphicsView->scene->itemAt(footprintPos, QTransform());
     footprint= qgraphicsitem_cast<FootprintObject*>(item);
 
@@ -4160,10 +4065,7 @@ void MainWindow::setShadowZone()
         footprint->setTipString();
         QPainterPath myPath;
         QPainterPath myEhnacedPath;
-        QPainterPath shadowPathIem=footprint->getShadowPath();
-        QPainterPath ehnacedShadowPath=footprint->getEhnacedShadowPath();
 
-        qDebug()<<"shadowPathIem (di footprint): "<< shadowPathIem;
         myPath=footprint->mapToItem(laserpoint, footprint->getShadowPath());
         shadowPathZone=shadowPathZone.united(myPath);
 
@@ -4370,11 +4272,15 @@ void MainWindow::undo()
     * con le slot di aggiornamento.
     */
     int index=undoStack->index();
-    bool addCommand=undoStack->command(index)==addFootprintCommand;
-    bool deleteCommand=undoStack->command(index)==deleteFootprintCommand;
-    qDebug()<<"undoStack->command(index)==addFootprintCommand: "<<addCommand;
-    qDebug()<<"undoStack->command(index)==deleteFootprintCommand: "<<deleteCommand;
-    if(addCommand)
+    bool addFootprintCmd=undoStack->command(index)==addFootprintCommand;
+    bool addReflectorCmd=undoStack->command(index)==addReflectorCommand;
+    bool addBinocularCmd=undoStack->command(index)==addBinocularCommand;
+    bool deleteFootprintCmd=undoStack->command(index)==deleteFootprintCommand;
+    bool deleteReflectorCmd=undoStack->command(index)==deleteReflectorCommand;
+    bool deleteBinocularCmd=undoStack->command(index)==deleteBinocularCommand;
+    qDebug()<<"undoStack->command(index)==addFootprintCommand: "<<addFootprintCmd;
+    qDebug()<<"undoStack->command(index)==deleteFootprintCommand: "<<deleteFootprintCmd;
+    if(addFootprintCmd)
     {
         if(myFootprints.count()<footprintsCount)
         {
@@ -4389,7 +4295,7 @@ void MainWindow::undo()
         }
         footprintsCount=myFootprints.count();
     }
-    else if(deleteCommand)
+    else if(deleteFootprintCmd)
     {
         if(myFootprints.count()>footprintsCount)
         {
@@ -4404,7 +4310,26 @@ void MainWindow::undo()
         }
         footprintsCount=myFootprints.count();
     }
-    if((!addCommand)&&(!deleteCommand))
+    else if(addReflectorCmd)
+    {
+
+    }
+    else if(addBinocularCmd)
+        setMaxEhnacedOpticalDiameter();
+
+    else if(deleteReflectorCmd)
+    {
+        if(!myReflectors.isEmpty())
+        {
+            reflector=myReflectors.last().first;
+            setMaxEhnacedOpticalDiameter();
+            setLaserpointShapePathForReflectors();
+        }
+    }
+    else if(deleteBinocularCmd)
+        setMaxEhnacedOpticalDiameter();
+
+    if((!addFootprintCmd)&&(!deleteFootprintCmd))
         setShadowZone();
 }
 
@@ -4420,11 +4345,15 @@ void MainWindow::redo()
     */
 
     int index=undoStack->index();
-    bool addCommand=undoStack->command(index-1)==addFootprintCommand;
-    bool deleteCommand=undoStack->command(index-1)==deleteFootprintCommand;
-    qDebug()<<"undoStack->command(index-1)==addFootprintCommand: "<<addCommand;
-    qDebug()<<"undoStack->command(index-1)==deleteFootprintCommand: "<<deleteCommand;
-    if(addCommand)
+    bool addFootprintCmd=undoStack->command(index-1)==addFootprintCommand;
+    bool addReflectorCmd=undoStack->command(index-1)==addReflectorCommand;
+    bool addBinocularCmd=undoStack->command(index-1)==addBinocularCommand;
+    bool deleteFootprintCmd=undoStack->command(index-1)==deleteFootprintCommand;
+    bool deleteReflectorCmd=undoStack->command(index-1)==deleteReflectorCommand;
+    bool deleteBinocularCmd=undoStack->command(index-1)==deleteBinocularCommand;
+    qDebug()<<"undoStack->command(index-1)==addFootprintCommand: "<<addFootprintCmd;
+    qDebug()<<"undoStack->command(index-1)==deleteFootprintCommand: "<<deleteFootprintCmd;
+    if(addFootprintCmd)
     {
         if(myFootprints.count()>footprintsCount)
         {
@@ -4439,7 +4368,7 @@ void MainWindow::redo()
         }
         footprintsCount=myFootprints.count();
     }
-    else if(deleteCommand)
+    else if(deleteFootprintCmd)
     {
         if(myFootprints.count()<footprintsCount)
         {
@@ -4455,8 +4384,45 @@ void MainWindow::redo()
         }
         footprintsCount=myFootprints.count();
     }
+    else if(addReflectorCmd)
+    {
+        setMaxEhnacedOpticalDiameter();
+        setLaserpointShapePathForReflectors();
+    }
+    else if(addBinocularCmd)
+    {
+        double exendedOpticalDiameter=binocular->getExendedOpticalDiameter();
+        bool binocularInZone=laserpoint->shapeEnhacedPathContainsPoint(laserpoint->mapFromScene(binocular->pos()), exendedOpticalDiameter);
+        binocular->setInZone(binocularInZone);
+        setMaxEhnacedOpticalDiameter();
+        binocular->laserParametersChanged();
 
-    if((!addCommand)&&(!deleteCommand))
+        if(footprint!=nullptr)
+        {
+            QList<FootprintObject*>::iterator myIterator; // iterator
+            myIterator = myFootprints.begin();
+
+            while (myIterator != myFootprints.end() )
+            {
+                footprint=*myIterator;
+                footprint->laserParameterChanged();
+                ++myIterator;
+            }
+        }
+    }
+    else if(deleteReflectorCmd)
+    {
+        if(!myReflectors.isEmpty())
+        {
+            reflector=myReflectors.last().first;
+            setMaxEhnacedOpticalDiameter();
+            setLaserpointShapePathForReflectors();
+        }
+    }
+    else if(deleteBinocularCmd)
+        setMaxEhnacedOpticalDiameter();
+
+    if((!addFootprintCmd)&&(!deleteFootprintCmd))
         setShadowZone();
 }
 
@@ -4477,6 +4443,7 @@ void MainWindow::footprintRedimensioning(FootprintObject *footprint, QRectF oldR
 
     undoStack->push(boxRedimensionCommand);
 }
+
 
 MainWindow::~MainWindow()
 {

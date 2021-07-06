@@ -19,11 +19,13 @@ AddBinocularCommand::AddBinocularCommand(double _attenuatedDNRO, double _binocul
 
     binocular->setPixScale(scale);
     binocular->setPos(initialPosition);
-    binocular->setTextLabel();
-    binocular->setStringPosition();    
-    binocular->setBinSeqNumber(binSeqNumber);
 
     binocularLink=addBinocularLink();
+
+    double exendedOpticalDiameter=binocular->getExendedOpticalDiameter();
+    bool binocularInZone=laserpoint->shapeEnhacedPathContainsPoint(laserpoint->mapFromScene(binocular->pos()), exendedOpticalDiameter);
+    binocular->setInZone(binocularInZone);
+
     setText(QObject::tr("Aggiungo %1")
         .arg(createAddBinocularCommandString(initialPosition)));
 }
@@ -60,6 +62,10 @@ void AddBinocularCommand::redo()
     laserWindow->graphicsView->scene->clearSelection();
 
     laserWindow->graphicsView->scene->addItem(binocularLink);
+
+    binocular->setTextLabel();
+    binocular->setStringPosition();
+    binocular->setBinSeqNumber(binSeqNumber);
 
     QGraphicsItem *item =laserWindow->graphicsView->scene->itemAt(initialPosition, QTransform());
     binocularOnScene= qgraphicsitem_cast<Binocular*>(item);

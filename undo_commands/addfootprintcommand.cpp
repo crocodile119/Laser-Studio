@@ -28,11 +28,9 @@ AddFootprintCommand::AddFootprintCommand(double _attenuatedDNRO, double _scale, 
 
 void AddFootprintCommand::undo()
 {
-    QRectF boundingRects=laserWindow->graphicsView->scene->itemsBoundingRect();
     laserWindow->graphicsView->scene->removeItem(footprint);
     laserWindow->graphicsView->scene->removeItem(objectLink);
-    laserWindow->graphicsView->scene->update(boundingRects);
-
+    laserWindow->graphicsView->scene->update();
 
     myFootprints->clear();
 

@@ -252,6 +252,7 @@ void FootprintObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     updateTipString();
     setFlag(ItemIsMovable, true);
     m_resizeHandlePressed=false;
+    update();
     QGraphicsItem::mouseReleaseEvent(event);
 }
 

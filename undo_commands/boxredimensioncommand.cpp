@@ -15,6 +15,7 @@ void BoxRedimensionCommand::undo()
 
     footprint->setRectangle(myRectangle);
     footprint->updateTipString();
+    footprint->scene()->update();
 
     setText(createBoxEditCommandString(rect));
 }

@@ -209,6 +209,9 @@ void FootprintObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
         m_resizeHandlePressed = rectangle.resizeHandle().contains(event->pos());
 
+        qDebug()<<"rectangle.resizeHandle()"<<rectangle.resizeHandle();
+        qDebug()<<"m_resizeHandlePressed: "<<m_resizeHandlePressed;
+        qDebug()<<"event->pos(): "<<event->pos();
         if (m_resizeHandlePressed)
         {
             m_mousePressOffset = rectangle.rect().bottomRight() - event->pos();

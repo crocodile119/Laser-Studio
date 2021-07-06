@@ -396,13 +396,9 @@ private:
     QAction *glassGoggleAction;
     QAction *plasticGoggleAction;
 
-    QUndoCommand *addFootprintCommand;
-    QUndoCommand *addReflectorCommand;
-    QUndoCommand *addBinocularCommand;
-    QUndoCommand *deleteFootprintCommand;
     QUndoCommand *deleteReflectorCommand;
-    QUndoCommand *deleteBinocularCommand;
-
+    QUndoCommand *deleteFootprintCommand;
+    QUndoCommand *addFootprintCommand;
     QGraphicsView *view;
     QList <pair<Reflector *, int>> myReflectors;
     QList <pair<Binocular *, int>> myBinoculars;

@@ -3,6 +3,7 @@
 #include <QGraphicsScene>
 #include <QStyleOptionGraphicsItem>
 #include <cmath>
+#include "undo_commands/boxredimensioncommand.cpp"
 
 const double FootprintObject::degRad = 180.0/3.1415926535897932384626433832795;
 const double FootprintObject::radDeg = 3.1415926535897932384626433832795/180.0;
@@ -38,6 +39,7 @@ FootprintObject::FootprintObject(double _scale)
 {
     scale=_scale;
     Rectangle myRect(0.0, 0.0, 20.0/scale, 20.0/scale);
+    oldRect=QRectF(0.0, 0.0, 20.0/scale, 20.0/scale);
     myGraphicsRect=myRect;
     handleBrush = Qt::white;
     setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges);
@@ -223,8 +225,8 @@ void FootprintObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 void FootprintObject::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     const Rectangle &rectangle = myGraphicsRect; 
+    oldRect=rect;
     QRectF rect=myGraphicsRect.rect();
-
     if (m_resizeHandlePressed) {
         setFlag(ItemIsMovable, false);
         rect = QRectF(rectangle.rect().topLeft(), event->pos()  + m_mousePressOffset);
@@ -239,10 +241,12 @@ void FootprintObject::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
     if((rect.width()!=myGraphicsRect.rect().width())||(rect.height()!=myGraphicsRect.rect().height()))
     {
-    prepareGeometryChange();
-    handleRect(rectangle);
-    myGraphicsRect.setRect(rect);
-    update();
+        prepareGeometryChange();
+        handleRect(rectangle);
+        update(rect);
+        myGraphicsRect.setRect(rect);
+        QUndoCommand* boxRedimensionCommand =new BoxRedimensionCommand(this, oldRect);
+        undoStack->push(boxRedimensionCommand);
     }
     QGraphicsItem::mouseMoveEvent(event);
 }
@@ -620,13 +624,9 @@ void FootprintObject::setEhnacedShadowPath(QPainterPath path)
     foreach (ObjectLink *itemlink, myObjectLinks)
     {
         if(itemlink->objectLinkPhase_x()>=0)
-        {
-        ehnacedShadowPathItem=laserEhnacedBeamPath.intersected(path);
-        }
+            ehnacedShadowPathItem=laserEhnacedBeamPath.intersected(path);
         else
-        {
-        ehnacedShadowPathItem.clear();
-        }
+            ehnacedShadowPathItem.clear();
     }
 }
 
@@ -723,4 +723,9 @@ void FootprintObject::setTextLabel()
     textLabel="Ingombro" + QString("\n(%1,%2)")
             .arg(xString)
             .arg(yString);
+}
+
+void FootprintObject::setUndoStack(QUndoStack* _undoStack)
+{
+    undoStack=_undoStack;
 }

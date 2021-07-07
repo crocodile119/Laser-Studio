@@ -39,7 +39,7 @@ CentralWidget::CentralWidget(QWidget *parent) :
     myDockControls= new DockControls(this, myDockResults, myDockEffects, myDockSkin, myDockGoggle, myDockLea);
 
     gridLayout = new QGridLayout(this);
-    graphicsView =new DisplayScene();
+    graphicsView =new DisplayScene(this);
 
     gridLayout->addWidget(graphicsView, 0, 0, 1, 1);
     label = new QLabel();

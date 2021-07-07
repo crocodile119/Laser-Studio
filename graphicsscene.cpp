@@ -12,7 +12,6 @@
 
 GraphicsScene::GraphicsScene(QObject *parent):QGraphicsScene(parent)
 {
-
 }
 
 void GraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
@@ -95,25 +94,13 @@ void GraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
         LabRoom *myLabRoom= qgraphicsitem_cast<LabRoom*>(movingItem);
         if(footprint)
         {
-            auto myFootprintRectangle=footprint->getRectangle();
-            QRectF myRect=myFootprintRectangle.rect();
-
-            QRectF rectangle=myRect;
-
             if(oldPos!= movingItem->pos())
             {
                 emit graphicItemMoved(movingItem, oldPos);
                 qDebug()<<"Footprint spostato: ";
             }
             if(footprint->getResizeHandlePressed())
-            {
-                if(rectangle!=oldRectangle)
-                    emit footprintDimensionEdit(footprint, oldRectangle);
-
                 emit footprintRelease();
-
-                footprint->update();
-            }
         }
         else if(laserpoint)
         {

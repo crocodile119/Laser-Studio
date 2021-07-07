@@ -9,7 +9,7 @@
 
 DisplayScene::DisplayScene(QWidget* parent) : QGraphicsView(parent)
 {
-        scene = new GraphicsScene();
+        scene = new GraphicsScene(this);
         scene->clearSelection();
 
         setScene(scene);

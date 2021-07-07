@@ -27,6 +27,7 @@ private:
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
 #include <QObject>
+#include <QUndoStack>
 #include "objectlink.h"
 #include "laserpoint.h"
 
@@ -87,6 +88,7 @@ public:
     void updateTipString();
     QRectF labelRect();
     void setTextLabel();
+    void setUndoStack(QUndoStack* _undoStack);
 
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event)override;
@@ -132,5 +134,7 @@ private:
     QPainterPath pieHazardPath;
     QTransform myTransform;
     QString description;
+    QUndoStack* undoStack;
+    QRectF oldRect;
 };
 #endif

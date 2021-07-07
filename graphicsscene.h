@@ -18,9 +18,6 @@ protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent);
 
-signals:
-    void footprintDimensionEdit(FootprintObject *footprint, QRectF oldRect);
-
 private:
     QPointF oldPos;
     QGraphicsItem *movingItem=nullptr;

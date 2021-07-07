@@ -36,7 +36,6 @@
 #include "undo_commands/addlaserpropertycommand.h"
 #include "undo_commands/addbinocularpropertycommand.h"
 #include "undo_commands/addreflectorpropertycommand.h"
-#include "undo_commands/boxredimensioncommand.h"
 #include "undo_commands/deletereflectorcommand.h"
 #include "undo_commands/deletebinocularcommand.h"
 #include "undo_commands/deletefootprintcommand.h"
@@ -183,7 +182,7 @@ MainWindow::MainWindow()
     connect(laserWindow->graphicsView->scene, SIGNAL(changed(const QList<QRectF> &)),this, SLOT(setViewportRect()));
     connect(laserWindow->graphicsView, SIGNAL(viewportChanged()),this, SLOT(setViewportRect()));
     connect(laserWindow->graphicsView->scene, &GraphicsScene::graphicItemMoved, this, &MainWindow::graphicItemMoveToStack);
-    connect(laserWindow->graphicsView->scene, &GraphicsScene::footprintDimensionEdit, this, &MainWindow::footprintRedimensioning);
+    connect(undoStack, &QUndoStack::indexChanged, this, &MainWindow::updateUndoStackList);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -1335,6 +1334,8 @@ void MainWindow::createUndoView()
     myDockHistory=new DockHistory();
     myDockHistory->ui->scrollArea->setWidget(undoView);
     undoView->setWindowTitle(tr("Command List"));
+    undoView->setCleanIcon(QIcon(":/images/ok.png"));
+    undoView->setEmptyLabel("Inizio cronologia comandi");
     undoView->show();
     undoView->setAttribute(Qt::WA_QuitOnClose, false);
 }
@@ -4036,6 +4037,7 @@ void MainWindow::addFootprint()
     QGraphicsItem *item =laserWindow->graphicsView->scene->itemAt(footprintPos, QTransform());
     footprint= qgraphicsitem_cast<FootprintObject*>(item);
 
+    footprint->setUndoStack(undoStack);
 //addFootprintCommand finisce qui
     setMaxEhnacedOpticalDiameter();
     footprint->laserParameterChanged();
@@ -4471,6 +4473,14 @@ void MainWindow::redo()
     statusBar()->showMessage(commandRedoTriggered(), 2000);
 }
 
+void MainWindow::updateUndoStackList(int idx)
+{
+    qDebug()<<"Idx pari a: "<< idx;
+
+    setMaxEhnacedOpticalDiameter();
+    setShadowZone();
+    footprintsCount=myFootprints.count();
+}
 
 void MainWindow::controlsModified()
 {
@@ -4480,13 +4490,6 @@ void MainWindow::controlsModified()
 void MainWindow::graphicItemMoveToStack(QGraphicsItem *movingItem, const QPointF& oldPosition)
 {
     undoStack->push(new MoveCommand(movingItem, oldPosition));
-}
-
-void MainWindow::footprintRedimensioning(FootprintObject *footprint, QRectF oldRectangle)
-{
-    QUndoCommand* boxRedimensionCommand =new BoxRedimensionCommand(footprint, oldRectangle);
-
-    undoStack->push(boxRedimensionCommand);
 }
 
 MainWindow::~MainWindow()

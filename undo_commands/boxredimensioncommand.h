@@ -11,6 +11,8 @@ public:
 
     void undo() override;
     void redo() override;
+    bool mergeWith(const QUndoCommand *command) override;
+    int id() const override;
 
 private:
     FootprintObject *footprint;

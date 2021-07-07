@@ -601,13 +601,11 @@ void MainWindow::setCondMeteo()
         double A = dialog.getA();
         double V = dialog.getV();
         double atmAttCoeff = dialog.getAtmAttCoeff();
-        QUndoCommand *addMeteoCommand = new AddMeteoCommand(laserWindow, wavelength, A,
-                                        V, atmAttCoeff);
+        addMeteoCommand = new AddMeteoCommand(laserWindow, wavelength, A,
+                                        V, atmAttCoeff, environmentModel);
         undoStack->push(addMeteoCommand);
 
         updateForCondMeteo();
-        environmentModel->setMeteoVisibility(laserWindow->getMeteoRange());
-        environmentModel->myDataHasChanged();
     }
 }
 
@@ -4480,6 +4478,10 @@ void MainWindow::updateUndoStackList(int idx)
     setMaxEhnacedOpticalDiameter();
     setShadowZone();
     footprintsCount=myFootprints.count();
+
+    environmentModel->setMeteoVisibility(laserWindow->getMeteoRange());
+    environmentModel->myDataHasChanged();
+    updateForCondMeteo();
 }
 
 void MainWindow::controlsModified()

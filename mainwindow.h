@@ -401,6 +401,7 @@ private:
     QUndoCommand *addFootprintCommand;
     QUndoCommand *addReflectorCommand;
     QUndoCommand *addBinocularCommand;
+    QUndoCommand *addMeteoCommand;
     QUndoCommand *deleteFootprintCommand;
     QUndoCommand *deleteReflectorCommand;
     QUndoCommand *deleteBinocularCommand;

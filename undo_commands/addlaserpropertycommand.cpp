@@ -10,8 +10,6 @@ AddLaserPropertyCommand::AddLaserPropertyCommand(LaserPoint* _laserpoint, QPoint
     oldApertureAngle=laserpoint->getAperture();
     oldFilterOn=laserpoint->isFilterOn();
     oldTransmittance=laserpoint->getTransmittance();
-
-    setText(QObject::tr("Modifico le proprietà del punto laser"));
 }
 
 void AddLaserPropertyCommand::undo()
@@ -88,7 +86,7 @@ QString redoLaserPointPropertyString(LaserPoint *laserpoint, QPointF oldPosition
             &&(apertureAngle==oldApertureAngle)&&(transmittance==oldTransmittance))
         actionString="nessuna modifica eseguita";
 
-    return QObject::tr("Modifico il riflettore: %1%2%3%4%5")
+    return QObject::tr("Modifico il punto laser: %1%2%3%4%5")
         .arg(positionString)
         .arg(installationIndexString)
         .arg(apertureAngleString)
@@ -132,7 +130,7 @@ QString undoLaserPointPropertyString(QPointF position, int installationIndex, do
             &&(apertureAngle==oldApertureAngle)&&(transmittance==oldTransmittance))
         actionString="nessuna modifica eseguita";
 
-    return QObject::tr("Modifico il riflettore: %1%2%3%4%5")
+    return QObject::tr("Modifico il punto laser: %1%2%3%4%5")
         .arg(positionString)
         .arg(installationIndexString)
         .arg(apertureAngleString)

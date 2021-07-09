@@ -1026,6 +1026,13 @@ void MainWindow::createActions()
     showReflectorsList->setStatusTip(tr("Visualizza la lista dei riflettori"));
     viewMenu->addAction(showReflectorsList);
 
+    addDockWidget(Qt::RightDockWidgetArea, myDockHistory);
+    showDockHistory = new QAction(tr("Visualizza la cronologia dei comandi"), this);
+    showDockHistory = myDockHistory->toggleViewAction();
+    showDockHistory->setIcon(QIcon(":/images/history.png"));
+    showDockHistory->setStatusTip(tr("Visualizza la cronologia dei comandi"));
+    viewMenu->addAction(showDockHistory);
+
     tabifyDockWidget(laserWindow->myDockReflectorsList, laserWindow->myDockGoggle);  
     setTabPosition(Qt::RightDockWidgetArea, QTabWidget::North);
 
@@ -1056,26 +1063,19 @@ void MainWindow::createActions()
     reflectorsEditMenu = menuBar()->addMenu(tr("&Dettagli scena"));
     reflectorsEditMenu ->setFont(font);
 
-    undoAction = undoStack->createUndoAction(this, tr("&Undo"));
+    undoAction = undoStack->createUndoAction(this, tr("&Annulla"));
     undoAction->setShortcuts(QKeySequence::Undo);
     undoAction->setIcon(QIcon(":/images/undo.png"));
     connect(undoAction, SIGNAL(triggered()), this, SLOT(undo()));
 
     reflectorsEditMenu->addAction(undoAction);
 
-    redoAction = undoStack->createRedoAction(this, tr("&Redo"));
+    redoAction = undoStack->createRedoAction(this, tr("&Ripristina"));
     redoAction->setShortcuts(QKeySequence::Redo);
     redoAction->setIcon(QIcon(":/images/redo.png"));
     connect(redoAction, SIGNAL(triggered()), this, SLOT(redo()));
 
     reflectorsEditMenu->addAction(redoAction);
-
-    addDockWidget(Qt::RightDockWidgetArea, myDockHistory);
-    showDockHistory = new QAction(tr("Visualizza la cronologia dei comandi"), this);
-    showDockHistory = myDockHistory->toggleViewAction();
-    showDockHistory->setIcon(QIcon(":/images/history.png"));
-    showDockHistory->setStatusTip(tr("Visualizza la cronologia dei comandi"));
-    reflectorsEditMenu->addAction(showDockHistory);
 
     changeMeteoAct= new QAction(tr("Specifica meteo"), this);
     changeMeteoAct->setIcon(QIcon(":/images/meteo.png"));
@@ -2770,16 +2770,16 @@ void MainWindow::createToolBars()
     viewToolBar->addAction(showReflectorsList);
     viewToolBar->addAction(centerOnViewAction);
     viewToolBar->addAction(showGridAction);
+    viewToolBar->addAction(showDockHistory);
 
     sceneToolBar = addToolBar(tr("Scena"));
     sceneToolBar->setObjectName(tr("Scena"));
+    sceneToolBar->addAction(undoAction);
+    sceneToolBar->addAction(redoAction);
     sceneToolBar->addAction(deleteAction);
     sceneToolBar->addAction(sendToBackAction);
     sceneToolBar->addAction(bringToFrontAction);
     sceneToolBar->addAction(changeMeteoAct);
-    sceneToolBar->addAction(undoAction);
-    sceneToolBar->addAction(redoAction);
-    sceneToolBar->addAction(showDockHistory);
 
     environmentToolBar = addToolBar(tr("Ambiente"));
     environmentToolBar->setObjectName(tr("Ambiente"));
@@ -4496,5 +4496,35 @@ void MainWindow::graphicItemMoveToStack(QGraphicsItem *movingItem, const QPointF
 
 MainWindow::~MainWindow()
 {
+    if(!myFootprints.isEmpty())
+    {
+        QList<FootprintObject*>::iterator myIterator; // iterator
+        myIterator = myFootprints.begin();
+        while (myIterator != myFootprints.end())
+        {
+            footprint=*myIterator;
+            delete footprint;
+        }
+    }
+    if(!myReflectors.isEmpty())
+    {
+        QList<pair<Reflector*, int>>::iterator myIterator; // iterator
+        myIterator = myReflectors.begin();
+        while (myIterator != myReflectors.end())
+        {
+            reflector=myIterator->first;
+            delete reflector;
+        }
+    }
+    if(!myBinoculars.isEmpty())
+    {
+        QList<pair<Binocular*, int>>::iterator myIterator; // iterator
+        myIterator = myBinoculars.begin();
+        while (myIterator != myBinoculars.end())
+        {
+            binocular=myIterator->first;
+            delete binocular;
+        }
+    }
 }
 

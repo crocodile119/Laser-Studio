@@ -26,20 +26,12 @@
         <file>images/results.png</file>
         <file>images/skin.png</file>
         <file>images/lambertian.png</file>
-        <file>images/background.png</file>
         <file>images/preview.png</file>
         <file>images/point.png</file>
         <file>images/grid.png</file>
         <file>images/list.png</file>
         <file>images/image.png</file>
         <file>images/selection.png</file>
-        <file>images/background2.png</file>
-        <file>images/background1.png</file>
-        <file>images/background3.png</file>
-        <file>images/background4.png</file>
-        <file>images/background5.png</file>
-        <file>images/background6.png</file>
-        <file>images/background7.png</file>
         <file>images/laserpix.bmp</file>
         <file>images/lambertian.bmp</file>
         <file>images/mirror.bmp</file>
@@ -53,7 +45,6 @@
         <file>images/zoomin.png</file>
         <file>images/zoomout.png</file>
         <file>images/room.png</file>
-        <file>images/roomedit.png</file>
         <file>images/binocularpix.png</file>
         <file>images/binocular.png</file>
         <file>images/meteo.png</file>

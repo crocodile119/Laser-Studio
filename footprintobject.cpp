@@ -128,7 +128,6 @@ void FootprintObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
     painter->drawPath(shadowPathItem);
     //painter->drawPath(laserEhnacedBeamPath);
     painter->drawPath(ehnacedShadowPathItem);
-
 /*
     //QPointF center= rect.bottomRight();
 

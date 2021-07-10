@@ -89,6 +89,7 @@ public:
     QRectF labelRect();
     void setTextLabel();
     void setUndoStack(QUndoStack* _undoStack);
+    void paintFootprint(bool _paint);
 
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event)override;
@@ -136,5 +137,6 @@ private:
     QString description;
     QUndoStack* undoStack;
     QRectF oldRect;
+    bool myPaint;
 };
 #endif

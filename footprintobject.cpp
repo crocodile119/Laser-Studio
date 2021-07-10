@@ -41,6 +41,7 @@ FootprintObject::FootprintObject(double _scale)
     Rectangle myRect(0.0, 0.0, 20.0/scale, 20.0/scale);
     oldRect=QRectF(0.0, 0.0, 20.0/scale, 20.0/scale);
     myGraphicsRect=myRect;
+    myPaint=true;
     handleBrush = Qt::white;
     setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges);
     addfreeCorner=false;
@@ -91,85 +92,87 @@ QRectF FootprintObject::boundingRect() const
 void FootprintObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
            QWidget */* widget */)
 {   
-    QPen pen;
-    pen.setColor(Qt::green);
-    pen.setCosmetic(true);
+    if(myPaint)
+    {
+        QPen pen;
+        pen.setColor(Qt::green);
+        pen.setCosmetic(true);
 
-    if (option->state & QStyle::State_Selected) {
-        pen.setStyle(Qt::DotLine);
-        pen.setWidth(2);
-        pen.setColor(Qt::darkGray);
-    }
+        if (option->state & QStyle::State_Selected) {
+            pen.setStyle(Qt::DotLine);
+            pen.setWidth(2);
+            pen.setColor(Qt::darkGray);
+        }
 
-    painter->setPen(pen);
-    painter->setBrush(Qt::white);
+        painter->setPen(pen);
+        painter->setBrush(Qt::white);
 
-    /*QLineF lineRight= QLineF(QPointF(0.0, 0.0), QPointF(20.0, 0));
-    QLineF lineDown= QLineF(QPointF(0.0, 0.0), QPointF(0, 20.0));
-    painter->drawLine(lineRight);
-    painter->drawLine(lineDown);
+        /*QLineF lineRight= QLineF(QPointF(0.0, 0.0), QPointF(20.0, 0));
+        QLineF lineDown= QLineF(QPointF(0.0, 0.0), QPointF(0, 20.0));
+        painter->drawLine(lineRight);
+        painter->drawLine(lineDown);
+        */
+        const Rectangle &rectangle=myGraphicsRect;
+        rect = rectangle.rect();
+        //setResizeHandle(scale);
+        //rect.adjust(1.0, 1.0, -10.0/2, -10.0/2);
+
+        painter->drawRect(rect);
+        setResizeHandle(scale);
+        QPen shadow;
+        shadow.setColor(Qt::transparent);
+        QBrush shadowBrush= QBrush(QColor(230, 230, 230, 156));
+        painter->setPen(shadow);
+        painter->setBrush(shadowBrush);
+        setShadowPath(shadowPath(opticalDiameter));
+        setEhnacedShadowPath(shadowPath(ehnacedDiameter));
+        //painter->drawPath(shadowPath(ehnacedDiameter));
+
+        painter->drawPath(shadowPathItem);
+        //painter->drawPath(laserEhnacedBeamPath);
+        painter->drawPath(ehnacedShadowPathItem);
+    /*
+        //QPointF center= rect.bottomRight();
+
     */
-    const Rectangle &rectangle=myGraphicsRect;
-    rect = rectangle.rect();
-    //setResizeHandle(scale);
-    //rect.adjust(1.0, 1.0, -10.0/2, -10.0/2);
 
-    painter->drawRect(rect);
-    setResizeHandle(scale);
-    QPen shadow;
-    shadow.setColor(Qt::transparent);
-    QBrush shadowBrush= QBrush(QColor(230, 230, 230, 156));
-    painter->setPen(shadow);
-    painter->setBrush(shadowBrush);
-    setShadowPath(shadowPath(opticalDiameter));
-    setEhnacedShadowPath(shadowPath(ehnacedDiameter));
-    //painter->drawPath(shadowPath(ehnacedDiameter));
+        QPen handlePen;
+        handlePen.setColor(Qt::gray);
+        handlePen.setCosmetic(true);
+        painter->setPen(handlePen);
+        painter->setBrush(handleBrush);
 
-    painter->drawPath(shadowPathItem);
-    //painter->drawPath(laserEhnacedBeamPath);
-    painter->drawPath(ehnacedShadowPathItem);
-/*
-    //QPointF center= rect.bottomRight();
+        handleRect(rectangle);
 
-*/
+        painter->drawRect(handle_rect);
 
-    QPen handlePen;
-    handlePen.setColor(Qt::gray);
-    handlePen.setCosmetic(true);
-    painter->setPen(handlePen);
-    painter->setBrush(handleBrush);
+        QTransform transform=painter->transform();
 
-    handleRect(rectangle);
+        double m13=transform.m13();
+        double m23=transform.m23();
+        double m32=transform.m32();
+        double m31=transform.m31();
+        double m21=transform.m21();
+        double m12=transform.m12();
 
-    painter->drawRect(handle_rect);
+        QRectF boundingRect=labelRect();
+        painter->save();
 
-    QTransform transform=painter->transform();
+        painter->resetTransform();
+        QTransform myTransform=QTransform(1.0, m12, m13, m21, 1.0, m23, m31, m32, 1.0);
 
-    double m13=transform.m13();
-    double m23=transform.m23();
-    double m32=transform.m32();
-    double m31=transform.m31();
-    double m21=transform.m21();
-    double m12=transform.m12();
+        painter->setTransform(myTransform);
 
-    QRectF boundingRect=labelRect();
-    painter->save();
+        QPen textPen(Qt::black);
+        painter->setPen(textPen);
 
-    painter->resetTransform();
-    QTransform myTransform=QTransform(1.0, m12, m13, m21, 1.0, m23, m31, m32, 1.0);
+        setTextLabel();
 
-    painter->setTransform(myTransform);
-
-    QPen textPen(Qt::black);
-    painter->setPen(textPen);
-
-    setTextLabel();
-
-    painter->drawText(boundingRect, Qt::AlignLeft, textLabel, &boundingRect);
-    painter->resetTransform();
-    painter->restore();
-    painter->setTransform(transform);
-
+        painter->drawText(boundingRect, Qt::AlignLeft, textLabel, &boundingRect);
+        painter->resetTransform();
+        painter->restore();
+        painter->setTransform(transform);
+    }
     update();
 }
 
@@ -727,4 +730,9 @@ void FootprintObject::setTextLabel()
 void FootprintObject::setUndoStack(QUndoStack* _undoStack)
 {
     undoStack=_undoStack;
+}
+
+void FootprintObject::paintFootprint(bool _paint)
+{
+    myPaint=_paint;
 }

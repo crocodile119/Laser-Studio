@@ -3960,11 +3960,15 @@ void MainWindow::addRoom()
     meteoWidgets(meteoWidgetsON, meteoWidgetsON, meteoWidgetsON);
     updateForCondMeteo();
 
+    int zValue = 0;
+
     setWindowModified(true);
 
+    zValue=laserpoint->zValue()-1;
+    myLabRoom->setZValue(zValue);
+
     laserpoint->setSelected(true);
-    laserWindow->graphicsView->centerOn(myLabRoom->pos());
-    sendToBack();   
+    laserWindow->graphicsView->centerOn(myLabRoom->pos()); 
 
     undoStack->clear();
     laserWindow->setUndoStack(undoStack);

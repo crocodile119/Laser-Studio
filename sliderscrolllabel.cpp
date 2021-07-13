@@ -229,7 +229,7 @@ void SliderScrollLabel::on_slider_actionTriggered(int action)
     if((action==1)||(action==2)||(action==3)||(action==4))
     {
         QUndoCommand *scrollCommand = new AddScrollSliderValueCommand(slider, scrollBar, sliderOldValue, scrollBarOldValue,
-                                                                 "T cute[s]", AddScrollSliderValueCommand::movement::TRIGGER_ACTION,
+                                                                 "T cute[s]", AddScrollSliderValueCommand::movement::SLIDER_MOVED,
                                                                  AddScrollSliderValueCommand::command::SLIDER);
         undoStack->push(scrollCommand);
         sliderOldValue=slider->sliderPosition();

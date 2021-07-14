@@ -20,9 +20,6 @@ void LaserClassSP::updateAll()
 
 void LaserClassSP::setPulseWidth(const double _pulseWidth)
 {
-    if(_pulseWidth==pulseWidth)
-        return;
-
     myLaserClass.setPulseWidth(_pulseWidth);
     pulseWidth=_pulseWidth;
 }

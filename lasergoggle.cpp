@@ -505,9 +505,9 @@ string LaserGoggle::outputSort()
     else if(pulseCode==MODE_LOCKED)
     {
         if((wavelength>=315.0)and(wavelength<1400.0))
-            laserOutputSort="H<sub>picco</sub>";
+            laserOutputSort="H<sub>picco </sub>";
         else
-            laserOutputSort="E<sub>picco</sub>";
+            laserOutputSort="E<sub>picco </sub>";
     }
     else if((pulseCode==Q_SWITCHED) || (pulseCode==SIMPLE_PULSED))
         laserOutputSort="H";

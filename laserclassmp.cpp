@@ -24,7 +24,7 @@ void LaserClassMP::meanClassUpdate(const double& _timeBase, const double& _meanP
     //In base a ciacuno dei LEA delle varie classi trasformo l'unità di misura dell'uscita laser
     meanLEA_formulaSort=getMeanLEA_FormulaSort();
 
-    meanPowerErgEq=powerErgUnit(meanLEA_formulaSort, _meanPower, _timeBase);
+    meanPowerErgEq=meanPowerUnit(meanLEA_formulaSort, _meanPower, _timeBase);
     //del laser calcolo le distanze e le aperture relative alle condizioni 1 e 3
 
     /****************************************************
@@ -123,7 +123,7 @@ void LaserClassMP::c5ClassUpdate()
 void LaserClassMP::tiClassUpdate(const double& _Tmin, const double& _powerErg)
 {
     //In base a ciacuno dei LEA delle varie classi trasformo l'unità di misura dell'uscita laser
-    tiPowerErgEq=powerErgUnit(myTiLaserClass.getLEA_FormulaSort(), _powerErg, _Tmin);
+    tiPowerErgEq=leaPowerErgUnit(laserOperation::MULTIPULSED, myTiLaserClass.getLEA_FormulaSort(), _powerErg, _Tmin);
     //del laser calcolo le distanze e le aperture relative alle condizioni 1 e 3
 
     /****************************************************
@@ -356,7 +356,7 @@ void LaserClassMP::setTimeBase()
 }
 
 
-array<double, ComputeLEA::N_LEA> LaserClassMP::powerErgUnit(array<int, ComputeLEA::N_LEA> _meanLEA_formulaSort, const double &_powerErg, const double &time)
+array<double, ComputeLEA::N_LEA> LaserClassMP::meanPowerUnit(array<int, ComputeLEA::N_LEA> _meanLEA_formulaSort, const double &_powerErg, const double &time)
 {
     array<double, ComputeLEA::N_LEA> myPowerErgEq;
     for(size_t i=0; i<ComputeLEA::N_LEA; i++)
@@ -397,9 +397,6 @@ void LaserClassMP::setWavelength(const double& _wavelength)
     myMeanLaserClass.setWavelength(_wavelength);
     myTiLaserClass.setWavelength(_wavelength);
 
-    if(_wavelength==wavelength)
-        return;
-
     myLaserClass.setWavelength(_wavelength);
     wavelength=_wavelength;
 }
@@ -410,9 +407,6 @@ void LaserClassMP::setAlpha(const double& _alpha)
     myMeanLaserClass.setAlpha(_alpha);
     myTiLaserClass.setAlpha(_alpha);
 
-    if(_alpha==alpha)
-        return;
-
     myLaserClass.setAlpha(_alpha);
     alpha=_alpha;
 }
@@ -421,9 +415,6 @@ void LaserClassMP::setPulseWidth(const double& _pulseWidth)
 {
     myMeanLaserClass.setPulseWidth(timeBase);
     myTiLaserClass.setPulseWidth(Ti);
-
-    if(_pulseWidth==pulseWidth)
-        return;
 
     myLaserClass.setPulseWidth(_pulseWidth);
     pulseWidth=_pulseWidth;
@@ -441,6 +432,8 @@ void LaserClassMP::highFrequencyValuation()
 
 array<double, ComputeLEA::N_LEA> LaserClassMP::computeLEA_ThermalCorrection(array<double, ComputeLEA::N_LEA> _LEA_Value)
 {
+    if(C5!=1)
+    {
     array<double, ComputeLEA::N_LEA> _LEA_ThermalCorrected;
     for(size_t i=0; i<ComputeLEA::N_LEA; i++)
     {
@@ -448,6 +441,9 @@ array<double, ComputeLEA::N_LEA> LaserClassMP::computeLEA_ThermalCorrection(arra
     }
 
     return _LEA_ThermalCorrected;
+    }
+    else
+    return _LEA_Value;
 }
 
 void LaserClassMP::updateAll()

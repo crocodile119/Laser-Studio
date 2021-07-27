@@ -95,7 +95,7 @@ La classe prevede inoltre un costruttore di default con i seguenti parametri:
     * contestualmente imposta il valore della durata dell'impulso dell'oggetto myMeanLaserClass a T<sub>i</sub>.
     */
 
-    array<double, ComputeLEA::N_LEA> powerErgUnit(array<int, ComputeLEA::N_LEA>, const double &, const double &);/*!< Restituisce un puntatore ad un array di double lungo 4 nel quale
+    array<double, ComputeLEA::N_LEA> meanPowerUnit(array<int, ComputeLEA::N_LEA>, const double &, const double &);/*!< Restituisce un array di double lungo 4 nel quale
     * sono memorizzati i valori dell'uscita media del dispositivo espressi nell'unità di misura omogenee al LEA corrispondente.
     *     Unità di Misura LEA  | Uscita
     * :-----------------------:|:------------------:

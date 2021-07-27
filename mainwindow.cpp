@@ -475,12 +475,9 @@ void MainWindow::about()
 {
     QMessageBox::about(this, tr("Informazioni su Laser Studio"),
             tr("<h2>Laser Studio</h2>"
-               "<p>Applicazione per la valutazione <br>"
-               " della sicurezza laser.</p>"
-               "<p>Versione di verifica</p>"
+               "<p>Applicazione per la valutazione della sicurezza laser in accordo con la direttiva SMD-W-001.</p>"
                "<p>Autore: Ing. Carmine Giordano</p>"
-               "<p>L'applicativo risulta mancante delle funzioni di editing"
-               " e di ripristino, qualche funzionalità potrebbe non essere completa.</p>"));
+               "<p>La disponibilità del software è resa nei termini specificati dalla GNU GPL consultabile dal sito <a href=\"https://www.gnu.org/licenses/gpl-3.0.html\">gnu.org.</a></p>"));
 }
 
 void MainWindow::onLineHelp()
@@ -3963,11 +3960,15 @@ void MainWindow::addRoom()
     meteoWidgets(meteoWidgetsON, meteoWidgetsON, meteoWidgetsON);
     updateForCondMeteo();
 
+    int zValue = 0;
+
     setWindowModified(true);
 
+    zValue=laserpoint->zValue()-1;
+    myLabRoom->setZValue(zValue);
+
     laserpoint->setSelected(true);
-    laserWindow->graphicsView->centerOn(myLabRoom->pos());
-    sendToBack();   
+    laserWindow->graphicsView->centerOn(myLabRoom->pos()); 
 
     undoStack->clear();
     laserWindow->setUndoStack(undoStack);

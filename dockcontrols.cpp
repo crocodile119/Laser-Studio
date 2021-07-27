@@ -2887,8 +2887,10 @@ void DockControls::dComputeOpticalDensity()
         double beamArea;
         double PRF;
         double opticalDensityRatio;
+        double radiance;
         double irradiance;
         QString formulaSort;
+        int pulseNumber;
 
         MyLaserMP_Pr->computeBeamArea();
         beamArea=MyLaserMP_Pr->getBeamArea();
@@ -2896,15 +2898,16 @@ void DockControls::dComputeOpticalDensity()
         powerErg=MyLaserMP_Pr->getPowerErg();
         formulaSort=QString::fromStdString(MyLaserMP_Pr->getFormulaSort());
         PRF=MyLaserMP_Pr->getPRF();
+        pulseNumber=ceil(PRF*MyLaserMP_Pr->getExposureTime());
         meanPower=powerErg*PRF;
         irradiance=meanPower/beamArea;
+        radiance=powerErg/beamArea;
+        secondEMP=MyLaserMP_Pr->getEMP_MP();
 
         if(formulaSort=='E')
-            secondEMP=MyLaserMP_Pr->getEMP_MP();
-        else if(formulaSort=='H')
-            secondEMP=MyLaserMP_Pr->getEMP_MP()/MyLaserMP_Pr->getExposureTime();
-
-        opticalDensityRatio=irradiance/secondEMP;
+            opticalDensityRatio=irradiance/secondEMP;
+        else
+            opticalDensityRatio=radiance*double(pulseNumber)/secondEMP;
 
         dOpticalDensity=std::log10(opticalDensityRatio);
     }
@@ -3316,7 +3319,7 @@ void DockControls::setWidgetsForMultiPulse_Operation()
                          .arg(QString::number(MyLaserClassMP_Pr->getTimeBase()));
 
 
-    LaserClassCW::laserClass myLaserClass=MyLaserClassMP_Pr->getLaserClass();
+    LaserClassCW::laserClass myLaserClass=MyLaserClassMP_Pr->getSystemClassValutation();
     QString FormulaLEA;
     QString FormulaLEA_Tipo;
     QString FormulaLEA_Unit;
@@ -3465,10 +3468,10 @@ void DockControls::setWidgetsForMultiPulse_Operation()
     dockLea->ui->cond3LEA_Label_2->setText(PowerErgCond_3_Label);
 
     QString tPowerErgCond_1_Label_2=QString("%1<sub>Acc 1</sub>").arg(FormulaLEA_Tipo);
-    dockLea->ui->tCond1LEA_Label_2->setText(tPowerErgCond_1_Label);
+    dockLea->ui->tCond1LEA_Label_2->setText(tPowerErgCond_1_Label_2);
 
     QString tPowerErgCond_3_Label_2=QString("%1<sub>Acc 3</sub>").arg(FormulaLEA_Tipo);
-    dockLea->ui->tCond3LEA_Label_2->setText(tPowerErgCond_3_Label);
+    dockLea->ui->tCond3LEA_Label_2->setText(tPowerErgCond_3_Label_2);
 
     dockLea->ui->class_Label->setText(getLaserClassString(myLaserClass));
 
@@ -3493,7 +3496,6 @@ void DockControls::setWidgetsForThermal()
      * valutazione relativa agli effetti termici del laser per prf<1/Ti *
      * ******************************************************************/
 
-	LaserClassCW::laserClass myLaserClass=MyLaserClassMP_Pr->getLaserClass();
     QString FormulaLEA;
     QString FormulaLEA_Tipo;
     QString FormulaLEA_Unit;
@@ -3521,7 +3523,7 @@ void DockControls::setWidgetsForThermal()
                          .arg(QString::number(MyLaserClassMP_Pr->getTimeBase()));
 
 
-    myLaserClass=MyLaserClassMP_Pr->getLaserClass();
+    LaserClassCW::laserClass myLaserClass=MyLaserClassMP_Pr->getSystemClassValutation();
 
     if ((myLaserClass==LaserClassCW::laserClass::CLASSE_1)or(myLaserClass==LaserClassCW::laserClass::CLASSE_1M))
     {
@@ -3568,8 +3570,8 @@ void DockControls::setWidgetsForThermal()
                              .arg(LEA_Value)
                              .arg(FormulaLEA_Unit);
 
-    PowerErgCond_1=QString::number(MyLaserClassMP_Pr->getMeanPowerErg_Cond_1()[static_cast<int>(myClassData)], 'e', 2);
-    PowerErgCond_3=QString::number(MyLaserClassMP_Pr->getMeanPowerErg_Cond_3()[static_cast<int>(myClassData)], 'e', 2);
+    PowerErgCond_1=QString::number(MyLaserClassMP_Pr->getPowerErg_Cond_1()[static_cast<int>(myClassData)], 'e', 2);
+    PowerErgCond_3=QString::number(MyLaserClassMP_Pr->getPowerErg_Cond_3()[static_cast<int>(myClassData)], 'e', 2);
 
     PowerErgCond_1_Label=QString("%1=%2 %3")
                              .arg(FormulaLEA_Tipo)
@@ -3609,7 +3611,7 @@ void DockControls::setWidgetsForThermalTi()
         /********************************************************************
          * valutazione relativa agli effetti termici del laser per prf>1/Ti *
          * ******************************************************************/
-	LaserClassCW::laserClass myLaserClass=MyLaserClassMP_Pr->getLaserClass();
+    LaserClassCW::laserClass myLaserClass=MyLaserClassMP_Pr->getSystemClassValutation();
     QString FormulaLEA;
     QString FormulaLEA_Tipo;
     QString FormulaLEA_Unit;
@@ -3626,12 +3628,12 @@ void DockControls::setWidgetsForThermalTi()
 	
     dockLea->ui->couplingFactor1_Label_3->setText(QString::number(MyLaserClassMP_Pr->getTiCouplingFactor_Cond_1(), 'e', 2));
     dockLea->ui->couplingFactor3_Label_3->setText(QString::number(MyLaserClassMP_Pr->getTiCouplingFactor_Cond_3(), 'e', 2));
-    dockLea->ui->apertureDiam1_Label_3->setText(QString::number(MyLaserClassMP_Pr->getTiApCond_1(), 'e', 2)+" m");
-    dockLea->ui->apertureDiam3_Label_3->setText(QString::number(MyLaserClassMP_Pr->getTiApCond_3(), 'e', 2)+" m");
-    dockLea->ui->apertureDist1_Label_3->setText(QString::number(MyLaserClassMP_Pr->getTiDistCond_1(), 'e', 2)+" m");
-    dockLea->ui->apertureDist3_Label_3->setText(QString::number(MyLaserClassMP_Pr->getTiDistCond_3(), 'e', 2)+" m");
-    dockLea->ui->beamAperture1_Label_3->setText(QString::number(MyLaserClassMP_Pr->getTiBeamAtStop_Cond_1(), 'e', 2)+" m");
-    dockLea->ui->beamAperture3_Label_3->setText(QString::number(MyLaserClassMP_Pr->getTiBeamAtStop_Cond_3(), 'e', 2)+" m");
+    dockLea->ui->apertureDiam1_Label_3->setText(QString::number(MyLaserClassMP_Pr->getTiApCond_1(), 'e', 2)+" mm");
+    dockLea->ui->apertureDiam3_Label_3->setText(QString::number(MyLaserClassMP_Pr->getTiApCond_3(), 'e', 2)+" mm");
+    dockLea->ui->apertureDist1_Label_3->setText(QString::number(MyLaserClassMP_Pr->getTiDistCond_1(), 'e', 2)+" mm");
+    dockLea->ui->apertureDist3_Label_3->setText(QString::number(MyLaserClassMP_Pr->getTiDistCond_3(), 'e', 2)+" mm");
+    dockLea->ui->beamAperture1_Label_3->setText(QString::number(MyLaserClassMP_Pr->getTiBeamAtStop_Cond_1(), 'e', 2)+" mm");
+    dockLea->ui->beamAperture3_Label_3->setText(QString::number(MyLaserClassMP_Pr->getTiBeamAtStop_Cond_3(), 'e', 2)+" mm");
 
 	QString TimeBase_Label=QString("%1 s")
                     .arg(QString::number(MyLaserClassMP_Pr->getTimeBase()));

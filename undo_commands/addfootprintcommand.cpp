@@ -28,11 +28,11 @@ AddFootprintCommand::AddFootprintCommand(double _attenuatedDNRO, double _scale, 
 
 void AddFootprintCommand::undo()
 {
-    QRectF boundingRect=laserpoint->mapRectFromItem(laserpoint,footprint->boundingRect());
+    footprint->paintFootprint(false);
     laserWindow->graphicsView->scene->removeItem(footprint);
     laserWindow->graphicsView->scene->removeItem(objectLink);
     laserWindow->graphicsView->scene->clearSelection();
-    laserpoint->scene()->update(boundingRect);
+    laserWindow->graphicsView->scene->update();
 
     myFootprints->clear();
 
@@ -50,6 +50,7 @@ void AddFootprintCommand::undo()
 void AddFootprintCommand::redo()
 {
     laserWindow->graphicsView->scene->addItem(footprint);
+    footprint->paintFootprint(true);
     laserWindow->graphicsView->scene->clearSelection();
 
     laserWindow->graphicsView->scene->addItem(objectLink);

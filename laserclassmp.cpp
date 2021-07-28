@@ -452,7 +452,7 @@ void LaserClassMP::updateAll()
     computePulseNumber();
     computeC5();
     myLaserClass.calculate();
-    classUpdate(laserOperation::PULSED, pulseWidth, powerErg);
+    classUpdate(laserOperation::MULTIPULSED, pulseWidth, powerErg);
 
     setTimeBase();
     computeBeamArea();

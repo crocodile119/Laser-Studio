@@ -2839,7 +2839,6 @@ void DockControls::computeOpticalDensity()
 
         MyLaserMP_Pr->computeEMP_ForOD();
         firstAndThirdEMP=MyLaserMP_Pr->getEMP_ForOD();
-        pulseWidth=myLaserGoggle->getPulseWidth();
         formulaSort=QString::fromStdString(MyLaserMP_Pr->getFormulaSort());
         qDebug() << "Primo e terzo emp: " << firstAndThirdEMP;
 
@@ -2863,15 +2862,13 @@ void DockControls::computeOpticalDensity()
         * alla potenza di picco pertanto nel caso in cui la lunghezza d'onda sia   *
         * > 1400 e < 400 nm e che t< 10^9 l'uscita del laser va calcolata come Q/t *
         ****************************************************************************/
-        if((wavelength<=1400)and(wavelength>=400)and (pulseWidth>=MODELOCKED_LIMIT))
-            exposure=powerErg/beamArea;
-        else
-            exposure=powerErg/(beamArea*timeForPulse);
 
-        if(formulaSort=="E")
-            opticalDensityRatio=exposure/(firstAndThirdEMP*timeForPulse);
-        else if(formulaSort=="H")
-        opticalDensityRatio=exposure/firstAndThirdEMP;
+            exposure=powerErg/beamArea;
+            if(formulaSort=="E")
+                opticalDensityRatio=exposure/(firstAndThirdEMP*timeForPulse);
+            else if(formulaSort=="H")
+                opticalDensityRatio=exposure/firstAndThirdEMP;
+            qDebug()<<"opticalDensityRatio: "<<opticalDensityRatio;
 
         opticalDensity=std::log10(opticalDensityRatio);
     }
@@ -2896,7 +2893,7 @@ void DockControls::dComputeOpticalDensity()
         beamArea=MyLaserMP_Pr->getBeamArea();
 
         powerErg=MyLaserMP_Pr->getPowerErg();
-        formulaSort=QString::fromStdString(MyLaserMP_Pr->getFormulaSort());
+        formulaSort=QString::fromStdString(MyLaserMP_Pr->getMeanPowerFormulaSort());
         PRF=MyLaserMP_Pr->getPRF();
         pulseNumber=ceil(PRF*MyLaserMP_Pr->getExposureTime());
         meanPower=powerErg*PRF;

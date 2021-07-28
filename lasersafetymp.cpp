@@ -324,6 +324,7 @@ void LaserSafetyMP::computeEMP_ForOD()
         EMP_ForOD=fmin(SP_EMP_Result, CP_EMP_Result);
     else
         EMP_ForOD=SP_EMP_Result;
+    qDebug()<<"EMP_ForOD = "<< EMP_ForOD;
 }
 
 double LaserSafetyMP::getPowerErgForEMP()
@@ -415,15 +416,11 @@ void LaserSafetyMP::computePulseTrain_NOHD()
         string formulaSort;
 
         if(PRF<=(1/Tmin))
-        {
-            formulaSort=myLaser.getFormulaSort();
             pulseWidthMultiOperation=pulseWidth;
-        }
         else
-        {
-            formulaSort=myTmin_Laser.getFormulaSort();
             pulseWidthMultiOperation=Tmin;
-        }
+
+        formulaSort=myLaser.getFormulaSort();
 
         if(formulaSort=="E")
             ForNOHD=powerErg/pulseWidthMultiOperation;// se l'EMP è espresso in irradianza si considera la potenza (PowerErg è l'energia dell'impulso).

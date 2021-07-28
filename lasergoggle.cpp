@@ -285,9 +285,9 @@ int LaserGoggle::scaleNumber(vector< pair <int,double> > _dataVector, double myE
     i++;
 
     if(i==TABLEROWS)
-    myScaleNumber=0;
+        myScaleNumber=0;
     else
-    myScaleNumber= _dataVector[i].first;
+        myScaleNumber= _dataVector[i].first;
 
     return myScaleNumber;
 }

@@ -2463,7 +2463,7 @@ void MainWindow::addReflector(const target &target)
     //reflector=command->getReflector();
     QGraphicsItem *item =laserWindow->graphicsView->scene->itemAt(reflectorPos, QTransform());
     reflector= qgraphicsitem_cast<Reflector*>(item);
-
+    reflector->setUndoStack(undoStack);
     setMaxEhnacedOpticalDiameter();
     setLaserpointShapePathForReflectors();
 

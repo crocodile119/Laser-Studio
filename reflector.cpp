@@ -207,17 +207,10 @@ void Reflector::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     painter->setBrush(QColor(myBackgroundColor));
 
     QPainterPath semiPath;
-    semiPath.moveTo(0.0, 0.0);
     QRectF myBoudingRect=QRectF(0.0, 0.0, selectionReflectorRect().width(), selectionReflectorRect().height());
     myBoudingRect.moveCenter(QPointF(0.0, 0.0));
 
-    double firstPie=90.0;
-    double secondPie=180.0;
-
-    semiPath.arcTo(myBoudingRect, firstPie, secondPie);
-    semiPath.lineTo(QPointF(0.0, 0.0));
-
-    painter->drawPath(semiPath);
+    painter->drawEllipse(myBoudingRect);
     painter->setPen(pen);
     QRectF rect = outlineRect();
     painter->setBrush(Qt::NoBrush);

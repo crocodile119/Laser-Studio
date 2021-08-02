@@ -421,8 +421,19 @@ void Reflector::setStringDetails()
     QString nString;
     QString myReflectionCoeffString;
 
-    xString=QString::number(xCoordinate,'f', 0);
-    yString=QString::number(yCoordinate,'f', 0);
+    if(reflectorDistance>50)
+    {
+        xString=QString::number(xCoordinate,'f', 0);
+        yString=QString::number(yCoordinate,'f', 0);
+    }
+    else if((reflectorDistance<=50)||(reflectorDistance>50))
+    {
+        xString=QString::number(xCoordinate,'f', 1);
+        yString=QString::number(yCoordinate,'f', 1);
+    }
+        xString=QString::number(xCoordinate,'f', 2);
+        yString=QString::number(yCoordinate,'f', 2);
+
     reflectorDistanceString=QString::number(reflectorDistance,'f',0);
     myMaxElementString=QString::number(myMaxElement,'f',2);
     myPositioningElementString=QString::number(myPositioningElement,'f',2);

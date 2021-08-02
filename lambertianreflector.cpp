@@ -75,7 +75,7 @@ void LambertianReflector::computeZs(double _lambertianMax, double reflectionCoef
 
 bool LambertianReflector::evaluateDiffusionDistance()
 {
-    myDiffusionHazard=new DiffusionHazard(laserBeamDiameter, laserDivergence, laserEMP, laserPowerErg, laserDistance); //beamDiameter, divergence, EMP, powerErg. laserDistance
+    myDiffusionHazard=new DiffusionHazard(laserBeamDiameter, laserDivergence, laserDistance, laserEMP, laserPowerErg); //beamDiameter, divergence, EMP, powerErg. laserDistance
 
     qDebug()<< "Diametro del fascio laser" << laserBeamDiameter;
     qDebug()<< "Divergenza del fascio laser" << laserDivergence;

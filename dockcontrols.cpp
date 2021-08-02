@@ -33,6 +33,7 @@ DockControls::DockControls(QWidget *parent, DockResults *_dockResults, DockEffec
     exposureTimeControl=10;
     gaussianBeam=true;
     beamCorrection=1.0;
+    lambertianMax=0.109557;
     internalWaist=false;
 
     MyLaserCW_Pr=nullptr;
@@ -58,6 +59,8 @@ DockControls::DockControls(QWidget *parent, DockResults *_dockResults, DockEffec
     displayLaserOutput();
 
     enableTeEditing=false;
+    setEMP();
+    setPowerErgForEMP();
 
     connect(this, SIGNAL(EMP_Changed()), this, SLOT(setEMP()));
     connect(this, SIGNAL(powerErgForEMPChanged()), this, SLOT(setPowerErgForEMP()));
@@ -2111,6 +2114,7 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
         myLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE_LOW_WAVELENGTH);
     }
 
+    myLaserGoggle->setKiForCW_Operation();
     enableTeEditing=ui->teControl->isEnabled();
 
     MyLaserClassCW_Pr->setTimeBase();
@@ -2168,9 +2172,9 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
      * Range di variazione dell'energia dell'impulso nella modalità *
      * di funzionamento IMPULSATO                                   *
      ****************************************************************/
-    ui->powerErgControl->setValue(powerErg);
     ui->powerErgControl->setMinimumExponent(-12);
     ui->powerErgControl->setMaximumExponent(1);
+    ui->powerErgControl->setValue(powerErg);
 
     on_powerErgControl_valueChanged();
     ui->powerErgControl->setEnabled(true);
@@ -2222,16 +2226,15 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     * frequenza a 10.0, il tempo di esposizione degli occhi a 1.0e-06,  *
     * il tempo di esposizione della cute a 10. 				 *
     ******************************************************************/
-    powerErg=1.0e-03;
 
     /****************************************************************
      * Range di variazione dell'energia dell'impulso nella modalità *
      * di funzionamento IMPULSI MULTIPLI.                            *
      ****************************************************************/
-    ui->powerErgControl->setValue(powerErg);
+
     ui->powerErgControl->setMinimumExponent(-12);
     ui->powerErgControl->setMaximumExponent(1);
-
+    powerErg=1.0e-03;
     on_powerErgControl_valueChanged();
 
     //ogni volta cha passo al funzionamento ad impulsi multipli imposto la durata degli impulsi a 1.0e-06 s

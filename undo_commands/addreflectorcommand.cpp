@@ -8,13 +8,19 @@ AddReflectorCommand::AddReflectorCommand(double _attenuatedDNRO, double _attenua
                         scale(_scale), seqNumber(_seqNumber), myTarget(_myTarget), laserWindow(_laserWindow), laserpoint(_laserpoint),
                         myReflectors(_myReflectors), reflectorsModel(_reflectorsModel), initialPosition(_initialPosition)
 {
+    double divergence = laserWindow->myDockControls->getDivergence();
+    double beamDiameter = laserWindow->myDockControls->getBeamDiameter();
+    double EMP = laserWindow->myDockControls->getEMP();
+    double powerErgForEMP = laserWindow->myDockControls->getPowerErgForEMP();
+    double lambertianMax=laserWindow->myDockControls->getLambertianMax();
+
     reflector = new Reflector(_attenuatedDNRO,
-                              laserWindow->myDockControls->getDivergence(),
+                              divergence,
                               _reflectorDistance,
-                              laserWindow->myDockControls->getBeamDiameter(),
-                              laserWindow->myDockControls->getEMP(),
-                              laserWindow->myDockControls->getPowerErgForEMP(),
-                              laserWindow->myDockControls->getLambertianMax(),
+                              beamDiameter,
+                              EMP,
+                              powerErgForEMP,
+                              lambertianMax,
                               myTarget);
 
     reflector->setPixmap();

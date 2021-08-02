@@ -201,6 +201,8 @@ secondo i criteri illustrati di seguito:
     double laserIrrRadCorrected(double);/*!< Imposta e restitusce la radianza corretta del dispositivo nel caso di applicazione del criterio dell'impulso
     * moltiplicando il valore ottenuto della radianza con laserIrrRad(_laserOutput) per i fattori K e K<sub>i</sub>.*/
 
+    void setKiForCW_Operation();/*!< Imposta il valore di K<sub>i</sub> ad 1 per ristabilire le condizioni di funzionamento CW.*/
+
     void prepareGoggleMark();/*!< Esegue le seguenti operazioni:
     <ul>
     <li>memorizza il campo del prospetto B1 pertinente ai parametri impostati;</li>

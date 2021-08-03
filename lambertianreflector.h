@@ -39,6 +39,7 @@ public:
     QString getKindOfSurface()const;
     double getNewRapSolution()const;
     double getAlphaIndicator()const;
+    void setReflectance(const double &);
 
 private:
     double lambertianMax;    
@@ -57,6 +58,7 @@ private:
     QString kindOfSurface;
     double newRapSolution;
     double alphaIndicator;
+    double reflectance;
 };
 
 #endif // LAMBERTIANREFLECTOR_H;

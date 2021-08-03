@@ -43,6 +43,11 @@ void LambertianReflector::setLambertianMax(const double &_lambertianMax)
     lambertianMax=_lambertianMax;
 }
 
+void LambertianReflector::setReflectance(const double &_reflectance)
+{
+    reflectance=_reflectance;
+}
+
 double LambertianReflector::getLambertianMax()const
 {
     return lambertianMax;
@@ -115,6 +120,10 @@ bool LambertianReflector::evaluateDiffusionDistance()
     }
 
     myDiffusionHazard->computeAlpha();
+
+    if(myDiffusionHazard->getAlpha()>=100)
+        return false;
+
     qDebug()<<"Alpha: "<< myDiffusionHazard->getAlpha();
     qDebug()<<"Alpha indicator: "<< myDiffusionHazard->getAlphaIndicator();
 
@@ -133,7 +142,7 @@ bool LambertianReflector::evaluateDiffusionDistance()
         newRapSolution=myDiffusionHazard->getNewRapSolution();
         alpha=myDiffusionHazard->getAlpha();
         alphaIndicator=myDiffusionHazard->getAlphaIndicator();
-        reflectorHazardDistance=myDiffusionHazard->getReflectorHazardDistance();
+        reflectorHazardDistance=reflectance*myDiffusionHazard->getReflectorHazardDistance();
 
         return true;
     }

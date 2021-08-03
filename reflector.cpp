@@ -426,13 +426,16 @@ void Reflector::setStringDetails()
         xString=QString::number(xCoordinate,'f', 0);
         yString=QString::number(yCoordinate,'f', 0);
     }
-    else if((reflectorDistance<=50)||(reflectorDistance>50))
+    else if((reflectorDistance<=50)&&(reflectorDistance>20))
     {
         xString=QString::number(xCoordinate,'f', 1);
         yString=QString::number(yCoordinate,'f', 1);
     }
+    else
+    {
         xString=QString::number(xCoordinate,'f', 2);
         yString=QString::number(yCoordinate,'f', 2);
+    }
 
     reflectorDistanceString=QString::number(reflectorDistance,'f',0);
     myMaxElementString=QString::number(myMaxElement,'f',2);
@@ -504,8 +507,21 @@ void Reflector::setTextLabel()
     QString xString;
     QString yString;
 
-    xString=QString::number(xCoordinate=pos().x(),'f', 0);
-    yString=QString::number(yCoordinate=pos().y(),'f', 0);
+    if(reflectorDistance>50)
+    {
+        xString=QString::number(xCoordinate,'f', 0);
+        yString=QString::number(yCoordinate,'f', 0);
+    }
+    else if((reflectorDistance<=50)&&(reflectorDistance>20))
+    {
+        xString=QString::number(xCoordinate,'f', 1);
+        yString=QString::number(yCoordinate,'f', 1);
+    }
+    else
+    {
+        xString=QString::number(xCoordinate,'f', 2);
+        yString=QString::number(yCoordinate,'f', 2);
+    }
 
     prepareGeometryChange();
     textLabel =getReflectorKindString()+QString("\n(%1,%2)")
@@ -605,6 +621,7 @@ void Reflector::reflectorOperation()
              MyLambertianReflector_ptr->setLaserDivergence(divergence);
              MyLambertianReflector_ptr->setLaserEMP(laserEMP);
              MyLambertianReflector_ptr->setLaserPowerErg(laserPowerErg);
+             MyLambertianReflector_ptr->setReflectance(materialCoeff);
              qDebug()<<"laserPoewErg"<<laserPowerErg;
              MyLambertianReflector_ptr->setLaserDistance(reflectorDistance);
              MyLambertianReflector_ptr->computeSpotDiameter();

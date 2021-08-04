@@ -11,7 +11,7 @@ using namespace std;
 class LambertianReflector: public WetReflector
 {
 public:
-    LambertianReflector(double);
+    LambertianReflector();
     void computeTrigonometricReflection();
     void computeZs(double, double);
     void setLambertianMax(const double &);

@@ -2114,7 +2114,6 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
         myLaserGoggle->setPulseWidth(LaserGoggle::TIMEBASE_LOW_WAVELENGTH);
     }
 
-    myLaserGoggle->setKiForCW_Operation();
     enableTeEditing=ui->teControl->isEnabled();
 
     MyLaserClassCW_Pr->setTimeBase();
@@ -2235,6 +2234,7 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     ui->powerErgControl->setMinimumExponent(-12);
     ui->powerErgControl->setMaximumExponent(1);
     powerErg=1.0e-03;
+    ui->powerErgControl->setValue(powerErg);
     on_powerErgControl_valueChanged();
 
     //ogni volta cha passo al funzionamento ad impulsi multipli imposto la durata degli impulsi a 1.0e-06 s

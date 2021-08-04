@@ -9,6 +9,11 @@ FresnelReflector::FresnelReflector(double n_refraction): n(n_refraction)
 {
 }
 
+FresnelReflector::FresnelReflector()
+{
+     n=1.33;
+}
+
 void FresnelReflector::computeTrigonometricReflection()
 {
     reflectionAngleVect.clear();

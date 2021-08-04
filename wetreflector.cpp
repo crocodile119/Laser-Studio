@@ -3,10 +3,11 @@
 #include <iostream>
 
 const double WetReflector::phi_const = 2.5;
+const double WetReflector::n_refraction = 1.33;
 
-WetReflector::WetReflector(double n_refraction):FresnelReflector(n_refraction)
+WetReflector::WetReflector():FresnelReflector()
 {
-     n=n_refraction;
+
 }
 
 void WetReflector::computeTrigonometricReflection()
@@ -50,7 +51,7 @@ void WetReflector::computeZs(vector< pair <double,double> > myVector, double _dn
     {
         myRho_s=iterator->second;
         myRho_s*=reflectionCoeff;
-        sqrt_myRho_s=pow(myRho_s, 0.5);
+        sqrt_myRho_s=sqrt(myRho_s);
         double divergenceCorrection;
         divergenceCorrection=_divergence/(_divergence+phi_const);
         myZsVector_second=(sqrt_myRho_s*_dnro*divergenceCorrection)-(_objectDistance*divergenceCorrection);
@@ -67,7 +68,7 @@ void WetReflector::computeZs(vector< pair <double,double> > myVector, double _dn
     {
         myRho_s=reverse_iterator->second;
         myRho_s*=reflectionCoeff;
-        sqrt_myRho_s=pow(myRho_s, 0.5);
+        sqrt_myRho_s=sqrt(myRho_s);
         double divergenceCorrection;
         divergenceCorrection=_divergence/(_divergence+phi_const);
         myZsVector_second=(sqrt_myRho_s*_dnro*divergenceCorrection)-(_objectDistance*divergenceCorrection);

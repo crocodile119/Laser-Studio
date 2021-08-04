@@ -10,9 +10,10 @@ using namespace std;
 class WetReflector : public FresnelReflector
 {
 public:
-    WetReflector(double);
+    WetReflector();
 
     static const double phi_const;
+    static const double n_refraction;
 
     void computeZs(vector< pair <double,double> >, double, double, double, double);
     void computeTrigonometricReflection();

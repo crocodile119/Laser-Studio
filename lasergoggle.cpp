@@ -89,11 +89,6 @@ LaserGoggle::LaserGoggle(int _wavelength, double _pulseWidth, double _powerErg, 
     ki=1.0;
 }
 
-void LaserGoggle::setKiForCW_Operation()
-{
-    ki=1;
-}
-
 void LaserGoggle::setLaserOperation()
 {
     if(pulseWidth==CONTINUOS_OPERATION )
@@ -362,6 +357,9 @@ double LaserGoggle::frequencyCorrection()
 
     /* La funzione restituisce il valore  ni_max*/
     }
+    else
+        ki=1;
+
     return ni_max;
 }
 

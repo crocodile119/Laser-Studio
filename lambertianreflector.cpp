@@ -4,9 +4,8 @@
 #include <iostream>
 #include <QDebug>
 
-LambertianReflector::LambertianReflector(double n_refraction):WetReflector(n_refraction)
+LambertianReflector::LambertianReflector():WetReflector()
 {
-     n=n_refraction;
 }
 
 void LambertianReflector::computeTrigonometricReflection()

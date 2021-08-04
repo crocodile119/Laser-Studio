@@ -45,7 +45,7 @@ Reflector::Reflector(double _opticalDiameter, double _divergence, double _reflec
     MyWetReflector_ptr=nullptr;
     MyLambertianReflector_ptr=nullptr;
 
-    MyReflector=new LambertianReflector(n);
+    MyReflector=new LambertianReflector();
     MyLambertianReflector_ptr= MyReflector;
     setReflectorKindString();
     reflectorOperation();
@@ -321,7 +321,8 @@ void Reflector::laserParametersChanged()
             correctPositioning=2*(positioning+laserPhase);
 
         reflectorOperation();
-        setStringDetails();
+        setTipString();
+        setToolTip(tipString);
     }
 }
 
@@ -335,7 +336,8 @@ void Reflector::laserPositionChanged()
         reflectorOperation();
         setTextLabel();
         setReflectorKindString();
-        setStringDetails();
+        setTipString();
+        setToolTip(tipString);
     }
 }
 
@@ -437,7 +439,7 @@ void Reflector::setStringDetails()
         yString=QString::number(yCoordinate,'f', 2);
     }
 
-    reflectorDistanceString=QString::number(reflectorDistance,'f',0);
+    reflectorDistanceString=QString::number(reflectorDistance,'f',2);
     myMaxElementString=QString::number(myMaxElement,'f',2);
     myPositioningElementString=QString::number(myPositioningElement,'f',2);
     nString=QString::number(n, 'f',2);
@@ -582,6 +584,7 @@ void Reflector::reflectorOperation()
         case (WET_TARGET):
         {
             MyWetReflector_ptr=MyReflector;
+            MyWetReflector_ptr->setRefraction_n(WetReflector::n_refraction);
             MyWetReflector_ptr->computeTrigonometricReflection();
             MyWetReflector_ptr->computeZs(MyWetReflector_ptr->getRho_sVect(),opticalDiameter, reflectorDistance, divergence, materialCoeff);
             rho_sVect=MyWetReflector_ptr->getRho_sVect();
@@ -594,6 +597,7 @@ void Reflector::reflectorOperation()
         case(target::GLASS_TARGET):
         {
             MyFresnelReflector_ptr=MyReflector;
+            MyFresnelReflector_ptr->setRefraction_n(n);
             MyFresnelReflector_ptr->computeTrigonometricReflection();
             MyFresnelReflector_ptr->computeZs(MyFresnelReflector_ptr->getRho_sVect(),opticalDiameter, reflectorDistance, materialCoeff);
             rho_sVect=MyFresnelReflector_ptr->getRho_sVect();
@@ -700,7 +704,7 @@ double Reflector::getMaxElement()
 void Reflector::setPositioningElement()
 {
    int myZsVectorRow;
-   myZsVectorRow=abs(correctPositioning);
+   myZsVectorRow=abs(correctPositioning)+1;
 
    myPositioningElement=myZsVector.at(myZsVectorRow).second;
 

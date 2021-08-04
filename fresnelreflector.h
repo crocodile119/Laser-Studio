@@ -9,6 +9,7 @@ class FresnelReflector
 {
 public:
     FresnelReflector(double);
+    FresnelReflector();
 
     static const double radDeg;
 

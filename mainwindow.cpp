@@ -365,6 +365,7 @@ void MainWindow::open()
         {
             loadFile(fileName);
             makeSceneOfSavedItems();
+
             setupLaserProspective();
             laserSettingsAction->setChecked(true);
             undoStack->clear();
@@ -399,6 +400,7 @@ void MainWindow::open()
             laserpoint->setPos(laserpoint->pos()+QPointF(-1,-1));
             laserpoint->setPos(laserpoint->pos()+QPointF(1,1));
             laserWindow->graphicsView->centerOn(laserpoint->pos());
+
             laserWindow->graphicsView->update();
         }
     }
@@ -618,8 +620,23 @@ void MainWindow::updateForCondMeteo()
 
 void MainWindow::atmosphericEffects()
 {
+    double wavelength=laserWindow->myDockControls->getWavelength();
     bool atmEffects= addAtmosphericEffectsAct->isChecked();
     atmosphericEffectsOn(atmEffects);
+
+    if(atmEffects)
+    {
+        if((wavelength>=400)&&(wavelength<=2000))
+            statusBar()->showMessage(tr("Attenuazione atmosferica impostata"), 2000);
+        else
+            statusBar()->showMessage(tr("Attenuazione atmosferica non applicabile"), 2000);
+    }
+    else
+    {
+        if((wavelength>=400)&&(wavelength<=2000))
+            statusBar()->showMessage(tr("Attenuazione atmosferica disabilitata"), 2000);
+    }
+
     updateForCondMeteo();
 
     if(footprint!=nullptr)
@@ -2832,11 +2849,17 @@ double MainWindow::attenuatedDistance(const double & _distance)
 {
     double distance=_distance;
     double attenuatedlDistance=_distance;
+    double wavelength=laserWindow->myDockControls->getWavelength();
 
     if(laserWindow->getAtmEffectsBool())
     {
-        double atmCoeff=laserWindow->getAtmoshericEffectsCoefficient();
-        attenuatedlDistance=distance/(2-powf(CentralWidget::NEPERO_N, (-0.5*atmCoeff*distance)));
+        if((wavelength>=400)&&(wavelength<=2000))
+        {
+            double atmCoeff=laserWindow->getAtmoshericEffectsCoefficient();
+           attenuatedlDistance=distance/(2-powf(CentralWidget::NEPERO_N, (-0.5*atmCoeff*distance)));
+        }
+        else
+            attenuatedlDistance=distance;
     }
 
     if(laserWindow->getScintillationBool())
@@ -3597,6 +3620,7 @@ void MainWindow::makeSceneOfSavedItems(){
 
     laserWindow->myDockControls->updateGoggle();
     laserWindow->myDockControls->updateAllCompositeControlsFunctions();
+    updateForCondMeteo();
     setWindowModified(false);
     updateActions();
 }

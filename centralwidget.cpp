@@ -287,7 +287,11 @@ bool CentralWidget::readFile(const QString &fileName)
      myDockControls->ui->T_SkinControl->setValue(T_SkinSpinBox);
      myDockControls->ui->checkGaussianBeam->setChecked(isGaussianBeamChecked);
 
-     myDockControls->enableTeEdtiting(isTeChecked);
+     if((operationCombo==0)||(operationCombo==2))
+         myDockControls->enableTeEdtiting(isTeChecked);
+     else
+         myDockControls->enableTeEdtiting(false);
+
      myDockControls->setGoggleMaterial(goggleMaterial);
 
      modified();

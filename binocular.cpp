@@ -520,20 +520,19 @@ void Binocular::computeOpticalGain()
 
         if((k_evaluation_1<k_evaluation_2)and(k_evaluation_1<k_evaluation_3))
         {
-        opticalGain=k_evaluation_1;
-        opticalGainFormula="τ M^2";
+            opticalGain=k_evaluation_1;
+            opticalGainFormula="τ M^2";
         }
         else if((k_evaluation_2<k_evaluation_1)and(k_evaluation_2<k_evaluation_3))
         {
-        opticalGain=k_evaluation_2;
-        opticalGainFormula="τ D0^2 / g^2";
+            opticalGain=k_evaluation_2;
+            opticalGainFormula="τ D0^2 / g^2";
         }
         else if((k_evaluation_3<=k_evaluation_2)and(k_evaluation_3<=k_evaluation_1))
         {
-        opticalGain=k_evaluation_3;
-        opticalGainFormula="τ Db^2 / g^2";
+            opticalGain=k_evaluation_3;
+            opticalGainFormula="τ Db^2 / g^2";
         }
-
     }
     else if(((wavelength>=320)&&(wavelength<400))||((wavelength>1400)&&(wavelength<=4500)))
         {

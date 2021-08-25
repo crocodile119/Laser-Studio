@@ -31,8 +31,8 @@ class ComputeEMP
 {
 public:
     ComputeEMP(double=EmpLeaTables::HE_NE_WAVELENGTH, double=EmpLeaTables::NATURAL_AVERSION_TIME, double=EmpLeaTables::ALPHA_MIN);
-    static const double ALPHA_MIN;
-    static const double ALPHA_MAX;
+    const static double ALPHA_MIN;
+    const static double ALPHA_MAX;
     void EMP();/*!< Segue l'istanza della classe e calcola sia il valore dell'EMP, che la formula per il calcolo e l'unità di misura e
     * quindi il tipo di grandezza (radianza o esposizione energetica). Calcola inoltre i parametri ed effettua le correzioni nel caso di
     * valutazioni multiple. E' la funzione membro da impiegare ogni volta che si desidera calcolare l'EMP di un dispositivo laser. */

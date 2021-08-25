@@ -11,9 +11,9 @@ class ScaleNumbersModelView : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    static const int SCALE_NUMBER;
-    static const int ROW_NUMBERS;
-    static const int COLUMN_NUMBERS;
+    const static int SCALE_NUMBER;
+    const static int ROW_NUMBERS;
+    const static int COLUMN_NUMBERS;
 
     ScaleNumbersModelView(QObject *parent = nullptr);
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;

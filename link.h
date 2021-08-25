@@ -13,7 +13,7 @@ public:
     Link(LaserPoint *fromNode, Reflector *toNode);
     ~Link();
 
-    static const double degRad;
+    const static double degRad;
 
     int type() const override;
     LaserPoint *fromLaser() const;

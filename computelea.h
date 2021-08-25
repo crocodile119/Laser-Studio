@@ -25,8 +25,8 @@ class ComputeLEA
 public:
     ComputeLEA(double=EmpLeaTables::HE_NE_WAVELENGTH, double=EmpLeaTables::NATURAL_AVERSION_TIME, double=EmpLeaTables::ALPHA_MIN);
 
-    static const double ALPHA_MIN;
-    static const size_t N_LEA{4};
+    const static double ALPHA_MIN;
+    const static size_t N_LEA{4};
 
     enum class ClassData {CLASSE_1_1M,
     /**< Dati corrispondenti al LEA di Classe 1 e 1M. */

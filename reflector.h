@@ -87,8 +87,8 @@ public:
                const QStyleOptionGraphicsItem *option, QWidget *widget)override;
 
     //Compute reflection
-    static const double radDeg;
-    static const double phi_const;
+    const static double radDeg;
+    const static double phi_const;
 
     double getRefration_n() const;
     void setRefraction_n(const double&);

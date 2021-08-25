@@ -19,7 +19,7 @@ public:
     ~LabRoom();
 
     enum { Type = UserType + 3 };
-    static const double radDeg;
+    const static double radDeg;
     QString text() const;
     void setTextColor(const QColor &color);
     QColor textColor() const;

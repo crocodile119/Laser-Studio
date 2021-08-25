@@ -11,7 +11,7 @@ public:
     FresnelReflector(double);
     FresnelReflector();
 
-    static const double radDeg;
+    const static double radDeg;
 
     void printVector( vector< pair <double, double> > );
     vector< pair <double, double> > getReflectionAngleVect();

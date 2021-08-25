@@ -61,7 +61,7 @@ QtCharts::QLineSeries* MyChartView::buildDataLaserOutput()
 void MyChartView::setAxisY(double _firstSeriesItem)
 {
     axisY = new QLogValueAxis();
-    axisY->setTitleText(QString::fromStdString("Valori liminte " + getKindOfValue()));
+    axisY->setTitleText(QString::fromStdString("Valori limite " + getKindOfValue()));
     axisY->setLabelFormat("%g");
     axisY->setBase(10.0);
 

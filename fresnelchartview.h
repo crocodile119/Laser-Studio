@@ -31,9 +31,9 @@ public:
     QtCharts::QLineSeries* buildDataSerie();
     QtCharts::QLineSeries* buildPositioningSeries();
     QtCharts::QLineSeries* distanceDataSerie();
-    static const qreal radialMin;
-    static const qreal angularMin;
-    static const qreal angularMax;
+    const static qreal radialMin;
+    const static qreal angularMin;
+    const static qreal angularMax;
 
     double getDistance()const;
     void setDistance(const double&);

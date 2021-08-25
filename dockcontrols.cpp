@@ -2237,7 +2237,7 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     ui->powerErgControl->setValue(powerErg);
     on_powerErgControl_valueChanged();
 
-    //ogni volta cha passo al funzionamento ad impulsi multipli imposto la durata degli impulsi a 1.0e-06 s
+    //ogni volta che passo al funzionamento ad impulsi multipli imposto la durata degli impulsi a 1.0e-06 s
     pulseWidth=1.0e-06;
 
     //abilito il checkbox per l'impotazione manuale del tempo di esposizione

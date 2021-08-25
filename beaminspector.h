@@ -1,5 +1,5 @@
-#ifndef BINOCULAR_H
-#define BINOCULAR_H
+#ifndef BEAMINSPECTOR_H
+#define BEAMINSPECTOR_H
 
 #include <QApplication>
 #include <QColor>
@@ -8,21 +8,23 @@
 #include <QSet>
 #include <utility>
 #include <QGraphicsEllipseItem>
-#include "binocularlink.h"
+#include "inspectorlink.h"
 
-class BinocularLink;
+class InspectorLink;
 
-class Binocular : public QGraphicsObject
+class BeamInspector : public QGraphicsObject
 {
-    Q_DECLARE_TR_FUNCTIONS(Binocular)
+    Q_DECLARE_TR_FUNCTIONS(BeamInspector)
 
 public:
-    Binocular(double, double, double, double, double);
-    ~Binocular();
+    BeamInspector(double _inspectorDistance, double _wavelength, double _divergence, double _beamDiameter);
+    ~BeamInspector();
 
-    enum { Type = UserType + 4 };
-    const static double radDeg;
-    const static double g;
+    enum { Type = UserType + 9 };
+    static const double PI;
+    static const double Le;
+    static const double fe_min;
+
     QString text() const;
     void setTextColor(const QColor &color);
     QColor textColor() const;
@@ -30,24 +32,16 @@ public:
     QColor outlineColor() const;
     void setBackgroundColor(const QColor &color);
     QColor backgroundColor() const;
-    void setDNRO_Diameter(double newRadius);
-    void setOpticalGain(const double&);
-    double getOpticalGain()const;
     void setPixScale(const double &);
-    void addBinocularLink(BinocularLink *binocularlink);
-    void removeBinocularLink();
-    BinocularLink *getBinocularLink();
-    void setBinSeqNumber(const int&);
-    int  getBinSeqNumber() const;
-    QString getOpticalGainFormula()const;
-    bool isDangerous();
+    void addInspectorLink(InspectorLink *inspectorlink);
+    void removeInspectorLink(InspectorLink *inspectorlink);
+    void setInspectorSeqNumber(const int&_inspectorSeqNumber);
+    int  getInspectorSeqNumber() const;
     void laserPositionChanged();
     void laserParametersChanged();
-    double getExendedOpticalDiameter();
-    double getBinocularDistance();
+    double getInspectorDistance();
     void setDescription(const QString&);
     QString getDescription()const;
-    QString getBinocularEffects();
 
     void setWavelength(const double&);
     double getWavelength()const;
@@ -58,24 +52,8 @@ public:
     void setBeamDiameter(const double&);
     double getBeamDiameter()const;
 
-    void set_D0(const int&);
-    int get_D0();
-
-    double get_Db();
-
-    void setMagnification(const int&);
-    int getMagnification()const;
-
-    double getTransmissionCoeff()const;
-    void setTransmissionCoeff(const double&);
-
-    void setAtmoshericEffectsCoefficient(const double&);
-    double setAtmoshericEffectsCoefficient() const;
-
     void setStringPosition();
     int type() const override;
-
-    void computeOpticalGain();
 
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
@@ -84,20 +62,33 @@ public:
 
     QString getStringPosition()const;
     QString getLaserInstallation();
-    void setTextLabel();
     void setInZone(bool _inZone);
     void computeSpotDiameter();
-    void computeExendedOpticalDiameter();
+    static void computeRayleighDistance(const double&, const double&, const double&);
+    static double getRayleighDistance();
+    static void computeTEM00_RayleighDistance(const double&, const double&);
+    static void computeQualityFactor(const double&, const double&);
+    static double getQualityFactor();
+
+    //parte dedicata ai dati membro relativi alle caratteristiche del fascio
+    void computeCurvaureRadius(const double& distance);
+    void computeFm();
+    bool isFmFocusable();
+
+    void compute_d_r();
+    void compute_alpha_r();
 
 protected:
     QVariant itemChange(GraphicsItemChange change,
                         const QVariant &value)override;
 
 private:
-    QList<BinocularLink *> myBinocularLinks;
+    static double rayleighDistance; 
+    static double TEM00_RayleighDistance;
+    static double qualityFactor;
+
+    QSet<InspectorLink *> myInspectorLinks;
     QRectF outlineRect() const;
-    QRectF labelRect();
-    QRectF unitedBounding() const;
 
     double opticalDiameter;
 
@@ -109,29 +100,26 @@ private:
     QString position;
     QString textLabel;
     int installationIndex;
-    int binSeqNumber;
+    int inspectorSeqNumber;
     double scale;
-    double binocularDistance;
-    double opticalGain;
-    double exendedOpticalDiameter;  
+    double inspectorDistance;
     double wavelength;
     double divergence;
     double beamDiameter;
-    int D0;
-    double Db;
-    int magnification;
-    double transmissionCoeff;
-
     QStringList stringList;
-    QString opticalGainFormula;
-    QPixmap binocularPix;
+    QPixmap inspectorPix;
     QRectF myTextRect;
-    bool dangerous;   
     QString description;
-    double atmoshericEffectsCoefficient;
 
     QPainterPath path;
     bool inZone;
+
+    //parte dedicata ai dati membro relativi alle caratteristiche del fascio
+
+    double fm;// valore della distanza focale del cristallino che minimizza l'immagine retinica;
+    double curvatureRadius;
+    double d_r;
+    double alpha_r;
 };
 
 #endif

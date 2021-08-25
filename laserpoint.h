@@ -12,6 +12,7 @@
 class Link;
 class BinocularLink;
 class ObjectLink;
+class InspectorLink;
 
 class LaserPoint : public QGraphicsObject
 {
@@ -22,7 +23,7 @@ public:
     ~LaserPoint();
 
     enum { Type = UserType + 1 };
-    static const double radDeg;
+    const static double radDeg;
     QString text() const;
     void setTextColor(const QColor &color);
     QColor textColor() const;
@@ -50,9 +51,11 @@ public:
     void addLink(Link *link);
     void addBinocularLink(BinocularLink *binocularlink);
     void addObjectLink(ObjectLink *objectLink);
+    void addInspectorLink(InspectorLink *inspectorLink);
     void removeLink(Link *link);
     void removeBinocularLink(BinocularLink *binocularlink);
     void removeObjectLink(ObjectLink *objectLink);
+    void removeInspectorLink(InspectorLink *inspectorLink);
 
     QPainterPath shapePath();  
     bool shapePathContainsPoint(const QPointF&);
@@ -81,6 +84,10 @@ public:
     double getTransmittance()const;
     bool isFilterOn();
     void setFilterOn(bool);
+    void setRayleighDistance(const double& _rayleighDistance);
+    double getRayleighDistance()const;
+    void setQualityFactor(const double& _rayleighDistance);
+    double getQualityFactor()const;
 
 protected:
     QVariant itemChange(GraphicsItemChange change,
@@ -95,10 +102,13 @@ private:
     int roundness(double size) const;
     double opticalDiameter;
     double skinDiameter;
+    double rayleighDistance;
+    double qualityFactor;
 
     QSet<Link *> myLinks;
     QSet<BinocularLink *> myBinocularLinks;
     QSet<ObjectLink *> myObjectLinks;
+    QSet<InspectorLink *> myInspectorLinks;
 
     QString myText;
     QColor myTextColor;
@@ -114,6 +124,7 @@ private:
 
     QStringList stringList;
     QPixmap laserPix;
+    QPixmap prohibitedPix;
     QRectF myTextRect;
     QPainterPath laserPath;
     QPainterPath enhacedPath;

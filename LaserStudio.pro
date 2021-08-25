@@ -8,6 +8,7 @@ RC_ICONS = LaserStudioIcon.ico
 
 SOURCES +=\
     atmosphericeffectsdialog.cpp \
+    beaminspector.cpp \
     binocular.cpp \
     binocularlink.cpp \
     binocularpropertiesdialog.cpp \
@@ -37,6 +38,7 @@ SOURCES +=\
     gotopointdialog.cpp \
     graphicsscene.cpp \
     gridlines.cpp \
+    inspectorlink.cpp \
     labeditdialog.cpp \
     labroom.cpp \
     lambertianchartdialog.cpp \
@@ -97,6 +99,7 @@ SOURCES +=\
 
 HEADERS  += mainwindow.h \
     atmosphericeffectsdialog.h \
+    beaminspector.h \
     binocular.h \
     binocularlink.h \
     binocularpropertiesdialog.h \
@@ -127,6 +130,7 @@ HEADERS  += mainwindow.h \
     gotopointdialog.h \
     graphicsscene.h \
     gridlines.h \
+    inspectorlink.h \
     labeditdialog.h \
     labroom.h \
     lambertianchartdialog.h \

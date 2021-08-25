@@ -19,7 +19,7 @@
 
 const double LaserPoint::radDeg = 3.1415926535897932384626433832795/180;
 
-LaserPoint::LaserPoint():QGraphicsObject(), laserPix(":/images/laserpix.png")
+LaserPoint::LaserPoint():QGraphicsObject(), laserPix(":/images/laserpix.png"), prohibitedPix(":/images/prohibitedpix.png")
 {
     myTextColor = Qt::black;
     myOutlineColor = Qt::transparent;
@@ -103,6 +103,11 @@ void LaserPoint::addObjectLink(ObjectLink *objectlink)
     myObjectLinks.insert(objectlink);
 }
 
+void LaserPoint::addInspectorLink(InspectorLink *inspectorLink)
+{
+    myInspectorLinks.insert(inspectorLink);
+}
+
 void LaserPoint::removeLink(Link *link)
 {
     myLinks.remove(link);
@@ -116,6 +121,12 @@ void LaserPoint::removeBinocularLink(BinocularLink *binocularlink)
 void LaserPoint::removeObjectLink(ObjectLink *objectLink)
 {
     myObjectLinks.remove(objectLink);
+}
+
+
+void LaserPoint::removeInspectorLink(InspectorLink *inspectorLink)
+{
+    myInspectorLinks.remove(inspectorLink);
 }
 
 QRectF LaserPoint::boundingRect() const
@@ -210,7 +221,10 @@ void LaserPoint::paint(QPainter *painter,
 
     QRectF source(0.0, 0.0, laserPix.width(), laserPix.height());
 
-    painter->drawPixmap(pixRect, laserPix, source);
+    if(qualityFactor>=1)
+        painter->drawPixmap(pixRect, laserPix, source);
+    else
+        painter->drawPixmap(pixRect, prohibitedPix, source);
 
     QTransform transform=painter->transform();
 
@@ -612,4 +626,24 @@ void LaserPoint::setFilterOn(bool filter)
 void LaserPoint::setUndoStack(QUndoStack *_undoStack)
 {
     undoStack=_undoStack;
+}
+
+void LaserPoint::setRayleighDistance(const double& _rayleighDistance)
+{
+    rayleighDistance=_rayleighDistance;
+}
+
+double LaserPoint::getRayleighDistance()const
+{
+    return rayleighDistance;
+}
+
+void LaserPoint::setQualityFactor(const double& _qualityFactor)
+{
+    qualityFactor=_qualityFactor;
+}
+
+double LaserPoint::getQualityFactor()const
+{
+    return qualityFactor;
 }

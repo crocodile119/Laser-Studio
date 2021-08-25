@@ -4,6 +4,7 @@
 #include <QAbstractListModel>
 #include <QIcon>
 #include "laserpoint.h"
+#include "beaminspector.h"
 
 class LaserListModel : public QAbstractListModel
 {

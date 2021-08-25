@@ -25,6 +25,8 @@
 #include "laserpoint.h"
 #include "reflector.h"
 #include "binocular.h"
+#include "beaminspector.h"
+#include "inspectorlink.h"
 #include "wetchartdialog.h"
 #include "fresnelchartdialog.h"
 #include "lambertianchartdialog.h"
@@ -118,6 +120,7 @@ private slots:
     void setLambertianMaxForReflector();
     void addReflector(const target& target);
     void addBinocular();
+    void addBeamInspector();
     void addFootprint();
     void setGuiDarkTheme();
     void changeGuiTheme();
@@ -143,6 +146,7 @@ private slots:
     QPointF getUpdatedPosition();
     void setDistanceForReflector();
     void setDistanceForBinocular();
+    void setDistanceForInspector();
     void setBeamDiameterForBinocular();
     void setupLaserProspective();
     void setupFieldProspective();
@@ -204,12 +208,18 @@ private slots:
     void shadowZoneForLaser();
     void meteoWidgets(bool, bool, bool);
     void graphicItemMoveToStack(QGraphicsItem *movingItem, const QPointF& oldPosition);
+    void updateForBeamInspection();
     //scene
+
+    void addBeamInspectorLink();
+
 
 private:
     typedef QPair<LaserPoint *, Reflector *> NodePair;
     typedef QPair<LaserPoint *, Binocular *> BinocularNodePair;   
     typedef QPair<LaserPoint *, FootprintObject *> ObjectNodePair;
+    typedef QPair<LaserPoint *, BeamInspector *> InspectorNodePair;
+    InspectorNodePair selectedInspectorNodePair() const;
 
     //scene
     void createActions();
@@ -228,6 +238,7 @@ private:
     NodePair selectedNodePair() const;
     BinocularNodePair selectedBinocularNodePair() const;
     ObjectNodePair selectedObjectNodePair() const;
+    BeamInspector selectedBeamInspectorNodePair() const;
 
     void setMaxEhnacedOpticalDiameter();
     void createStatusBar();
@@ -359,6 +370,7 @@ private:
     LaserPoint *laserpoint;
     Reflector *reflector;
     Binocular *binocular;
+    BeamInspector *beamInspector;
     LabRoom *myLabRoom;
     LabRoom *myFakeRoom;
     FootprintObject *footprint;
@@ -374,9 +386,11 @@ private:
     bool dragModeState;
     bool myLabRoomInserted;
     bool state;
+    int inspectorSeqNumber;
 
     QAction *addBinocularAct;
     QAction *addLabAct;
+    QAction *addPinInspectorAction;
     QAction *addWetReflectorAction;
     QAction *addGlassReflectorAction;
     QAction *addMirrorReflectorAction;
@@ -409,6 +423,7 @@ private:
     QGraphicsView *view;
     QList <pair<Reflector *, int>> myReflectors;
     QList <pair<Binocular *, int>> myBinoculars;
+    QList <BeamInspector*> myBeamInspectors;
     QList <FootprintObject*> myFootprints;
     QList <LaserPoint*> laserPointList;
     QList <LabRoom*> labroomList;

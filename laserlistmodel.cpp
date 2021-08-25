@@ -1,5 +1,6 @@
 #include "laserlistmodel.h"
 #include <QStandardItem>
+#include <QDebug>
 
 LaserListModel::LaserListModel(const QList<LaserPoint*> &_laserPointList, QObject *parent)
     : QAbstractListModel(parent), laserPointList(_laserPointList),  laserIcon(":/images/laserpix.png")
@@ -25,10 +26,20 @@ QVariant LaserListModel::data(const QModelIndex &index, int role) const
 
     if (role == Qt::DisplayRole)
     {
-        laserDescriptor=laserPointList.at(index.row())->getStringPosition()+
-                        "\nPostazione: " + laserPointList.at(index.row())->getLaserInstallation();
+             laserDescriptor=laserPointList.at(index.row())->getStringPosition()+
+                        " Postazione: " + laserPointList.at(index.row())->getLaserInstallation()
+                        +"\nDistanza di Rayleigh: " +
+                QString::number(laserPointList.at(index.row())->getRayleighDistance(), 'e', 2) + " m"
+                        +" M2: " +
+                QString::number(laserPointList.at(index.row())->getQualityFactor(), 'e', 2);
 
         return  laserDescriptor;
+    }
+
+    else if (role == Qt::ForegroundRole)
+    {
+        if (laserPointList.at(index.row())->getQualityFactor()<1)
+            return QBrush(Qt::red);
     }
 
     if (role == Qt::DecorationRole)

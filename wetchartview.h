@@ -30,9 +30,9 @@ public:
     WetChartView(QWidget *parent, std::vector<std::pair<double, double>>, double, int);
     QtCharts::QLineSeries* buildDataSerie();
     QtCharts::QLineSeries* buildPositioningSeries();
-    static const qreal radialMin;
-    static const qreal angularMin;
-    static const qreal angularMax;
+    const static qreal radialMin;
+    const static qreal angularMin;
+    const static qreal angularMax;
 
     double getDistance()const;
     void setDistance(const double&);

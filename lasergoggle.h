@@ -37,7 +37,7 @@ class LaserGoggle
 public:
     const static int TIMEBASE;/*!< Base dei tempi per le lunghezze d'onda da 315 a 10<sup>6</sup> nm pari a 5 secondi. */
     const static int TIMEBASE_LOW_WAVELENGTH;/*!< Base dei tempi per le lunghezze d'onda da 180 a 315 nm pari a 30000 secondi. */
-    static const size_t TABLEROWS{10};/*!< Numero di righe del prospetto B1 della norma UNI EN 207. */
+    const static size_t TABLEROWS{10};/*!< Numero di righe del prospetto B1 della norma UNI EN 207. */
     const static double PI;/*!< Valore della costante <b>&pi;</b>. */
     const static int CONTINUOS_OPERATION;/*!< Funzionamento ad onda continua. */
     const static double GLASS_EXPONENT;/*!< Esponente per la correzione per filtro con materiale principale di vetro e pari a 1,1693

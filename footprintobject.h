@@ -12,7 +12,7 @@ public:
     Rectangle(qreal=0.0, qreal=0.0, qreal=20.0, qreal=20.0);
     QRectF resizeHandle() const;
     void setItemScale(const double &newScale);
-    static const QSizeF minSize;
+    const static QSizeF minSize;
     QRectF rect()const;
     void setRect(const QRectF &rect);
     void shadowPath();
@@ -41,8 +41,8 @@ public:
 
     static void setResizeHandle(double newScale);
     QRectF boundingRect() const override;
-    static const double degRad;
-    static const double radDeg;
+    const static double degRad;
+    const static double radDeg;
     int type() const override;
     void addObjectLink(ObjectLink *objectlink);
     void removeObjectLink();
@@ -64,7 +64,7 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                QWidget *widget) override;
     QRectF resizeHandle();
-    static const QSizeF minSize;
+    const static QSizeF minSize;
     void setLaserBeamPath(const QPainterPath&);
     void setLaserEhancedBeamPath(const QPainterPath&);   
     void setShadowPath(QPainterPath path);

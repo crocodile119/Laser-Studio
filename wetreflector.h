@@ -12,8 +12,8 @@ class WetReflector : public FresnelReflector
 public:
     WetReflector();
 
-    static const double phi_const;
-    static const double n_refraction;
+    const static double phi_const;
+    const static double n_refraction;
 
     void computeZs(vector< pair <double,double> >, double, double, double, double);
     void computeTrigonometricReflection();

@@ -50,9 +50,9 @@ public:
     ~DockControls();
     Ui::DockControls *ui;
 
-    static const int DOCKGOGGLEMINIMUN;
-    static const int DOCKGOGGLEMAXIMUN;
-    static const double MODELOCKED_LIMIT;
+    const static int DOCKGOGGLEMINIMUN;
+    const static int DOCKGOGGLEMAXIMUN;
+    const static double MODELOCKED_LIMIT;
 
     void setUpGoggle();
     void fetchDataVector();

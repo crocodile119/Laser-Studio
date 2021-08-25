@@ -12,7 +12,7 @@ class EnvironmentListModel : public QAbstractListModel
 public:
     EnvironmentListModel(const QList<LabRoom*> &_labroomList, bool _state, QObject *parent);
 
-    static const int STANDARD_VISIBILITY;
+    const static int STANDARD_VISIBILITY;
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role) const override;
     QVariant headerData(int section, Qt::Orientation orientation,

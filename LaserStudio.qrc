@@ -61,5 +61,8 @@
         <file>images/undo.png</file>
         <file>images/history.png</file>
         <file>images/ok.png</file>
+        <file>images/inspectorpix.png</file>
+        <file>images/inspector.png</file>
+        <file>images/prohibitedpix.png</file>
     </qresource>
 </RCC>

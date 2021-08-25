@@ -84,6 +84,8 @@ MainWindow::MainWindow()
     footprintsCount=0;
     dragModeState=false;
 
+    inspectorSeqNumber=0;
+
     createUndoView();
     createActions();
     createStatusBar();
@@ -120,6 +122,12 @@ MainWindow::MainWindow()
     environmentSelectionModel=laserWindow->myDockReflectorsList->ui->environmentListView->selectionModel();
 
     laserPointList.clear();
+    BeamInspector::computeRayleighDistance(laserWindow->myDockControls->getWavelength(),
+                                           laserWindow->myDockControls->getBeamDiameter(),
+                                           laserWindow->myDockControls->getDivergence());
+
+    laserpoint->setRayleighDistance(BeamInspector::getRayleighDistance());
+    laserpoint->setQualityFactor(BeamInspector::getQualityFactor());
     laserModel= new LaserListModel(laserPointList, this);
     laserModel->addDescriptor(*laserpoint);
 
@@ -154,6 +162,9 @@ MainWindow::MainWindow()
     connect(laserWindow->myDockControls, SIGNAL(modified()), this, SLOT(laserModified()));
     connect(laserWindow->myDockControls, SIGNAL(beamDiameterChanged()), this, SLOT(setReflectorBeamDiameterForDiffusion()));
     connect(laserWindow->myDockControls, SIGNAL(beamDiameterChanged()), this, SLOT(setBeamDiameterForBinocular()));
+    connect(laserWindow->myDockControls, SIGNAL(beamDiameterChanged()), this, SLOT(updateForBeamInspection()));
+    connect(laserWindow->myDockControls, SIGNAL(wavelengthChanged()), this, SLOT(updateForBeamInspection()));
+    connect(laserWindow->myDockControls, SIGNAL(divergenceChanged()), this, SLOT(updateForBeamInspection()));
     connect(laserWindow->myDockControls, SIGNAL(powerErgChanged()), this, SLOT(setReflectorPowerErgForDiffusion()));
     connect(laserWindow->myDockControls, SIGNAL(EMP_Changed()), this, SLOT(setReflectorEMP_ForDiffusion()));
     connect(laserWindow->myDockControls, SIGNAL(wavelengthChanged()), this, SLOT(setWavelengthForBinocular()));
@@ -226,6 +237,8 @@ void MainWindow::setLaserPoint()
     connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setUpdatedPosition()));
     connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setDistanceForReflector()));
     connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setDistanceForReflector()));
+    connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setDistanceForInspector()));
+    connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setDistanceForInspector()));
     connect(laserpoint, SIGNAL(xChanged()), this, SLOT(updateList()));
     connect(laserpoint, SIGNAL(yChanged()), this, SLOT(updateList()));
     connect(laserpoint, SIGNAL(xChanged()), this, SLOT(updateLaserList()));
@@ -1210,6 +1223,12 @@ void MainWindow::createActions()
     reflectorsMenu= environmentMenu ->addMenu(tr("Aggiungi riflettore"));
     reflectorsMenu->setFont(font);
 
+    addPinInspectorAction = new QAction(tr("Segnaposto di ispezione"), this);
+    addPinInspectorAction->setIcon(QIcon(":/images/inspector.png"));
+    connect(addPinInspectorAction, SIGNAL(triggered()), this, SLOT(addBeamInspector()));
+    addPinInspectorAction->setStatusTip(tr("Aggiunge segnaposto di ispezione"));
+    environmentMenu->addAction(addPinInspectorAction);
+
     addWetReflectorAction = new QAction(tr("Riflettore bagnato"), this);
     addWetReflectorAction->setIcon(QIcon(":/images/wet.png"));
     addWetReflectorAction->setStatusTip(tr("Aggiunge un riflettore bagnato alla scena"));
@@ -2131,6 +2150,19 @@ void MainWindow::updateScale()
         }
     }
 
+    if(beamInspector)
+    {
+        QList<BeamInspector*>::iterator myIterator; // iterator
+        myIterator = myBeamInspectors.begin();
+        while (myIterator != myBeamInspectors.end() )
+        {
+            beamInspector=*myIterator;
+            beamInspector->setPixScale(scale);
+            ++myIterator;
+        }
+    }
+
+
     if(footprint)
     {
         QList<FootprintObject*>::iterator myIterator; // iterator
@@ -2400,6 +2432,24 @@ MainWindow::ObjectNodePair MainWindow::selectedObjectNodePair() const
     return ObjectNodePair(laserpoint, footprint);
 }
 
+void MainWindow::addBeamInspectorLink()
+{
+    InspectorNodePair inspectorNodes=selectedInspectorNodePair();
+    if (inspectorNodes == InspectorNodePair())
+        return;
+
+    LaserPoint* laser= inspectorNodes.first;
+    BeamInspector* inspector= inspectorNodes.second;
+
+    InspectorLink *inspectorlink = new InspectorLink(laser, inspector);
+    laserWindow->graphicsView->scene->addItem(inspectorlink);
+}
+
+MainWindow::InspectorNodePair MainWindow::selectedInspectorNodePair() const
+{
+    return InspectorNodePair(laserpoint, beamInspector);
+}
+
 void MainWindow::addBinocular()
 {
     QPointF binocularPos=QPointF(laserpoint->pos().x()+ (150.0/scale * ((binSeqNumber+1) % 5)),
@@ -2452,6 +2502,48 @@ void MainWindow::addBinocular()
     connect(binocular, SIGNAL(yChanged()), this, SLOT(setLaserpointShapePathForBinoculars()));
 
     //emit binocularListChanged();
+}
+
+void MainWindow::addBeamInspector()
+{
+    QPointF inspectorPos=QPointF(laserpoint->pos().x()+ (150.0/scale * ((inspectorSeqNumber+1) % 5)),
+                        laserpoint->pos().y()+(50.0/scale * (((inspectorSeqNumber+1) / 5) % 11)));
+
+    double inspectorPosX=inspectorPos.x();
+    double inspectorPosY=inspectorPos.y();
+
+    double laserPosX=laserpoint->pos().x();
+    double laserPosY=laserpoint->pos().y();
+
+    double inspectorDistance=sqrtf(powf((inspectorPosX-laserPosX), 2)+powf((inspectorPosY-laserPosY), 2));
+
+
+
+    double wavelength=laserWindow->myDockControls->getWavelength();
+    double attenuatedDNRO= attenuatedDistance(laserWindow->myDockControls->getOpticalDistance());
+    double divergence=laserWindow->myDockControls->getDivergence();
+
+    //Costruttore DNRO, binocularDistance, wavelength, divergence, beamDiameter
+    beamInspector=new BeamInspector(inspectorDistance, wavelength, divergence, getBeamDiameter());
+
+    beamInspector->setPixScale(scale);
+    beamInspector->setPos(inspectorPos);
+
+
+    laserWindow->graphicsView->scene->addItem(beamInspector);
+
+    addBeamInspectorLink();
+
+    bool inspectorInZone=laserpoint->shapeEnhacedPathContainsPoint(laserpoint->mapFromScene(beamInspector->pos()), attenuatedDNRO);
+    beamInspector->setInZone(inspectorInZone);
+
+    beamInspector->setStringPosition();
+    beamInspector->setInspectorSeqNumber(inspectorSeqNumber);
+
+
+    myBeamInspectors.append(beamInspector);
+
+    beamInspector->laserParametersChanged();
 }
 
 void MainWindow::addReflector(const target &target)
@@ -2801,6 +2893,7 @@ void MainWindow::createToolBars()
     environmentToolBar->addAction(addLabAct);
     environmentToolBar->addAction(addBinocularAct);
     environmentToolBar->addAction(addWetReflectorAction);
+    environmentToolBar->addAction(addPinInspectorAction);
     environmentToolBar->addAction(addGlassReflectorAction);
     environmentToolBar->addAction(addLambertianReflectorAction);
     environmentToolBar->addAction(addMirrorReflectorAction);
@@ -3104,6 +3197,29 @@ void MainWindow::setDistanceForBinocular()
         ++myIterator;
     }
     binocularsModel->myDataHasChanged();
+    updateActions();
+}
+
+void MainWindow::setDistanceForInspector()
+{
+    if(beamInspector==0)
+        return;
+
+    QList<BeamInspector*>::iterator myIterator; // iterator
+    myIterator = myBeamInspectors.begin();
+    while (myIterator != myBeamInspectors.end() )
+    {
+        beamInspector=*myIterator;
+/*
+        if(laserpoint->shapePathContainsPoint(laserpoint->mapFromScene(binocular->pos()), exendedOpticalDiameter))
+            binocular->setInZone(true);
+        else
+            binocular->setInZone(false);
+*/
+        beamInspector->laserPositionChanged();
+        ++myIterator;
+    }
+    //binocularsModel->myDataHasChanged();
     updateActions();
 }
 
@@ -4553,3 +4669,12 @@ MainWindow::~MainWindow()
     }
 }
 
+void MainWindow::updateForBeamInspection()
+{
+    BeamInspector::computeRayleighDistance(laserWindow->myDockControls->getWavelength(),
+                                           laserWindow->myDockControls->getBeamDiameter(),
+                                           laserWindow->myDockControls->getDivergence());
+    laserpoint->setRayleighDistance(BeamInspector::getRayleighDistance());
+    laserpoint->setQualityFactor(BeamInspector::getQualityFactor());
+    laserModel->myDataHasChanged();
+}

@@ -235,6 +235,7 @@ private:
     Link *selectedLink() const;
     LabRoom *selectedLab() const;
     FootprintObject *selectedFootprint()const;
+    BeamInspector *selectedBeamInspector() const;
     NodePair selectedNodePair() const;
     BinocularNodePair selectedBinocularNodePair() const;
     ObjectNodePair selectedObjectNodePair() const;

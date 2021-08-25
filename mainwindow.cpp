@@ -21,6 +21,8 @@
 #include "ui_labeditdialog.h"
 #include "footprintdialog.h"
 #include "ui_footprintdialog.h"
+#include "beaminspectordialog.h"
+#include "ui_beaminspectordialog.h"
 #include "gotopointdialog.h"
 #include "ui_gotopointdialog.h"
 #include "description.h"
@@ -812,6 +814,19 @@ void MainWindow::properties()
             undoStack->push(addFootprintPropertyCommand);
         }
             shadowZoneForLaser();
+    }
+    else if(beamInspector)
+    {
+        BeamInspectorDialog dialog(beamInspector, this);
+        dialog.exec();
+
+        if(dialog.result()==QDialog::Accepted)
+        {
+            double x=dialog.ui->xSpinBox->value();
+            double y=dialog.ui->ySpinBox->value();
+
+            beamInspector->setPos(QPointF(x,y));
+        }
     }
     else
         installationDescription();
@@ -2412,6 +2427,14 @@ LaserPoint *MainWindow::selectedLaserPoint() const
         return 0;
 }
 
+BeamInspector *MainWindow::selectedBeamInspector() const
+{
+    QList<QGraphicsItem *> items = laserWindow->graphicsView->scene->selectedItems();
+    if (items.count() == 1)
+        return dynamic_cast<BeamInspector *>(items.first());
+    else
+        return 0;
+}
 
 Link *MainWindow::selectedLink() const
 {

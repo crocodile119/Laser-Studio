@@ -49,6 +49,7 @@ public:
     double getT1() const;/*!< Restituisce il valore del parametro T<sub>1</sub> in secondi. */
     double getT2() const;/*!< Restituisce il valore del parametro T<sub>1</sub> in secondi. */
     double getEMP() const;/*!< Restituisce il valore numerico dell'EMP. */
+    empdata getEMP_Data()const;
     string getFormulaEMP() const;/*!< Restituisce la formula usata per il calcolo dell'EMP. */
     string getFormulaSort() const;/*!< Restituisce 'E' se il valore dell'EMP è in irradianza 'H' se il valore è in esposizione energetica. */
     string getRadiation() const;/*!< Restituisce il tipo di radiazione emessa dal dispositivo laser. */
@@ -97,6 +98,8 @@ private:
 
     std::array<empdata, EmpLeaTables::TABLEROW_EMP> empStructValues;
     empdata myEmpData;
+    empdata photoEmpData;
+    empdata thermoEmpData;
 
     string EMP_Formula;
     int EMP_FormulaSort;

@@ -9,6 +9,7 @@ RC_ICONS = LaserStudioIcon.ico
 SOURCES +=\
     atmosphericeffectsdialog.cpp \
     beaminspector.cpp \
+    beaminspectordialog.cpp \
     binocular.cpp \
     binocularlink.cpp \
     binocularpropertiesdialog.cpp \
@@ -100,6 +101,7 @@ SOURCES +=\
 HEADERS  += mainwindow.h \
     atmosphericeffectsdialog.h \
     beaminspector.h \
+    beaminspectordialog.h \
     binocular.h \
     binocularlink.h \
     binocularpropertiesdialog.h \
@@ -192,6 +194,7 @@ RESOURCES       = LaserStudio.qrc
 
 FORMS    += \
     atmosphericeffectsdialog.ui \
+    beaminspectordialog.ui \
     binocularpropertiesdialog.ui \
     description.ui \
     dockcontrols.ui \

@@ -42,6 +42,7 @@ public:
     double getInspectorDistance();
     void setDescription(const QString&);
     QString getDescription()const;
+    void inspectorUpdate();
 
     void setWavelength(const double&);
     double getWavelength()const;
@@ -63,20 +64,34 @@ public:
     QString getStringPosition()const;
     QString getLaserInstallation();
     void setInZone(bool _inZone);
-    void computeSpotDiameter();
     static void computeRayleighDistance(const double&, const double&, const double&);
     static double getRayleighDistance();
     static void computeTEM00_RayleighDistance(const double&, const double&);
     static void computeQualityFactor(const double&, const double&);
     static double getQualityFactor();
+    static QString kindOfOcularDamage(const double &_wavelength);
 
     //parte dedicata ai dati membro relativi alle caratteristiche del fascio
+    void computeSpotDiameter();
     void computeCurvaureRadius(const double& distance);
     void computeFm();
+    void compute_d_r_FarField();
+    void computePercentError();
     bool isFmFocusable();
+    bool isFarField();
 
     void compute_d_r();
     void compute_alpha_r();
+    void computeCE();
+
+    double getSpotDiameter()const;
+    double getCurvatureRadius()const;
+    double get_fm()const;
+    double get_alpha_r()const;
+    double get_d_r()const;
+    double getPercentError()const;
+    double get_d_r_FarField()const;
+    double getCE()const;
 
 protected:
     QVariant itemChange(GraphicsItemChange change,
@@ -116,10 +131,15 @@ private:
 
     //parte dedicata ai dati membro relativi alle caratteristiche del fascio
 
+    double spotDiameter;
     double fm;// valore della distanza focale del cristallino che minimizza l'immagine retinica;
     double curvatureRadius;
     double d_r;
     double alpha_r;
+    double d_r_FarField;
+    double alpha_r_FarField;
+    double percentError;
+    double CE;
 };
 
 #endif

@@ -14,11 +14,11 @@
 #include <cmath>
 #include "inspectorlink.h"
 #include "beaminspector.h"
-
+#include "computeemp.h"
 
 const double BeamInspector::PI = 3.1415926535897932384626433832795;
-const double BeamInspector::Le= 17.0;//distanza tra il cristallino e la retina in mm
-const double BeamInspector::fe_min= 14.53;//distanza di focalizzazione minima per l'occhio in mm
+const double BeamInspector::Le= 17.0*1.0e-03;//distanza tra il cristallino e la retina in m
+const double BeamInspector::fe_min= 14.53*1.0e-03;//distanza di focalizzazione minima per l'occhio in m
 double BeamInspector::rayleighDistance;
 double BeamInspector::TEM00_RayleighDistance;
 double BeamInspector::qualityFactor;
@@ -28,6 +28,8 @@ BeamInspector::BeamInspector(double _inspectorDistance, double _wavelength, doub
      scale(1.0), inspectorDistance(_inspectorDistance), wavelength(_wavelength), divergence(_divergence), beamDiameter(_beamDiameter),
      inspectorPix(":/images/inspectorpix.png")
 {
+
+    inspectorUpdate();
     setStringPosition();
     setToolTip(position);
     setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges);
@@ -171,7 +173,7 @@ QVariant BeamInspector::itemChange(GraphicsItemChange change,
             inspectorDistance=inspectorlink->linkInspectorLenght();
             inspectorlink->trackNodes();
 
-            //Elaborazione da inserire
+            inspectorUpdate();
 
             setStringPosition();
             setToolTip(position);
@@ -203,7 +205,7 @@ void BeamInspector::laserPositionChanged()
       inspectorDistance=inspectorlink->linkInspectorLenght();
       inspectorlink->trackNodes();
 
-      //Elaborazione da inserire
+      inspectorUpdate();
 
       setToolTip(position);
       setStringPosition();
@@ -376,34 +378,155 @@ void BeamInspector::computeFm()
             fm=Le;
         else
             fm=fe_min;
-    }
+    } 
 }
 
 void BeamInspector::compute_d_r()
 {
-    if(isFmFocusable())
+    if((wavelength>=400)&&(wavelength<=1400))
     {
-        d_r=beamDiameter*Le/sqrt(pow(inspectorDistance,2)+pow(rayleighDistance,2));
+        if(isFmFocusable())
+        {
+            d_r=beamDiameter*1.0e-03*Le/sqrt(pow(inspectorDistance,2)+pow(rayleighDistance,2));
+        }
+        else
+        {
+            double zR_L1_square=pow(inspectorDistance,2)+pow(rayleighDistance,2);
+            d_r=beamDiameter*1.0e-03/sqrt(zR_L1_square)*sqrt(pow(Le, 2)+pow((zR_L1_square/rayleighDistance),2)*
+                                                    pow((1-Le/fm+(beamDiameter*1.0e-03*Le)/zR_L1_square),2));
+        }
     }
     else
-    {
-        double zR_L1_square=pow(inspectorDistance,2)+pow(rayleighDistance,2);
-        d_r=beamDiameter/sqrt(zR_L1_square)*sqrt(pow(Le, 2)+pow((zR_L1_square/rayleighDistance),2)*
-                                                pow((1-Le/fm+(beamDiameter*Le)/zR_L1_square),2));
-    }
+        d_r=0;
 }
 
 void BeamInspector::compute_alpha_r()
 {
-    if(isFmFocusable())
-    {
-        alpha_r=beamDiameter/sqrt(pow(inspectorDistance,2)+pow(rayleighDistance,2));
-    }
+    if((wavelength>=400)&&(wavelength<=1400))
+        {
+        if(isFmFocusable())
+        {
+            alpha_r=beamDiameter/sqrt(pow(inspectorDistance,2)+pow(rayleighDistance,2));
+        }
 
-    else
-    {
-        double zR_L1_square=pow(inspectorDistance,2)+pow(rayleighDistance,2);
-        d_r=beamDiameter/sqrt(zR_L1_square)*sqrt(1+pow((zR_L1_square/rayleighDistance),2)*
-                                                    pow((1/Le-1/fm+(beamDiameter/zR_L1_square)),2));
+        else
+        {
+            double zR_L1_square=pow(inspectorDistance,2)+pow(rayleighDistance,2);
+            alpha_r=beamDiameter/sqrt(zR_L1_square)*sqrt(1+pow((zR_L1_square/rayleighDistance),2)*
+                                                        pow((1/Le-1/fm+(inspectorDistance/zR_L1_square)),2));
+        }
     }
+    else
+        alpha_r=0;
+}
+
+void BeamInspector::computeSpotDiameter()
+{
+    spotDiameter=beamDiameter+divergence*inspectorDistance;
+}
+
+double BeamInspector::getSpotDiameter()const
+{
+    return spotDiameter;
+}
+
+double BeamInspector::getCurvatureRadius()const
+{
+    return curvatureRadius;
+}
+
+double BeamInspector::get_fm()const
+{
+    return fm;
+}
+
+double BeamInspector::get_alpha_r()const
+{
+    return alpha_r;
+}
+
+double BeamInspector::get_d_r()const
+{
+    return d_r;
+}
+
+QString BeamInspector::kindOfOcularDamage(const double& _wavelength)
+{
+    QString damage;
+    if(_wavelength<400)
+    {
+        damage= "fotocheratite(infiammazione corneale);"
+                "\ncongiuntivite (infiammazione congiuntivale);"
+                "\ncataratta (opacizzazione del cristallino.";
+    }
+    else if((_wavelength>=400)&&(_wavelength<=1400))
+    {
+        damage="la radiazione è assorbita dall'epitelio pigmentato e dalla coroide;"
+               "\nbruciatura della retina con conseguente perdita parziale o tatale della capacità visiva.";
+    }
+    else if((_wavelength>1400)&&(_wavelength<=3000))
+    {
+        damage="bruciatura del cristallino;"
+                "\nbruciatura della cornea.";
+    }
+    else if((_wavelength>3000)&&(_wavelength<1.0e+06))
+        damage="bruciatura del cristallino.";
+
+    return damage;
+}
+
+void BeamInspector::compute_d_r_FarField()
+{
+    d_r_FarField=1.0e-03*beamDiameter*Le/inspectorDistance;
+}
+
+double BeamInspector::get_d_r_FarField()const
+{
+    return d_r_FarField;
+}
+
+void BeamInspector::computePercentError()
+{
+    percentError=(d_r_FarField-d_r)/d_r*100.0;
+}
+
+double BeamInspector::getPercentError()const
+{
+    return percentError;
+}
+
+void BeamInspector::computeCE()
+{
+    if(alpha_r<=ComputeEMP::ALPHA_MIN)
+        CE=1.0;
+    else if((ComputeEMP::ALPHA_MIN<alpha_r)&&(alpha_r<=ComputeEMP::ALPHA_MAX))
+        CE=alpha_r/ComputeEMP::ALPHA_MIN;
+    else if(alpha_r>ComputeEMP::ALPHA_MAX)
+        CE=ComputeEMP::ALPHA_MAX/ComputeEMP::ALPHA_MIN;
+}
+
+double BeamInspector::getCE()const
+{
+    return CE;
+}
+
+bool BeamInspector::isFarField()
+{
+    bool farField=false;
+    if((inspectorDistance/rayleighDistance)>10)
+        farField=true;
+
+    return farField;
+}
+
+void BeamInspector::inspectorUpdate()
+{
+    computeSpotDiameter();
+    computeFm();
+    computeCurvaureRadius(inspectorDistance);
+    compute_d_r();
+    compute_alpha_r();
+    compute_d_r_FarField();
+    computePercentError();
+    computeCE();
 }

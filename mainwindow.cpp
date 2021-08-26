@@ -4699,5 +4699,19 @@ void MainWindow::updateForBeamInspection()
                                            laserWindow->myDockControls->getDivergence());
     laserpoint->setRayleighDistance(BeamInspector::getRayleighDistance());
     laserpoint->setQualityFactor(BeamInspector::getQualityFactor());
+
+    QList<BeamInspector*>::iterator myIterator; // iterator
+    myIterator = myBeamInspectors.begin();
+
+    while (myIterator != myBeamInspectors.end() )
+    {
+        beamInspector=*myIterator;
+        //opticalDistance è la NOHD che viene moltiplicata per 2 da setDNRO_Diameter
+        beamInspector->laserParametersChanged();
+
+        ++myIterator;
+    }
+
+    beamInspector->laserParametersChanged();
     laserModel->myDataHasChanged();
 }

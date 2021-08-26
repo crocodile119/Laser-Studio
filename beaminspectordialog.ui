@@ -521,7 +521,7 @@ QLabel {padding: 3px}
 QLabel {margin-left: 10px}</string>
         </property>
         <property name="text">
-         <string>&lt;p&gt;z &lt;sub&gt;r&lt;/sub&gt;/L [mm]&lt;/p&gt;</string>
+         <string>&lt;p&gt;z &lt;sub&gt;r&lt;/sub&gt;/L &lt;/p&gt;</string>
         </property>
        </widget>
       </item>
@@ -608,7 +608,7 @@ QLabel {padding: 3px}
 QLabel {margin-left: 10px}</string>
         </property>
         <property name="text">
-         <string>f &lt;sub&gt;m&lt;/sub&gt; [mm]</string>
+         <string>f &lt;sub&gt;m&lt;/sub&gt; [m]</string>
         </property>
        </widget>
       </item>

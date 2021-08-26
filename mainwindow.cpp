@@ -4706,12 +4706,13 @@ void MainWindow::updateForBeamInspection()
     while (myIterator != myBeamInspectors.end() )
     {
         beamInspector=*myIterator;
+        beamInspector->setWavelength(laserWindow->myDockControls->getWavelength());
+        beamInspector->setBeamDiameter(laserWindow->myDockControls->getBeamDiameter()),
+        beamInspector->setDivergence(laserWindow->myDockControls->getDivergence());
         //opticalDistance è la NOHD che viene moltiplicata per 2 da setDNRO_Diameter
         beamInspector->laserParametersChanged();
 
         ++myIterator;
     }
-
-    beamInspector->laserParametersChanged();
     laserModel->myDataHasChanged();
 }

@@ -192,7 +192,7 @@ void BeamInspector::laserParametersChanged()
       inspectorDistance=inspectorlink->linkInspectorLenght();
       inspectorlink->trackNodes();
 
-      //Elaborazione da inserire
+      inspectorUpdate();
 
       setStringPosition();
   }
@@ -351,7 +351,7 @@ double BeamInspector::getQualityFactor()
 
 void BeamInspector::computeCurvaureRadius(const double& distance)
 {
-    curvatureRadius=distance+ pow(rayleighDistance, 2)/distance;
+    curvatureRadius=distance+pow(rayleighDistance, 2)/distance;
 }
 
 bool BeamInspector::isFmFocusable()
@@ -369,7 +369,7 @@ void BeamInspector::computeFm()
 {
     if(isFmFocusable())
     {
-        double inverseFm=1/Le+1/(curvatureRadius);
+        double inverseFm=1/Le+1/curvatureRadius;
         fm=1/inverseFm;
     }
     else
@@ -521,9 +521,9 @@ bool BeamInspector::isFarField()
 
 void BeamInspector::inspectorUpdate()
 {
-    computeSpotDiameter();
-    computeFm();
+    computeSpotDiameter(); 
     computeCurvaureRadius(inspectorDistance);
+    computeFm();
     compute_d_r();
     compute_alpha_r();
     compute_d_r_FarField();

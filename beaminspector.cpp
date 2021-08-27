@@ -374,18 +374,18 @@ bool BeamInspector::isFmFocusable()
 
 void BeamInspector::computeFm()
 {
-    if(isFmFocusable())
-    {
-        double inverseFm=1/Le+1/curvatureRadius;
-        fm=1/inverseFm;
-    }
-    else
-    {
-        if(fm>Le)
-            fm=Le;
+    double inverseFm=1/Le+1/curvatureRadius;
+        if(isFmFocusable())
+        {
+            fm=1/inverseFm;
+        }
         else
-            fm=fe_min;
-    } 
+        {
+            if(1/inverseFm>Le)
+                fm=Le;
+            else
+                fm=fe_min;
+        }
 }
 
 void BeamInspector::compute_d_r()

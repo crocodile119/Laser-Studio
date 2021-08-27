@@ -3,7 +3,6 @@
 #include <QDebug>
 #include <QLegendMarker>
 
-
   BeamInspectorChart::BeamInspectorChart(QWidget *parent, double _rayleighDistance,
                                          std::vector<std::pair<double, double>> _beamVector,
                                          std::vector<std::pair<double, double>> _apparentVector)
@@ -45,8 +44,10 @@ void BeamInspectorChart::setAxisY()
 {
     axisY = new QValueAxis();
     axisY->setTitleText(QString::fromStdString("asse y [m] "));
-    axisY->setMin(std::min(beamSeries->at(2).y(), apparentSeries->at(2).y()));
-    axisY->setMax(std::max(beamSeries->at(0).y(), apparentSeries->at(0).y()));
+    axisY->setMin(std::min(beamSeries->at(2).y(),
+                           apparentSeries->at(2).y()));
+    axisY->setMax(std::max(beamSeries->at(0).y(),
+                           apparentSeries->at(0).y()));
     axisY->setMinorTickCount(-1);
     chart->addAxis(axisY, Qt::AlignLeft);
     beamSeries->attachAxis(axisY);
@@ -59,8 +60,10 @@ void BeamInspectorChart::setAxisX()
     axisX = new QValueAxis();
     axisX->setTitleText("asse x [m]");
     axisX->setLabelFormat("%g");
-    axisX->setMin(std::min(beamSeries->at(0).x(), apparentSeries->at(0).x()));
-    axisX->setMax(std::max(beamSeries->at(0).x(), apparentSeries->at(0).x()));
+    axisX->setMin(std::min(beamSeries->at(0).x(),
+                           apparentSeries->at(0).x()));
+    axisX->setMax(std::max((apparentSeries->at(0).x())+beamSeries->at(0).x(),
+                           apparentSeries->at(0).x()));
 
     chart->addAxis(axisX, Qt::AlignBottom);
     beamSeries->attachAxis(axisX);

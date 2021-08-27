@@ -32,6 +32,7 @@ public:
     void setAxisY();
     void buildDataSeries();
     QChart *getBeamChartObject()const;
+    const static double BOUND_COEFFICIENT;
 
 private:
 

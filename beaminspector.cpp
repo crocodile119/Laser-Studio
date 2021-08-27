@@ -172,6 +172,7 @@ QVariant BeamInspector::itemChange(GraphicsItemChange change,
         {
             inspectorDistance=inspectorlink->linkInspectorLenght();
             inspectorlink->trackNodes();
+            linkInspectorPhase=inspectorlink->linkInspectorPhase();
 
             inspectorUpdate();
 
@@ -204,6 +205,7 @@ void BeamInspector::laserPositionChanged()
   {
       inspectorDistance=inspectorlink->linkInspectorLenght();
       inspectorlink->trackNodes();
+      linkInspectorPhase=inspectorlink->linkInspectorPhase();
 
       inspectorUpdate();
 
@@ -238,7 +240,7 @@ void BeamInspector::setStringPosition()
 
     xString=QString::number(xCoordinate=pos().x(),'f', 0);
     yString=QString::number(yCoordinate=pos().y(),'f', 0);
-        inspectorDistanceString=QString::number(inspectorDistance,'f',2);
+    inspectorDistanceString=QString::number(inspectorDistance,'f',2);
 
 
 
@@ -317,6 +319,11 @@ double BeamInspector::getDivergence()const
 void BeamInspector::setInZone(bool _inZone)
 {
     inZone=_inZone;
+}
+
+double BeamInspector::getLinkInspectorPhase()const
+{
+    return linkInspectorPhase;
 }
 
 void BeamInspector::computeTEM00_RayleighDistance(const double& _wavelength, const double& _beamDiameter)
@@ -420,6 +427,11 @@ void BeamInspector::compute_alpha_r()
         alpha_r=0;
 }
 
+void BeamInspector::compute_d_s()
+{
+    d_s=alpha_r*curvatureRadius;
+}
+
 void BeamInspector::computeSpotDiameter()
 {
     spotDiameter=beamDiameter+divergence*inspectorDistance;
@@ -443,6 +455,11 @@ double BeamInspector::get_fm()const
 double BeamInspector::get_alpha_r()const
 {
     return alpha_r;
+}
+
+double BeamInspector::get_d_s()const
+{
+    return d_s;
 }
 
 double BeamInspector::get_d_r()const
@@ -529,4 +546,5 @@ void BeamInspector::inspectorUpdate()
     compute_d_r_FarField();
     computePercentError();
     computeCE();
+    compute_d_s();
 }

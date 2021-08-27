@@ -9,12 +9,15 @@ RC_ICONS = LaserStudioIcon.ico
 SOURCES +=\
     atmosphericeffectsdialog.cpp \
     beaminspector.cpp \
+    beaminspectorchart.cpp \
     beaminspectordialog.cpp \
     binocular.cpp \
     binocularlink.cpp \
     binocularpropertiesdialog.cpp \
     binocularslistmodel.cpp \
     centralwidget.cpp \
+    chart.cpp \
+    chartview.cpp \
     comboboxbands.cpp \
     computeemp.cpp \
     computelea.cpp \
@@ -101,12 +104,15 @@ SOURCES +=\
 HEADERS  += mainwindow.h \
     atmosphericeffectsdialog.h \
     beaminspector.h \
+    beaminspectorchart.h \
     beaminspectordialog.h \
     binocular.h \
     binocularlink.h \
     binocularpropertiesdialog.h \
     binocularslistmodel.h \
     centralwidget.h \
+    chart.h \
+    chartview.h \
     comboboxbands.h \
     computeemp.h \
     computelea.h \

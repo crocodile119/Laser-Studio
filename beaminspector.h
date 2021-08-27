@@ -40,6 +40,7 @@ public:
     void laserPositionChanged();
     void laserParametersChanged();
     double getInspectorDistance();
+    double getLinkInspectorPhase()const;
     void setDescription(const QString&);
     QString getDescription()const;
     void inspectorUpdate();
@@ -82,6 +83,7 @@ public:
 
     void compute_d_r();
     void compute_alpha_r();
+    void compute_d_s();
     void computeCE();
 
     double getSpotDiameter()const;
@@ -91,6 +93,7 @@ public:
     double get_d_r()const;
     double getPercentError()const;
     double get_d_r_FarField()const;
+    double get_d_s()const;
     double getCE()const;
 
 protected:
@@ -106,6 +109,7 @@ private:
     QRectF outlineRect() const;
 
     double opticalDiameter;
+    double linkInspectorPhase;
 
     QString myText;
     QColor myTextColor;
@@ -134,10 +138,11 @@ private:
     double spotDiameter;
     double fm;// valore della distanza focale del cristallino che minimizza l'immagine retinica;
     double curvatureRadius;
-    double d_r;
-    double alpha_r;
-    double d_r_FarField;
-    double alpha_r_FarField;
+    double d_r;//diametro dell'immagine retinica
+    double alpha_r;//angolo sotteso dall'immagine retinica=angolo sotteso dalla sorgente apparente
+    double d_s;//diametro della sorgente apparente
+    double d_r_FarField;//diametro della sorgente in campo lontano
+    double alpha_r_FarField;//angolo sotteso dalla sorgente apparente in campo lontano
     double percentError;
     double CE;
 };

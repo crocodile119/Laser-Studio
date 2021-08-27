@@ -41,146 +41,7 @@ QFrame{border solid 1px #f0f0f0}</string>
       <string>Posizione</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="5" column="3">
-       <widget class="QLabel" name="qualityFactorLabel">
-        <property name="styleSheet">
-         <string notr="true">QLabel {background-color: #fafafa}
-QLabel {color: #000000}
-QLabel {border: 0px solid grey}
-QLabel {border-radius: 8px}
-QLabel {padding: 3px}
-QLabel {margin-right: 10px}</string>
-        </property>
-        <property name="text">
-         <string>TextLabel</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="3">
-       <widget class="QDoubleSpinBox" name="ySpinBox">
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QDoubleSpinBox{color: #000000}</string>
-        </property>
-        <property name="minimum">
-         <double>-1000000.000000000000000</double>
-        </property>
-        <property name="maximum">
-         <double>1000000.000000000000000</double>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0" colspan="3">
-       <widget class="QLabel" name="tQualityFactorLabel">
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QLabel {background-color: #00c800}
-QLabel {color: #fafafa}
-QLabel {border: 0px solid grey}
-QLabel {border-radius: 8px}
-QLabel {padding: 3px}
-QLabel {margin-left: 10px}</string>
-        </property>
-        <property name="text">
-         <string>&lt;p&gt;M&lt;sup&gt;2&lt;/sup&gt;&lt;/p&gt;</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="3">
-       <widget class="QDoubleSpinBox" name="xSpinBox">
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QDoubleSpinBox{color: #000000}</string>
-        </property>
-        <property name="minimum">
-         <double>-1000000.000000000000000</double>
-        </property>
-        <property name="maximum">
-         <double>1000000.000000000000000</double>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0" colspan="3">
-       <widget class="QLabel" name="tSpotDiameterLabel">
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QLabel {background-color: #00c800}
-QLabel {color: #fafafa}
-QLabel {border: 0px solid grey}
-QLabel {border-radius: 8px}
-QLabel {padding: 3px}
-QLabel {margin-left: 10px}</string>
-        </property>
-        <property name="text">
-         <string>d &lt;sub&gt;b&lt;/sub&gt; [mm]</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0" colspan="3">
-       <widget class="QLabel" name="tYLabel">
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QLabel {background-color: #00c800}
-QLabel {color: #fafafa}
-QLabel {border: 0px solid grey}
-QLabel {border-radius: 8px}
-QLabel {padding: 3px}
-QLabel {margin-left: 10px}</string>
-        </property>
-        <property name="text">
-         <string>Y:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0" colspan="3">
-       <widget class="QLabel" name="tRayleighDistanceLabel">
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QLabel {background-color: #00c800}
-QLabel {color: #fafafa}
-QLabel {border: 0px solid grey}
-QLabel {border-radius: 8px}
-QLabel {padding: 3px}
-QLabel {margin-left: 10px}</string>
-        </property>
-        <property name="text">
-         <string>&lt;p&gt;z&lt;sub&gt;R&lt;/sub&gt; [m]&lt;/p&gt;</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0" colspan="3">
+      <item row="0" column="0">
        <widget class="QLabel" name="tXLabel">
         <property name="font">
          <font>
@@ -202,62 +63,65 @@ QLabel {margin-left: 10px}</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="3">
-       <widget class="QLabel" name="apertureDistanceLabel">
+      <item row="0" column="1">
+       <widget class="QDoubleSpinBox" name="xSpinBox">
         <property name="font">
          <font>
           <pointsize>8</pointsize>
          </font>
         </property>
         <property name="styleSheet">
-         <string notr="true">QLabel {background-color: #fafafa}
-QLabel {color: #000000}
-QLabel {border: 0px solid grey}
-QLabel {border-radius: 8px}
-QLabel {padding: 3px}
-QLabel {margin-right: 10px}</string>
+         <string notr="true">QDoubleSpinBox{color: #000000}</string>
         </property>
-        <property name="text">
-         <string>TextLabel</string>
+        <property name="minimum">
+         <double>-1000000.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>1000000.000000000000000</double>
         </property>
        </widget>
       </item>
-      <item row="3" column="3">
-       <widget class="QLabel" name="rayleighDistanceLabel">
+      <item row="1" column="0">
+       <widget class="QLabel" name="tYLabel">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
         <property name="styleSheet">
-         <string notr="true">QLabel {background-color: #fafafa}
-QLabel {color: #000000}
+         <string notr="true">QLabel {background-color: #00c800}
+QLabel {color: #fafafa}
 QLabel {border: 0px solid grey}
 QLabel {border-radius: 8px}
 QLabel {padding: 3px}
-QLabel {margin-right: 10px}</string>
+QLabel {margin-left: 10px}</string>
         </property>
         <property name="text">
-         <string>TextLabel</string>
+         <string>Y:</string>
         </property>
        </widget>
       </item>
-      <item row="4" column="3">
-       <widget class="QLabel" name="spotDiameterLabel">
+      <item row="1" column="1">
+       <widget class="QDoubleSpinBox" name="ySpinBox">
         <property name="font">
          <font>
           <pointsize>8</pointsize>
          </font>
         </property>
         <property name="styleSheet">
-         <string notr="true">QLabel {background-color: #fafafa}
-QLabel {color: #000000}
-QLabel {border: 0px solid grey}
-QLabel {border-radius: 8px}
-QLabel {padding: 3px}
-QLabel {margin-right: 10px}</string>
+         <string notr="true">QDoubleSpinBox{color: #000000}</string>
         </property>
-        <property name="text">
-         <string>TextLabel</string>
+        <property name="minimum">
+         <double>-1000000.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>1000000.000000000000000</double>
         </property>
        </widget>
       </item>
-      <item row="2" column="0" colspan="3">
+      <item row="2" column="0">
        <widget class="QLabel" name="tApertureDistanceLabel">
         <property name="font">
          <font>
@@ -279,7 +143,180 @@ QLabel {margin-left: 10px}</string>
         </property>
        </widget>
       </item>
-      <item row="6" column="0" colspan="4">
+      <item row="2" column="1">
+       <widget class="QLabel" name="apertureDistanceLabel">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+        </property>
+        <property name="text">
+         <string>TextLabel</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="tRayleighDistanceLabel">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel {background-color: #00c800}
+QLabel {color: #fafafa}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-left: 10px}</string>
+        </property>
+        <property name="text">
+         <string>&lt;p&gt;z&lt;sub&gt;R&lt;/sub&gt; [m]&lt;/p&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLabel" name="rayleighDistanceLabel">
+        <property name="styleSheet">
+         <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+        </property>
+        <property name="text">
+         <string>TextLabel</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="tSpotDiameterLabel">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel {background-color: #00c800}
+QLabel {color: #fafafa}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-left: 10px}</string>
+        </property>
+        <property name="text">
+         <string>d &lt;sub&gt;b&lt;/sub&gt; [mm]</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QLabel" name="spotDiameterLabel">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+        </property>
+        <property name="text">
+         <string>TextLabel</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="tQualityFactorLabel">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel {background-color: #00c800}
+QLabel {color: #fafafa}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-left: 10px}</string>
+        </property>
+        <property name="text">
+         <string>&lt;p&gt;M&lt;sup&gt;2&lt;/sup&gt;&lt;/p&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QLabel" name="qualityFactorLabel">
+        <property name="styleSheet">
+         <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+        </property>
+        <property name="text">
+         <string>TextLabel</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="tInspectorPhaseLabel">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel {background-color: #00c800}
+QLabel {color: #fafafa}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-left: 10px}</string>
+        </property>
+        <property name="text">
+         <string>&amp;phi;&lt;sub&gt;Inspector&lt;/sub&gt;[rad]</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1">
+       <widget class="QLabel" name="inspectorPhaseLabel">
+        <property name="styleSheet">
+         <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+        </property>
+        <property name="text">
+         <string>TextLabel</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0" colspan="2">
        <widget class="QGroupBox" name="groupBox_3">
         <property name="title">
          <string/>
@@ -360,50 +397,8 @@ QTextEdit {margin-right: 10px}</string>
       <string>Danno retinico</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="2">
-       <widget class="QLabel" name="tFarFieldLabel">
-        <property name="font">
-         <font>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QLabel {background-color: #00c800}
-QLabel {color: #fafafa}
-QLabel {border: 0px solid grey}
-QLabel {border-radius: 8px}
-QLabel {padding: 3px}
-QLabel {margin-left: 10px}</string>
-        </property>
-        <property name="text">
-         <string>Propagazione</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="4" colspan="2">
-       <widget class="QLabel" name="tErrorLabel">
-        <property name="font">
-         <font>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QLabel {background-color: #00c800}
-QLabel {color: #fafafa}
-QLabel {border: 0px solid grey}
-QLabel {border-radius: 8px}
-QLabel {padding: 3px}
-QLabel {margin-left: 10px}</string>
-        </property>
-        <property name="text">
-         <string>errore</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="3">
-       <widget class="QLabel" name="farFieldLabel">
+      <item row="0" column="1">
+       <widget class="QLabel" name="farFieldRatioLabel">
         <property name="styleSheet">
          <string notr="true">QLabel {background-color: #fafafa}
 QLabel {color: #000000}
@@ -417,7 +412,58 @@ QLabel {margin-right: 10px}</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="0">
+      <item row="1" column="1">
+       <widget class="QLabel" name="curvatureRadiusLabel">
+        <property name="styleSheet">
+         <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+        </property>
+        <property name="text">
+         <string>TextLabel</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QLabel" name="alphaLabel">
+        <property name="styleSheet">
+         <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+        </property>
+        <property name="text">
+         <string>TextLabel</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="11">
+       <widget class="QLabel" name="tRetinalDiameterLabel_2">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel {background-color: #00c800}
+QLabel {color: #fafafa}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-left: 10px}</string>
+        </property>
+        <property name="text">
+         <string>d &lt;sub&gt;ff&lt;/sub&gt; [&amp;mu;m]</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
        <widget class="QLabel" name="tCurvatureRadiusLabel">
         <property name="font">
          <font>
@@ -438,8 +484,8 @@ QLabel {margin-left: 10px}</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="2">
-       <widget class="QLabel" name="tRetinalDiameterLabel">
+      <item row="0" column="2">
+       <widget class="QLabel" name="tFarFieldLabel">
         <property name="font">
          <font>
           <weight>75</weight>
@@ -455,52 +501,7 @@ QLabel {padding: 3px}
 QLabel {margin-left: 10px}</string>
         </property>
         <property name="text">
-         <string>d &lt;sub&gt;r&lt;/sub&gt; [&amp;mu;m]</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="6">
-       <widget class="QLabel" name="errorLabel">
-        <property name="styleSheet">
-         <string notr="true">QLabel {background-color: #fafafa}
-QLabel {color: #000000}
-QLabel {border: 0px solid grey}
-QLabel {border-radius: 8px}
-QLabel {padding: 3px}
-QLabel {margin-right: 10px}</string>
-        </property>
-        <property name="text">
-         <string>TextLabel</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QLabel" name="curvatureRadiusLabel">
-        <property name="styleSheet">
-         <string notr="true">QLabel {background-color: #fafafa}
-QLabel {color: #000000}
-QLabel {border: 0px solid grey}
-QLabel {border-radius: 8px}
-QLabel {padding: 3px}
-QLabel {margin-right: 10px}</string>
-        </property>
-        <property name="text">
-         <string>TextLabel</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="6">
-       <widget class="QLabel" name="ffRetinalDiameterLabel">
-        <property name="styleSheet">
-         <string notr="true">QLabel {background-color: #fafafa}
-QLabel {color: #000000}
-QLabel {border: 0px solid grey}
-QLabel {border-radius: 8px}
-QLabel {padding: 3px}
-QLabel {margin-right: 10px}</string>
-        </property>
-        <property name="text">
-         <string>TextLabel</string>
+         <string>Propagazione</string>
         </property>
        </widget>
       </item>
@@ -525,109 +526,7 @@ QLabel {margin-left: 10px}</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
-       <widget class="QLabel" name="eyeFocusLengthLabel">
-        <property name="styleSheet">
-         <string notr="true">QLabel {background-color: #fafafa}
-QLabel {color: #000000}
-QLabel {border: 0px solid grey}
-QLabel {border-radius: 8px}
-QLabel {padding: 3px}
-QLabel {margin-right: 10px}</string>
-        </property>
-        <property name="text">
-         <string>TextLabel</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="3">
-       <widget class="QLabel" name="alphaLabel">
-        <property name="styleSheet">
-         <string notr="true">QLabel {background-color: #fafafa}
-QLabel {color: #000000}
-QLabel {border: 0px solid grey}
-QLabel {border-radius: 8px}
-QLabel {padding: 3px}
-QLabel {margin-right: 10px}</string>
-        </property>
-        <property name="text">
-         <string>TextLabel</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="4" colspan="2">
-       <widget class="QLabel" name="tCE_Label">
-        <property name="font">
-         <font>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QLabel {background-color: #00c800}
-QLabel {color: #fafafa}
-QLabel {border: 0px solid grey}
-QLabel {border-radius: 8px}
-QLabel {padding: 3px}
-QLabel {margin-left: 10px}</string>
-        </property>
-        <property name="text">
-         <string>&lt;p&gt;C&lt;sub&gt;E&lt;/sub&gt;&lt;/p&gt;</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLabel" name="farFieldRatioLabel">
-        <property name="styleSheet">
-         <string notr="true">QLabel {background-color: #fafafa}
-QLabel {color: #000000}
-QLabel {border: 0px solid grey}
-QLabel {border-radius: 8px}
-QLabel {padding: 3px}
-QLabel {margin-right: 10px}</string>
-        </property>
-        <property name="text">
-         <string>TextLabel</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="tEyeFocusLengthLabel">
-        <property name="font">
-         <font>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QLabel {background-color: #00c800}
-QLabel {color: #fafafa}
-QLabel {border: 0px solid grey}
-QLabel {border-radius: 8px}
-QLabel {padding: 3px}
-QLabel {margin-left: 10px}</string>
-        </property>
-        <property name="text">
-         <string>f &lt;sub&gt;m&lt;/sub&gt; [m]</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="6">
-       <widget class="QLabel" name="CE_Label">
-        <property name="styleSheet">
-         <string notr="true">QLabel {background-color: #fafafa}
-QLabel {color: #000000}
-QLabel {border: 0px solid grey}
-QLabel {border-radius: 8px}
-QLabel {padding: 3px}
-QLabel {margin-right: 10px}</string>
-        </property>
-        <property name="text">
-         <string>TextLabel</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="3">
+      <item row="0" column="10">
        <widget class="QLabel" name="retinalDiameterLabel">
         <property name="styleSheet">
          <string notr="true">QLabel {background-color: #fafafa}
@@ -642,8 +541,23 @@ QLabel {margin-right: 10px}</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="4" colspan="2">
-       <widget class="QLabel" name="tRetinalDiameterLabel_2">
+      <item row="0" column="12">
+       <widget class="QLabel" name="ffRetinalDiameterLabel">
+        <property name="styleSheet">
+         <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+        </property>
+        <property name="text">
+         <string>TextLabel</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="9">
+       <widget class="QLabel" name="tRetinalDiameterLabel">
         <property name="font">
          <font>
           <weight>75</weight>
@@ -659,11 +573,11 @@ QLabel {padding: 3px}
 QLabel {margin-left: 10px}</string>
         </property>
         <property name="text">
-         <string>d &lt;sub&gt;ff&lt;/sub&gt; [&amp;mu;m]</string>
+         <string>d &lt;sub&gt;r&lt;/sub&gt; [&amp;mu;m]</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="2">
+      <item row="1" column="2">
        <widget class="QLabel" name="tAlphaLabel">
         <property name="font">
          <font>
@@ -684,24 +598,170 @@ QLabel {margin-left: 10px}</string>
         </property>
        </widget>
       </item>
+      <item row="0" column="3">
+       <widget class="QLabel" name="farFieldLabel">
+        <property name="styleSheet">
+         <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+        </property>
+        <property name="text">
+         <string>TextLabel</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="4">
+       <widget class="QLabel" name="tApparentSourceLabel">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel {background-color: #00c800}
+QLabel {color: #fafafa}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-left: 10px}</string>
+        </property>
+        <property name="text">
+         <string>&lt;p&gt;d&lt;sub&gt;s&lt;/sub&gt;&lt;/p&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="7">
+       <widget class="QLabel" name="CE_Label">
+        <property name="styleSheet">
+         <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+        </property>
+        <property name="text">
+         <string>TextLabel</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="6">
+       <widget class="QLabel" name="tCE_Label">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel {background-color: #00c800}
+QLabel {color: #fafafa}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-left: 10px}</string>
+        </property>
+        <property name="text">
+         <string>&lt;p&gt;C&lt;sub&gt;E&lt;/sub&gt;&lt;/p&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="5">
+       <widget class="QLabel" name="apparentSourceLabel">
+        <property name="styleSheet">
+         <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+        </property>
+        <property name="text">
+         <string>TextLabel</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4">
+       <widget class="QLabel" name="tErrorLabel">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel {background-color: #00c800}
+QLabel {color: #fafafa}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-left: 10px}</string>
+        </property>
+        <property name="text">
+         <string>errore</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="5">
+       <widget class="QLabel" name="errorLabel">
+        <property name="styleSheet">
+         <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+        </property>
+        <property name="text">
+         <string>TextLabel</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="6">
+       <widget class="QLabel" name="tEyeFocusLengthLabel">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel {background-color: #00c800}
+QLabel {color: #fafafa}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-left: 10px}</string>
+        </property>
+        <property name="text">
+         <string>f &lt;sub&gt;m&lt;/sub&gt; [m]</string>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="7">
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+       <widget class="QLabel" name="eyeFocusLengthLabel">
+        <property name="styleSheet">
+         <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
         </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
+        <property name="text">
+         <string>TextLabel</string>
         </property>
-       </spacer>
+       </widget>
       </item>
      </layout>
     </widget>
    </item>
    <item row="0" column="1">
-    <layout class="QGridLayout" name="sceneGridLayout"/>
+    <layout class="QGridLayout" name="chartGridLayout"/>
    </item>
   </layout>
  </widget>

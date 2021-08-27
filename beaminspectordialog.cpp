@@ -2,9 +2,9 @@
 #include <QColorDialog>
 #include "beaminspectordialog.h"
 
-BeamInspectorDialog::BeamInspectorDialog(BeamInspector *_beamInspector, QPointF _laserPos,
+BeamInspectorDialog::BeamInspectorDialog(BeamInspector *_beamInspector,
                                          QWidget *parent)
-    : QDialog(parent), ui(new Ui::BeamInspectorDialog), beamInspector(_beamInspector), laserPos(_laserPos)
+    : QDialog(parent), ui(new Ui::BeamInspectorDialog), beamInspector(_beamInspector)
 {
     ui->setupUi(this);
     ui->xSpinBox->setValue(beamInspector->x());
@@ -36,8 +36,7 @@ BeamInspectorDialog::BeamInspectorDialog(BeamInspector *_beamInspector, QPointF 
 
     rotation=beamInspector->getLinkInspectorPhase();
     beamInspectorChart = new BeamInspectorChart(this, beamInspector->getRayleighDistance(),
-                                                beamDiameterVector(), apparentSourceDiameterVector(),
-                                                laserPos, rotation);
+                                                beamDiameterVector(), apparentSourceDiameterVector());
 
     QtCharts::QChart* beamChartObject=beamInspectorChart->getBeamChartObject();
 

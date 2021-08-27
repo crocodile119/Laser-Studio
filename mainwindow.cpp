@@ -817,7 +817,7 @@ void MainWindow::properties()
     }
     else if(beamInspector)
     {
-        BeamInspectorDialog dialog(beamInspector, this->laserpoint->pos(), this);
+        BeamInspectorDialog dialog(beamInspector, this);
         dialog.exec();
 
         if(dialog.result()==QDialog::Accepted)

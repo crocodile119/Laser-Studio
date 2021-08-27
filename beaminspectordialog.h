@@ -17,7 +17,7 @@ class BeamInspectorDialog : public QDialog, private Ui::BeamInspectorDialog
     Q_OBJECT
 
 public:
-    BeamInspectorDialog(BeamInspector *_beamInspector, QPointF _laserPos, QWidget *parent = 0);
+    BeamInspectorDialog(BeamInspector *_beamInspector, QWidget *parent = 0);
     ~BeamInspectorDialog();
     Ui::BeamInspectorDialog *ui;
     std::vector<std::pair <double,double> > beamDiameterVector();

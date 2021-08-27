@@ -23,9 +23,8 @@ class BeamInspectorChart: QWidget
 
 public:
     BeamInspectorChart(QWidget *parent, double _rayleighDistance, std::vector<std::pair<double,
-                       double>> _beamVector, std::vector<std::pair<double, double> > _apparentVector,
-                       QPointF _translation, double _rotation);
-    QtCharts::QLineSeries* buildDataSerie(std::vector<std::pair<double, double> > dataVector, double rotation, QPointF translation, QtCharts::QLineSeries *mySerie);
+                       double>> _beamVector, std::vector<std::pair<double, double> > _apparentVector);
+    QtCharts::QLineSeries* buildDataSerie(std::vector<std::pair<double, double> > dataVector, QtCharts::QLineSeries *mySerie);
     void buildChart(double _min, double _max);
     void setVectorsForSeries(std::vector<std::pair<double, double> > _beamVector, std::vector<std::pair<double, double> > _apparentVector);
     void updateChart();
@@ -47,8 +46,6 @@ private:
     double firstSeriesItem;
     double lastSeriesItem;
     std::string kindOfValues;
-    QPointF translation;
-    double rotation;
 };
 
 #endif // BEAMINSPECTORCHART_H

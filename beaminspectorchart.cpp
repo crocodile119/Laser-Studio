@@ -6,10 +6,8 @@
 
   BeamInspectorChart::BeamInspectorChart(QWidget *parent, double _rayleighDistance,
                                          std::vector<std::pair<double, double>> _beamVector,
-                                         std::vector<std::pair<double, double>> _apparentVector,
-                                         QPointF _translation, double _rotation)
-      :  QWidget(parent), rayleighDistance(_rayleighDistance), beamVector(_beamVector),apparentVector(_apparentVector),
-        translation(_translation), rotation(_rotation)
+                                         std::vector<std::pair<double, double>> _apparentVector)
+      :  QWidget(parent), rayleighDistance(_rayleighDistance), beamVector(_beamVector),apparentVector(_apparentVector)
 {
     chart= new Chart();
 
@@ -30,14 +28,14 @@
 }
 
 QtCharts::QLineSeries* BeamInspectorChart::buildDataSerie(std::vector<std::pair<double, double>> dataVector,
-                                    double rotation, QPointF translation, QtCharts::QLineSeries *mySerie)
+                                    QtCharts::QLineSeries *mySerie)
 {
     mySerie->clear();
     for (std::vector<std::pair<double, double>>::iterator it = dataVector.begin() ; it != dataVector.end(); ++it)
     {
         std::pair<double, double> myPair=*it;
-        double x=translation.x()+std::cos(rotation)*myPair.first-std::sin(rotation)*myPair.second;
-        double y=translation.y()+std::sin(rotation)*myPair.first+std::cos(rotation)*myPair.second;
+        double x=myPair.first;
+        double y=myPair.second;
         mySerie->append(x,y);
     }
     return mySerie;
@@ -86,8 +84,8 @@ void BeamInspectorChart::updateChart()
 
 void BeamInspectorChart::buildDataSeries()
 {
-    beamSeries=buildDataSerie(beamVector, rotation,  translation, beamSeries);
-    apparentSeries=buildDataSerie(apparentVector, rotation,  translation, apparentSeries);
+    beamSeries=buildDataSerie(beamVector, beamSeries);
+    apparentSeries=buildDataSerie(apparentVector, apparentSeries);
 }
 
 QtCharts::QChart *BeamInspectorChart::getBeamChartObject()const

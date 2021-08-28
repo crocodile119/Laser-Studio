@@ -20,17 +20,17 @@ public:
     BeamInspectorDialog(BeamInspector *_beamInspector, QWidget *parent = 0);
     ~BeamInspectorDialog();
     Ui::BeamInspectorDialog *ui;
+    void setUpBeamInspector();
+    void setUpChart();
     std::vector<std::pair <double,double> > beamDiameterVector();
     std::vector<std::pair <double,double> > apparentSourceDiameterVector();
 
 private slots:
-
+    void on_xSpinBox_valueChanged(double arg1);
+    void on_ySpinBox_valueChanged(double arg1);
 
 private:
     BeamInspector *beamInspector;
-    QPointF laserPos;
-    double rotation;
-    BeamInspectorChart *beamInspectorChart;
     std::vector<std::pair<double, double>> beamVector;
     std::vector<std::pair<double, double>> retinalVector;
 };

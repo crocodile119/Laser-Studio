@@ -6,11 +6,9 @@
   BeamInspectorChart::BeamInspectorChart(QWidget *parent, double _rayleighDistance,
                                          std::vector<std::pair<double, double>> _beamVector,
                                          std::vector<std::pair<double, double>> _apparentVector)
-      :  QWidget(parent), rayleighDistance(_rayleighDistance), beamVector(_beamVector),apparentVector(_apparentVector)
+      :  QWidget(parent), rayleighDistance(_rayleighDistance), beamVector(_beamVector),apparentVector(_apparentVector),
+         chart(new Chart()), beamSeries(new QtCharts::QLineSeries())
 {
-    chart= new Chart();
-
-    beamSeries =new QtCharts::QLineSeries();
     beamSeries->setName(tr("Diametro del waist"));
     beamSeries ->setColor(QColor::fromRgb(255, 0, 0));
     apparentSeries=new QtCharts::QLineSeries();
@@ -44,10 +42,8 @@ void BeamInspectorChart::setAxisY()
 {
     axisY = new QValueAxis();
     axisY->setTitleText(QString::fromStdString("asse y [m] "));
-    axisY->setMin(std::min(beamSeries->at(2).y(),
-                           apparentSeries->at(2).y()));
-    axisY->setMax(std::max(beamSeries->at(0).y(),
-                           apparentSeries->at(0).y()));
+    axisY->setMin(std::min(beamSeries->at(2).y(), apparentSeries->at(2).y()));
+    axisY->setMax(std::max(beamSeries->at(0).y(), apparentSeries->at(0).y()));
     axisY->setMinorTickCount(-1);
     chart->addAxis(axisY, Qt::AlignLeft);
     beamSeries->attachAxis(axisY);
@@ -60,10 +56,8 @@ void BeamInspectorChart::setAxisX()
     axisX = new QValueAxis();
     axisX->setTitleText("asse x [m]");
     axisX->setLabelFormat("%g");
-    axisX->setMin(std::min(beamSeries->at(0).x(),
-                           apparentSeries->at(0).x()));
-    axisX->setMax(std::max((apparentSeries->at(0).x())+beamSeries->at(0).x(),
-                           apparentSeries->at(0).x()));
+    axisX->setMin(std::min(beamSeries->at(0).x(), apparentSeries->at(0).x()));
+    axisX->setMax(std::max(beamSeries->at(0).x(), apparentSeries->at(0).x()));
 
     chart->addAxis(axisX, Qt::AlignBottom);
     beamSeries->attachAxis(axisX);
@@ -78,9 +72,18 @@ void BeamInspectorChart::setVectorsForSeries(std::vector<std::pair<double, doubl
 
 void BeamInspectorChart::updateChart()
 {
+    delete chart;
+    chart=new Chart();
+    beamSeries=new QtCharts::QLineSeries();
+    apparentSeries=new QtCharts::QLineSeries();
+    beamSeries->setName(tr("Diametro del waist"));
+    beamSeries ->setColor(QColor::fromRgb(255, 0, 0));
+    apparentSeries=new QtCharts::QLineSeries();
+    apparentSeries->setName(tr("Diametro della sorgente apparente"));
+    apparentSeries ->setColor(QColor::fromRgb(0, 255, 0));
     buildDataSeries();
-    chart->removeAxis(axisX);
-    chart->removeAxis(axisY);
+    //chart->removeAxis(axisX);
+    //chart->removeAxis(axisY);
     setAxisX();
     setAxisY();
 }
@@ -94,4 +97,9 @@ void BeamInspectorChart::buildDataSeries()
 QtCharts::QChart *BeamInspectorChart::getBeamChartObject()const
 {
     return chart;
+}
+
+BeamInspectorChart::~BeamInspectorChart()
+{
+
 }

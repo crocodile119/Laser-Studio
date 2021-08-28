@@ -2,13 +2,61 @@
 #include <QColorDialog>
 #include "beaminspectordialog.h"
 
-BeamInspectorDialog::BeamInspectorDialog(BeamInspector *_beamInspector,
-                                         QWidget *parent)
+BeamInspectorDialog::BeamInspectorDialog(BeamInspector *_beamInspector, QWidget *parent)
     : QDialog(parent), ui(new Ui::BeamInspectorDialog), beamInspector(_beamInspector)
 {
     ui->setupUi(this);
+    setUpChart();
     ui->xSpinBox->setValue(beamInspector->x());
     ui->ySpinBox->setValue(beamInspector->y());
+}
+
+std::vector<std::pair <double,double> > BeamInspectorDialog::beamDiameterVector()
+{
+    std::vector< std::pair <double,double> > dataBeamDiameterVector;
+    double beamDiameter=beamInspector->getBeamDiameter();
+
+    dataBeamDiameterVector.push_back( std::make_pair(0.0, beamDiameter/2));
+    dataBeamDiameterVector.push_back( std::make_pair(0.0, 0.0));
+    dataBeamDiameterVector.push_back( std::make_pair(0.0, -beamDiameter/2));
+
+    return dataBeamDiameterVector;
+}
+
+std::vector<std::pair <double,double> > BeamInspectorDialog::apparentSourceDiameterVector()
+{
+    std::vector< std::pair <double,double> > dataApparentSourceDiameterVector;
+    double apparentSourceDiameter=beamInspector->get_d_s();
+    double apparentSourceAbscissa=pow(beamInspector->getRayleighDistance(),2)/beamInspector->getInspectorDistance();
+    dataApparentSourceDiameterVector.push_back( std::make_pair(-apparentSourceAbscissa, apparentSourceDiameter/2));
+    dataApparentSourceDiameterVector.push_back( std::make_pair(-apparentSourceAbscissa, 0.0));
+    dataApparentSourceDiameterVector.push_back( std::make_pair(-apparentSourceAbscissa, -apparentSourceDiameter/2));
+
+    return dataApparentSourceDiameterVector;
+}
+BeamInspectorDialog::~BeamInspectorDialog()
+{
+    delete ui;
+}
+
+void BeamInspectorDialog::on_xSpinBox_valueChanged(double arg1)
+{
+    beamInspector->setPos(QPointF(arg1, beamInspector->pos().y()));
+    beamInspector->inspectorUpdate();
+    setUpBeamInspector();
+    setUpChart();
+}
+
+void BeamInspectorDialog::on_ySpinBox_valueChanged(double arg1)
+{
+    beamInspector->setPos(QPointF(beamInspector->pos().x(), arg1));
+    beamInspector->inspectorUpdate();
+    setUpBeamInspector();
+    setUpChart();
+}
+
+void BeamInspectorDialog::setUpBeamInspector()
+{
     ui->apertureDistanceLabel->setText(QString::number(beamInspector->getInspectorDistance()));
     ui->rayleighDistanceLabel->setText(QString::number(beamInspector->getRayleighDistance()));
     ui->qualityFactorLabel->setText(QString::number(beamInspector->getQualityFactor()));
@@ -33,54 +81,19 @@ BeamInspectorDialog::BeamInspectorDialog(BeamInspector *_beamInspector,
         ui->farFieldLabel->setText(tr("Campo vicino"));
 
     ui->inspectorPhaseLabel->setText(QString::number(beamInspector->getLinkInspectorPhase()));
+}
 
-    rotation=beamInspector->getLinkInspectorPhase();
-    beamInspectorChart = new BeamInspectorChart(this, beamInspector->getRayleighDistance(),
-                                                beamDiameterVector(), apparentSourceDiameterVector());
+void BeamInspectorDialog::setUpChart()
+{
+    BeamInspectorChart *beamInspectorChart=new BeamInspectorChart(this, beamInspector->getRayleighDistance(),
+                           beamDiameterVector(), apparentSourceDiameterVector());
 
-    QtCharts::QChart* beamChartObject=beamInspectorChart->getBeamChartObject();
-
+    QtCharts::QChart* beamChartObject;
+    beamChartObject=beamInspectorChart->getBeamChartObject();
     beamChartObject->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     beamChartObject->setMinimumSize(240, 130);
-    beamChartObject->setAnimationOptions(QChart::SeriesAnimations);
 
     ChartView *beamChartView = new ChartView(beamChartObject);
+
     ui->chartGridLayout->addWidget(beamChartView, 0, 1);
-
-}
-
-std::vector<std::pair <double,double> > BeamInspectorDialog::beamDiameterVector()
-{
-    std::vector< std::pair <double,double> > dataBeamDiameterVector;
-    double beamDiameter=beamInspector->getBeamDiameter();
-
-    dataBeamDiameterVector.push_back( std::make_pair(0.0, beamDiameter/2));
-    dataBeamDiameterVector.push_back( std::make_pair(0.0, 0.0));
-    dataBeamDiameterVector.push_back( std::make_pair(0.0, -beamDiameter/2));
-
-    return dataBeamDiameterVector;
-}
-
-std::vector<std::pair <double,double> > BeamInspectorDialog::apparentSourceDiameterVector()
-{
-    std::vector< std::pair <double,double> > dataApparentSourceDiameterVector;
-    double apparentSourceDiameter=beamInspector->get_d_s();
-    double apparentSourceAbscissa=pow(beamInspector->getRayleighDistance(),2)/beamInspector->getInspectorDistance();
-    dataApparentSourceDiameterVector.push_back( std::make_pair(-apparentSourceAbscissa, apparentSourceDiameter/2));
-    dataApparentSourceDiameterVector.push_back( std::make_pair(-apparentSourceAbscissa, 0.0));
-    dataApparentSourceDiameterVector.push_back( std::make_pair(-apparentSourceAbscissa, -apparentSourceDiameter/2));
-
-    std::vector<std::pair <double,double> >::const_iterator constIterator; // const_iterator
-    // display vector elements using const_iterator
-    for ( constIterator = dataApparentSourceDiameterVector.begin();
-          constIterator != dataApparentSourceDiameterVector.end(); ++constIterator )
-    {
-         qDebug() << "Coordinata x: " << constIterator->first << " Coordinata y: " <<  constIterator->second;
-    }
-
-    return dataApparentSourceDiameterVector;
-}
-BeamInspectorDialog::~BeamInspectorDialog()
-{
-    delete ui;
 }

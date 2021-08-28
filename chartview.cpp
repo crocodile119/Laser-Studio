@@ -73,6 +73,9 @@ void ChartView::keyPressEvent(QKeyEvent *event)
     case Qt::Key_Down:
         chart()->scroll(0, -10);
         break;
+    case Qt::Key_Space:
+        chart()->zoomReset();
+        break;
     default:
         QGraphicsView::keyPressEvent(event);
         break;

@@ -34,7 +34,6 @@ public:
     void setAxisY();
     void buildDataSeries();
     QChart *getBeamChartObject()const;
-    const static double BOUND_COEFFICIENT;
 
 private:
 
@@ -49,6 +48,7 @@ private:
     double firstSeriesItem;
     double lastSeriesItem;
     std::string kindOfValues;
+    double approx;
 };
 
 #endif // BEAMINSPECTORCHART_H

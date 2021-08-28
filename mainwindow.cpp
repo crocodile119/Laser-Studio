@@ -697,6 +697,7 @@ void MainWindow::properties()
     LaserPoint *laserpoint = selectedLaserPoint();
     Reflector *reflector = selectedReflector();
     Binocular *binocular = selectedBinocular();
+    BeamInspector *beamInspector = selectedBeamInspector();
     LabRoom *myLabRoom = selectedLab();
     FootprintObject *footprint= selectedFootprint();
 
@@ -818,18 +819,20 @@ void MainWindow::properties()
     else if(beamInspector)
     {
         BeamInspectorDialog dialog(beamInspector, this);
+        QPointF position=beamInspector->pos();
         dialog.exec();
 
-        if(dialog.result()==QDialog::Accepted)
+        if(dialog.result()==QDialog::Rejected)
+            beamInspector->setPos(position);
+        else
         {
-            double x=dialog.ui->xSpinBox->value();
-            double y=dialog.ui->ySpinBox->value();
-
-            beamInspector->setPos(QPointF(x,y));
+            beamInspector->setDescription(dialog.ui->descriptionTextEdit->toPlainText());
+            qDebug()<< "Descrizione segnaposto: "<<dialog.ui->descriptionTextEdit->toPlainText();
         }
     }
     else
         installationDescription();
+
 }
 
 void MainWindow::installationDescription()

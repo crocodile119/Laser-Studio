@@ -74,6 +74,7 @@ SOURCES +=\
     reflectorsqlist.cpp \
     scalenumbersmodelview.cpp \
     scientificnotationcontrol.cpp \
+    scientificnumber.cpp \
     scrollbarcontrol.cpp \
     sliderscrolllabel.cpp \
     tablescontroller.cpp \
@@ -169,6 +170,7 @@ HEADERS  += mainwindow.h \
     reflectorsqlist.h \
     scalenumbersmodelview.h \
     scientificnotationcontrol.h \
+    scientificnumber.h \
     scrollbarcontrol.h \
     sliderscrolllabel.h \
     tablescontroller.h \

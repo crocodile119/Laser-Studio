@@ -7,6 +7,7 @@
 #include "beaminspectorchart.h"
 #include <vector>
 #include <utility>
+#include <QApplication>
 
 namespace Ui {
 class BeamInspectorDialog;
@@ -28,6 +29,7 @@ public:
 private slots:
     void on_xSpinBox_valueChanged(double arg1);
     void on_ySpinBox_valueChanged(double arg1);
+    void on_toolButton_clicked();
 
 private:
     BeamInspector *beamInspector;

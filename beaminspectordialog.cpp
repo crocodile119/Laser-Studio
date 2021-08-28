@@ -60,8 +60,8 @@ void BeamInspectorDialog::setUpBeamInspector()
     ui->apertureDistanceLabel->setText(QString::number(beamInspector->getInspectorDistance()));
     ui->rayleighDistanceLabel->setText(QString::number(beamInspector->getRayleighDistance()));
     ui->qualityFactorLabel->setText(QString::number(beamInspector->getQualityFactor()));
-    ui->descriptionTextEdit->setPlainText(beamInspector->getDescription());
     ui->spotDiameterLabel->setText(QString::number(beamInspector->getSpotDiameter()));
+    ui->descriptionTextEdit->setPlainText(beamInspector->getDescription());
     double farFieldRatio=beamInspector->getRayleighDistance()/beamInspector->getInspectorDistance();
     ui->farFieldRatioLabel->setText(QString::number(farFieldRatio));
     ui->eyeFocusLengthLabel->setText(QString::number(beamInspector->get_fm()));
@@ -94,6 +94,21 @@ void BeamInspectorDialog::setUpChart()
     beamChartObject->setMinimumSize(240, 130);
 
     ChartView *beamChartView = new ChartView(beamChartObject);
-
+    beamChartView ->setObjectName("beamChartView");
     ui->chartGridLayout->addWidget(beamChartView, 0, 1);
+    beamChartView->setToolTip("+: Zoom in "
+                              "\n-: Zoom out"
+                              "\nbarra spaziatrice: reimposta lo zoom"
+                              "\nfreccia a destra : muovi a destra"
+                              "\nfreccia a sinistra : muovi a sinistra"
+                              "\nfreccia in alto: muovi in alto"
+                              "\nfreccia in basso: muovi in basso");
 }
+
+void BeamInspectorDialog::on_toolButton_clicked()
+{
+    QWidget* pWid=static_cast<QWidget *>(parentWidget());
+    ChartView* beamChartView=pWid->findChild<ChartView *>("beamChartView");
+    beamChartView->chart()->zoomOut();
+}
+

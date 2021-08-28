@@ -1,7 +1,7 @@
 #include "beaminspectorchart.h"
 #include <vector>
 #include <QDebug>
-#include <QLegendMarker>
+#include "scientificnumber.h"
 
   BeamInspectorChart::BeamInspectorChart(QWidget *parent, double _rayleighDistance,
                                          std::vector<std::pair<double, double>> _beamVector,
@@ -42,8 +42,15 @@ void BeamInspectorChart::setAxisY()
 {
     axisY = new QValueAxis();
     axisY->setTitleText(QString::fromStdString("asse y [m] "));
-    axisY->setMin(std::min(beamSeries->at(2).y(), apparentSeries->at(2).y()));
-    axisY->setMax(std::max(beamSeries->at(0).y(), apparentSeries->at(0).y()));
+
+    ScientificNumber beamDiameterScientificNumber(beamSeries->at(0).y());
+    ScientificNumber apparentDiameterScientificNumber(apparentSeries->at(0).y());
+
+    axisY->setMin(std::min(-beamDiameterScientificNumber.numberLimit(),
+                           -apparentDiameterScientificNumber.numberLimit()));
+    axisY->setMax(std::max(beamDiameterScientificNumber.numberLimit(),
+                           apparentDiameterScientificNumber.numberLimit()));
+
     axisY->setMinorTickCount(-1);
     chart->addAxis(axisY, Qt::AlignLeft);
     beamSeries->attachAxis(axisY);
@@ -56,8 +63,15 @@ void BeamInspectorChart::setAxisX()
     axisX = new QValueAxis();
     axisX->setTitleText("asse x [m]");
     axisX->setLabelFormat("%g");
-    axisX->setMin(std::min(beamSeries->at(0).x(), apparentSeries->at(0).x()));
-    axisX->setMax(std::max(beamSeries->at(0).x(), apparentSeries->at(0).x()));
+
+    ScientificNumber beamDiameterScientificNumber(beamSeries->at(0).x());
+    ScientificNumber apparentDiameterScientificNumber(apparentSeries->at(0).x());
+    double exponent =beamDiameterScientificNumber.getExponent();
+
+    axisX->setMin(std::min(beamDiameterScientificNumber.numberLimit()+pow(10, exponent-2),
+                           apparentDiameterScientificNumber.numberLimit()));
+    axisX->setMax(std::max(beamDiameterScientificNumber.numberLimit()+pow(10, exponent-2),
+                           apparentDiameterScientificNumber.numberLimit()));
 
     chart->addAxis(axisX, Qt::AlignBottom);
     beamSeries->attachAxis(axisX);
@@ -72,18 +86,9 @@ void BeamInspectorChart::setVectorsForSeries(std::vector<std::pair<double, doubl
 
 void BeamInspectorChart::updateChart()
 {
-    delete chart;
-    chart=new Chart();
-    beamSeries=new QtCharts::QLineSeries();
-    apparentSeries=new QtCharts::QLineSeries();
-    beamSeries->setName(tr("Diametro del waist"));
-    beamSeries ->setColor(QColor::fromRgb(255, 0, 0));
-    apparentSeries=new QtCharts::QLineSeries();
-    apparentSeries->setName(tr("Diametro della sorgente apparente"));
-    apparentSeries ->setColor(QColor::fromRgb(0, 255, 0));
     buildDataSeries();
-    //chart->removeAxis(axisX);
-    //chart->removeAxis(axisY);
+    chart->removeAxis(axisX);
+    chart->removeAxis(axisY);
     setAxisX();
     setAxisY();
 }

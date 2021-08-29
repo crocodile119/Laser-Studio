@@ -34,6 +34,7 @@
 #include "laserlistmodel.h"
 #include "binocularslistmodel.h"
 #include "environmentlistmodel.h"
+#include "inspectorslistmodel.h"
 #include "labroom.h"
 #include "footprintobject.h"
 #include "objectlink.h"
@@ -81,6 +82,7 @@ signals:
     void reflectorListChanged();
     void binocularListChanged();
     void myLabRoomListChanged();
+    void beamInspectorListChanged();
 
 private slots:
     bool save();
@@ -127,6 +129,7 @@ private slots:
     void setThemeOnStart();
     void addLabList();
     void addBinocularList();
+    void addInspectorList();
     void addBinocularLink();
     void addObjectLink();
     void addLink();
@@ -197,6 +200,7 @@ private slots:
     void updateLabList();
     void updateLaserList();
     void updateBinocularList();
+    void updateInspectorList();
     void updateForCondMeteo();
     void selectFromList();
     void selectBinocularFromList();
@@ -267,10 +271,12 @@ private:
 
     ReflectorsListModel *reflectorsModel;
     BinocularsListModel *binocularsModel;
+    InspectorsListModel *inspectorsModel;
     LaserListModel *laserModel;
     EnvironmentListModel *environmentModel;
     QItemSelectionModel *reflectorsSelectionModel;
     QItemSelectionModel *laserSelectionModel;
+    QItemSelectionModel *inspectorsSelectionModel;
     QItemSelectionModel *binocularsSelectionModel; 
     QItemSelectionModel *environmentSelectionModel;
 
@@ -424,7 +430,7 @@ private:
     QGraphicsView *view;
     QList <pair<Reflector *, int>> myReflectors;
     QList <pair<Binocular *, int>> myBinoculars;
-    QList <BeamInspector*> myBeamInspectors;
+    QList <pair<BeamInspector*, int>> myBeamInspectors;
     QList <FootprintObject*> myFootprints;
     QList <LaserPoint*> laserPointList;
     QList <LabRoom*> labroomList;

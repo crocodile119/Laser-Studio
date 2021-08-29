@@ -237,17 +237,19 @@ void BeamInspector::setStringPosition()
     QString xString;
     QString yString;
     QString inspectorDistanceString;
+    QString CE_String;
 
-    xString=QString::number(xCoordinate=pos().x(),'f', 0);
-    yString=QString::number(yCoordinate=pos().y(),'f', 0);
+    xString=QString::number(xCoordinate=pos().x(),'f', 2);
+    yString=QString::number(yCoordinate=pos().y(),'f', 2);
     inspectorDistanceString=QString::number(inspectorDistance,'f',2);
+    CE_String=QString::number(CE,'2', 2);
 
 
-
-    position ="Segnaposto di indagine" + QString(" (%1,%2) \ndist[m]: %3")
+    position ="Segnaposto di indagine" + QString(" (%1,%2) \ndist[m]: %3 CE: %4")
                                     .arg(xString)
                                     .arg(yString)           
-                                    .arg(inspectorDistanceString);
+                                    .arg(inspectorDistanceString)
+                                    .arg(CE_String);
 
 }
 

@@ -105,10 +105,4 @@ void BeamInspectorDialog::setUpChart()
                               "\nfreccia in basso: muovi in basso");
 }
 
-void BeamInspectorDialog::on_toolButton_clicked()
-{
-    QWidget* pWid=static_cast<QWidget *>(parentWidget());
-    ChartView* beamChartView=pWid->findChild<ChartView *>("beamChartView");
-    beamChartView->chart()->zoomOut();
-}
 

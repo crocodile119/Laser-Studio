@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>215</width>
-    <height>218</height>
+    <width>355</width>
+    <height>728</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>168</width>
-    <height>135</height>
+    <height>260</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -59,82 +59,12 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-135</y>
-         <width>180</width>
-         <height>436</height>
+         <y>0</y>
+         <width>333</width>
+         <height>680</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout">
-        <item row="3" column="0" colspan="3">
-         <widget class="QListView" name="laserListView">
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>90</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <family>Arial</family>
-            <pointsize>8</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="autoFillBackground">
-           <bool>true</bool>
-          </property>
-          <property name="styleSheet">
-           <string notr="true"/>
-          </property>
-          <property name="frameShape">
-           <enum>QFrame::Panel</enum>
-          </property>
-          <property name="dragEnabled">
-           <bool>true</bool>
-          </property>
-          <property name="alternatingRowColors">
-           <bool>true</bool>
-          </property>
-          <property name="selectionBehavior">
-           <enum>QAbstractItemView::SelectItems</enum>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>40</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="textElideMode">
-           <enum>Qt::ElideRight</enum>
-          </property>
-          <property name="isWrapping" stdset="0">
-           <bool>false</bool>
-          </property>
-          <property name="spacing">
-           <number>5</number>
-          </property>
-          <property name="viewMode">
-           <enum>QListView::ListMode</enum>
-          </property>
-          <property name="modelColumn">
-           <number>0</number>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="2">
-         <spacer name="horizontalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>176</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
         <item row="5" column="0" colspan="3">
          <widget class="QListView" name="listView">
           <property name="palette">
@@ -610,19 +540,6 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="1" colspan="2">
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>204</width>
-            <height>23</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
         <item row="1" column="0" colspan="3">
          <widget class="QListView" name="environmentListView">
           <property name="maximumSize">
@@ -680,6 +597,19 @@
           </property>
          </widget>
         </item>
+        <item row="4" column="2">
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>176</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
         <item row="2" column="2">
          <spacer name="horizontalSpacer_4">
           <property name="orientation">
@@ -693,8 +623,8 @@
           </property>
          </spacer>
         </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="label">
+        <item row="6" column="0" colspan="2">
+         <widget class="QLabel" name="label_3">
           <property name="font">
            <font>
             <pointsize>8</pointsize>
@@ -713,34 +643,7 @@ QLabel {padding-right: 12px}
 QLabel {margin-right: 10px}</string>
           </property>
           <property name="text">
-           <string>Punto laser</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0">
-         <widget class="QLabel" name="label_2">
-          <property name="font">
-           <font>
-            <pointsize>8</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLabel {background-color: #00c800}
-QLabel {color: #fafafa}
-QLabel {border: 0px solid grey}
-QLabel {border-radius: 8px}
-QLabel {padding: 5px}
-QLabel {padding-left: 12px}
-QLabel {padding-right: 12px}
-QLabel {margin-right: 10px}</string>
-          </property>
-          <property name="text">
-           <string>Riflettori</string>
+           <string>Dispositivi ottici</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
@@ -774,8 +677,21 @@ QLabel {margin-right: 10px}</string>
           </property>
          </widget>
         </item>
-        <item row="6" column="0" colspan="2">
-         <widget class="QLabel" name="label_3">
+        <item row="0" column="1" colspan="2">
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>204</width>
+            <height>23</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="label_2">
           <property name="font">
            <font>
             <pointsize>8</pointsize>
@@ -794,7 +710,158 @@ QLabel {padding-right: 12px}
 QLabel {margin-right: 10px}</string>
           </property>
           <property name="text">
-           <string>Dispositivi ottici</string>
+           <string>Riflettori</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="0" colspan="3">
+         <widget class="QListView" name="binocularListView">
+          <property name="font">
+           <font>
+            <family>Arial</family>
+            <pointsize>8</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::Panel</enum>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="spacing">
+           <number>5</number>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="0">
+         <widget class="QLabel" name="inspectorsLabel">
+          <property name="font">
+           <font>
+            <pointsize>8</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLabel {background-color: #00c800}
+QLabel {color: #fafafa}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 5px}
+QLabel {padding-left: 12px}
+QLabel {padding-right: 12px}
+QLabel {margin-right: 10px}</string>
+          </property>
+          <property name="text">
+           <string>Segnaposti</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="2">
+         <spacer name="horizontalSpacer_5">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="3" column="0" colspan="3">
+         <widget class="QListView" name="laserListView">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>90</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Arial</family>
+            <pointsize>8</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::Panel</enum>
+          </property>
+          <property name="dragEnabled">
+           <bool>true</bool>
+          </property>
+          <property name="alternatingRowColors">
+           <bool>true</bool>
+          </property>
+          <property name="selectionBehavior">
+           <enum>QAbstractItemView::SelectItems</enum>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="textElideMode">
+           <enum>Qt::ElideRight</enum>
+          </property>
+          <property name="isWrapping" stdset="0">
+           <bool>false</bool>
+          </property>
+          <property name="spacing">
+           <number>5</number>
+          </property>
+          <property name="viewMode">
+           <enum>QListView::ListMode</enum>
+          </property>
+          <property name="modelColumn">
+           <number>0</number>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label">
+          <property name="font">
+           <font>
+            <pointsize>8</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLabel {background-color: #00c800}
+QLabel {color: #fafafa}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 5px}
+QLabel {padding-left: 12px}
+QLabel {padding-right: 12px}
+QLabel {margin-right: 10px}</string>
+          </property>
+          <property name="text">
+           <string>Punto laser</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
@@ -814,8 +881,8 @@ QLabel {margin-right: 10px}</string>
           </property>
          </spacer>
         </item>
-        <item row="7" column="0" colspan="3">
-         <widget class="QListView" name="binocularListView">
+        <item row="9" column="0" colspan="3">
+         <widget class="QListView" name="inspectorsListView">
           <property name="font">
            <font>
             <family>Arial</family>

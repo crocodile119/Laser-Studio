@@ -109,6 +109,7 @@ MainWindow::MainWindow()
     state=false;
     reflectorsModel= new ReflectorsListModel(myReflectors, this);
     binocularsModel= new BinocularsListModel(myBinoculars, this);
+    inspectorsModel= new InspectorsListModel(myBeamInspectors, this);
     environmentModel= new EnvironmentListModel(labroomList, state, this);
     QRectF fakeRect= QRectF(0.0, 0.0, 0.0, 0.0);
     myFakeRoom=new LabRoom(fakeRect);
@@ -116,7 +117,8 @@ MainWindow::MainWindow()
 
     laserWindow->myDockReflectorsList->ui->listView->setWordWrap(true);
     laserWindow->myDockReflectorsList->ui->listView->setModel(reflectorsModel);
-    laserWindow->myDockReflectorsList->ui->binocularListView->setModel(binocularsModel);    
+    laserWindow->myDockReflectorsList->ui->binocularListView->setModel(binocularsModel);
+    laserWindow->myDockReflectorsList->ui->inspectorsListView->setModel(inspectorsModel);
     laserWindow->myDockReflectorsList->ui->environmentListView->setModel(environmentModel);
 
     reflectorsSelectionModel=laserWindow->myDockReflectorsList->ui->listView->selectionModel();
@@ -196,6 +198,7 @@ MainWindow::MainWindow()
     connect(laserWindow->graphicsView, SIGNAL(viewportChanged()),this, SLOT(setViewportRect()));
     connect(laserWindow->graphicsView->scene, &GraphicsScene::graphicItemMoved, this, &MainWindow::graphicItemMoveToStack);
     connect(undoStack, &QUndoStack::indexChanged, this, &MainWindow::updateUndoStackList);
+    connect(this, SIGNAL(beamInspectorListChanged()), this, SLOT(addInspectorList()));
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -290,6 +293,10 @@ void MainWindow::newFile()
         myBinoculars.clear();
         binocularsModel->deleteList();
         binocularsSelectionModel->clear();
+
+        myBeamInspectors.clear();
+        inspectorsModel->deleteList();
+        inspectorsSelectionModel->clear();
 
         labroomList.clear();
         environmentModel->deleteList();
@@ -2170,11 +2177,11 @@ void MainWindow::updateScale()
 
     if(beamInspector)
     {
-        QList<BeamInspector*>::iterator myIterator; // iterator
+        QList<pair<BeamInspector*, int>>::iterator myIterator; // iterator
         myIterator = myBeamInspectors.begin();
         while (myIterator != myBeamInspectors.end() )
         {
-            beamInspector=*myIterator;
+            beamInspector=myIterator->first;
             beamInspector->setPixScale(scale);
             ++myIterator;
         }
@@ -2567,9 +2574,14 @@ void MainWindow::addBeamInspector()
     beamInspector->setInspectorSeqNumber(inspectorSeqNumber);
 
 
-    myBeamInspectors.append(beamInspector);
+    myBeamInspectors.append(make_pair(beamInspector, inspectorSeqNumber));
 
     beamInspector->laserParametersChanged();
+
+    connect(beamInspector, SIGNAL(xChanged()), this, SLOT(updateInspectorList()));
+    connect(beamInspector, SIGNAL(yChanged()), this, SLOT(updateInspectorList()));
+
+    emit beamInspectorListChanged();
 }
 
 void MainWindow::addReflector(const target &target)
@@ -3231,11 +3243,11 @@ void MainWindow::setDistanceForInspector()
     if(beamInspector==0)
         return;
 
-    QList<BeamInspector*>::iterator myIterator; // iterator
+    QList<pair<BeamInspector*, int>>::iterator myIterator; // iterator
     myIterator = myBeamInspectors.begin();
     while (myIterator != myBeamInspectors.end() )
     {
-        beamInspector=*myIterator;
+        beamInspector=myIterator->first;
 /*
         if(laserpoint->shapePathContainsPoint(laserpoint->mapFromScene(binocular->pos()), exendedOpticalDiameter))
             binocular->setInZone(true);
@@ -3473,6 +3485,10 @@ void MainWindow::makeSceneOfSavedItems(){
     myBinoculars.clear();
     binocularsModel->deleteList();
     binocularsSelectionModel->clear();
+
+    myBeamInspectors.clear();
+    inspectorsModel->deleteList();
+    inspectorsSelectionModel->clear();
 
     labroomList.clear();
     environmentModel->deleteList();
@@ -3825,6 +3841,16 @@ void MainWindow::addBinocularList()
     binocularsModel->addElement(*binocular);
 }
 
+void MainWindow::addInspectorList()
+{
+    int modelIndex=inspectorsModel->addElement(*beamInspector);
+    myBeamInspectors.append(make_pair(beamInspector, modelIndex));
+    beamInspector->setInspectorSeqNumber(modelIndex);
+
+    inspectorsModel->myDataHasChanged();
+}
+
+
 void MainWindow::addLabList()
 {
     environmentModel->addDescriptor(*myLabRoom);
@@ -3905,6 +3931,11 @@ void MainWindow::updateList()
 void MainWindow::updateBinocularList()
 {
     binocularsModel->myDataHasChanged();
+}
+
+void MainWindow::updateInspectorList()
+{
+    inspectorsModel->myDataHasChanged();
 }
 
 void MainWindow::updateLaserList()
@@ -4703,12 +4734,12 @@ void MainWindow::updateForBeamInspection()
     laserpoint->setRayleighDistance(BeamInspector::getRayleighDistance());
     laserpoint->setQualityFactor(BeamInspector::getQualityFactor());
 
-    QList<BeamInspector*>::iterator myIterator; // iterator
+    QList<pair<BeamInspector*, int>>::iterator myIterator; // iterator
     myIterator = myBeamInspectors.begin();
 
     while (myIterator != myBeamInspectors.end() )
     {
-        beamInspector=*myIterator;
+        beamInspector=myIterator->first;
         beamInspector->setWavelength(laserWindow->myDockControls->getWavelength());
         beamInspector->setBeamDiameter(laserWindow->myDockControls->getBeamDiameter()),
         beamInspector->setDivergence(laserWindow->myDockControls->getDivergence());
@@ -4717,5 +4748,5 @@ void MainWindow::updateForBeamInspection()
 
         ++myIterator;
     }
-    laserModel->myDataHasChanged();
+    inspectorsModel->myDataHasChanged();
 }

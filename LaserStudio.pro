@@ -43,6 +43,7 @@ SOURCES +=\
     graphicsscene.cpp \
     gridlines.cpp \
     inspectorlink.cpp \
+    inspectorslistmodel.cpp \
     labeditdialog.cpp \
     labroom.cpp \
     lambertianchartdialog.cpp \
@@ -140,6 +141,7 @@ HEADERS  += mainwindow.h \
     graphicsscene.h \
     gridlines.h \
     inspectorlink.h \
+    inspectorslistmodel.h \
     labeditdialog.h \
     labroom.h \
     lambertianchartdialog.h \

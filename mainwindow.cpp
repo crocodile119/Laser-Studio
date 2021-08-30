@@ -182,6 +182,7 @@ MainWindow::MainWindow()
     connect(laserWindow->myDockReflectorsList->ui->inspectorListView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(selectInspectorFromList()));
     connect(laserWindow->myDockReflectorsList->ui->listView, SIGNAL(clicked(QModelIndex)), this, SLOT(goToSelectedReflector()));
     connect(laserWindow->myDockReflectorsList->ui->binocularListView, SIGNAL(clicked(QModelIndex)), this, SLOT(goToSelectedBinocular()));
+    connect(laserWindow->myDockReflectorsList->ui->inspectorListView, SIGNAL(clicked(QModelIndex)), this, SLOT(goToSelectedBeamInspector()));
     connect(laserWindow->myDockReflectorsList->ui->laserListView, SIGNAL(clicked(QModelIndex)), this, SLOT(gotToLaserpoint()));
     connect(laserWindow->myDockReflectorsList->ui->environmentListView, SIGNAL(clicked(QModelIndex)), this, SLOT(goToLab()));
     connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(updateActions()));

@@ -60,8 +60,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>333</width>
-         <height>680</height>
+         <width>337</width>
+         <height>688</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout">
@@ -882,7 +882,7 @@ QLabel {margin-right: 10px}</string>
          </spacer>
         </item>
         <item row="9" column="0" colspan="3">
-         <widget class="QListView" name="inspectorsListView">
+         <widget class="QListView" name="inspectorListView">
           <property name="font">
            <font>
             <family>Arial</family>

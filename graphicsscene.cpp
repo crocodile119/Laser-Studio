@@ -1,9 +1,4 @@
 #include "graphicsscene.h"
-#include "laserpoint.h"
-#include "reflector.h"
-#include "binocular.h"
-#include "labroom.h"
-#include "footprintobject.h"
 #include <QGraphicsSceneMouseEvent>
 #include <QDebug>
 #include <QRect>
@@ -27,6 +22,7 @@ void GraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
         Reflector *reflector= qgraphicsitem_cast<Reflector*>(movingItem);
         LaserPoint *laserpoint= qgraphicsitem_cast<LaserPoint*>(movingItem);
         Binocular *binocular= qgraphicsitem_cast<Binocular*>(movingItem);
+        BeamInspector* beamInspector= qgraphicsitem_cast<BeamInspector*>(movingItem);
         FootprintObject *footprint= qgraphicsitem_cast<FootprintObject*>(movingItem);
         LabRoom *myLabRoom= qgraphicsitem_cast<LabRoom*>(movingItem);
 
@@ -55,6 +51,15 @@ void GraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             binocular->setSelected(true);
             oldPos=binocular->pos();
             emit binocularSelected();
+        }
+
+        else if(beamInspector)
+        {
+            qDebug()<<"Ho selezionato un segnaposto di ispezione: ";
+            clearSelection();
+            beamInspector->setSelected(true);
+            oldPos=beamInspector->pos();
+            emit inspectorSelected();
         }
 
         else if(footprint)
@@ -90,6 +95,7 @@ void GraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
         Reflector *reflector= qgraphicsitem_cast<Reflector*>(movingItem);
         LaserPoint *laserpoint= qgraphicsitem_cast<LaserPoint*>(movingItem);
         Binocular *binocular= qgraphicsitem_cast<Binocular*>(movingItem);
+        BeamInspector *beamInspector= qgraphicsitem_cast<BeamInspector*>(movingItem);
         FootprintObject *footprint= qgraphicsitem_cast<FootprintObject*>(movingItem);
         LabRoom *myLabRoom= qgraphicsitem_cast<LabRoom*>(movingItem);
         if(footprint)
@@ -124,6 +130,14 @@ void GraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
             {
                 emit graphicItemMoved(movingItem, oldPos);
                 qDebug()<<"Strumento ottico spostato: ";
+            }
+        }
+        else if(beamInspector)
+        {
+            if(oldPos!= movingItem->pos())
+            {
+                emit graphicItemMoved(movingItem, oldPos);
+                qDebug()<<"Segnaposto di ispezione spostato: ";
             }
         }
         else if(myLabRoom)

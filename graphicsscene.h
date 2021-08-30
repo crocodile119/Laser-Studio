@@ -5,7 +5,11 @@
 #include <QGraphicsScene>
 #include <QMouseEvent>
 #include <QRubberBand>
+#include "laserpoint.h"
 #include "reflector.h"
+#include "binocular.h"
+#include "beaminspector.h"
+#include "labroom.h"
 #include "footprintobject.h"
 
 class GraphicsScene: public QGraphicsScene
@@ -28,6 +32,7 @@ signals:
     void reflectorSelected();
     void laserSelected();
     void binocularSelected();
+    void inspectorSelected();
     void labroomSelected();
     void deselected();
     void footprintRelease();

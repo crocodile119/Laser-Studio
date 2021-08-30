@@ -79,6 +79,7 @@ SOURCES +=\
     scrollbarcontrol.cpp \
     sliderscrolllabel.cpp \
     tablescontroller.cpp \
+    undo_commands/addbeaminspectorcommand.cpp \
     undo_commands/addbinocularcommand.cpp \
     undo_commands/addbinocularpropertycommand.cpp \
     undo_commands/addcomboboxvaluecommand.cpp \
@@ -95,6 +96,7 @@ SOURCES +=\
     undo_commands/addscrollbarvaluecommand.cpp \
     undo_commands/addscrollslidervaluecommand.cpp \
     undo_commands/boxredimensioncommand.cpp \
+    undo_commands/deletebeaminspectorcommand.cpp \
     undo_commands/deletebinocularcommand.cpp \
     undo_commands/deletefootprintcommand.cpp \
     undo_commands/deletereflectorcommand.cpp \
@@ -176,6 +178,7 @@ HEADERS  += mainwindow.h \
     scrollbarcontrol.h \
     sliderscrolllabel.h \
     tablescontroller.h \
+    undo_commands/addbeaminspectorcommand.h \
     undo_commands/addbinocularcommand.h \
     undo_commands/addbinocularpropertycommand.h \
     undo_commands/addcomboboxvaluecommand.h \
@@ -192,6 +195,7 @@ HEADERS  += mainwindow.h \
     undo_commands/addscrollbarvaluecommand.h \
     undo_commands/addscrollslidervaluecommand.h \
     undo_commands/boxredimensioncommand.h \
+    undo_commands/deletebeaminspectorcommand.h \
     undo_commands/deletebinocularcommand.h \
     undo_commands/deletefootprintcommand.h \
     undo_commands/deletereflectorcommand.h \

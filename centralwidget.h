@@ -112,6 +112,10 @@ public:
     QVector <int> getBinocular_D0Vect()const;
     QVector <QString > getBinocularDescriptionVect()const;
 
+    //Getters per i segnaposti di ispezione.
+    QVector <QPointF> getBeamInspectorPosVect()const;
+    QVector <QString > getBeamInspectorDescriptionVect()const;
+
     double getLambertianMax()const;
     double getLaserEMP()const;
     double getPowerErg()const;
@@ -196,6 +200,10 @@ private:
     QVector <double> binocularTransmissionVect;
     QVector <int> binocular_D0Vect;
     QVector <QString > binocularDescriptionVect;
+
+    //Parametri dispositivi ottici
+    QVector <QPointF> beamInspectorPosVect;
+    QVector <QString > beamInspectorDescriptionVect;
 
     double atmoshericEffectsCoefficient;
     int meteoRange;

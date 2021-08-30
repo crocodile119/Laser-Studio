@@ -26,7 +26,7 @@ InspectorLink::InspectorLink(LaserPoint *fromLaser, BeamInspector *toBeamInspect
 InspectorLink::~InspectorLink()
 {
     fromMyLaser->removeInspectorLink(this);
-    toMyBeamInspector->removeInspectorLink(this);
+    toMyBeamInspector->removeInspectorLink();
 }
 
 int InspectorLink::type() const

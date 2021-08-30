@@ -22,6 +22,7 @@ const double BeamInspector::fe_min= 14.53*1.0e-03;//distanza di focalizzazione m
 double BeamInspector::rayleighDistance;
 double BeamInspector::TEM00_RayleighDistance;
 double BeamInspector::qualityFactor;
+double BeamInspector::pixHeight=20;
 
 BeamInspector::BeamInspector(double _inspectorDistance, double _wavelength, double _divergence, double _beamDiameter): QGraphicsObject(),
      myTextColor(Qt::black), myBackgroundColor(Qt::white), myOutlineColor(Qt::transparent), myBeamColor(Qt::darkGray),
@@ -43,12 +44,12 @@ BeamInspector::~BeamInspector()
 
 void BeamInspector::addInspectorLink(InspectorLink *inspectorlink)
 {
-    myInspectorLinks.insert(inspectorlink);
+    myInspectorLinks.push_back(inspectorlink);
 }
 
-void BeamInspector::removeInspectorLink(InspectorLink *inspectorlink)
+void BeamInspector::removeInspectorLink()
 {
-    myInspectorLinks.remove(inspectorlink);
+    myInspectorLinks.clear();
 }
 
 int BeamInspector::type() const
@@ -192,10 +193,12 @@ void BeamInspector::laserParametersChanged()
   {
       inspectorDistance=inspectorlink->linkInspectorLenght();
       inspectorlink->trackNodes();
+      linkInspectorPhase=inspectorlink->linkInspectorPhase();
 
       inspectorUpdate();
 
       setStringPosition();
+      setToolTip(position);
   }
 }
 
@@ -209,9 +212,8 @@ void BeamInspector::laserPositionChanged()
 
       inspectorUpdate();
 
-      setToolTip(position);
       setStringPosition();
-      qDebug()<<"setStringPosition()"<<getStringPosition();
+      setToolTip(position);
    }
 }
 
@@ -223,7 +225,14 @@ QRectF BeamInspector::outlineRect() const
     QPointF bottom=rect.bottomLeft();
     QPointF center=rect.center();
     rect.translate(QPointF(-center.x(), -bottom.y()));
+    //rect.translate(-center);
     return rect;
+}
+
+QPointF BeamInspector::positionShift(const double & scale)
+{
+    double rectHeight=pixHeight/scale;
+    return QPointF(0.0, rectHeight/2);
 }
 
 void BeamInspector::setStringPosition()
@@ -286,6 +295,11 @@ void BeamInspector::setDescription(const QString& _description)
 QString BeamInspector::getDescription() const
 {
     return description;
+}
+
+InspectorLink* BeamInspector::getBeamInspectorLink()
+{
+    return myInspectorLinks.first();
 }
 
 void BeamInspector::setWavelength(const double& _wavelength)

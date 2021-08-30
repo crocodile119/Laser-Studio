@@ -5,6 +5,7 @@
 
 #include "../reflector.h"
 #include "../binocular.h"
+#include "../beaminspector.h"
 #include "../laserpoint.h"
 #include "../labroom.h"
 #include "../footprintobject.h"

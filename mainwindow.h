@@ -185,6 +185,7 @@ private slots:
     void labroomSelectionFromGraphics();
     void listSelectionFromGraphics();
     void binocularListSelectionFromGraphics();
+    void inspectorListSelectionFromGraphics();
     void listMultipleSelectionFromGraphics();
     void laserpointSelectionFromGraphics();
     void listDeselectionFromGraphics();
@@ -195,6 +196,7 @@ private slots:
     void setGoggleMaterial(LaserGoggle::material);
     void goToSelectedReflector();
     void goToSelectedBinocular();
+    void goToSelectedBeamInspector();
     void gotToLaserpoint();
     void updateList();
     void updateLabList();
@@ -204,6 +206,7 @@ private slots:
     void updateForCondMeteo();
     void selectFromList();
     void selectBinocularFromList();
+    void selectInspectorFromList();
     void propertyFromList();
     void environmentFromList();
     void setLaserpointShapePathForReflectors();
@@ -388,12 +391,12 @@ private:
     int seqNumber;
     int binSeqNumber;
     int footprintSeqNumber;
+    int inspectorSeqNumber;
     int scaleNumber;
     double gridUnit;
     bool dragModeState;
     bool myLabRoomInserted;
     bool state;
-    int inspectorSeqNumber;
 
     QAction *addBinocularAct;
     QAction *addLabAct;
@@ -422,10 +425,12 @@ private:
     QUndoCommand *addFootprintCommand;
     QUndoCommand *addReflectorCommand;
     QUndoCommand *addBinocularCommand;
+    QUndoCommand *addBeamInspectorCommand;
     QUndoCommand *addMeteoCommand;
     QUndoCommand *deleteFootprintCommand;
     QUndoCommand *deleteReflectorCommand;
     QUndoCommand *deleteBinocularCommand;
+    QUndoCommand *deleteBeamInspectorCommand;
 
     QGraphicsView *view;
     QList <pair<Reflector *, int>> myReflectors;

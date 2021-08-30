@@ -17,6 +17,7 @@ public:
     ~ReflectorsQList();
     QModelIndex getModelIndex();
     QModelIndex getModelBinocularIndex();
+    QModelIndex getModelBeamInspectorIndex();
     Ui::ReflectorsQList *ui;
 
 private slots:
@@ -24,6 +25,8 @@ private slots:
     void on_listView_doubleClicked(const QModelIndex &index);
     void on_binocularListView_clicked(const QModelIndex &index);
     void on_binocularListView_doubleClicked(const QModelIndex &index);
+    void on_inspectorListView_doubleClicked(const QModelIndex &index);
+    void on_inspectorListView_clicked(const QModelIndex &index);
     void on_laserListView_clicked(const QModelIndex &index);
     void on_laserListView_doubleClicked(const QModelIndex &index);
     void on_environmentListView_clicked(const QModelIndex &index);
@@ -32,6 +35,7 @@ private slots:
 private:
     QModelIndex index;
     QModelIndex binocularIndex;
+    QModelIndex inspectorIndex;
     QModelIndex laserIndex;
     QModelIndex environmentIndex;
 };

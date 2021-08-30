@@ -34,13 +34,14 @@ public:
     QColor backgroundColor() const;
     void setPixScale(const double &);
     void addInspectorLink(InspectorLink *inspectorlink);
-    void removeInspectorLink(InspectorLink *inspectorlink);
+    void removeInspectorLink();
     void setInspectorSeqNumber(const int&_inspectorSeqNumber);
     int  getInspectorSeqNumber() const;
     void laserPositionChanged();
     void laserParametersChanged();
     double getInspectorDistance();
     double getLinkInspectorPhase()const;
+    InspectorLink* getBeamInspectorLink();
     void setDescription(const QString&);
     QString getDescription()const;
     void inspectorUpdate();
@@ -80,6 +81,7 @@ public:
     void computePercentError();
     bool isFmFocusable();
     bool isFarField();
+    static QPointF positionShift(const double &scale);
 
     void compute_d_r();
     void compute_alpha_r();
@@ -104,8 +106,9 @@ private:
     static double rayleighDistance; 
     static double TEM00_RayleighDistance;
     static double qualityFactor;
+    static double pixHeight;
 
-    QSet<InspectorLink *> myInspectorLinks;
+    QList<InspectorLink *> myInspectorLinks;
     QRectF outlineRect() const;
 
     double opticalDiameter;

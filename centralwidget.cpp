@@ -122,6 +122,10 @@ bool CentralWidget::writeFile(const QString &fileName)
     QVector <int> binocular_D0Vect;
     QVector <QString > binocularDescriptionVect;
 
+    //vettori relativi ai segnaposti di ispezione
+    QVector<QPointF> beamInspectorPosVect;
+    QVector <QString > beamInspectorDescriptionVect;
+
     //vettori relativi agli ingombri
     QVector<QPointF> footprintPosVect;
     QVector<QRectF>footprintRectVect;
@@ -179,6 +183,12 @@ bool CentralWidget::writeFile(const QString &fileName)
                binocular_D0Vect.push_back(binocular->get_D0());
                binocularDescriptionVect.push_back(binocular->getDescription());
             }
+           BeamInspector *beamInspector = dynamic_cast<BeamInspector *>(*myIterator);
+           if (beamInspector)
+           {
+                beamInspectorPosVect.push_back(beamInspector->pos());
+                beamInspectorDescriptionVect.push_back(beamInspector->getDescription());
+           }
 
            FootprintObject *footprint = dynamic_cast<FootprintObject *>(*myIterator);
            if (footprint)
@@ -208,7 +218,8 @@ bool CentralWidget::writeFile(const QString &fileName)
         << StringPosition << OpticalDiameter << Divergence << ReflectorDistance << ReflectionCoeff
         << ZValue << ReflectorKind << ReflectorPositioningVect << binocularPosVect << binocularOpticalGainVect
         << binocularMagnificationVect << binocularTransmissionVect << binocular_D0Vect << binocularDescriptionVect
-        << myLabPosition<< myLabRect << roomNumber << footprintPosVect << footprintRectVect << footprintDescriptionVect;
+        << beamInspectorPosVect <<beamInspectorDescriptionVect << myLabPosition<< myLabRect << roomNumber
+        << footprintPosVect << footprintRectVect << footprintDescriptionVect;
 
     QApplication::restoreOverrideCursor();
 
@@ -268,9 +279,9 @@ bool CentralWidget::readFile(const QString &fileName)
         >> lambertianMax >> laserEMP >> laserBeamDiameter >> laserPowerErg >> laserPosition >> laserZValue >> aperture >> installation
         >> filterOn >> transmittance >> posVect >> TypeVect >> TextVect >> ReflectorDescriptionVect
         >> StringPositionVect >> OpticalDiameterVect >> DivergenceVect >> ReflectorDistanceVect >> ReflectionCoeffVect >> ZValueVect
-        >> ReflectorKindVect >> ReflectorPositioningVect >> binocularPosVect >> binocularOpticalGainVect >> binocularMagnificationVect >> binocularTransmissionVect
-        >> binocular_D0Vect >> binocularDescriptionVect >> myLabPosition >> myLabRect >> roomNumber
-        >> footprintPosVect >> footprintRectVect >> footprintDescriptionVect;
+        >> ReflectorKindVect >> ReflectorPositioningVect >> binocularPosVect >> binocularOpticalGainVect >> binocularMagnificationVect
+        >> binocularTransmissionVect >> binocular_D0Vect >> binocularDescriptionVect >> beamInspectorPosVect >> beamInspectorDescriptionVect
+        >> myLabPosition >> myLabRect >> roomNumber >> footprintPosVect >> footprintRectVect >> footprintDescriptionVect;
 
      myDockControls->ui->operationCombo->setCurrentIndex(operationCombo);
      myDockControls->ui->enableTeCheckBox->setChecked(isTeChecked);
@@ -463,6 +474,16 @@ QVector <int> CentralWidget::getBinocular_D0Vect()const
 QVector <QString > CentralWidget::getBinocularDescriptionVect()const
 {
     return binocularDescriptionVect;
+}
+
+QVector <QPointF> CentralWidget::getBeamInspectorPosVect()const
+{
+    return beamInspectorPosVect;
+}
+
+QVector <QString > CentralWidget::getBeamInspectorDescriptionVect()const
+{
+    return beamInspectorDescriptionVect;
 }
 
 bool CentralWidget::getGridState()const

@@ -191,7 +191,7 @@ void LabRoom::setTextLabel()
     labRectHeightString=QString::number(labRectHeight,'f', 1);
 
     prepareGeometryChange();
-    textLabel ="laboratorio "+QString("(%1,%2)\nlarghezza [m] %3, lunghezza [m] %4")
+    textLabel ="laboratorio "+QString("(%1,%2)<br>larghezza [m] %3, lunghezza [m] %4<br>")
                                     .arg(xString)
                                     .arg(yString)
                                     .arg(labRectWidthString)

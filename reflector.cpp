@@ -448,7 +448,7 @@ void Reflector::setStringDetails()
     switch(myTarget)
     {
         case (WET_TARGET):
-        refrectorDetailsString=reflectionKindString + QString(" (%1,%2) \ndist[m]: %3, DROr[m]: %4, DROr max [m]: %5 \nn=%6 ρ=%7")
+        refrectorDetailsString=reflectionKindString + QString(" (%1,%2) <br>dist[m]: %3, DRO<sub>r</sub>[m]: %4, DRO<sub>r max </sub>[m]: %5 <br>n=%6 ρ=%7")
                                         .arg(xString)
                                         .arg(yString)
                                         .arg(reflectorDistanceString)
@@ -458,7 +458,7 @@ void Reflector::setStringDetails()
                                         .arg(myReflectionCoeffString);
         break;
         case(GLASS_TARGET):
-        refrectorDetailsString=reflectionKindString + QString(" (%1,%2) \ndist[m]: %3, DROr[m]: %4, DROr max [m]: %5 \nn=%6 τ=%7")
+        refrectorDetailsString=reflectionKindString + QString(" (%1,%2) <br>dist[m]: %3, DRO<sub>r</sub>[m]: %4, DRO<sub>r max</sub> [m]: %5 <br>n=%6 ρ=%7")
                                         .arg(xString)
                                         .arg(yString)
                                         .arg(reflectorDistanceString)
@@ -469,7 +469,7 @@ void Reflector::setStringDetails()
 
         break;
         case(MIRROR_TARGET):
-        refrectorDetailsString=reflectionKindString + QString(" (%1,%2) \ndist[m]: %3, DROr[m]: %4, \nρ=%5")
+        refrectorDetailsString=reflectionKindString + QString(" (%1,%2) <br>dist[m]: %3, DRO<sub>r</sub>[m]: %4, <br>ρ=%5")
                                         .arg(xString)
                                         .arg(yString)
                                         .arg(reflectorDistanceString)
@@ -478,7 +478,7 @@ void Reflector::setStringDetails()
 
         break;
         case(LAMBERTIAN_TARGET):
-        refrectorDetailsString =reflectionKindString + QString(" (%1,%2) \ndist[m]: %3, DROr[m]: %4, DROr max [m]: %5 \nρ=%6")
+        refrectorDetailsString =reflectionKindString + QString(" (%1,%2) <br>dist[m]: %3, DRO<sub>r</sub>[m]: %4, DRO<sub>r max</sub> [m]: %5 <br>ρ=%6")
                                         .arg(xString)
                                         .arg(yString)
                                         .arg(reflectorDistanceString)

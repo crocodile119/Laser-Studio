@@ -33,7 +33,7 @@ QVariant EnvironmentListModel::data(const QModelIndex &index, int role) const
             laserDescriptor=labroomList.at(index.row())->getTextLabel();
         else
         {
-            laserDescriptor=QString("Poligono di tiro militare. \nVisibilità meteorologica: %1 km")
+            laserDescriptor=QString("Poligono di tiro militare. <br>Visibilità meteorologica: %1 km<br>")
                 .arg(meteoVisibilityStr);
         }
 

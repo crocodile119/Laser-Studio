@@ -87,6 +87,7 @@ SOURCES +=\
     undo_commands/adddialvaluecommand.cpp \
     undo_commands/addfootprintcommand.cpp \
     undo_commands/addfootprintpropertycommand.cpp \
+    undo_commands/addinspectorpropertycommand.cpp \
     undo_commands/addlabpropertycommand.cpp \
     undo_commands/addlaserpropertycommand.cpp \
     undo_commands/addmeteocommand.cpp \
@@ -142,6 +143,7 @@ HEADERS  += mainwindow.h \
     gotopointdialog.h \
     graphicsscene.h \
     gridlines.h \
+    htmldelegate.h \
     inspectorlink.h \
     inspectorslistmodel.h \
     labeditdialog.h \
@@ -186,6 +188,7 @@ HEADERS  += mainwindow.h \
     undo_commands/adddialvaluecommand.h \
     undo_commands/addfootprintcommand.h \
     undo_commands/addfootprintpropertycommand.h \
+    undo_commands/addinspectorpropertycommand.h \
     undo_commands/addlabpropertycommand.h \
     undo_commands/addlaserpropertycommand.h \
     undo_commands/addmeteocommand.h \

@@ -103,6 +103,12 @@ void BeamInspectorDialog::setUpChart()
                               "\nfreccia a sinistra : muovi a sinistra"
                               "\nfreccia in alto: muovi in alto"
                               "\nfreccia in basso: muovi in basso");
+
+    double wavelength=beamInspector->getWavelength();
+    bool retinalDamage=(wavelength>=400)&&(wavelength<=1400);
+    ui->retinalGroupBox->setVisible(retinalDamage);
+    beamChartView->setVisible(retinalDamage);
+    setMaximumSize(sizeHint());
 }
 
 

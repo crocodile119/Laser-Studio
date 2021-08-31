@@ -38,12 +38,14 @@
 #include "undo_commands/addlabpropertycommand.h"
 #include "undo_commands/addlaserpropertycommand.h"
 #include "undo_commands/addbinocularpropertycommand.h"
+#include "undo_commands/addinspectorpropertycommand.h"
 #include "undo_commands/addreflectorpropertycommand.h"
 #include "undo_commands/deletereflectorcommand.h"
 #include "undo_commands/deletebinocularcommand.h"
 #include "undo_commands/deletebeaminspectorcommand.h"
 #include "undo_commands/deletefootprintcommand.h"
 #include "undo_commands/movecommand.h"
+#include "htmldelegate.h"
 
 #include <QtWidgets>
 #include <iterator>
@@ -111,15 +113,25 @@ MainWindow::MainWindow()
     binocularsModel= new BinocularsListModel(myBinoculars, this);
     inspectorsModel= new InspectorsListModel(myBeamInspectors, this);
     environmentModel= new EnvironmentListModel(labroomList, state, this);
+    HtmlDelegate* laserHtmlDelegate = new HtmlDelegate;
+    HtmlDelegate* reflectorsHtmlDelegate = new HtmlDelegate;
+    HtmlDelegate* binocularsHtmlDelegate = new HtmlDelegate;
+    HtmlDelegate* inspectorsHtmlDelegate = new HtmlDelegate;
+    HtmlDelegate* environmentHtmlDelegate = new HtmlDelegate;
+
     QRectF fakeRect= QRectF(0.0, 0.0, 0.0, 0.0);
     myFakeRoom=new LabRoom(fakeRect);
     environmentModel->addDescriptor(*myFakeRoom);
 
     laserWindow->myDockReflectorsList->ui->listView->setWordWrap(true);
-    laserWindow->myDockReflectorsList->ui->listView->setModel(reflectorsModel);
+    laserWindow->myDockReflectorsList->ui->listView->setModel(reflectorsModel);  
+    laserWindow->myDockReflectorsList->ui->listView->setItemDelegate(reflectorsHtmlDelegate);
     laserWindow->myDockReflectorsList->ui->binocularListView->setModel(binocularsModel);
+    laserWindow->myDockReflectorsList->ui->binocularListView->setItemDelegate(binocularsHtmlDelegate);
     laserWindow->myDockReflectorsList->ui->inspectorListView->setModel(inspectorsModel);
+    laserWindow->myDockReflectorsList->ui->inspectorListView->setItemDelegate(inspectorsHtmlDelegate);
     laserWindow->myDockReflectorsList->ui->environmentListView->setModel(environmentModel);
+    laserWindow->myDockReflectorsList->ui->environmentListView->setItemDelegate(environmentHtmlDelegate);
 
     reflectorsSelectionModel=laserWindow->myDockReflectorsList->ui->listView->selectionModel();
     binocularsSelectionModel=laserWindow->myDockReflectorsList->ui->binocularListView->selectionModel();
@@ -137,7 +149,8 @@ MainWindow::MainWindow()
     laserModel->addDescriptor(*laserpoint);
 
     laserWindow->myDockReflectorsList->ui->laserListView->setWordWrap(true);
-    laserWindow->myDockReflectorsList->ui->laserListView->setModel(laserModel); 
+    laserWindow->myDockReflectorsList->ui->laserListView->setModel(laserModel);
+    laserWindow->myDockReflectorsList->ui->laserListView->setItemDelegate(laserHtmlDelegate);
     laserSelectionModel=laserWindow->myDockReflectorsList->ui->laserListView->selectionModel();
     setupLaserProspective();
 
@@ -876,8 +889,11 @@ void MainWindow::properties()
             beamInspector->setPos(position);
         else
         {
-            beamInspector->setDescription(dialog.ui->descriptionTextEdit->toPlainText());
-            qDebug()<< "Descrizione segnaposto: "<<dialog.ui->descriptionTextEdit->toPlainText();
+           QString description=dialog.ui->descriptionTextEdit->toPlainText();
+           QUndoCommand* addInspectorPropertyCommand = new AddInspectorPropertyCommand(beamInspector, position,
+                                     description);
+
+           undoStack->push(addInspectorPropertyCommand);
         }
     }
     else
@@ -4347,9 +4363,11 @@ void MainWindow::listDeselectionFromGraphics()
 {
     laserWindow->graphicsView->scene->clearSelection();
     laserSelectionModel->clear();
+    //laserWindow->myDockReflectorsList->setFocu
     reflectorsSelectionModel->clear();
     binocularsSelectionModel->clear();
     environmentSelectionModel->clear();
+    inspectorsSelectionModel->clear();
 }
 
 void MainWindow::addObjectLink()
@@ -4594,12 +4612,18 @@ void MainWindow::setGuiDarkTheme()
                          "QGraphicsView {background-color:#f0f0f0;}"
                          ));
         laserWindow->myDockGoggle->setStyleSheet(tr("QLabel {color: #fafafa}"));
+        laserWindow->myDockReflectorsList->setStyleSheet(tr(
+        "QListView {show-decoration-selected: 1;"
+                    "selection-color: white;"
+                    "selection-background-color: #0068d9;}"));
     }
     else
     {
         setStyleSheet(tr(""));
         laserWindow->setStyleSheet(tr(""));
         laserWindow->myDockGoggle->setStyleSheet(tr(""));
+        laserWindow->myDockGoggle->setStyleSheet(tr(""));
+        laserWindow->myDockReflectorsList->setStyleSheet(tr(""));
     }
 }
 

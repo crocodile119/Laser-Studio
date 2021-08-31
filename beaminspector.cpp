@@ -254,7 +254,7 @@ void BeamInspector::setStringPosition()
     CE_String=QString::number(CE,'2', 2);
 
 
-    position ="Segnaposto di indagine" + QString(" (%1,%2) \ndist[m]: %3 CE: %4")
+    position ="Segnaposto di indagine" + QString(" (%1,%2) <br>dist[m]: %3 C<sub>E</sub>: %4<br>")
                                     .arg(xString)
                                     .arg(yString)           
                                     .arg(inspectorDistanceString)

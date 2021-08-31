@@ -338,7 +338,7 @@ void LaserPoint::setStringPosition()
     QString filterOnString;
 
     if(filterOn)
-        filterOnString="\nfiltro montato su ottica con transmittanza τ="+ QString::number(getTransmittance());
+        filterOnString="<br>filtro montato su ottica con transmittanza τ="+ QString::number(getTransmittance());
     else
         filterOnString.clear();
 

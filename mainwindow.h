@@ -26,6 +26,7 @@
 #include "reflector.h"
 #include "binocular.h"
 #include "beaminspector.h"
+#include "beaminspectordialog.h"
 #include "inspectorlink.h"
 #include "wetchartdialog.h"
 #include "fresnelchartdialog.h"
@@ -385,6 +386,7 @@ private:
     LabRoom *myFakeRoom;
     FootprintObject *footprint;
     GridLines *gridlines;
+    BeamInspectorDialog *beamInspectorDialog;
 
     int minZ;
     int maxZ;

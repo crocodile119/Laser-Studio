@@ -42,6 +42,7 @@ SOURCES +=\
     gotopointdialog.cpp \
     graphicsscene.cpp \
     gridlines.cpp \
+    htmldelegate.cpp \
     inspectorlink.cpp \
     inspectorslistmodel.cpp \
     labeditdialog.cpp \
@@ -211,7 +212,6 @@ RESOURCES       = LaserStudio.qrc
 
 FORMS    += \
     atmosphericeffectsdialog.ui \
-    beaminspectordialog.ui \
     binocularpropertiesdialog.ui \
     description.ui \
     dockcontrols.ui \

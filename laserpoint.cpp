@@ -347,7 +347,7 @@ void LaserPoint::setStringPosition()
     opticalDistanceString=QString::number(opticalDiameter/2,'f',2);
     skinDistanceString=QString::number(skinDiameter/2,'f',2);
 
-    position ="Punto Laser" + QString(" (%1,%2) %3, \nDRO[m]: %4  DRP[m]: %5" )
+    position ="Punto Laser" + QString(" (%1,%2) %3, DRO[m]: %4  <br>DRP[m]: %5" )
                                     .arg(xString)
                                     .arg(yString)
                                     .arg(filterOnString)

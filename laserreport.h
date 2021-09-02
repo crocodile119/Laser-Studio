@@ -5,6 +5,7 @@
 #include "reflector.h"
 #include "binocular.h"
 #include "footprintobject.h"
+#include "beaminspector.h"
 #include "dockcontrols.h"
 
 class LaserReport
@@ -25,6 +26,7 @@ public:
     void reflectorsValuation();
     void binocularsValuation();
     void footprintsValuation();
+    void inspectorsValuation();
 
     QString htmlInstallationDescription();
     QString htmlLaserInstallation();
@@ -40,6 +42,7 @@ public:
     QString htmlReflectors(const int &number);
     void buidReflectorsDocumentPart();
     QString htmlFootprints();
+    QString htmlInspectors();
     QString htmlBinoculars();
     QString htmlClassifier();
     QString htmlMeteo();
@@ -54,6 +57,7 @@ public:
     void setReflectorsList(const QList<pair<Reflector *, int> > &);
     void setFootprintsList(const QList<FootprintObject *> &);
     void setBinocularsList(const QList<pair<Binocular*, int>> &);
+    void setBeamInspectorsList(const QList<pair<BeamInspector*, int>> &_);
     void setReflectorsFilenameList(const QStringList &);
     void setReflectorsGraphImageList(const QList<QImage> &);
 
@@ -67,6 +71,7 @@ private:
     Reflector *reflector;
     Binocular *binocular;
     FootprintObject *footprint;
+    BeamInspector *beamInspector;
     QString correction;
 
     QStringList effects;
@@ -75,6 +80,7 @@ private:
     QStringList goggle;
     QStringList reflectors;
     QStringList binoculars;
+    QStringList inspectors;
     QStringList footprints;
     QStringList laser;
     QStringList skin;
@@ -88,6 +94,7 @@ private:
 
     QList<pair<Reflector*, int>> myReflectors;
     QList<pair<Binocular*, int>> myBinoculars;
+    QList<pair<BeamInspector*, int>> myBeamInspectors;
     QList<FootprintObject*> myFootprints;
 
     bool indoor;

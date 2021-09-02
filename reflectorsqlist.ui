@@ -34,7 +34,9 @@
    </font>
   </property>
   <property name="styleSheet">
-   <string notr="true"/>
+   <string notr="true">QListView {show-decoration-selected: 1;
+                  selection-color: white;
+                  selection-background-color: #0068d9;}</string>
   </property>
   <property name="allowedAreas">
    <set>Qt::AllDockWidgetAreas</set>
@@ -60,8 +62,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>366</width>
-         <height>680</height>
+         <width>370</width>
+         <height>682</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout">

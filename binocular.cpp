@@ -301,7 +301,7 @@ void Binocular::setStringPosition()
 
     if((wavelength>=400)&&(wavelength<=1400))
     {
-    position ="Dispositivo ottico" + QString(" (%1,%2) <br>dist[m]: %3, DNROE[m]: %4 <br>τ= %5, D<sub>b</sub>[mm]=%6, D<sub>0</sub>[mm]=%7, M= %8, K=%9 <br>%10")
+    position ="Dispositivo ottico" + QString(" (%1,%2) <br>dist[m]: %3, DNROE[m]: %4 <br>τ= %5, D<sub>b</sub>[mm]=%6, D<sub>0</sub>[mm]=%7, <br>M= %8, K=%9 <br>%10")
                                     .arg(xString)
                                     .arg(yString)           
                                     .arg(binocularDistanceString)

@@ -22,7 +22,6 @@
 #include "footprintdialog.h"
 #include "ui_footprintdialog.h"
 #include "beaminspectordialog.h"
-#include "ui_beaminspectordialog.h"
 #include "gotopointdialog.h"
 #include "ui_gotopointdialog.h"
 #include "description.h"
@@ -113,11 +112,11 @@ MainWindow::MainWindow()
     binocularsModel= new BinocularsListModel(myBinoculars, this);
     inspectorsModel= new InspectorsListModel(myBeamInspectors, this);
     environmentModel= new EnvironmentListModel(labroomList, state, this);
-    HtmlDelegate* laserHtmlDelegate = new HtmlDelegate;
-    HtmlDelegate* reflectorsHtmlDelegate = new HtmlDelegate;
-    HtmlDelegate* binocularsHtmlDelegate = new HtmlDelegate;
-    HtmlDelegate* inspectorsHtmlDelegate = new HtmlDelegate;
-    HtmlDelegate* environmentHtmlDelegate = new HtmlDelegate;
+    HtmlDelegate* laserHtmlDelegate = new HtmlDelegate();
+    HtmlDelegate* reflectorsHtmlDelegate = new HtmlDelegate();
+    HtmlDelegate* binocularsHtmlDelegate = new HtmlDelegate();
+    HtmlDelegate* inspectorsHtmlDelegate = new HtmlDelegate();
+    HtmlDelegate* environmentHtmlDelegate = new HtmlDelegate();
 
     QRectF fakeRect= QRectF(0.0, 0.0, 0.0, 0.0);
     myFakeRoom=new LabRoom(fakeRect);
@@ -639,8 +638,8 @@ void MainWindow::selectInspectorFromList()
         beamInspector->setPos(position);
     else
     {
-        beamInspector->setDescription(dialog.ui->descriptionTextEdit->toPlainText());
-        qDebug()<< "Descrizione segnaposto: "<<dialog.ui->descriptionTextEdit->toPlainText();
+        beamInspector->setDescription(dialog.descriptionTextEdit->toPlainText());
+        qDebug()<< "Descrizione segnaposto: "<<dialog.descriptionTextEdit->toPlainText();
     }
 }
 
@@ -881,24 +880,23 @@ void MainWindow::properties()
     }
     else if(beamInspector)
     {
-        BeamInspectorDialog dialog(beamInspector, this);
-        QPointF position=beamInspector->pos();
-        dialog.exec();
+        QPointF myPosition=beamInspector->pos(); 
+        QString description=beamInspector->getDescription();
+        beamInspectorDialog = new BeamInspectorDialog(beamInspector, this);
+        beamInspectorDialog->exec();
 
-        if(dialog.result()==QDialog::Rejected)
-            beamInspector->setPos(position);
+        if(beamInspectorDialog->result()==QDialog::Rejected)
+            beamInspector->setPos(beamInspector->pos());
         else
         {
-           QString description=dialog.ui->descriptionTextEdit->toPlainText();
-           QUndoCommand* addInspectorPropertyCommand = new AddInspectorPropertyCommand(beamInspector, position,
-                                     description);
+           QUndoCommand* addInspectorPropertyCommand =
+                   new AddInspectorPropertyCommand(beamInspector, myPosition, description);
 
            undoStack->push(addInspectorPropertyCommand);
         }
     }
     else
         installationDescription();
-
 }
 
 void MainWindow::installationDescription()
@@ -1921,6 +1919,7 @@ void MainWindow::exportReport()
     myLaserReport=new LaserReport(laserWindow, laserpoint, LaserReport::ODF);
     myLaserReport->setReflectorsList(myReflectors);
     myLaserReport->setFootprintsList(myFootprints);
+    myLaserReport->setBeamInspectorsList(myBeamInspectors);
     myLaserReport->setBinocularsList(myBinoculars);
     myLaserReport->setIndoor(environmentModel->getState());
 
@@ -1957,6 +1956,7 @@ void MainWindow::printReport(QPrinter *printer)
         myLaserReport=new LaserReport(laserWindow, laserpoint, LaserReport::PDF);
         myLaserReport->setReflectorsList(myReflectors);
         myLaserReport->setFootprintsList(myFootprints);
+        myLaserReport->setBeamInspectorsList(myBeamInspectors);
         myLaserReport->setBinocularsList(myBinoculars);
         myLaserReport->setIndoor(environmentModel->getState());
 
@@ -4612,18 +4612,12 @@ void MainWindow::setGuiDarkTheme()
                          "QGraphicsView {background-color:#f0f0f0;}"
                          ));
         laserWindow->myDockGoggle->setStyleSheet(tr("QLabel {color: #fafafa}"));
-        laserWindow->myDockReflectorsList->setStyleSheet(tr(
-        "QListView {show-decoration-selected: 1;"
-                    "selection-color: white;"
-                    "selection-background-color: #0068d9;}"));
     }
     else
     {
         setStyleSheet(tr(""));
         laserWindow->setStyleSheet(tr(""));
         laserWindow->myDockGoggle->setStyleSheet(tr(""));
-        laserWindow->myDockGoggle->setStyleSheet(tr(""));
-        laserWindow->myDockReflectorsList->setStyleSheet(tr(""));
     }
 }
 

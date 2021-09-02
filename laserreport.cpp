@@ -100,6 +100,7 @@ QTextDocument* LaserReport::buildReportDocument()
 
     myCursor.insertHtml(htmlClassifier());
     buidReflectorsDocumentPart();
+    myCursor.insertHtml(htmlInspectors());
     myCursor.insertHtml(htmlFootprints());
     myCursor.insertHtml(htmlBinoculars());
 
@@ -526,6 +527,12 @@ void LaserReport::firstPageReport()
                                       .arg(laserpoint->pos().x())
                                       .arg(laserpoint->pos().y());
 
+    double qualityFactor=BeamInspector::getQualityFactor();
+    QString qualityFactorString="M<sup>2</sup>: " +QString::number(qualityFactor);
+
+    double rayleighDistance=BeamInspector::getRayleighDistance();
+    QString rayleighDistanceString="z<sub>R</sub>: " +QString::number(rayleighDistance, 'e', 2);
+
     QString aperturaStr ="Apertura zona di sgombero: " +
             QString::number(laserpoint->getAperture())+"&deg;";
 
@@ -596,6 +603,8 @@ void LaserReport::firstPageReport()
     filterStr="Filtro montato su ottica: assente";
 
     laser.append(laserPositionStr);
+    laser.append(qualityFactorString);
+    laser.append(rayleighDistanceString);
     laser.append(aperturaStr);
 
     if(laserpoint->isFilterOn())
@@ -676,6 +685,43 @@ void LaserReport::binocularsValuation()
         binoculars.append("Distanza dal punto laser [m]: " + QString::number(binocular->getBinocularDistance()));
     }
 }
+
+void LaserReport::inspectorsValuation()
+{
+    inspectors.append("Posizione [m, m]: " + QString("(%1,%2)")
+                     .arg(beamInspector->pos().x())
+                     .arg(beamInspector->pos().y()));
+    inspectors.append("Descrizione: " + beamInspector->getDescription());
+    QString D_b="D<sub>b</sup>[m]: " + QString::number(beamInspector->getSpotDiameter(),'e', 2);
+    inspectors.append(D_b);
+    inspectors.append("L [m]: " + QString::number(beamInspector->getInspectorDistance(),'e', 2));
+    inspectors.append("φ<sub>orizzontale</sub>: " + QString::number(beamInspector->getLinkInspectorPhase(),'e', 2));
+
+    QString fieldType;
+    if(beamInspector->isFarField())
+        fieldType="Campo lontano";
+    else
+        fieldType="Campo vicino";
+
+    inspectors.append("Propagazione: " + fieldType);
+
+    double wavelength=laserWindow->myDockControls->getWavelength();
+    if((wavelength>=400)&&(wavelength<=1400))
+    {
+        inspectors.append("Danno retinico (400 ≤ λ ≤ 1400 nm) : ");
+        double farFieldRatio=beamInspector->getRayleighDistance()/beamInspector->getInspectorDistance();
+        inspectors.append("z<sub>R</sub>/L: " + QString::number(farFieldRatio, 'e', 2));
+        inspectors.append("f<sub></sub> [m]: " + QString::number(beamInspector->get_fm(),'e', 2));
+        inspectors.append("d<sub>r</sub> [μm]: " + QString::number(beamInspector->get_d_r(),'e', 2));
+        inspectors.append("d<sub>ff</sub> [μm]: " + QString::number(beamInspector->get_d_r_FarField(),'e', 2));
+        inspectors.append("e%: " + QString::number(beamInspector->getPercentError(),'f', 2));
+        inspectors.append("r<sub>s</sub> [m]: " + QString::number(beamInspector->getCurvatureRadius(),'e', 2));
+        inspectors.append("d<sub>s</sub> [mm]: " + QString::number(beamInspector->get_d_s(),'e', 2));
+        inspectors.append("α [mrad]: " + QString::number(beamInspector->get_alpha_r(),'e', 2));
+        inspectors.append("C<sub>E</sub>: " + QString::number(beamInspector->getCE(),'f', 2));
+    }
+}
+
 
 void LaserReport::footprintsValuation()
 {
@@ -1134,10 +1180,52 @@ QString LaserReport::htmlFootprints()
             foreach (QString entry, footprints)
             {
                 QStringList fields = entry.split(": ");
-                QString title = fields[0].toHtmlEscaped();
-                QString body = fields[1].toHtmlEscaped();
+                QString title = fields[0];
+                QString body = fields[1];
 
                 html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b></td>\n"
+                       "<td>" + body + "</td>\n</tr>\n";
+            }
+
+        html +="\n</table><br>\n";
+        ++myIterator;
+    ++i;
+        }
+    }
+    return html;
+}
+
+QString LaserReport::htmlInspectors()
+{
+    QString html;
+
+    if(!myBeamInspectors.empty())
+    {
+        html +="<br><h2>Segnaposti presenti nell'area</h2>";
+
+        QList<std::pair<BeamInspector*, int>>::iterator myIterator; // iterator
+        myIterator = myBeamInspectors.begin();
+        int i =1;
+        while(myIterator != myBeamInspectors.end())
+        {
+            beamInspector=myIterator->first;
+            inspectors.clear();
+            inspectorsValuation();
+
+            html +=
+            "<table width="+correction+">\n"
+            "<tr><th colspan=\"2\">Segnaposto n. "+ QString::number(i) +"</th></tr>\n";
+
+            foreach (QString entry, inspectors)
+            {
+                QStringList fields = entry.split(":");
+                QString title = fields[0];
+                QString body = fields[1];
+
+                if(body==" ")
+                    html +="<tr>\n<td colspan=\"2\"><i>" + title + "</i></td>\n</tr>\n";
+                else
+                    html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b></td>\n"
                        "<td>" + body + "</td>\n</tr>\n";
             }
 
@@ -1173,8 +1261,8 @@ QString LaserReport::htmlBinoculars()
 
             foreach (QString entry, binoculars) {
             QStringList fields = entry.split(": ");
-            QString title = fields[0].toHtmlEscaped();
-            QString body = fields[1].toHtmlEscaped();
+            QString title = fields[0];
+            QString body = fields[1];
 
             html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b></td>\n"
                    "<td>" + body + "</td>\n</tr>\n";
@@ -1281,9 +1369,15 @@ void LaserReport::setFootprintsList(const QList<FootprintObject*> &_myFootprints
 {
    myFootprints=_myFootprints;
 }
+
 void LaserReport::setBinocularsList(const QList<pair<Binocular*, int>> &_myBinoculars)
 {
     myBinoculars=_myBinoculars;
+}
+
+void LaserReport::setBeamInspectorsList(const QList<pair<BeamInspector*, int>> &_myBeamInspectors)
+{
+    myBeamInspectors=_myBeamInspectors;
 }
 
 void LaserReport::setReflectorsFilenameList(const QStringList &_reflectorsImageName)

@@ -708,7 +708,7 @@ void LaserReport::inspectorsValuation()
     double wavelength=laserWindow->myDockControls->getWavelength();
     if((wavelength>=400)&&(wavelength<=1400))
     {
-        inspectors.append("Danno retinico (400 ≤ λ ≤ 1400 nm) : ");
+        inspectors.append("Danno retinico (400 ≤ λ ≤ 1400 nm) :dr");
         double farFieldRatio=beamInspector->getRayleighDistance()/beamInspector->getInspectorDistance();
         inspectors.append("z<sub>R</sub>/L: " + QString::number(farFieldRatio, 'e', 2));
         inspectors.append("f<sub></sub> [m]: " + QString::number(beamInspector->get_fm(),'e', 2));
@@ -719,6 +719,9 @@ void LaserReport::inspectorsValuation()
         inspectors.append("d<sub>s</sub> [mm]: " + QString::number(beamInspector->get_d_s(),'e', 2));
         inspectors.append("α [mrad]: " + QString::number(beamInspector->get_alpha_r(),'e', 2));
         inspectors.append("C<sub>E</sub>: " + QString::number(beamInspector->getCE(),'f', 2));
+        inspectors.append(QString::fromStdString(beamInspector->getEMP_Sort())+
+                          QString::fromStdString(beamInspector->getEMP_Unit())+ ": "
+                        + QString::number(beamInspector->getEMP(),'f', 2));
     }
 }
 
@@ -1222,7 +1225,7 @@ QString LaserReport::htmlInspectors()
                 QString title = fields[0];
                 QString body = fields[1];
 
-                if(body==" ")
+                if(body=="dr")
                     html +="<tr>\n<td colspan=\"2\"><i>" + title + "</i></td>\n</tr>\n";
                 else
                     html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b></td>\n"

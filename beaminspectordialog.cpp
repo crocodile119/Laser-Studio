@@ -90,7 +90,9 @@ void BeamInspectorDialog::setUpBeamInspector()
         ffRetinalDiameterLabel->setText(QString::number(d_r_FarField_micron));
         errorLabel->setText(QString::number(beamInspector->getPercentError())+" %");
         CE_Label->setText(QString::number(beamInspector->getCE()));
+        EMP_Label->setText(QString::number(beamInspector->getReducedEMP()));
         apparentSourceLabel->setText(QString::number(beamInspector->get_d_s()));
+        tEMP_Label->setText(QString::fromStdString(beamInspector->getEMP_Sort()+beamInspector->getEMP_Unit()));
     }
 }
 
@@ -441,6 +443,17 @@ void BeamInspectorDialog::setUpWidget()
         CE_Label->setStyleSheet(valueStyle);
         retinalGridLayout->addWidget(CE_Label, 1, 7, 1, 1);
 
+        tEMP_Label = new QLabel(retinalGroupBox);
+        tEMP_Label->setObjectName(QString::fromUtf8("tEMP_Label"));
+        tEMP_Label->setFont(boldFont);
+        tEMP_Label->setStyleSheet(nameStyle);
+        retinalGridLayout->addWidget(tEMP_Label, 1, 8, 1, 1);
+
+        EMP_Label = new QLabel(retinalGroupBox);
+        EMP_Label->setObjectName(QString::fromUtf8("EMP_Label"));
+        EMP_Label->setFont(font);
+        EMP_Label->setStyleSheet(valueStyle);
+        retinalGridLayout->addWidget(EMP_Label, 1, 9, 1, 1);
 
         dockGridLayout->addWidget(retinalGroupBox, 3, 0, 1, 2);
 }
@@ -454,10 +467,10 @@ void BeamInspectorDialog::setUpWidget()
         beamPointGroupBox->setTitle("Fascio nel punto");
         tSpotDiameterLabel->setText("d <sub>b</sub> [mm]");
         tDescriptionTextEdit->setText("Descrizione");
-        tRayleighDistanceLabel->setText("<p>z<sub>R</sub> [m]</p>");
+        tRayleighDistanceLabel->setText("z<sub>R</sub> [m]");
         tApertureDistanceLabel->setText("L [m]");
         tInspectorPhaseLabel->setText("&phi;<sub>Inspector</sub>[rad]");
-        tQualityFactorLabel->setText("<p>M<sup>2</sup></p>");
+        tQualityFactorLabel->setText("M<sup>2</sup>");
         tXLabel->setText("X:");
         tYLabel->setText("Y:");
         tFarFieldLabel->setText("Propagazione");
@@ -465,15 +478,15 @@ void BeamInspectorDialog::setUpWidget()
         if(isRetinalHazard())
         {
             retinalGroupBox->setTitle("Dati relativi al danno retinico e alla sorgente apparente");
-            tFarFieldRatioLabel->setText("<p>z <sub>r</sub>/L </p>");
+            tFarFieldRatioLabel->setText("z <sub>r</sub>/L");
             tErrorLabel->setText("errore");
             tEyeFocusLengthLabel->setText("f <sub>m</sub> [m]");
             tRetinalDiameterLabel->setText("d <sub>r</sub> [&mu;m]");
             tRetinalDiameterLabel_2->setText("d <sub>ff</sub> [&mu;m]");
             tCurvatureRadiusLabel->setText("r<sub>s</sub> [m]");
-            tApparentSourceLabel->setText("<p>d<sub>s</sub>[mm]</p>");
-            tAlphaLabel->setText("<p>&alpha; [mrad]</p>");
-            tCE_Label->setText("<p>C<sub>E</sub></p>");
+            tApparentSourceLabel->setText("d<sub>s</sub>[mm]");
+            tAlphaLabel->setText("<p>&alpha;[mrad]</p>");
+            tCE_Label->setText("C<sub>E</sub>");
         }
 
         resize(sizeHint());

@@ -173,6 +173,8 @@ MainWindow::MainWindow()
     connect(laserWindow->myDockControls, SIGNAL(NOHD_Changed()), this, SLOT(setDNRO_ForReflector()));
     connect(laserWindow->myDockControls, SIGNAL(NOHD_Changed()), this, SLOT(setDNRO_ForBinocular()));
     connect(laserWindow->myDockControls, SIGNAL(NOHD_Changed()), this, SLOT(setDNRO_ForFootprint()));
+    connect(laserWindow->myDockControls, SIGNAL(EMP_Changed()), this, SLOT(setDNRO_ForInspector()));
+    connect(laserWindow->myDockControls, SIGNAL(powerErgForEMPChanged()), this, SLOT(setDNRO_ForInspector()));
     connect(laserWindow->myDockControls, SIGNAL(lambertianMaxChanged()), this, SLOT(setLambertianMaxForReflector()));
     connect(laserWindow->myDockControls, SIGNAL(NSHD_Changed()), this, SLOT(setDNRC_ForLaserpoint()));
     connect(laserWindow->myDockControls, SIGNAL(divergenceChanged()), this, SLOT(setDivergenceForReflector()));
@@ -2616,6 +2618,7 @@ void MainWindow::addBeamInspector()
     QGraphicsItem *item =laserWindow->graphicsView->scene->itemAt(shiftPosition, QTransform());
     beamInspector= qgraphicsitem_cast<BeamInspector*>(item);
 
+    setDNRO_ForInspector();
     beamInspector->laserParametersChanged();
     inspectorSeqNumber++;
 
@@ -3153,6 +3156,34 @@ void MainWindow::setDNRO_ForFootprint()
         ++myIterator;
     }
     shadowZoneForLaser();
+}
+
+void MainWindow::setDNRO_ForInspector()
+{
+    if(beamInspector==0)
+        return;
+
+    double EMP=laserWindow->myDockControls->getEMP();
+    double powerErgForEMP=laserWindow->myDockControls->getPowerErgForEMP();
+    std::string EMP_Sort=laserWindow->myDockControls->getEMP_Sort();
+
+    qDebug()<<"EMP per il calcolo della DNRO"<<EMP;
+    qDebug()<<"Potenza o energia dell'impulso per il calcolo della DNRO"<<powerErgForEMP;
+
+    QList<pair<BeamInspector*, int>>::iterator myIterator; // iterator
+    myIterator = myBeamInspectors.begin();
+
+    while (myIterator != myBeamInspectors.end() )
+    {
+        beamInspector=myIterator->first;
+        beamInspector->setEMP(EMP);
+        beamInspector->setPowerErgForEMP(powerErgForEMP);
+        beamInspector->setEMP_Sort(EMP_Sort);
+        beamInspector->laserParametersChanged();
+
+        ++myIterator;
+    }
+    inspectorsModel->myDataHasChanged();
 }
 
 void MainWindow::setDivergenceForReflector()
@@ -4362,12 +4393,11 @@ void MainWindow::scintillationOn(bool _scintillationBool)
 void MainWindow::listDeselectionFromGraphics()
 {
     laserWindow->graphicsView->scene->clearSelection();
-    laserSelectionModel->clear();
-    //laserWindow->myDockReflectorsList->setFocu
-    reflectorsSelectionModel->clear();
-    binocularsSelectionModel->clear();
-    environmentSelectionModel->clear();
-    inspectorsSelectionModel->clear();
+    laserSelectionModel->clearSelection();
+    reflectorsSelectionModel->clearSelection();
+    binocularsSelectionModel->clearSelection();
+    environmentSelectionModel->clearSelection();
+    inspectorsSelectionModel->clearSelection();
 }
 
 void MainWindow::addObjectLink()
@@ -4762,9 +4792,11 @@ void MainWindow::redo()
     bool addFootprintCmd=undoStack->command(index-1)==addFootprintCommand;
     bool addReflectorCmd=undoStack->command(index-1)==addReflectorCommand;
     bool addBinocularCmd=undoStack->command(index-1)==addBinocularCommand;
+    bool addBeamInspectorCmd=undoStack->command(index-1)==addBeamInspectorCommand;
     bool deleteFootprintCmd=undoStack->command(index-1)==deleteFootprintCommand;
     bool deleteReflectorCmd=undoStack->command(index-1)==deleteReflectorCommand;
     bool deleteBinocularCmd=undoStack->command(index-1)==deleteBinocularCommand;
+    bool deleteBeamInspectorCmd=undoStack->command(index-1)==deleteBeamInspectorCommand;
     qDebug()<<"undoStack->command(index-1)==addFootprintCommand: "<<addFootprintCmd;
     qDebug()<<"undoStack->command(index-1)==deleteFootprintCommand: "<<deleteFootprintCmd;
     if(addFootprintCmd)
@@ -4823,6 +4855,11 @@ void MainWindow::redo()
             }
         }
     }
+    else if(addBeamInspectorCmd)
+    {
+        setDNRO_ForInspector();
+        beamInspector->laserParametersChanged();
+    }
     else if(deleteReflectorCmd)
     {
         if(!myReflectors.isEmpty())
@@ -4834,6 +4871,12 @@ void MainWindow::redo()
     }
     else if(deleteBinocularCmd)
         setMaxEhnacedOpticalDiameter();
+
+    else if(deleteBeamInspectorCmd)
+    {
+        setDNRO_ForInspector();
+        beamInspector->laserParametersChanged();
+    }
 
     if((!addFootprintCmd)&&(!deleteFootprintCmd))
         setShadowZone();
@@ -4915,7 +4958,7 @@ void MainWindow::updateForBeamInspection()
         beamInspector->setWavelength(laserWindow->myDockControls->getWavelength());
         beamInspector->setBeamDiameter(laserWindow->myDockControls->getBeamDiameter()),
         beamInspector->setDivergence(laserWindow->myDockControls->getDivergence());
-        //opticalDistance è la NOHD che viene moltiplicata per 2 da setDNRO_Diameter
+
         beamInspector->laserParametersChanged();
 
         ++myIterator;

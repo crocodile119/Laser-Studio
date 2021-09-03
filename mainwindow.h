@@ -119,6 +119,7 @@ private slots:
     void setDNRO_ForReflector();
     void setDNRO_ForBinocular();
     void setDNRO_ForFootprint();
+    void setDNRO_ForInspector();
     void setWavelengthForBinocular();
     void setLambertianMaxForReflector();
     void addReflector(const target& target);

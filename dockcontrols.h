@@ -101,6 +101,7 @@ public:
 
     double getWavelength()const;
     double getPowerErgForEMP()const;
+    string getEMP_Sort()const;
 
     double getOpticalDistance()const;
     double getSkinDistances()const;
@@ -167,6 +168,7 @@ private slots:
     void on_wavelengthScrollBar_valueChanged(int value);
     void setEMP();
     void setPowerErgForEMP();
+    void setEMP_Sort();
     void on_enableTeCheckBox_toggled(bool checked);   
     void showGoggleCharts(bool checked);
     void on_checkGaussianBeam_clicked(bool checked);
@@ -205,6 +207,7 @@ private:
 
     double effectivePowerErg;
     double myEMP;
+    std::string EMP_Sort;
     double powerErgForEMP;
     double NOHD;
     double NSHD;

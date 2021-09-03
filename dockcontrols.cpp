@@ -60,9 +60,11 @@ DockControls::DockControls(QWidget *parent, DockResults *_dockResults, DockEffec
 
     enableTeEditing=false;
     setEMP();
+    setEMP_Sort();
     setPowerErgForEMP();
 
     connect(this, SIGNAL(EMP_Changed()), this, SLOT(setEMP()));
+    connect(this, SIGNAL(EMP_Changed()), this, SLOT(setEMP_Sort()));
     connect(this, SIGNAL(powerErgForEMPChanged()), this, SLOT(setPowerErgForEMP()));
     connect(dockGoggle->ui->showGoggleCharts, SIGNAL(toggled(bool)), this, SLOT(showGoggleCharts(bool)));
 }
@@ -2461,10 +2463,26 @@ void DockControls::setPowerErgForEMP()
     emit powerErgForEMPChanged();
 }
 
+void DockControls::setEMP_Sort()
+{
+    if(n_laser==operation::CONTINUOS_WAVE)
+        EMP_Sort=MyLaserCW_Pr->getFormulaSort();
+    else if(n_laser==operation::PULSE)
+        EMP_Sort=MyLaserSP_Pr->getFormulaSort();
+    else if(n_laser==operation::MULTI_PULSE)
+        EMP_Sort=MyLaserMP_Pr->getFormulaSort();
+    else
+        EMP_Sort="";
+}
 
 double DockControls::getPowerErgForEMP()const
 {
     return powerErgForEMP;
+}
+
+std::string DockControls::getEMP_Sort()const
+{
+    return EMP_Sort;
 }
 
 void DockControls::setEMP()

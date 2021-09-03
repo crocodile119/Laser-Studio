@@ -29,7 +29,6 @@ BeamInspector::BeamInspector(double _inspectorDistance, double _wavelength, doub
      scale(1.0), inspectorDistance(_inspectorDistance), wavelength(_wavelength), divergence(_divergence), beamDiameter(_beamDiameter),
      inspectorPix(":/images/inspectorpix.png")
 {
-
     inspectorUpdate();
     setStringPosition();
     setToolTip(position);
@@ -176,7 +175,6 @@ QVariant BeamInspector::itemChange(GraphicsItemChange change,
             linkInspectorPhase=inspectorlink->linkInspectorPhase();
 
             inspectorUpdate();
-
             setStringPosition();
             setToolTip(position);
         }
@@ -246,20 +244,55 @@ void BeamInspector::setStringPosition()
     QString xString;
     QString yString;
     QString inspectorDistanceString;
+    QString spotDiameterString;
     QString CE_String;
+    QString safePositionString;
+    QString EMP_SortUnitString;
+    QString EMP_ValueString;
 
     xString=QString::number(xCoordinate=pos().x(),'f', 2);
     yString=QString::number(yCoordinate=pos().y(),'f', 2);
     inspectorDistanceString=QString::number(inspectorDistance,'f',2);
-    CE_String=QString::number(CE,'2', 2);
+    spotDiameterString=QString::number(spotDiameter,'e',2);
 
+    if(isRetinalHazard())
+    {
+        CE_String=QString::number(CE,'f', 2);
+        EMP_SortUnitString=QString::fromStdString(getEMP_Sort())+QString::fromStdString(EMP_Unit);
+        EMP_ValueString=QString::number(reduced_EMP,'e', 2);
 
-    position ="Segnaposto di indagine" + QString(" (%1,%2) <br>dist[m]: %3 C<sub>E</sub>: %4<br>")
+        if(isSafePosition())
+            safePositionString="Possibile posizione sicura";
+        else
+            safePositionString="Posizione pericolosa";
+
+        position ="Segnaposto di indagine" + QString(" (%1,%2) <br>dist[m]: %3 D<sub>b</sub>[mm]: %4 C<sub>E</sub>: %5 %6=%7<br>%8")
                                     .arg(xString)
                                     .arg(yString)           
                                     .arg(inspectorDistanceString)
-                                    .arg(CE_String);
+                                    .arg(spotDiameterString)
+                                    .arg(CE_String)
+                                    .arg(EMP_SortUnitString)
+                                    .arg(EMP_ValueString)
+                                    .arg(safePositionString);
+    }
+    else
+    {
+        position ="Segnaposto di indagine" + QString(" (%1,%2) <br>dist[m]: %3 D<sub>b</sub>[mm]: %4 <br>")
+                                    .arg(xString)
+                                    .arg(yString)
+                                    .arg(inspectorDistanceString)
+                                    .arg(spotDiameterString);
+    }
+}
 
+bool BeamInspector::isRetinalHazard()
+{
+    bool retinalHazard=false;
+    if((wavelength>=400)&&(wavelength<=1400))
+            retinalHazard=true;
+
+    return retinalHazard;
 }
 
 QString BeamInspector::getStringPosition()const
@@ -285,6 +318,42 @@ int BeamInspector::getInspectorSeqNumber() const
 double BeamInspector::getInspectorDistance()
 {
     return inspectorDistance;
+}
+
+void BeamInspector::setPowerErgForEMP(const double& _powerErgForEMP)
+{
+    powerErgForEMP=_powerErgForEMP;
+}
+
+void BeamInspector::setEMP(const double& _EMP)
+{
+    EMP=_EMP;
+}
+
+void BeamInspector::setEMP_Sort(const std::string& _EMP_Sort)
+{
+    EMP_Sort=_EMP_Sort;
+}
+
+
+double BeamInspector::getPowerErgForEMP()const
+{
+    return powerErgForEMP;
+}
+
+double BeamInspector::getEMP()const
+{
+    return EMP;
+}
+
+std::string BeamInspector::getEMP_Unit()const
+{
+    return EMP_Unit;
+}
+
+double BeamInspector::getReducedEMP()const
+{
+    return reduced_EMP;
 }
 
 void BeamInspector::setDescription(const QString& _description)
@@ -386,6 +455,16 @@ bool BeamInspector::isFmFocusable()
         isFocusable=true;
 
     return isFocusable;
+}
+
+bool BeamInspector::isSafePosition()
+{
+   return (EMP_PoweErgRatio<CE);
+}
+
+void BeamInspector::valuatePosition()
+{
+   EMP_PoweErgRatio=(4*powerErgForEMP)/(PI*pow(1e-03*spotDiameter,2)*EMP);
 }
 
 void BeamInspector::computeFm()
@@ -552,15 +631,40 @@ bool BeamInspector::isFarField()
     return farField;
 }
 
+void BeamInspector::computeReduced_EMP()
+{
+    reduced_EMP=EMP*CE;
+}
+
+std::string BeamInspector::getEMP_Sort()const
+{
+    string myEMP_Sort=EMP_Sort;
+    return myEMP_Sort.append("<sub>&alpha;</sub>");
+}
+
+void BeamInspector::computeEMP_Unit()
+{
+    if(EMP_Sort=="E")
+        EMP_Unit=" [W/m<sup>2</sup>]";
+    else
+        EMP_Unit=" [J/m<sup>2</sup>]";
+}
+
 void BeamInspector::inspectorUpdate()
 {
-    computeSpotDiameter(); 
-    computeCurvaureRadius(inspectorDistance);
-    computeFm();
-    compute_d_r();
-    compute_alpha_r();
-    compute_d_r_FarField();
-    computePercentError();
-    computeCE();
-    compute_d_s();
+    computeSpotDiameter();
+    if(isRetinalHazard())
+    {
+        computeCurvaureRadius(inspectorDistance);
+        computeFm();
+        compute_d_r();
+        compute_alpha_r();
+        compute_d_r_FarField();
+        computePercentError();
+        computeCE();
+        compute_d_s();
+        valuatePosition();
+        computeReduced_EMP();
+        computeEMP_Unit();
+    }
 }

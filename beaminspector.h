@@ -40,8 +40,15 @@ public:
     void laserPositionChanged();
     void laserParametersChanged();
     double getInspectorDistance();
-    double getLinkInspectorPhase()const;
+    void setPowerErgForEMP(const double&);
+    void setEMP(const double&);
+    void setEMP_Sort(const std::string&);
+    double getPowerErgForEMP()const;
+    double getEMP()const;
+    std::string getEMP_Unit()const;
+    double getReducedEMP()const;
     InspectorLink* getBeamInspectorLink();
+    double getLinkInspectorPhase()const;
     void setDescription(const QString&);
     QString getDescription()const;
     void inspectorUpdate();
@@ -79,6 +86,7 @@ public:
     void computeFm();
     void compute_d_r_FarField();
     void computePercentError();
+    bool isRetinalHazard();
     bool isFmFocusable();
     bool isFarField();
     static QPointF positionShift(const double &scale);
@@ -87,6 +95,11 @@ public:
     void compute_alpha_r();
     void compute_d_s();
     void computeCE();
+    bool isSafePosition();
+    void valuatePosition();
+    std::string getEMP_Sort()const;
+    void computeEMP_Unit();
+    void computeReduced_EMP();
 
     double getSpotDiameter()const;
     double getCurvatureRadius()const;
@@ -128,6 +141,7 @@ private:
     double wavelength;
     double divergence;
     double beamDiameter;
+    double EMP_PoweErgRatio;
     QStringList stringList;
     QPixmap inspectorPix;
     QRectF myTextRect;
@@ -135,6 +149,12 @@ private:
 
     QPainterPath path;
     bool inZone;
+
+    double powerErgForEMP;
+    double EMP;
+    double reduced_EMP;
+    std::string EMP_Sort;
+    std::string EMP_Unit;
 
     //parte dedicata ai dati membro relativi alle caratteristiche del fascio
 

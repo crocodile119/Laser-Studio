@@ -213,6 +213,7 @@ private slots:
     void environmentFromList();
     void setLaserpointShapePathForReflectors();
     void setLaserpointShapePathForBinoculars();
+    void setLaserpointShapePathForInspectors();
     void setDistanceForFootprint();
     void shadowZoneForLaser();
     void meteoWidgets(bool, bool, bool);

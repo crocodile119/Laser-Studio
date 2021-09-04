@@ -296,6 +296,8 @@ void BeamInspector::setStringPosition()
     xString=QString::number(xCoordinate=pos().x(),'f', 2);
     yString=QString::number(yCoordinate=pos().y(),'f', 2);
     inspectorDistanceString=QString::number(inspectorDistance,'f',2);
+    if(inZone)
+    {
     spotDiameterString=QString::number(spotDiameter,'e',2);
 
 
@@ -353,6 +355,22 @@ void BeamInspector::setStringPosition()
                                     .arg(farFieldString)
                                     .arg(safePositionString);
     }
+    }
+    else
+    {
+
+    if(inspectorDistance<attenuatedDNRO)
+    safePositionString="fascio non accessibile";
+        else
+    safePositionString="possibile posizione sicura";
+
+    position ="Segnaposto di indagine" + QString(" (%1,%2) <br>dist[m]: %3<br>%4")
+                                .arg(xString)
+                                .arg(yString)
+                                .arg(inspectorDistanceString)
+                                .arg(safePositionString);
+    }
+
 }
 
 bool BeamInspector::isRetinalHazard()

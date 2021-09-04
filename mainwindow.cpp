@@ -2621,6 +2621,7 @@ void MainWindow::addBeamInspector()
     beamInspector= qgraphicsitem_cast<BeamInspector*>(item);
 
     setDNRO_ForInspector();
+    setLaserpointShapePathForInspectors();
     beamInspector->laserParametersChanged();
     inspectorSeqNumber++;
 
@@ -2628,6 +2629,9 @@ void MainWindow::addBeamInspector()
 
     connect(beamInspector, SIGNAL(xChanged()), this, SLOT(updateInspectorList()));
     connect(beamInspector, SIGNAL(yChanged()), this, SLOT(updateInspectorList()));
+    connect(beamInspector, SIGNAL(xChanged()), this, SLOT(setLaserpointShapePathForInspectors()));
+    connect(beamInspector, SIGNAL(xChanged()), this, SLOT(setLaserpointShapePathForInspectors()));
+
 }
 
 void MainWindow::addReflector(const target &target)
@@ -3336,7 +3340,8 @@ void MainWindow::setDistanceForInspector()
     while (myIterator != myBeamInspectors.end() )
     {
         beamInspector=myIterator->first;
-
+        beamInspector->setInZone(
+                    laserpoint->shapePathContainsPoint(laserpoint->mapFromScene(beamInspector->pos())));
         beamInspector->laserPositionChanged();
         ++myIterator;
     }
@@ -3805,6 +3810,8 @@ void MainWindow::makeSceneOfSavedItems(){
         beamInspector->laserParametersChanged();
         myBeamInspectors.append(make_pair(beamInspector, inspectorSeqNumber));
 
+        connect(beamInspector, SIGNAL(xChanged()), this, SLOT(setLaserpointShapePathForInspectors()));
+        connect(beamInspector, SIGNAL(xChanged()), this, SLOT(setLaserpointShapePathForInspectors()));
         connect(beamInspector, SIGNAL(xChanged()), this, SLOT(updateInspectorList()));
         connect(beamInspector, SIGNAL(yChanged()), this, SLOT(updateInspectorList()));
         ++inspectorSeqNumber;
@@ -4278,6 +4285,15 @@ void MainWindow::setLaserpointShapePathForReflectors()
     }
 }
 
+void MainWindow::setLaserpointShapePathForInspectors()
+{
+    if(selectedBeamInspector())
+    {
+        bool inLaserBeamShape=laserpoint->shapePathContainsPoint(laserpoint->mapFromScene(selectedBeamInspector()->pos()));
+            selectedBeamInspector()->setInZone(inLaserBeamShape);
+    }
+}
+
 void MainWindow::setLaserpointShapePathForBinoculars()
 {
     if(selectedBinocular())
@@ -4474,6 +4490,7 @@ void MainWindow::setShadowZone()
     laserpoint->setEhnacedShadowZone(ehnacedPathZone);
     setDistanceForBinocular();
     setDistanceForReflector();
+    setDistanceForInspector();
 }
 
 void MainWindow::shadowZoneForLaser()
@@ -4727,6 +4744,7 @@ void MainWindow::undo()
     bool deleteFootprintCmd=undoStack->command(index)==deleteFootprintCommand;
     bool deleteReflectorCmd=undoStack->command(index)==deleteReflectorCommand;
     bool deleteBinocularCmd=undoStack->command(index)==deleteBinocularCommand;
+    bool deleteBeamInspectorCmd=undoStack->command(index)==deleteBeamInspectorCommand;
     qDebug()<<"undoStack->command(index)==addFootprintCommand: "<<addFootprintCmd;
     qDebug()<<"undoStack->command(index)==deleteFootprintCommand: "<<deleteFootprintCmd;
     if(addFootprintCmd)
@@ -4773,6 +4791,14 @@ void MainWindow::undo()
             reflector=myReflectors.last().first;
             setMaxEhnacedOpticalDiameter();
             setLaserpointShapePathForReflectors();
+        }
+    }    
+    else if(deleteBeamInspectorCmd)
+    {
+        if(!myBeamInspectors.isEmpty())
+        {
+            beamInspector=myBeamInspectors.last().first;
+            setLaserpointShapePathForInspectors();
         }
     }
     else if(deleteBinocularCmd)
@@ -4862,7 +4888,7 @@ void MainWindow::redo()
     }
     else if(addBeamInspectorCmd)
     {
-        setDNRO_ForInspector();
+        setLaserpointShapePathForInspectors();
         beamInspector->laserParametersChanged();
     }
     else if(deleteReflectorCmd)
@@ -4879,8 +4905,11 @@ void MainWindow::redo()
 
     else if(deleteBeamInspectorCmd)
     {
-        setDNRO_ForInspector();
-        beamInspector->laserParametersChanged();
+        if(!myBeamInspectors.isEmpty())
+        {
+            beamInspector=myBeamInspectors.last().first;
+            setLaserpointShapePathForInspectors();
+        }
     }
 
     if((!addFootprintCmd)&&(!deleteFootprintCmd))

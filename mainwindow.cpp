@@ -695,6 +695,7 @@ void MainWindow::updateForCondMeteo()
     setDNRO_ForReflector();
     setDNRO_ForBinocular();
     setDNRO_ForFootprint();
+    setDNRO_ForInspector();
 }
 
 void MainWindow::atmosphericEffects()
@@ -2609,9 +2610,10 @@ void MainWindow::addBeamInspector()
     double laserPosY=laserpoint->pos().y();
 
     double inspectorDistance=sqrtf(powf((inspectorPosX-laserPosX), 2)+powf((inspectorPosY-laserPosY), 2));
+    double attenuatedDNRO=attenuatedDistance(laserWindow->myDockControls->getOpticalDistance());
 
     addBeamInspectorCommand = new AddBeamInspectorCommand(inspectorDistance, scale, inspectorSeqNumber, laserWindow,
-                                   laserpoint, &myBeamInspectors, inspectorsModel,  inspectorPos);
+                                   laserpoint, &myBeamInspectors, inspectorsModel,  inspectorPos, attenuatedDNRO);
 
     undoStack->push(addBeamInspectorCommand);
     QPointF shiftPosition =inspectorPos-BeamInspector::positionShift(scale);
@@ -3163,6 +3165,7 @@ void MainWindow::setDNRO_ForInspector()
     if(beamInspector==0)
         return;
 
+    double attenuatedDNRO=attenuatedDistance(laserWindow->myDockControls->getOpticalDistance());
     double EMP=laserWindow->myDockControls->getEMP();
     double powerErgForEMP=laserWindow->myDockControls->getPowerErgForEMP();
     std::string EMP_Sort=laserWindow->myDockControls->getEMP_Sort();
@@ -3179,6 +3182,7 @@ void MainWindow::setDNRO_ForInspector()
         beamInspector->setEMP(EMP);
         beamInspector->setPowerErgForEMP(powerErgForEMP);
         beamInspector->setEMP_Sort(EMP_Sort);
+        beamInspector->setAttenuatedDNRO(attenuatedDNRO);
         beamInspector->laserParametersChanged();
 
         ++myIterator;
@@ -3780,12 +3784,13 @@ void MainWindow::makeSceneOfSavedItems(){
         myBeamInspectorDescription=beamInspectorDescriptionVect.at(m);
 
         double inspectorDistance=sqrtf(powf(myBeamInspectorPos.x()-laserPosition.x(), 2)+powf((myBeamInspectorPos.y()-laserPosition.y()), 2));
-
+        double attenuatedDNRO= attenuatedDistance(laserWindow->myDockControls->getOpticalDistance());
         //Costruttore DNRO, binocularDistance, wavelength, divergence, beamDiameter
         beamInspector=new BeamInspector(inspectorDistance,
                                         laserWindow->myDockControls->getWavelength(),
                                         laserWindow->myDockControls->getDivergence(),
-                                        laserWindow->myDockControls->getBeamDiameter());
+                                        laserWindow->myDockControls->getBeamDiameter(),
+                                        attenuatedDNRO);
 
         beamInspector->setPixScale(scale);
         beamInspector->setPos(myBeamInspectorPos);

@@ -24,14 +24,15 @@ double BeamInspector::TEM00_RayleighDistance;
 double BeamInspector::qualityFactor;
 double BeamInspector::pixHeight=20;
 
-BeamInspector::BeamInspector(double _inspectorDistance, double _wavelength, double _divergence, double _beamDiameter): QGraphicsObject(),
+BeamInspector::BeamInspector(double _inspectorDistance, double _wavelength, double _divergence, double _beamDiameter, double _attenuatedDNRO): QGraphicsObject(),
      myTextColor(Qt::black), myBackgroundColor(Qt::white), myOutlineColor(Qt::transparent), myBeamColor(Qt::darkGray),
      scale(1.0), inspectorDistance(_inspectorDistance), wavelength(_wavelength), divergence(_divergence), beamDiameter(_beamDiameter),
-     inspectorPix(":/images/inspectorpix.png")
+     attenuatedDNRO(_attenuatedDNRO), inspectorPix(":/images/inspectorpix.png")
 {
     inspectorUpdate();
     setStringPosition();
-    setToolTip(position);
+    setTextLabel();
+    setToolTip(textTip);
     setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges);
 }
 
@@ -176,13 +177,19 @@ QVariant BeamInspector::itemChange(GraphicsItemChange change,
 
             inspectorUpdate();
             setStringPosition();
-            setToolTip(position);
+            setTextLabel();
+            setToolTip(textTip);
         }
         if (change == ItemSelectedChange) {
             return isSelected();
         }
     }
     return QGraphicsItem::itemChange(change, value);
+}
+
+void BeamInspector::setAttenuatedDNRO(const double& _attenuatedDNRO)
+{
+    attenuatedDNRO=_attenuatedDNRO;
 }
 
 void BeamInspector::laserParametersChanged()
@@ -196,7 +203,8 @@ void BeamInspector::laserParametersChanged()
       inspectorUpdate();
 
       setStringPosition();
-      setToolTip(position);
+      setTextLabel();
+      setToolTip(textTip);
   }
 }
 
@@ -211,7 +219,8 @@ void BeamInspector::laserPositionChanged()
       inspectorUpdate();
 
       setStringPosition();
-      setToolTip(position);
+      setTextLabel();
+      setToolTip(textTip);
    }
 }
 
@@ -233,6 +242,39 @@ QPointF BeamInspector::positionShift(const double & scale)
     return QPointF(0.0, rectHeight/2);
 }
 
+void BeamInspector::setTextLabel()
+{
+    double xCoordinate;
+    double yCoordinate;
+
+    xCoordinate=pos().x();
+    yCoordinate=pos().y();
+
+    QString xString;
+    QString yString;
+
+    if(inspectorDistance>50)
+    {
+        xString=QString::number(xCoordinate,'f', 0);
+        yString=QString::number(yCoordinate,'f', 0);
+    }
+    else if((inspectorDistance<=50)&&(inspectorDistance>20))
+    {
+        xString=QString::number(xCoordinate,'f', 1);
+        yString=QString::number(yCoordinate,'f', 1);
+    }
+    else
+    {
+        xString=QString::number(xCoordinate,'f', 2);
+        yString=QString::number(yCoordinate,'f', 2);
+    }
+
+    textTip =QString("Segnaposto\n  (%1,%2)")
+                                    .arg(xString)
+                                    .arg(yString);
+}
+
+
 void BeamInspector::setStringPosition()
 {
     double xCoordinate;
@@ -244,6 +286,7 @@ void BeamInspector::setStringPosition()
     QString xString;
     QString yString;
     QString inspectorDistanceString;
+    QString farFieldString;
     QString spotDiameterString;
     QString CE_String;
     QString safePositionString;
@@ -255,34 +298,60 @@ void BeamInspector::setStringPosition()
     inspectorDistanceString=QString::number(inspectorDistance,'f',2);
     spotDiameterString=QString::number(spotDiameter,'e',2);
 
+
+    if(isSafePosition())
+        safePositionString="possibile posizione sicura";
+    else
+        safePositionString="posizione pericolosa";
+
+
     if(isRetinalHazard())
     {
         CE_String=QString::number(CE,'f', 2);
         EMP_SortUnitString=QString::fromStdString(getEMP_Sort())+QString::fromStdString(EMP_Unit);
         EMP_ValueString=QString::number(reduced_EMP,'e', 2);
 
-        if(isSafePosition())
-            safePositionString="Possibile posizione sicura";
+        if(isFarField())
+        {
+            farFieldString="Campo lontano";
+            position ="Segnaposto di indagine" + QString(" (%1,%2) <br>dist[m]: %3 D<sub>b</sub>[mm]: %4 C<sub>E</sub>: %5 <br>%8, %9")
+                                        .arg(xString)
+                                        .arg(yString)
+                                        .arg(inspectorDistanceString)
+                                        .arg(spotDiameterString)
+                                        .arg(CE_String)
+                                        .arg(farFieldString)
+                                        .arg(safePositionString);
+        }
         else
-            safePositionString="Posizione pericolosa";
-
-        position ="Segnaposto di indagine" + QString(" (%1,%2) <br>dist[m]: %3 D<sub>b</sub>[mm]: %4 C<sub>E</sub>: %5 %6=%7<br>%8")
-                                    .arg(xString)
-                                    .arg(yString)           
-                                    .arg(inspectorDistanceString)
-                                    .arg(spotDiameterString)
-                                    .arg(CE_String)
-                                    .arg(EMP_SortUnitString)
-                                    .arg(EMP_ValueString)
-                                    .arg(safePositionString);
+        {
+            farFieldString="Campo vicino";
+            position ="Segnaposto di indagine" + QString(" (%1,%2) <br>dist[m]: %3 D<sub>b</sub>[mm]: %4 C<sub>E</sub>: %5 %6=%7<br>%8, %9")
+                                        .arg(xString)
+                                        .arg(yString)
+                                        .arg(inspectorDistanceString)
+                                        .arg(spotDiameterString)
+                                        .arg(CE_String)
+                                        .arg(EMP_SortUnitString)
+                                        .arg(EMP_ValueString)
+                                        .arg(farFieldString)
+                                        .arg(safePositionString);
+        }
     }
     else
     {
-        position ="Segnaposto di indagine" + QString(" (%1,%2) <br>dist[m]: %3 D<sub>b</sub>[mm]: %4 <br>")
+        if(isFarField())
+            farFieldString="Campo lontano";
+        else
+            farFieldString="Campo lontano";
+
+        position ="Segnaposto di indagine" + QString(" (%1,%2) <br>dist[m]: %3 D<sub>b</sub>[mm]: %4<br>%5, %6")
                                     .arg(xString)
                                     .arg(yString)
                                     .arg(inspectorDistanceString)
-                                    .arg(spotDiameterString);
+                                    .arg(spotDiameterString)
+                                    .arg(farFieldString)
+                                    .arg(safePositionString);
     }
 }
 
@@ -459,7 +528,10 @@ bool BeamInspector::isFmFocusable()
 
 bool BeamInspector::isSafePosition()
 {
-   return (EMP_PoweErgRatio<CE);
+   if(isFarField())
+       return (attenuatedDNRO<inspectorDistance);
+   else
+       return (EMP_PoweErgRatio<CE);
 }
 
 void BeamInspector::valuatePosition()
@@ -663,8 +735,11 @@ void BeamInspector::inspectorUpdate()
         computePercentError();
         computeCE();
         compute_d_s();
-        valuatePosition();
-        computeReduced_EMP();
-        computeEMP_Unit();
+        if(!isFarField())
+        {
+            valuatePosition();
+            computeReduced_EMP();
+            computeEMP_Unit();
+        }
     }
 }

@@ -90,9 +90,14 @@ void BeamInspectorDialog::setUpBeamInspector()
         ffRetinalDiameterLabel->setText(QString::number(d_r_FarField_micron));
         errorLabel->setText(QString::number(beamInspector->getPercentError())+" %");
         CE_Label->setText(QString::number(beamInspector->getCE()));
-        EMP_Label->setText(QString::number(beamInspector->getReducedEMP()));
         apparentSourceLabel->setText(QString::number(beamInspector->get_d_s()));
-        tEMP_Label->setText(QString::fromStdString(beamInspector->getEMP_Sort()+beamInspector->getEMP_Unit()));
+        EMP_Label->setVisible(beamInspector->isFarField());
+        tEMP_Label->setVisible(beamInspector->isFarField());
+        if(beamInspector->isFarField())
+        {
+            EMP_Label->setText(QString::number(beamInspector->getReducedEMP()));
+            tEMP_Label->setText(QString::fromStdString(beamInspector->getEMP_Sort()+beamInspector->getEMP_Unit()));
+        }
     }
 }
 

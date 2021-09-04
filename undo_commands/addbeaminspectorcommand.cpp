@@ -1,17 +1,17 @@
 #include "addbeaminspectorcommand.h"
 
-AddBeamInspectorCommand::AddBeamInspectorCommand(double _inspectorDistance, double _scale,int _inspectorSeqNumber,
+AddBeamInspectorCommand::AddBeamInspectorCommand(double _inspectorDistance, double _scale, int _inspectorSeqNumber,
                                          CentralWidget *_laserWindow, LaserPoint *_laserpoint, QList <pair<BeamInspector *, int>>*_myBeamInspectors,
-                                         InspectorsListModel *_inspectorsModel, QPointF _initialPosition, QUndoCommand *parent)
+                                         InspectorsListModel *_inspectorsModel, QPointF _initialPosition, double _attenuatedDNRO, QUndoCommand *parent)
                                          : QUndoCommand(parent), inspectorDistance(_inspectorDistance), scale(_scale), inspectorSeqNumber(_inspectorSeqNumber),
                                          laserWindow(_laserWindow), laserpoint(_laserpoint), myBeamInspectors(_myBeamInspectors),
-                                         inspectorsModel(_inspectorsModel), initialPosition(_initialPosition)
+                                         inspectorsModel(_inspectorsModel), initialPosition(_initialPosition), attenuatedDNRO(_attenuatedDNRO)
 {  
     double _wavelength=laserWindow->myDockControls->getWavelength();
     double _divergence=laserWindow->myDockControls->getDivergence();
     double _beamDiameter=laserWindow->myDockControls->getBeamDiameter();
 
-    beamInspector = new BeamInspector(_inspectorDistance, _wavelength, _divergence, _beamDiameter);
+    beamInspector = new BeamInspector(_inspectorDistance, _wavelength, _divergence, _beamDiameter, _attenuatedDNRO);
 
     beamInspector->setPixScale(scale);
     beamInspector->setPos(initialPosition);

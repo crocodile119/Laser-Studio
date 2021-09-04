@@ -17,7 +17,7 @@ class BeamInspector : public QGraphicsObject
     Q_DECLARE_TR_FUNCTIONS(BeamInspector)
 
 public:
-    BeamInspector(double _inspectorDistance, double _wavelength, double _divergence, double _beamDiameter);
+    BeamInspector(double _inspectorDistance, double _wavelength, double _divergence, double _beamDiameter, double _attenuatedDNRO);
     ~BeamInspector();
 
     enum { Type = UserType + 9 };
@@ -43,6 +43,7 @@ public:
     void setPowerErgForEMP(const double&);
     void setEMP(const double&);
     void setEMP_Sort(const std::string&);
+    void setAttenuatedDNRO(const double& _attenuatedDNRO);
     double getPowerErgForEMP()const;
     double getEMP()const;
     std::string getEMP_Unit()const;
@@ -63,6 +64,7 @@ public:
     double getBeamDiameter()const;
 
     void setStringPosition();
+    void setTextLabel();
     int type() const override;
 
     QRectF boundingRect() const override;
@@ -128,6 +130,7 @@ private:
     double linkInspectorPhase;
 
     QString myText;
+    QString textTip;
     QColor myTextColor;
     QColor myBackgroundColor;
     QColor myOutlineColor;
@@ -141,6 +144,7 @@ private:
     double wavelength;
     double divergence;
     double beamDiameter;
+    double attenuatedDNRO;
     double EMP_PoweErgRatio;
     QStringList stringList;
     QPixmap inspectorPix;

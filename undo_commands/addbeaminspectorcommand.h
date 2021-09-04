@@ -16,7 +16,7 @@ public:
     AddBeamInspectorCommand(double _inspectorDistance, double _scale,
                int _inspectorSeqNumber, CentralWidget *_laserWindow, LaserPoint *_laserpoint,
                QList<pair<BeamInspector *, int> > *_myBeamInspectors, InspectorsListModel *_inspectorsModel,
-               QPointF _initialPosition, QUndoCommand *parent = nullptr);
+               QPointF _initialPosition, double _attenuatedDNRO, QUndoCommand *parent = nullptr);
 
     ~AddBeamInspectorCommand();
 
@@ -40,6 +40,7 @@ private:
     QPointF initialPosition;
     InspectorLink *inspectorLink=nullptr;
     BeamInspector *beamInspectorOnScene=nullptr;
+    double attenuatedDNRO;
 };
 
 QString createAddInspectorCommandString(const QPointF&);

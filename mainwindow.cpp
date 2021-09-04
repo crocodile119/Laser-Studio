@@ -122,7 +122,6 @@ MainWindow::MainWindow()
     myFakeRoom=new LabRoom(fakeRect);
     environmentModel->addDescriptor(*myFakeRoom);
 
-    laserWindow->myDockReflectorsList->ui->listView->setWordWrap(true);
     laserWindow->myDockReflectorsList->ui->listView->setModel(reflectorsModel);  
     laserWindow->myDockReflectorsList->ui->listView->setItemDelegate(reflectorsHtmlDelegate);
     laserWindow->myDockReflectorsList->ui->binocularListView->setModel(binocularsModel);
@@ -138,16 +137,10 @@ MainWindow::MainWindow()
     environmentSelectionModel=laserWindow->myDockReflectorsList->ui->environmentListView->selectionModel();
 
     laserPointList.clear();
-    BeamInspector::computeRayleighDistance(laserWindow->myDockControls->getWavelength(),
-                                           laserWindow->myDockControls->getBeamDiameter(),
-                                           laserWindow->myDockControls->getDivergence());
 
-    laserpoint->setRayleighDistance(BeamInspector::getRayleighDistance());
-    laserpoint->setQualityFactor(BeamInspector::getQualityFactor());
     laserModel= new LaserListModel(laserPointList, this);
     laserModel->addDescriptor(*laserpoint);
 
-    laserWindow->myDockReflectorsList->ui->laserListView->setWordWrap(true);
     laserWindow->myDockReflectorsList->ui->laserListView->setModel(laserModel);
     laserWindow->myDockReflectorsList->ui->laserListView->setItemDelegate(laserHtmlDelegate);
     laserSelectionModel=laserWindow->myDockReflectorsList->ui->laserListView->selectionModel();
@@ -253,6 +246,14 @@ void MainWindow::setLaserPoint()
     laserpoint->setPos(QPoint(0, 0));
     laserpoint->setUndoStack(undoStack);
     laserpoint->setSelected(true);
+
+    BeamInspector::computeRayleighDistance(laserWindow->myDockControls->getWavelength(),
+                                           laserWindow->myDockControls->getBeamDiameter(),
+                                           laserWindow->myDockControls->getDivergence());
+
+    laserpoint->setRayleighDistance(BeamInspector::getRayleighDistance());
+    laserpoint->setQualityFactor(BeamInspector::getQualityFactor());
+
     laserpoint->setStringPosition();
 
     laserWindow->graphicsView->scene->addItem(laserpoint);

@@ -26,12 +26,7 @@ QVariant LaserListModel::data(const QModelIndex &index, int role) const
 
     if (role == Qt::DisplayRole)
     {
-             laserDescriptor=laserPointList.at(index.row())->getStringPosition()+
-                        " Postazione: " + laserPointList.at(index.row())->getLaserInstallation()
-                        +"<br>Distanza di Rayleigh: " +
-                QString::number(laserPointList.at(index.row())->getRayleighDistance(), 'e', 2) + " m"
-                        +" M<sup>2</sup>: " +
-                QString::number(laserPointList.at(index.row())->getQualityFactor(), 'e', 2) + "<br>";
+             laserDescriptor=laserPointList.at(index.row())->getStringPosition();
 
         return  laserDescriptor;
     }

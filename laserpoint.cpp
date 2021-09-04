@@ -336,6 +336,9 @@ void LaserPoint::setStringPosition()
     QString opticalDistanceString;
     QString skinDistanceString;
     QString filterOnString;
+    QString installationString;
+    QString rayleighDistanceString;
+    QString qualityFactorString;
 
     if(filterOn)
         filterOnString="<br>filtro montato su ottica con transmittanza τ="+ QString::number(getTransmittance());
@@ -346,13 +349,19 @@ void LaserPoint::setStringPosition()
     yString=QString::number(yCoordinate,'f', 0);
     opticalDistanceString=QString::number(opticalDiameter/2,'f',2);
     skinDistanceString=QString::number(skinDiameter/2,'f',2);
+    installationString=getLaserInstallation();
+    rayleighDistanceString=QString::number(rayleighDistance, 'e', 2);
+    qualityFactorString=QString::number(qualityFactor, 'e', 2);
 
-    position ="Punto Laser" + QString(" (%1,%2) %3, DRO[m]: %4  <br>DRP[m]: %5" )
+    position ="Punto Laser" + QString(" (%1,%2) %3, DRO[m]: %4  <br>DRP[m]: %5 Postazione: %6 <br>z<sub>R</sub>[m]: %7 M<sup>2</sup>: %8" )
                                     .arg(xString)
                                     .arg(yString)
                                     .arg(filterOnString)
                                     .arg(opticalDistanceString)
-                                    .arg(skinDistanceString);
+                                    .arg(skinDistanceString)
+                                    .arg(installationString)
+                                    .arg(rayleighDistanceString)
+                                    .arg(qualityFactorString);
 }
 
 void LaserPoint::setTextLabel()

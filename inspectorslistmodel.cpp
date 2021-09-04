@@ -15,7 +15,7 @@ int InspectorsListModel::rowCount(const QModelIndex &parent) const
 
 QVariant InspectorsListModel::data(const QModelIndex &index, int role) const
 {
-    QString binocularData;
+    QString inspectorData;
 
     if (!index.isValid())
         return QVariant();
@@ -25,8 +25,8 @@ QVariant InspectorsListModel::data(const QModelIndex &index, int role) const
 
     if (role == Qt::DisplayRole)
     {
-        binocularData=myBeamInspectors.at(index.row()).first->getStringPosition();
-        return  binocularData;
+        inspectorData=myBeamInspectors.at(index.row()).first->getStringPosition();
+        return  inspectorData;
     }
 
     else if (role == Qt::DecorationRole)

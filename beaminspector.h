@@ -44,6 +44,7 @@ public:
     void setEMP(const double&);
     void setEMP_Sort(const std::string&);
     void setAttenuatedDNRO(const double& _attenuatedDNRO);
+    double getAttenuatedDNRO()const;
     double getPowerErgForEMP()const;
     double getEMP()const;
     std::string getEMP_Unit()const;
@@ -75,6 +76,7 @@ public:
     QString getStringPosition()const;
     QString getLaserInstallation();
     void setInZone(bool _inZone);
+    bool getInZone()const;
     static void computeRayleighDistance(const double&, const double&, const double&);
     static double getRayleighDistance();
     static void computeTEM00_RayleighDistance(const double&, const double&);

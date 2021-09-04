@@ -91,9 +91,9 @@ void BeamInspectorDialog::setUpBeamInspector()
         errorLabel->setText(QString::number(beamInspector->getPercentError())+" %");
         CE_Label->setText(QString::number(beamInspector->getCE()));
         apparentSourceLabel->setText(QString::number(beamInspector->get_d_s()));
-        EMP_Label->setVisible(beamInspector->isFarField());
-        tEMP_Label->setVisible(beamInspector->isFarField());
-        if(beamInspector->isFarField())
+        EMP_Label->setVisible(!beamInspector->isFarField());
+        tEMP_Label->setVisible(!beamInspector->isFarField());
+        if(!beamInspector->isFarField())
         {
             EMP_Label->setText(QString::number(beamInspector->getReducedEMP()));
             tEMP_Label->setText(QString::fromStdString(beamInspector->getEMP_Sort()+beamInspector->getEMP_Unit()));

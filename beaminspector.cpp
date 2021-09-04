@@ -192,6 +192,11 @@ void BeamInspector::setAttenuatedDNRO(const double& _attenuatedDNRO)
     attenuatedDNRO=_attenuatedDNRO;
 }
 
+double BeamInspector::getAttenuatedDNRO()const
+{
+    return attenuatedDNRO;
+}
+
 void BeamInspector::laserParametersChanged()
 {
   foreach (InspectorLink *inspectorlink, myInspectorLinks)
@@ -325,40 +330,39 @@ void BeamInspector::setStringPosition()
                                         .arg(farFieldString)
                                         .arg(safePositionString);
         }
+            else
+            {
+                farFieldString="Campo vicino";
+                position ="Segnaposto di indagine" + QString(" (%1,%2) <br>dist[m]: %3 D<sub>b</sub>[mm]: %4 C<sub>E</sub>: %5 %6=%7<br>%8, %9")
+                                            .arg(xString)
+                                            .arg(yString)
+                                            .arg(inspectorDistanceString)
+                                            .arg(spotDiameterString)
+                                            .arg(CE_String)
+                                            .arg(EMP_SortUnitString)
+                                            .arg(EMP_ValueString)
+                                            .arg(farFieldString)
+                                            .arg(safePositionString);
+            }
+        }
         else
         {
-            farFieldString="Campo vicino";
-            position ="Segnaposto di indagine" + QString(" (%1,%2) <br>dist[m]: %3 D<sub>b</sub>[mm]: %4 C<sub>E</sub>: %5 %6=%7<br>%8, %9")
+            if(isFarField())
+                farFieldString="Campo lontano";
+            else
+                farFieldString="Campo lontano";
+
+            position ="Segnaposto di indagine" + QString(" (%1,%2) <br>dist[m]: %3 D<sub>b</sub>[mm]: %4<br>%5, %6")
                                         .arg(xString)
                                         .arg(yString)
                                         .arg(inspectorDistanceString)
                                         .arg(spotDiameterString)
-                                        .arg(CE_String)
-                                        .arg(EMP_SortUnitString)
-                                        .arg(EMP_ValueString)
                                         .arg(farFieldString)
                                         .arg(safePositionString);
         }
     }
     else
     {
-        if(isFarField())
-            farFieldString="Campo lontano";
-        else
-            farFieldString="Campo lontano";
-
-        position ="Segnaposto di indagine" + QString(" (%1,%2) <br>dist[m]: %3 D<sub>b</sub>[mm]: %4<br>%5, %6")
-                                    .arg(xString)
-                                    .arg(yString)
-                                    .arg(inspectorDistanceString)
-                                    .arg(spotDiameterString)
-                                    .arg(farFieldString)
-                                    .arg(safePositionString);
-    }
-    }
-    else
-    {
-
     if(inspectorDistance<attenuatedDNRO)
     safePositionString="fascio non accessibile";
         else
@@ -491,6 +495,11 @@ double BeamInspector::getDivergence()const
 void BeamInspector::setInZone(bool _inZone)
 {
     inZone=_inZone;
+}
+
+bool BeamInspector::getInZone()const
+{
+    return inZone;
 }
 
 double BeamInspector::getLinkInspectorPhase()const

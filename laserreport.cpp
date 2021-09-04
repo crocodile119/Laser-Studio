@@ -692,36 +692,51 @@ void LaserReport::inspectorsValuation()
                      .arg(beamInspector->pos().x())
                      .arg(beamInspector->pos().y()));
     inspectors.append("Descrizione: " + beamInspector->getDescription());
-    QString D_b="D<sub>b</sup>[m]: " + QString::number(beamInspector->getSpotDiameter(),'e', 2);
-    inspectors.append(D_b);
     inspectors.append("L [m]: " + QString::number(beamInspector->getInspectorDistance(),'e', 2));
     inspectors.append("φ<sub>orizzontale</sub>: " + QString::number(beamInspector->getLinkInspectorPhase(),'e', 2));
 
-    QString fieldType;
-    if(beamInspector->isFarField())
-        fieldType="Campo lontano";
-    else
-        fieldType="Campo vicino";
-
-    inspectors.append("Propagazione: " + fieldType);
-
-    double wavelength=laserWindow->myDockControls->getWavelength();
-    if((wavelength>=400)&&(wavelength<=1400))
+    if(beamInspector->getInZone())
     {
-        inspectors.append("Danno retinico (400 ≤ λ ≤ 1400 nm) :dr");
-        double farFieldRatio=beamInspector->getRayleighDistance()/beamInspector->getInspectorDistance();
-        inspectors.append("z<sub>R</sub>/L: " + QString::number(farFieldRatio, 'e', 2));
-        inspectors.append("f<sub></sub> [m]: " + QString::number(beamInspector->get_fm(),'e', 2));
-        inspectors.append("d<sub>r</sub> [μm]: " + QString::number(beamInspector->get_d_r(),'e', 2));
-        inspectors.append("d<sub>ff</sub> [μm]: " + QString::number(beamInspector->get_d_r_FarField(),'e', 2));
-        inspectors.append("e%: " + QString::number(beamInspector->getPercentError(),'f', 2));
-        inspectors.append("r<sub>s</sub> [m]: " + QString::number(beamInspector->getCurvatureRadius(),'e', 2));
-        inspectors.append("d<sub>s</sub> [mm]: " + QString::number(beamInspector->get_d_s(),'e', 2));
-        inspectors.append("α [mrad]: " + QString::number(beamInspector->get_alpha_r(),'e', 2));
-        inspectors.append("C<sub>E</sub>: " + QString::number(beamInspector->getCE(),'f', 2));
-        inspectors.append(QString::fromStdString(beamInspector->getEMP_Sort())+
-                          QString::fromStdString(beamInspector->getEMP_Unit())+ ": "
-                        + QString::number(beamInspector->getEMP(),'f', 2));
+        QString D_b="D<sub>b</sup>[m]: " + QString::number(beamInspector->getSpotDiameter(),'e', 2);
+        inspectors.append(D_b);
+
+        QString fieldType;
+        if(beamInspector->isFarField())
+            fieldType="Campo lontano";
+        else
+            fieldType="Campo vicino";
+
+        inspectors.append("Propagazione: " + fieldType);
+
+        if(beamInspector->isRetinalHazard())
+        {
+            inspectors.append("Danno retinico (400 ≤ λ ≤ 1400 nm) :dr");
+            double farFieldRatio=beamInspector->getRayleighDistance()/beamInspector->getInspectorDistance();
+            inspectors.append("z<sub>R</sub>/L: " + QString::number(farFieldRatio, 'e', 2));
+            inspectors.append("f<sub></sub> [m]: " + QString::number(beamInspector->get_fm(),'e', 2));
+            inspectors.append("d<sub>r</sub> [μm]: " + QString::number(beamInspector->get_d_r(),'e', 2));
+            inspectors.append("d<sub>ff</sub> [μm]: " + QString::number(beamInspector->get_d_r_FarField(),'e', 2));
+            inspectors.append("e%: " + QString::number(beamInspector->getPercentError(),'f', 2));
+            inspectors.append("r<sub>s</sub> [m]: " + QString::number(beamInspector->getCurvatureRadius(),'e', 2));
+            inspectors.append("d<sub>s</sub> [mm]: " + QString::number(beamInspector->get_d_s(),'e', 2));
+            inspectors.append("α [mrad]: " + QString::number(beamInspector->get_alpha_r(),'e', 2));
+            inspectors.append("C<sub>E</sub>: " + QString::number(beamInspector->getCE(),'f', 2));
+            if(!beamInspector->isFarField())
+            {
+                inspectors.append(QString::fromStdString(beamInspector->getEMP_Sort())+
+                                  QString::fromStdString(beamInspector->getEMP_Unit())+ ": "
+                                + QString::number(beamInspector->getEMP(),'f', 2));
+            }
+        }
+        inspectors.append("Effetti: posizione pericolosa");
+    }
+    else
+    {
+        if(beamInspector->getInspectorDistance()<beamInspector->getAttenuatedDNRO())
+            inspectors.append("Effetti: fascio non accessibile");
+        else
+            inspectors.append("Effetti: possibile posizione sicura");
+
     }
 }
 

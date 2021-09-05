@@ -893,6 +893,7 @@ void MainWindow::properties()
             beamInspector->setPos(beamInspector->pos());
         else
         {
+           beamInspector->setDescription(beamInspectorDialog->descriptionTextEdit->toPlainText());
            QUndoCommand* addInspectorPropertyCommand =
                    new AddInspectorPropertyCommand(beamInspector, myPosition, description);
 

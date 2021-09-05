@@ -48,7 +48,7 @@ public:
     double getPowerErgForEMP()const;
     double getEMP()const;
     std::string getEMP_Unit()const;
-    double getReducedEMP()const;
+    double getAugmentedEMP()const;
     InspectorLink* getBeamInspectorLink();
     double getLinkInspectorPhase()const;
     void setDescription(const QString&);
@@ -76,7 +76,7 @@ public:
     QString getStringPosition()const;
     QString getLaserInstallation();
     void setInZone(bool _inZone);
-    bool getInZone()const;
+    bool isInZone()const;
     static void computeRayleighDistance(const double&, const double&, const double&);
     static double getRayleighDistance();
     static void computeTEM00_RayleighDistance(const double&, const double&);
@@ -93,6 +93,7 @@ public:
     bool isRetinalHazard();
     bool isFmFocusable();
     bool isFarField();
+    bool isOutOfLaserAperture();
     static QPointF positionShift(const double &scale);
 
     void compute_d_r();
@@ -103,7 +104,7 @@ public:
     void valuatePosition();
     std::string getEMP_Sort()const;
     void computeEMP_Unit();
-    void computeReduced_EMP();
+    void computeAugmented_EMP();
 
     double getSpotDiameter()const;
     double getCurvatureRadius()const;
@@ -158,7 +159,7 @@ private:
 
     double powerErgForEMP;
     double EMP;
-    double reduced_EMP;
+    double augmented_EMP;
     std::string EMP_Sort;
     std::string EMP_Unit;
 

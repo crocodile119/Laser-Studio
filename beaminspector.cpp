@@ -316,7 +316,7 @@ void BeamInspector::setStringPosition()
     {
         CE_String=QString::number(CE,'f', 2);
         EMP_SortUnitString=QString::fromStdString(getEMP_Sort())+QString::fromStdString(EMP_Unit);
-        EMP_ValueString=QString::number(reduced_EMP,'e', 2);
+        EMP_ValueString=QString::number(augmented_EMP,'e', 2);
 
         if(isFarField())
         {
@@ -442,9 +442,9 @@ std::string BeamInspector::getEMP_Unit()const
     return EMP_Unit;
 }
 
-double BeamInspector::getReducedEMP()const
+double BeamInspector::getAugmentedEMP()const
 {
-    return reduced_EMP;
+    return augmented_EMP;
 }
 
 void BeamInspector::setDescription(const QString& _description)
@@ -497,9 +497,20 @@ void BeamInspector::setInZone(bool _inZone)
     inZone=_inZone;
 }
 
-bool BeamInspector::getInZone()const
+bool BeamInspector::isInZone()const
 {
     return inZone;
+}
+
+bool BeamInspector::isOutOfLaserAperture()
+{
+    bool outOfLaserAperture=false;
+    double laserSemiAperture=(myInspectorLinks.first()->fromLaser()->getAperture()/2+
+                              myInspectorLinks.first()->fromLaser()->getPillow())/180*BeamInspector::PI;
+    if(std::abs(linkInspectorPhase)>laserSemiAperture)
+        outOfLaserAperture=true;
+
+    return outOfLaserAperture;
 }
 
 double BeamInspector::getLinkInspectorPhase()const
@@ -730,9 +741,9 @@ bool BeamInspector::isFarField()
     return farField;
 }
 
-void BeamInspector::computeReduced_EMP()
+void BeamInspector::computeAugmented_EMP()
 {
-    reduced_EMP=EMP*CE;
+    augmented_EMP=EMP*CE;
 }
 
 std::string BeamInspector::getEMP_Sort()const
@@ -765,7 +776,7 @@ void BeamInspector::inspectorUpdate()
         if(!isFarField())
         {
             valuatePosition();
-            computeReduced_EMP();
+            computeAugmented_EMP();
             computeEMP_Unit();
         }
     }

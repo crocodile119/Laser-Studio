@@ -1932,6 +1932,8 @@ void MainWindow::exportReport()
 
     myLaserReport->setReflectorsFilenameList(reflectorsFilenameList);
     myLaserReport->setReflectorsGraphImageList(reflectorsGraphImageList);
+    myLaserReport->setInspectorsFilenameList(inspectorsFilenameList);
+    myLaserReport->setInspectorsGraphImageList(inspectorsGraphImageList);
 
     QTextDocument *textDocument=myLaserReport->buildReportDocument();
 
@@ -1969,6 +1971,8 @@ void MainWindow::printReport(QPrinter *printer)
 
         myLaserReport->setReflectorsFilenameList(reflectorsFilenameList);
         myLaserReport->setReflectorsGraphImageList(reflectorsGraphImageList);
+        myLaserReport->setInspectorsFilenameList(inspectorsFilenameList);
+        myLaserReport->setInspectorsGraphImageList(inspectorsGraphImageList);
 
         QTextDocument *textDocument=myLaserReport->buildReportDocument();
         textDocument->adjustSize();
@@ -2069,6 +2073,74 @@ void MainWindow::saveReportImages()
     ***************************************************************************/
 
     myPainter.end();
+
+    if(!myBeamInspectors.empty())
+    {
+        QString inspectorFilename;
+        QImage imageChart;
+
+        inspectorsFilenameList.clear();
+        inspectorsGraphImageList.clear();
+
+        QList<pair<BeamInspector*, int>>::iterator myIterator; // iterator
+        myIterator = myBeamInspectors.begin();
+        int i =1;
+        while (myIterator != myBeamInspectors.end() )
+        {
+            beamInspector=myIterator->first;
+            if(beamInspector->isRetinalHazard()&&(beamInspector->isInZone()))
+            {
+                std::vector< std::pair <double,double> > dataBeamDiameterVector;
+                double beamDiameter=beamInspector->getBeamDiameter();
+
+                dataBeamDiameterVector.push_back( std::make_pair(0.0, beamDiameter/2));
+                dataBeamDiameterVector.push_back( std::make_pair(0.0, 0.0));
+                dataBeamDiameterVector.push_back( std::make_pair(0.0, -beamDiameter/2));
+
+                std::vector< std::pair <double,double> > dataApparentSourceDiameterVector;
+                double apparentSourceDiameter=beamInspector->get_d_s();
+                double apparentSourceAbscissa=pow(beamInspector->getRayleighDistance(),2)/beamInspector->getInspectorDistance();
+                dataApparentSourceDiameterVector.push_back( std::make_pair(-apparentSourceAbscissa, apparentSourceDiameter/2));
+                dataApparentSourceDiameterVector.push_back( std::make_pair(-apparentSourceAbscissa, 0.0));
+                dataApparentSourceDiameterVector.push_back( std::make_pair(-apparentSourceAbscissa, -apparentSourceDiameter/2));
+
+                BeamInspectorChart* beamInspectorChart=new BeamInspectorChart(this, beamInspector->getRayleighDistance(),
+                                                                 dataBeamDiameterVector,
+                                                                 dataApparentSourceDiameterVector);
+
+                QtCharts::QChart* beamChartObject;
+                beamChartObject=beamInspectorChart->getBeamChartObject();
+                beamChartObject->setGeometry(0, 0, 640, 480);
+
+                ChartView *beamChartView = new ChartView(beamChartObject);
+                beamChartView->setRenderHint(QPainter::Antialiasing);
+
+                QSize imageChartSize=beamChartView->size();
+                imageChart=QImage(imageChartSize, QImage::Format::Format_RGB32);
+                myPainter.begin(&imageChart);
+                imageChart.fill(0);
+                imageChart.invertPixels();
+
+                beamChartView->scene()->render(&myPainter);
+
+                inspectorFilename="inspectorChartImg"+QString::number(i)+".png";
+
+                if(imageChart.save(inspectorFilename, "PNG"))
+                    qDebug()<<"Imagine salvata";
+
+                myPainter.end();
+
+                inspectorsGraphImageList.append(imageChart);
+                inspectorsFilenameList.append(inspectorFilename);
+            }
+            else
+            {
+                imageChart=QImage();
+            }
+            ++myIterator;
+            ++i;
+        }
+    }
 
     if(!myReflectors.empty())
     {

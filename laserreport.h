@@ -41,8 +41,9 @@ public:
 
     QString htmlReflectors(const int &number);
     void buidReflectorsDocumentPart();
+    QString htmlInspectors(const int &number);
+    void buidInspectorsDocumentPart();
     QString htmlFootprints();
-    QString htmlInspectors();
     QString htmlBinoculars();
     QString htmlClassifier();
     QString htmlMeteo();
@@ -60,6 +61,8 @@ public:
     void setBeamInspectorsList(const QList<pair<BeamInspector*, int>> &_);
     void setReflectorsFilenameList(const QStringList &);
     void setReflectorsGraphImageList(const QList<QImage> &);
+    void setInspectorsFilenameList(const QStringList &);
+    void setInspectorsGraphImageList(const QList<QImage> &);
 
 private:
     CentralWidget *laserWindow;
@@ -90,6 +93,8 @@ private:
     QStringList *entries;
     QStringList reflectorsImageName;
     QList<QImage> reflectorsGraphImage;
+    QStringList inspectorsImageName;
+    QList<QImage> inspectorsGraphImage;
     QRect previewRect;
 
     QList<pair<Reflector*, int>> myReflectors;

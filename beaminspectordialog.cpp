@@ -41,6 +41,7 @@ std::vector<std::pair <double,double> > BeamInspectorDialog::apparentSourceDiame
 
     return dataApparentSourceDiameterVector;
 }
+
 BeamInspectorDialog::~BeamInspectorDialog()
 {
 
@@ -95,7 +96,7 @@ void BeamInspectorDialog::setUpBeamInspector()
         tEMP_Label->setVisible(!beamInspector->isFarField());
         if(!beamInspector->isFarField())
         {
-            EMP_Label->setText(QString::number(beamInspector->getReducedEMP()));
+            EMP_Label->setText(QString::number(beamInspector->getAugmentedEMP()));
             tEMP_Label->setText(QString::fromStdString(beamInspector->getEMP_Sort()+beamInspector->getEMP_Unit()));
         }
     }

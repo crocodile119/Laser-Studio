@@ -100,7 +100,7 @@ QTextDocument* LaserReport::buildReportDocument()
 
     myCursor.insertHtml(htmlClassifier());
     buidReflectorsDocumentPart();
-    myCursor.insertHtml(htmlInspectors());
+    buidInspectorsDocumentPart();
     myCursor.insertHtml(htmlFootprints());
     myCursor.insertHtml(htmlBinoculars());
 
@@ -695,19 +695,19 @@ void LaserReport::inspectorsValuation()
     inspectors.append("L [m]: " + QString::number(beamInspector->getInspectorDistance(),'e', 2));
     inspectors.append("φ<sub>orizzontale</sub>: " + QString::number(beamInspector->getLinkInspectorPhase(),'e', 2));
 
-    if(beamInspector->getInZone())
+    QString fieldType;
+    if(beamInspector->isFarField())
+        fieldType="Campo lontano";
+    else
+        fieldType="Campo vicino";
+
+    inspectors.append("Propagazione: " + fieldType);
+
+    if(beamInspector->isInZone())
     {
         QString D_b="D<sub>b</sup>[m]: " + QString::number(beamInspector->getSpotDiameter(),'e', 2);
         inspectors.append(D_b);
-
-        QString fieldType;
-        if(beamInspector->isFarField())
-            fieldType="Campo lontano";
-        else
-            fieldType="Campo vicino";
-
-        inspectors.append("Propagazione: " + fieldType);
-
+        QString safePosition="Effetti: posizione pericolosa";
         if(beamInspector->isRetinalHazard())
         {
             inspectors.append("Danno retinico (400 ≤ λ ≤ 1400 nm) :dr");
@@ -725,18 +725,24 @@ void LaserReport::inspectorsValuation()
             {
                 inspectors.append(QString::fromStdString(beamInspector->getEMP_Sort())+
                                   QString::fromStdString(beamInspector->getEMP_Unit())+ ": "
-                                + QString::number(beamInspector->getReducedEMP(),'e', 2));
+                                + QString::number(beamInspector->getAugmentedEMP(),'e', 2));
+                if(beamInspector->isSafePosition())
+                    safePosition="Effetti: L'EMP è aumentato dal fattore C<sub>E</sub> ad un valore tollerabile, possibile posizione sicura";
             }
         }
-        inspectors.append("Effetti: posizione pericolosa");
+        inspectors.append(safePosition);
     }
     else
     {
-        if(beamInspector->getInspectorDistance()<beamInspector->getAttenuatedDNRO())
-            inspectors.append("Effetti: fascio non accessibile");
+        if(beamInspector->isOutOfLaserAperture())
+        {
+            if(beamInspector->getInspectorDistance()<beamInspector->getAttenuatedDNRO())
+                inspectors.append("Effetti: fascio non accessibile, possibile posizione sicura");
+            else
+                inspectors.append("Effetti: fascio non accessibile inoltre la distanza è maggiore della DNRO, possibile posizione sicura");
+        }
         else
-            inspectors.append("Effetti: possibile posizione sicura");
-
+            inspectors.append("Effetti: distanza maggiore della DNRO, possibile posizione sicura");
     }
 }
 
@@ -1213,45 +1219,66 @@ QString LaserReport::htmlFootprints()
     return html;
 }
 
-QString LaserReport::htmlInspectors()
+void LaserReport::buidInspectorsDocumentPart()
 {
     QString html;
 
     if(!myBeamInspectors.empty())
     {
         html +="<br><h2>Segnaposti presenti nell'area</h2>";
-
-        QList<std::pair<BeamInspector*, int>>::iterator myIterator; // iterator
+        QList<pair<BeamInspector*, int>>::iterator myIterator; // iterator
         myIterator = myBeamInspectors.begin();
         int i =1;
-        while(myIterator != myBeamInspectors.end())
+
+        while (myIterator != myBeamInspectors.end() )
         {
             beamInspector=myIterator->first;
-            inspectors.clear();
-            inspectorsValuation();
+            myCursor.insertHtml(htmlInspectors(i));
 
-            html +=
-            "<table width="+correction+">\n"
-            "<tr><th colspan=\"2\">Segnaposto n. "+ QString::number(i) +"</th></tr>\n";
-
-            foreach (QString entry, inspectors)
+            if((beamInspector->isRetinalHazard())&&(beamInspector->isInZone()))
             {
-                QStringList fields = entry.split(":");
-                QString title = fields[0];
-                QString body = fields[1];
+                QUrl Uri=QUrl("mydata://"+inspectorsImageName[i-1]);
 
-                if(body=="dr")
-                    html +="<tr>\n<td colspan=\"2\"><i>" + title + "</i></td>\n</tr>\n";
-                else
-                    html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b></td>\n"
-                       "<td>" + body + "</td>\n</tr>\n";
+                QTextImageFormat imageFormat;
+                imageFormat.setName(Uri.toString());
+                imageFormat.setQuality(800);
+
+                textDocument->addResource(QTextDocument::ImageResource,
+                    Uri, QVariant(inspectorsGraphImage[i-1]));
+
+                myCursor.insertImage(imageFormat);
             }
-
-        html +="\n</table><br>\n";
+        ++i;
         ++myIterator;
-    ++i;
         }
     }
+}
+
+QString LaserReport::htmlInspectors(const int & number)
+{
+    QString html;
+    QString htmlImage;
+
+    inspectorsValuation();
+
+    html += "<table width="+correction+">\n"
+            "<tr><th colspan=\"2\">Segnaposto n. "+ QString::number(number) +"</th></tr>\n";
+
+    foreach (QString entry, inspectors)
+    {
+        QStringList fields = entry.split(":");
+        QString title = fields[0];
+        QString body = fields[1];
+
+        if(body=="dr")
+           html +="<tr>\n<td colspan=\"2\"><i>" + title + "</i></td>\n</tr>\n";
+        else
+           html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b></td>\n"
+                  "<td>" + body + "</td>\n</tr>\n";
+    }
+
+    html +="\n</table><br>\n";
+
     return html;
 }
 
@@ -1298,7 +1325,7 @@ QString LaserReport::htmlClassifier()
 {
     QString html;   
 
-    html +="<h2>Valutazione della Classe secondo la procedura semplificata CEI EN 60825-1</h2>\n";
+    html +="<br><h2>Valutazione della Classe secondo la procedura semplificata CEI EN 60825-1</h2>\n";
 
     QImage myLaserWarning = QImage("./laser_warning.png");
     QUrl Uri=QUrl("mydata://laser_warning.png");
@@ -1406,6 +1433,16 @@ void LaserReport::setReflectorsFilenameList(const QStringList &_reflectorsImageN
 void LaserReport::setReflectorsGraphImageList(const QList<QImage> & _reflectorsGraphImage)
 {
     reflectorsGraphImage=_reflectorsGraphImage;
+}
+
+void LaserReport::setInspectorsFilenameList(const QStringList & _inspectorsImageName)
+{
+    inspectorsImageName=_inspectorsImageName;
+}
+
+void LaserReport::setInspectorsGraphImageList(const QList<QImage> & _inspectorsGraphImage)
+{
+    inspectorsGraphImage=_inspectorsGraphImage;
 }
 
 void LaserReport::setIndoor(bool _indoor)

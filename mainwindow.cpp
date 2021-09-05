@@ -2624,6 +2624,7 @@ void MainWindow::addBeamInspector()
 
     setDNRO_ForInspector();
     setLaserpointShapePathForInspectors();
+    setDistanceForInspector();
     beamInspector->laserParametersChanged();
     inspectorSeqNumber++;
 
@@ -2632,7 +2633,7 @@ void MainWindow::addBeamInspector()
     connect(beamInspector, SIGNAL(xChanged()), this, SLOT(updateInspectorList()));
     connect(beamInspector, SIGNAL(yChanged()), this, SLOT(updateInspectorList()));
     connect(beamInspector, SIGNAL(xChanged()), this, SLOT(setLaserpointShapePathForInspectors()));
-    connect(beamInspector, SIGNAL(xChanged()), this, SLOT(setLaserpointShapePathForInspectors()));
+    connect(beamInspector, SIGNAL(yChanged()), this, SLOT(setLaserpointShapePathForInspectors()));
 
 }
 
@@ -3490,7 +3491,8 @@ void MainWindow::setReflectorBeamDiameterForDiffusion()
     }
 }
 
-void MainWindow::makeSceneOfSavedItems(){
+void MainWindow::makeSceneOfSavedItems()
+{
 
     /**************************************************************************
      * I controlli vengono regolati dalla funzione readFile() di centralWidget *
@@ -3813,13 +3815,12 @@ void MainWindow::makeSceneOfSavedItems(){
         myBeamInspectors.append(make_pair(beamInspector, inspectorSeqNumber));
 
         connect(beamInspector, SIGNAL(xChanged()), this, SLOT(setLaserpointShapePathForInspectors()));
-        connect(beamInspector, SIGNAL(xChanged()), this, SLOT(setLaserpointShapePathForInspectors()));
+        connect(beamInspector, SIGNAL(yChanged()), this, SLOT(setLaserpointShapePathForInspectors()));
         connect(beamInspector, SIGNAL(xChanged()), this, SLOT(updateInspectorList()));
         connect(beamInspector, SIGNAL(yChanged()), this, SLOT(updateInspectorList()));
         ++inspectorSeqNumber;
         ++m;
     }
-
 
     laserWindow->graphicsView->scene->clearSelection();
     laserPointList.clear();
@@ -3829,6 +3830,9 @@ void MainWindow::makeSceneOfSavedItems(){
     inspectorsModel->setElementList(myBeamInspectors);
     int NumberOfFootprint= footprintPosVect.size();
     int k=0;
+
+    if(NumberOfFootprint==0)
+        setDistanceForInspector();
 
     while(k<NumberOfFootprint)
     {
@@ -4489,7 +4493,7 @@ void MainWindow::setShadowZone()
         ++myIterator;
     }
     laserpoint->setShadowZone(shadowPathZone);
-    laserpoint->setEhnacedShadowZone(ehnacedPathZone);
+    laserpoint->setEhnacedShadowZone(ehnacedPathZone);    
     setDistanceForBinocular();
     setDistanceForReflector();
     setDistanceForInspector();

@@ -725,7 +725,7 @@ void LaserReport::inspectorsValuation()
             {
                 inspectors.append(QString::fromStdString(beamInspector->getEMP_Sort())+
                                   QString::fromStdString(beamInspector->getEMP_Unit())+ ": "
-                                + QString::number(beamInspector->getEMP(),'f', 2));
+                                + QString::number(beamInspector->getReducedEMP(),'e', 2));
             }
         }
         inspectors.append("Effetti: posizione pericolosa");

@@ -126,7 +126,6 @@ void LaserReport::laserAssessmentResults()
 
     QString powerErgStr= laserWindow->myDockControls->ui->powerErgControl->getTitle()+ "= " + QString::number(laserWindow->myDockControls->ui->powerErgControl->getScientificNumber(), 'e', 2);
     QString wavelengthStr= "&lambda; [nm]= " + QString::number(laserWindow->myDockControls->ui->wavelengthScrollBar->value());
-    QString alphaStr= "&alpha; [mrad]= " + QString::number(laserWindow->myDockControls->ui->alphaControl->getScientificNumber(), 'e', 2);
     QString pulseStr= laserWindow->myDockControls->ui->pulseControl->getTitle()+ "= " + QString::number(laserWindow->myDockControls->ui->pulseControl->getScientificNumber(), 'e', 2);
     QString divergenceStr= "&phi; [mrad]= " +  QString::number(laserWindow->myDockControls->ui->divergenceControl->getScientificNumber(), 'e', 2);
     QString diameterStr= "a [mm]= " + QString::number(laserWindow->myDockControls->ui->beamDiameterControl->getScientificNumber(), 'e', 2);
@@ -135,7 +134,6 @@ void LaserReport::laserAssessmentResults()
 
     input.append(powerErgStr);
     input.append(wavelengthStr);
-    input.append(alphaStr);
     input.append(pulseStr);
     input.append(divergenceStr);
     input.append(diameterStr);

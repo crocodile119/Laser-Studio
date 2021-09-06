@@ -622,7 +622,6 @@ void DockControls::fetchDataVector()
 void DockControls::updateAllCompositeControlsFunctions()
 {
     on_T_SkinControl_valueChanged();
-    on_alphaControl_valueChanged();
     on_beamDiameterControl_valueChanged();
     on_divergenceControl_valueChanged();
     on_powerErgControl_valueChanged();
@@ -1194,75 +1193,6 @@ void DockControls::showControls(bool _show)
             dockLea->ui->tabWidget->setTabText(0,"Criterio dell'impulso");
         }
     }
-}
-
-void DockControls::on_alphaControl_valueChanged()
-{
-    /*******************************************
-    * Ricavo il valore impostato dal controllo *
-    ********************************************/
-    int exponent=ui->alphaControl->getExponent();
-    qDebug()<< "Esponente di alphaControl: "<<exponent;
-    double mantissa=ui->alphaControl->getMantissa();
-	
-    /*******************************************************************************+****
-    * Memorizzo il valore impostato dal controllo nella variabile membro corrispondente *
-    *************************************************************************************/
-    alpha=mantissa*powf(10, exponent);
-	
-    /*****************
-    * CONTINUOS WAVE *
-    * ****************/	
-    if(n_laser==operation::CONTINUOS_WAVE)
-    {   
-        /****************************************
-        * Imposto il valore negli oggetti Laser *
-        *****************************************/
-        MyLaserCW_Pr->setAlpha(alpha);
-        MyLaserSkinSP_Pr->setAlpha(alpha);
-    }
-    else
-    /************
-    * IMPULSATO *
-    * ***********/
-    if(n_laser==operation::PULSE)
-    {
-    /****************************************
-    * Imposto il valore negli oggetti Laser *
-    *****************************************/
-        MyLaserSP_Pr->setAlpha(alpha);
-        MyLaserSkinSP_Pr->setAlpha(alpha);
-    }
-    else
-    /*******************
-    * IMPULSI MULTIPLI *
-    * ******************/
-        if(n_laser==operation::MULTI_PULSE)
-    {
-	/*****************************************
-    * Imposto il valore negli oggetti Laser *
-    *****************************************/
-        MyLaserMP_Pr->setAlpha(alpha);
-        MyLaserSkinMP_Pr->setAlpha(alpha);
-    }
-
-   /*******************************************
-    * Imposto i widget per la visualizzazione *
-    *******************************************/	
-    setWidgets();
-	
-   /********************************************************
-    * Imposto altri valori necessarie per la parte grafica *
-    ********************************************************/	
-    setOpticalDistance();
-    setSkinDistances();
-    setLambertianMax();
-	
-   /******************
-    * Emetto segnali *
-    ******************/
-    emit EMP_Changed();//Cambia l'EMP
-    emit modified();//Per salvataggio file
 }
 
 void DockControls::on_divergenceControl_valueChanged()
@@ -2495,12 +2425,16 @@ void DockControls::setEMP()
     if(n_laser==operation::PULSE)
         _myEMP=MyLaserSP_Pr->getEMP();
     else
-        _myEMP=MyLaserMP_Pr->returnMultiPulse_EMP();
+        if((getExposureTime()>10)&&(getExposureTime()<3.0e+04))
+            _myEMP=MyLaserMP_Pr->EMP_ForLongRetinalExposure();
+        else
+            _myEMP=MyLaserMP_Pr->returnMultiPulse_EMP();
 
     if(_myEMP==myEMP)
     return;
 
     myEMP=_myEMP;
+    qDebug()<<"myEMP: "<<myEMP;
 }
 
 double DockControls::getPowerErg()const
@@ -2529,6 +2463,10 @@ double DockControls::getBeamDiameter()const
     return beamDiameter;
 }
 
+double DockControls::getPRF()const
+{
+    return prf;
+}
 
 /***********************************************************************************************
  * Salvattagio degli argomenti delle slot dei controlli necessari                              *
@@ -2637,12 +2575,6 @@ void DockControls::setDialControls()
     ui->powerErgControl->setMinimumExponent(-3);
     ui->powerErgControl->setMaximumExponent(6);
     ui->powerErgControl->setValue(1.00e+00);
-
-    QString alpha="α";
-    ui->alphaControl->setTitle(alpha.toHtmlEscaped() + " [mrad]");
-    ui->alphaControl->setMinimumExponent(-3);
-    ui->alphaControl->setMaximumExponent(1);
-    ui->alphaControl->setValue(1.50e+00);
 
     ui->pulseControl->setTitle(tr("t [s]"));
     ui->pulseControl->setMinimumExponent(-11);
@@ -3987,7 +3919,6 @@ void DockControls::setUndoStack(QUndoStack* _undoStack)
 {
     undoStack=_undoStack;
     ui->powerErgControl->setUndoStack(undoStack);
-    ui->alphaControl->setUndoStack(undoStack);
     ui->pulseControl->setUndoStack(undoStack);
     ui->divergenceControl->setUndoStack(undoStack);
     ui->beamDiameterControl->setUndoStack(undoStack);
@@ -4003,9 +3934,6 @@ void DockControls::resetHistory()
 {
     ui->powerErgControl->setDialInitialValue();
     ui->powerErgControl->setScrollBarInitialValue();
-
-    ui->alphaControl->setDialInitialValue();
-    ui->alphaControl->setScrollBarInitialValue();
 
     ui->pulseControl->setDialInitialValue();
     ui->pulseControl->setScrollBarInitialValue();
@@ -4027,4 +3955,17 @@ void DockControls::resetHistory()
     ui->wavelengthScrollBar->setScrollBarInitialValue();
 
     ui->comboBoxBands->setComboBoxInitialValue();
+}
+
+double DockControls::ordinaryExposureTime(const double &wavelength)
+{
+    double ordinaryExposureTime;
+    if((wavelength>180)&&(wavelength<400))
+        ordinaryExposureTime=3000;
+    else if((wavelength>=400)&&(wavelength<=700))
+        ordinaryExposureTime=0.25;
+    else
+        ordinaryExposureTime=10;
+
+ return ordinaryExposureTime;
 }

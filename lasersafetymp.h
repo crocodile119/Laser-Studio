@@ -145,6 +145,8 @@ double returnMultiPulse_EMP();/*!< Calcola e restituisce il valore numerico del 
     \f[EMP=min \left(EMP_{singolo}, EMP_{medio}\right)\f]
 
 */
+
+double EMP_ForLongRetinalExposure()const;
 double getPowerErgForEMP();/*!< La funzione individua la potenza/energia dell'impulso del laser corrispondente all'<b>EMP</b> minimo.
     Se l'<b>EMP</b> corrisponde al valore di potenza media si considera questo valore come quello
     significativo altrimenti si considera l'<b>EMP</b> che corrisponde al prodotto <b>EPM</b> &sdot; <b>C<sub>P</sub></b>

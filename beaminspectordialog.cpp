@@ -94,10 +94,22 @@ void BeamInspectorDialog::setUpBeamInspector()
         apparentSourceLabel->setText(QString::number(beamInspector->get_d_s()));
         EMP_Label->setVisible(!beamInspector->isFarField());
         tEMP_Label->setVisible(!beamInspector->isFarField());
+        Formula_Label->setVisible(!beamInspector->isFarField());
+        tFormula_Label->setVisible(!beamInspector->isFarField());
         if(!beamInspector->isFarField())
         {
-            EMP_Label->setText(QString::number(beamInspector->getAugmentedEMP()));
-            tEMP_Label->setText(QString::fromStdString(beamInspector->getEMP_Sort()+beamInspector->getEMP_Unit()));
+            if(beamInspector->isLongExposure())
+            {
+                EMP_Label->setText(QString::number(beamInspector->getLongExposureEMP()));
+                tEMP_Label->setText(QString::fromStdString(beamInspector->getEMP_Sort()+beamInspector->getEMP_Unit()));
+            }
+            else
+            {
+                EMP_Label->setText(QString::number(beamInspector->getAugmentedEMP()));
+                tEMP_Label->setText(QString::fromStdString(beamInspector->getLongExposition_EMP_Sort()+beamInspector->getEMP_Unit()));
+            }
+            Formula_Label->setText(QString::fromStdString(beamInspector->getFormula()));
+            tFormula_Label->setText(QString::fromStdString(beamInspector->getFormula()));
         }
     }
 }
@@ -460,6 +472,18 @@ void BeamInspectorDialog::setUpWidget()
         EMP_Label->setFont(font);
         EMP_Label->setStyleSheet(valueStyle);
         retinalGridLayout->addWidget(EMP_Label, 1, 9, 1, 1);
+
+        tFormula_Label = new QLabel(retinalGroupBox);
+        tFormula_Label->setObjectName(QString::fromUtf8("tFormula_Label"));
+        tFormula_Label->setFont(boldFont);
+        tFormula_Label->setStyleSheet(nameStyle);
+        retinalGridLayout->addWidget(tFormula_Label, 1, 10, 1, 1);
+
+        Formula_Label = new QLabel(retinalGroupBox);
+        Formula_Label->setObjectName(QString::fromUtf8("Formula_Label"));
+        Formula_Label->setFont(font);
+        Formula_Label->setStyleSheet(valueStyle);
+        retinalGridLayout->addWidget(Formula_Label, 1, 11, 1, 1);
 
         dockGridLayout->addWidget(retinalGroupBox, 3, 0, 1, 2);
 }

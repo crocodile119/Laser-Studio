@@ -3247,6 +3247,19 @@ void MainWindow::setDNRO_ForInspector()
     double attenuatedDNRO=attenuatedDistance(laserWindow->myDockControls->getOpticalDistance());
     double EMP=laserWindow->myDockControls->getEMP();
     double powerErgForEMP=laserWindow->myDockControls->getPowerErgForEMP();
+    double powerErg=laserWindow->myDockControls->getPowerErg();
+    bool exposureTimeByControl=laserWindow->myDockControls->isTeEdtitingEnabled();
+    double numberOfPulses;
+
+    double exposureTime=laserWindow->myDockControls->getExposureTime();
+    DockControls::operation laserOperation=laserWindow->myDockControls->laserOperation();
+    if(laserWindow->myDockControls->laserOperation()==DockControls::operation::CONTINUOS_WAVE)
+        numberOfPulses=BeamInspector::NO_MULTI_PULSE;
+    else if(laserWindow->myDockControls->laserOperation()==DockControls::operation::PULSE)
+        numberOfPulses=BeamInspector::NO_MULTI_PULSE;
+    else if(laserWindow->myDockControls->laserOperation()==DockControls::operation::MULTI_PULSE)
+        numberOfPulses=exposureTime*laserWindow->myDockControls->getPRF();
+
     std::string EMP_Sort=laserWindow->myDockControls->getEMP_Sort();
 
     qDebug()<<"EMP per il calcolo della DNRO"<<EMP;
@@ -3261,7 +3274,21 @@ void MainWindow::setDNRO_ForInspector()
         beamInspector->setEMP(EMP);
         beamInspector->setPowerErgForEMP(powerErgForEMP);
         beamInspector->setEMP_Sort(EMP_Sort);
+        beamInspector->setPowerErg(powerErg);
         beamInspector->setAttenuatedDNRO(attenuatedDNRO);
+        beamInspector->setLaserOperation(laserOperation);
+
+        if(exposureTimeByControl)
+        {
+            beamInspector->setExposureTime(exposureTime);
+            beamInspector->setNumberOfPulses(numberOfPulses);
+        }
+        else
+        {
+            beamInspector->setExposureTime(BeamInspector::NO_INTERESTING_EXPOSURE_TIME);
+            numberOfPulses=BeamInspector::NO_MULTI_PULSE;
+        }
+
         beamInspector->laserParametersChanged();
 
         ++myIterator;

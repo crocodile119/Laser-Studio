@@ -318,6 +318,18 @@ double LaserSafetyMP::returnMultiPulse_EMP()
     }
 }
 
+double LaserSafetyMP::EMP_ForLongRetinalExposure()const
+{
+    double m1;
+
+    if(((wavelength>=400)and(wavelength<=1400))&&((exposureTime>10)and(exposureTime<3.0e+04)))
+        m1=fmin(SP_EMP_Result, CP_EMP_Result);
+    else
+        m1=0;
+
+    return m1;
+}
+
 void LaserSafetyMP::computeEMP_ForOD()
 {
     if((wavelength>=400)and(wavelength<=1.0e+06))

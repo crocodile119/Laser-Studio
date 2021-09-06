@@ -9,6 +9,8 @@
 #include <utility>
 #include <QGraphicsEllipseItem>
 #include "inspectorlink.h"
+#include "computeemp.h"
+#include "dockcontrols.h"
 
 class InspectorLink;
 
@@ -24,6 +26,9 @@ public:
     static const double PI;
     static const double Le;
     static const double fe_min;
+    static const double NO_INTERESTING_EXPOSURE_TIME;
+    static const double NO_MULTI_PULSE;
+    static const double SHORT_TIME_LIMIT;
 
     QString text() const;
     void setTextColor(const QColor &color);
@@ -43,12 +48,16 @@ public:
     void setPowerErgForEMP(const double&);
     void setEMP(const double&);
     void setEMP_Sort(const std::string&);
+    void setExposureTime(const double&);
     void setAttenuatedDNRO(const double& _attenuatedDNRO);
     double getAttenuatedDNRO()const;
     double getPowerErgForEMP()const;
     double getEMP()const;
     std::string getEMP_Unit()const;
     double getAugmentedEMP()const;
+    double getLongExposureEMP()const;
+    std::string getLongExposureEMP_Unit()const;
+    std::string getLongExposureEMP_Sort()const;
     InspectorLink* getBeamInspectorLink();
     double getLinkInspectorPhase()const;
     void setDescription(const QString&);
@@ -61,8 +70,13 @@ public:
     void setDivergence(const double&);
     double getDivergence()const;
 
+    void setLaserOperation(const DockControls::operation&);
+    void setPowerErg(const double& _powerErg);
+
     void setBeamDiameter(const double&);
     double getBeamDiameter()const;
+    void setNumberOfPulses(const double &);
+    double getNumberOfPulses()const;
 
     void setStringPosition();
     void setTextLabel();
@@ -90,6 +104,8 @@ public:
     void computeFm();
     void compute_d_r_FarField();
     void computePercentError();
+    void computeForLongExposure();
+    bool isLongExposure();
     bool isRetinalHazard();
     bool isFmFocusable();
     bool isFarField();
@@ -102,8 +118,12 @@ public:
     void computeCE();
     bool isSafePosition();
     void valuatePosition();
+    void valuateLongExposurePosition();
     std::string getEMP_Sort()const;
+    std::string getLongExposition_EMP_Sort()const;
     void computeEMP_Unit();
+    void computeLongExposure_EMP_Sort();
+    void computeLongExposureEMP_Unit();
     void computeAugmented_EMP();
 
     double getSpotDiameter()const;
@@ -115,6 +135,7 @@ public:
     double get_d_r_FarField()const;
     double get_d_s()const;
     double getCE()const;
+    std::string getFormula()const;
 
 protected:
     QVariant itemChange(GraphicsItemChange change,
@@ -147,8 +168,12 @@ private:
     double wavelength;
     double divergence;
     double beamDiameter;
+    double powerErg;
+    double longExposurePowerErg;
     double attenuatedDNRO;
     double EMP_PoweErgRatio;
+    double exposureTime;
+    double numberOfPulses;
     QStringList stringList;
     QPixmap inspectorPix;
     QRectF myTextRect;
@@ -160,8 +185,11 @@ private:
     double powerErgForEMP;
     double EMP;
     double augmented_EMP;
+    double longExposure_EMP;
     std::string EMP_Sort;
     std::string EMP_Unit;
+    std::string longExposure_EMP_Sort;
+    std::string longExposure_EMP_Unit;
 
     //parte dedicata ai dati membro relativi alle caratteristiche del fascio
 
@@ -175,6 +203,10 @@ private:
     double alpha_r_FarField;//angolo sotteso dalla sorgente apparente in campo lontano
     double percentError;
     double CE;
+    std::string formula;
+    double T1;
+    double T2;
+    DockControls::operation laserOperation;
 };
 
 #endif

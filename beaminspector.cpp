@@ -14,11 +14,13 @@
 #include <cmath>
 #include "inspectorlink.h"
 #include "beaminspector.h"
-#include "computeemp.h"
 
 const double BeamInspector::PI = 3.1415926535897932384626433832795;
 const double BeamInspector::Le= 17.0*1.0e-03;//distanza tra il cristallino e la retina in m
 const double BeamInspector::fe_min= 14.53*1.0e-03;//distanza di focalizzazione minima per l'occhio in m
+const double BeamInspector::NO_INTERESTING_EXPOSURE_TIME=1.0;
+const double BeamInspector::NO_MULTI_PULSE=1.0;
+const double BeamInspector::SHORT_TIME_LIMIT=10.0;
 double BeamInspector::rayleighDistance;
 double BeamInspector::TEM00_RayleighDistance;
 double BeamInspector::qualityFactor;
@@ -311,12 +313,19 @@ void BeamInspector::setStringPosition()
     else
         safePositionString="posizione pericolosa";
 
-
     if(isRetinalHazard())
     {
         CE_String=QString::number(CE,'f', 2);
-        EMP_SortUnitString=QString::fromStdString(getEMP_Sort())+QString::fromStdString(EMP_Unit);
-        EMP_ValueString=QString::number(augmented_EMP,'e', 2);
+        if(isLongExposure())
+        {
+            EMP_SortUnitString=QString::fromStdString(getLongExposureEMP_Sort())+QString::fromStdString(longExposure_EMP_Unit);
+            EMP_ValueString=QString::number(longExposure_EMP,'e', 2);
+        }
+        else
+        {
+            EMP_SortUnitString=QString::fromStdString(getEMP_Sort())+QString::fromStdString(EMP_Unit);
+            EMP_ValueString=QString::number(augmented_EMP,'e', 2);
+        }
 
         if(isFarField())
         {
@@ -426,6 +435,10 @@ void BeamInspector::setEMP_Sort(const std::string& _EMP_Sort)
     EMP_Sort=_EMP_Sort;
 }
 
+void BeamInspector::setExposureTime(const double& _exposureTime)
+{
+    exposureTime=_exposureTime;
+}
 
 double BeamInspector::getPowerErgForEMP()const
 {
@@ -442,9 +455,24 @@ std::string BeamInspector::getEMP_Unit()const
     return EMP_Unit;
 }
 
+std::string BeamInspector::getLongExposureEMP_Unit()const
+{
+    return longExposure_EMP_Unit;
+}
+
+std::string BeamInspector::getLongExposureEMP_Sort()const
+{
+    return longExposure_EMP_Sort;
+}
+
 double BeamInspector::getAugmentedEMP()const
 {
     return augmented_EMP;
+}
+
+double BeamInspector::getLongExposureEMP()const
+{
+    return longExposure_EMP;
 }
 
 void BeamInspector::setDescription(const QString& _description)
@@ -472,6 +500,11 @@ double BeamInspector::getWavelength()const
     return wavelength;
 }
 
+void BeamInspector::setPowerErg(const double& _powerErg)
+{
+    powerErg=_powerErg;
+}
+
 void BeamInspector::setBeamDiameter(const double& _beamDiameter)
 {
     beamDiameter=_beamDiameter;
@@ -482,6 +515,16 @@ double BeamInspector::getBeamDiameter()const
     return beamDiameter;
 }
 
+void BeamInspector::setNumberOfPulses(const double &_numberOfPulses)
+{
+    numberOfPulses=_numberOfPulses;
+}
+
+double BeamInspector::getNumberOfPulses()const
+{
+    return numberOfPulses;
+}
+
 void BeamInspector::setDivergence(const double& _divergence)
 {
     divergence=_divergence;
@@ -490,6 +533,11 @@ void BeamInspector::setDivergence(const double& _divergence)
 double BeamInspector::getDivergence()const
 {
     return divergence;
+}
+
+void BeamInspector::setLaserOperation(const DockControls::operation& _laserOperation)
+{
+    laserOperation=_laserOperation;
 }
 
 void BeamInspector::setInZone(bool _inZone)
@@ -572,9 +620,23 @@ bool BeamInspector::isSafePosition()
        return (EMP_PoweErgRatio<CE);
 }
 
+void BeamInspector::valuateLongExposurePosition()
+{
+   if(alpha_r<1.5)
+       longExposurePowerErg=powerErg;
+    else
+    {
+        if(exposureTime>T2)
+            longExposurePowerErg=powerErg*exposureTime;
+        else
+            longExposurePowerErg=powerErg;
+    }
+    EMP_PoweErgRatio=(4*longExposurePowerErg)/(PI*pow(1e-03*spotDiameter,2)*longExposure_EMP);
+}
+
 void BeamInspector::valuatePosition()
 {
-   EMP_PoweErgRatio=(4*powerErgForEMP)/(PI*pow(1e-03*spotDiameter,2)*EMP);
+    EMP_PoweErgRatio=(4*powerErgForEMP)/(PI*pow(1e-03*spotDiameter,2)*EMP);
 }
 
 void BeamInspector::computeFm()
@@ -732,6 +794,10 @@ double BeamInspector::getCE()const
     return CE;
 }
 
+std::string BeamInspector::getFormula()const
+{
+    return formula;
+}
 bool BeamInspector::isFarField()
 {
     bool farField=false;
@@ -748,8 +814,12 @@ void BeamInspector::computeAugmented_EMP()
 
 std::string BeamInspector::getEMP_Sort()const
 {
-    string myEMP_Sort=EMP_Sort;
-    return myEMP_Sort.append("<sub>&alpha;</sub>");
+    return EMP_Sort;
+}
+
+std::string BeamInspector::getLongExposition_EMP_Sort()const
+{
+    return longExposure_EMP_Sort;
 }
 
 void BeamInspector::computeEMP_Unit()
@@ -758,6 +828,53 @@ void BeamInspector::computeEMP_Unit()
         EMP_Unit=" [W/m<sup>2</sup>]";
     else
         EMP_Unit=" [J/m<sup>2</sup>]";
+}
+
+void BeamInspector::computeLongExposureEMP_Unit()
+{
+    if(longExposure_EMP_Sort=="E")
+        longExposure_EMP_Unit=" [W/m<sup>2</sup>]";
+    else
+        longExposure_EMP_Unit=" [J/m<sup>2</sup>]";
+}
+
+bool BeamInspector::isLongExposure()
+{
+    return (exposureTime>SHORT_TIME_LIMIT);
+}
+
+void BeamInspector::computeForLongExposure()
+{
+    ComputeEMP* retinalEMP=new ComputeEMP(wavelength, exposureTime, alpha_r);
+    if(laserOperation==DockControls::operation::CONTINUOS_WAVE)
+    {
+        longExposure_EMP=retinalEMP->getEMP();
+        formula=retinalEMP->getFormulaEMP();
+        longExposure_EMP_Sort=retinalEMP->getFormulaSort();
+        T1=retinalEMP->getT1();
+        T2=retinalEMP->getT2();
+    }
+    else
+    if(laserOperation==DockControls::operation::MULTI_PULSE)
+    {
+        formula=retinalEMP->getFormulaEMP();
+        if(EMP_Sort=="E")
+        {
+            if(retinalEMP->getFormulaEMP()=="E")
+                longExposure_EMP_Sort=std::min(retinalEMP->getEMP(), EMP);
+            else
+                longExposure_EMP_Sort=std::min(retinalEMP->getEMP()/exposureTime, EMP);
+        }
+        else
+        {
+            if(retinalEMP->getFormulaEMP()=="H")
+                longExposure_EMP_Sort=std::min(retinalEMP->getEMP()/numberOfPulses, EMP);
+            else
+                longExposure_EMP_Sort=std::min(retinalEMP->getEMP()/numberOfPulses*exposureTime, EMP);
+        }
+    }
+    else
+        longExposure_EMP_Sort=0.0;
 }
 
 void BeamInspector::inspectorUpdate()
@@ -775,9 +892,18 @@ void BeamInspector::inspectorUpdate()
         compute_d_s();
         if(!isFarField())
         {
-            valuatePosition();
-            computeAugmented_EMP();
-            computeEMP_Unit();
+            if(isLongExposure())
+            {
+                computeForLongExposure();
+                valuateLongExposurePosition();
+                computeLongExposureEMP_Unit();
+            }
+            else
+            {
+                valuatePosition();
+                computeAugmented_EMP();
+                computeEMP_Unit();
+            }
         }
     }
 }

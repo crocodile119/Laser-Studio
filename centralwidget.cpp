@@ -205,14 +205,13 @@ bool CentralWidget::writeFile(const QString &fileName)
 
     out << myLabRoomInserted << scintillationBool << atmEffectsBool << meteoRange << a_coefficient << atmoshericEffectsCoefficient
         << scaleIndex << scale << force << customer << uasl << uaslAssistant << laserDescription << placeDescription << gridState
-        << goggleMaterial << myDockControls->ui->powerErgControl->getScientificNumber() << myDockControls->ui->alphaControl->getScientificNumber()
-        << myDockControls->ui->pulseControl->getScientificNumber() << myDockControls->ui->divergenceControl->getScientificNumber()
-        << myDockControls->ui->beamDiameterControl->getScientificNumber() << myDockControls->ui->prfControl->getScientificNumber()
-        << myDockControls->ui->wavelengthScrollBar->value() << myDockControls->ui->operationCombo->currentIndex()
-        << myDockControls->ui->checkGaussianBeam->isChecked() << myDockControls->ui->comboBoxBands->currentIndex()
-        << myDockControls->ui->T_SkinControl->getScientificNumber() << myDockControls->ui->teControl->getDialNumber()
-        << myDockControls->ui->enableTeCheckBox->isChecked() << myDockControls->ui->internalWaist_checkBox->isChecked()
-        << myDockControls->getLambertianMax() << myDockControls->getEMP()
+        << goggleMaterial << myDockControls->ui->powerErgControl->getScientificNumber() << myDockControls->ui->pulseControl->getScientificNumber()
+        << myDockControls->ui->divergenceControl->getScientificNumber() << myDockControls->ui->beamDiameterControl->getScientificNumber()
+        << myDockControls->ui->prfControl->getScientificNumber() << myDockControls->ui->wavelengthScrollBar->value()
+        << myDockControls->ui->operationCombo->currentIndex() << myDockControls->ui->checkGaussianBeam->isChecked()
+        << myDockControls->ui->comboBoxBands->currentIndex() << myDockControls->ui->T_SkinControl->getScientificNumber()
+        << myDockControls->ui->teControl->getDialNumber() << myDockControls->ui->enableTeCheckBox->isChecked()
+        << myDockControls->ui->internalWaist_checkBox->isChecked() << myDockControls->getLambertianMax() << myDockControls->getEMP()
         << myDockControls->getBeamDiameter() << myDockControls->getPowerErg() << laserPosition << laserZValue
         << aperture << installation << filterOn << transmittance << pos << Type << Text << ReflectorDescriptionVect
         << StringPosition << OpticalDiameter << Divergence << ReflectorDistance << ReflectionCoeff
@@ -287,7 +286,6 @@ bool CentralWidget::readFile(const QString &fileName)
      myDockControls->ui->enableTeCheckBox->setChecked(isTeChecked);
      myDockControls->ui->comboBoxBands->setCurrentIndex(comboBox);
      myDockControls->ui->powerErgControl->setValue(powerErgControl);
-     myDockControls->ui->alphaControl->setValue(alphaControl);
      myDockControls->ui->pulseControl->setValue(pulseControl);
      myDockControls->ui->divergenceControl->setValue(divergenceControl);
      myDockControls->ui->beamDiameterControl->setValue(beamDiameterControl);

@@ -71,6 +71,8 @@ private:
     QLabel *CE_Label;
     QLabel *tEMP_Label;
     QLabel *EMP_Label;
+    QLabel *tFormula_Label;
+    QLabel *Formula_Label;
     QDialogButtonBox *buttonBox;
     QGroupBox *beamPointGroupBox;
     QGridLayout *beamPointGridLayout;

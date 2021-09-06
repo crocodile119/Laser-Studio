@@ -54,6 +54,7 @@ public:
     const static int DOCKGOGGLEMAXIMUN;
     const static double MODELOCKED_LIMIT;
 
+    static double ordinaryExposureTime(const double &wavelength);
     void setUpGoggle();
     void fetchDataVector();
     void fetchDDataVector();
@@ -97,6 +98,7 @@ public:
 
     double getEMP()const;
     double getBeamDiameter()const;
+    double getPRF()const;
     double getPowerErg()const;
 
     double getWavelength()const;
@@ -158,7 +160,6 @@ public:
 private slots:
     void on_operationCombo_currentIndexChanged(int index);
     void on_powerErgControl_valueChanged();
-    void on_alphaControl_valueChanged();
     void on_pulseControl_valueChanged();
     void on_divergenceControl_valueChanged();
     void on_beamDiameterControl_valueChanged();

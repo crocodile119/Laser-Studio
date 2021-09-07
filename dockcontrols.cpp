@@ -389,6 +389,9 @@ void DockControls::on_teControl_valueChanged()
         MyLaserMP_Pr->setPulseWidth(pulseWidth);
         }
         setWidgets();
+        setOpticalDistance();
+        setPowerErgForEMP();
+        setLambertianMax();
         emit EMP_Changed();//Cambia l'EMP
         emit modified();//Per salvataggio file
     }

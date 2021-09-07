@@ -591,7 +591,8 @@ void ComputeEMP::ThermoEffects()
     EMP_Result=_ThermoEMP;
     formula=_ThermoFormula;
     formulaSort=_ThermoFormulaSort;
-}	
+}
+
 void ComputeEMP::EMPPhotoThermo()
 {
     if ((wavelength>=400) and (wavelength<=600))
@@ -618,7 +619,16 @@ void ComputeEMP::EMPPhotoThermo()
     else
     notes="nessuna";
 }
-	
+
+bool ComputeEMP::isPhotochemical()
+{
+    bool photo=false;
+    if(((wavelength>=400)&&(wavelength<=600))&&(_PhotoEMPH<_ThermoEMPH))
+        photo=true;
+
+    return photo;
+}
+
 void ComputeEMP::BioEffects()
 {
 switch ((EmpLeaTables::typeOfOutput)myEmpData.effects)

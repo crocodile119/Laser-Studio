@@ -61,6 +61,7 @@ public:
     * con effetti fotochimici. */
     void adaptForSkinEMP();/*!< Potrà essere invocato qualora fosse necessario ottenere il valore di EMP per la pelle. */
     std::array<empdata, EmpLeaTables::TABLEROW_EMP> getEMP_Table()const;
+    bool isPhotochemical();
 
 
 protected:

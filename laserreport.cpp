@@ -721,11 +721,27 @@ void LaserReport::inspectorsValuation()
             inspectors.append("C<sub>E</sub>: " + QString::number(beamInspector->getCE(),'f', 2));
             if(!beamInspector->isFarField())
             {
+                if(beamInspector->isLongExposure())
+                {
+                    inspectors.append(QString::fromStdString(beamInspector->getLongExposureEMP_Sort())+
+                                      QString::fromStdString(beamInspector->getLongExposureEMP_Unit())+ ": "+
+                                      QString::number(beamInspector->getLongExposureEMP()));
+                    inspectors.append("Formula EMP per esposizioni lunghe: "+QString::fromStdString(beamInspector->getFormula()));
+                    inspectors.append("T<sub>1</sub>: "+QString::number(beamInspector->getT1()));
+                    inspectors.append("T<sub>2</sub>: "+QString::number(beamInspector->getT2()));
+                    inspectors.append("Notes: "+QString::fromStdString(beamInspector->getNotes()));
+
+                    if(beamInspector->getLaserOperation()==DockControls::operation::MULTI_PULSE)
+                        inspectors.append("Effetto prevalente: "+QString::fromStdString(beamInspector->getMainEffect()));
+                }
+                else
+                {
                 inspectors.append(QString::fromStdString(beamInspector->getEMP_Sort())+
                                   QString::fromStdString(beamInspector->getEMP_Unit())+ ": "
                                 + QString::number(beamInspector->getAugmentedEMP(),'e', 2));
                 if(beamInspector->isSafePosition())
                     safePosition="Effetti: L'EMP è aumentato dal fattore C<sub>E</sub> ad un valore tollerabile, possibile posizione sicura";
+                }
             }
         }
         inspectors.append(safePosition);

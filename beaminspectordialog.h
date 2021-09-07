@@ -73,6 +73,15 @@ private:
     QLabel *EMP_Label;
     QLabel *tFormula_Label;
     QLabel *Formula_Label;
+    QLabel *tT1_Label;
+    QLabel *T1_Label;
+    QLabel *tT2_Label;
+    QLabel *T2_Label;
+    QLabel *tNotes_Label;
+    QLabel *Notes_Label;
+    QLabel *tMainMultiPulseEffect_Label;
+    QLabel *MainMultiPulseEffect_Label;
+
     QDialogButtonBox *buttonBox;
     QGroupBox *beamPointGroupBox;
     QGridLayout *beamPointGridLayout;

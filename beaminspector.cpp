@@ -540,6 +540,11 @@ void BeamInspector::setLaserOperation(const DockControls::operation& _laserOpera
     laserOperation=_laserOperation;
 }
 
+DockControls::operation BeamInspector::getLaserOperation()const
+{
+    return laserOperation;
+}
+
 void BeamInspector::setInZone(bool _inZone)
 {
     inZone=_inZone;
@@ -564,6 +569,21 @@ bool BeamInspector::isOutOfLaserAperture()
 double BeamInspector::getLinkInspectorPhase()const
 {
     return linkInspectorPhase;
+}
+
+double BeamInspector::getT1()const
+{
+    return T1;
+}
+
+double BeamInspector::getT2()const
+{
+    return T2;
+}
+
+std::string BeamInspector::getNotes()const
+{
+    return notes;
 }
 
 void BeamInspector::computeTEM00_RayleighDistance(const double& _wavelength, const double& _beamDiameter)
@@ -614,24 +634,52 @@ bool BeamInspector::isFmFocusable()
 
 bool BeamInspector::isSafePosition()
 {
-   if(isFarField())
-       return (attenuatedDNRO<inspectorDistance);
-   else
-       return (EMP_PoweErgRatio<CE);
+    bool safePosition;
+    if(isFarField())
+        safePosition=attenuatedDNRO<inspectorDistance;
+    else
+    {
+        if(!photochemical)
+            safePosition=EMP_PoweErgRatio<CE;
+        else
+            safePosition=false;
+    }
+    return safePosition;
 }
 
 void BeamInspector::valuateLongExposurePosition()
 {
-   if(alpha_r<1.5)
-       longExposurePowerErg=powerErg;
-    else
+    if(laserOperation==DockControls::operation::CONTINUOS_WAVE)
     {
-        if(exposureTime>T2)
-            longExposurePowerErg=powerErg*exposureTime;
-        else
+        if(alpha_r<1.5)
             longExposurePowerErg=powerErg;
+        else
+        {
+            if(exposureTime<=T2)
+                longExposurePowerErg=powerErg*exposureTime;
+            else
+                longExposurePowerErg=powerErg;
+        }
+
+        EMP_PoweErgRatio=(4*longExposurePowerErg)/(PI*pow(1e-03*spotDiameter,2)*longExposure_EMP);
     }
-    EMP_PoweErgRatio=(4*longExposurePowerErg)/(PI*pow(1e-03*spotDiameter,2)*longExposure_EMP);
+    else if(laserOperation==DockControls::operation::MULTI_PULSE)
+    {
+        if(alpha_r<1.5)
+        {
+            longExposurePowerErg=powerErg;
+            EMP_PoweErgRatio=(4*longExposurePowerErg)/(PI*pow(1e-03*spotDiameter,2)*longExposure_EMP*exposureTime/numberOfPulses);
+        }
+        else
+        {
+            if(exposureTime<=T2)
+                longExposurePowerErg=(4*longExposurePowerErg)/(PI*pow(1e-03*spotDiameter,2)*longExposure_EMP/numberOfPulses);
+            else
+                EMP_PoweErgRatio=(4*longExposurePowerErg)/(PI*pow(1e-03*spotDiameter,2)*longExposure_EMP*exposureTime/numberOfPulses);
+        }
+    }
+    else
+        EMP_PoweErgRatio=1;
 }
 
 void BeamInspector::valuatePosition()
@@ -822,6 +870,11 @@ std::string BeamInspector::getLongExposition_EMP_Sort()const
     return longExposure_EMP_Sort;
 }
 
+std::string BeamInspector::getMainEffect()const
+{
+    return multiPulseMainEffect;
+}
+
 void BeamInspector::computeEMP_Unit()
 {
     if(EMP_Sort=="E")
@@ -846,35 +899,61 @@ bool BeamInspector::isLongExposure()
 void BeamInspector::computeForLongExposure()
 {
     ComputeEMP* retinalEMP=new ComputeEMP(wavelength, exposureTime, alpha_r);
+    notes=retinalEMP->getPhotochemicalNote();
+    photochemical=retinalEMP->isPhotochemical();
+    T1=retinalEMP->getT1();
+    T2=retinalEMP->getT2();
     if(laserOperation==DockControls::operation::CONTINUOS_WAVE)
     {
         longExposure_EMP=retinalEMP->getEMP();
         formula=retinalEMP->getFormulaEMP();
         longExposure_EMP_Sort=retinalEMP->getFormulaSort();
-        T1=retinalEMP->getT1();
-        T2=retinalEMP->getT2();
     }
     else
     if(laserOperation==DockControls::operation::MULTI_PULSE)
     {
-        formula=retinalEMP->getFormulaEMP();
+        longExposure_EMP_Sort=retinalEMP->getFormulaSort();
+        formula=retinalEMP->getFormulaEMP()+"/N";
         if(EMP_Sort=="E")
         {
             if(retinalEMP->getFormulaEMP()=="E")
-                longExposure_EMP_Sort=std::min(retinalEMP->getEMP(), EMP);
+            {
+                longExposure_EMP=std::min(retinalEMP->getEMP(), EMP);
+                 multiPulseMainEffect=mainEffect(retinalEMP->getEMP(), EMP);
+            }
             else
-                longExposure_EMP_Sort=std::min(retinalEMP->getEMP()/exposureTime, EMP);
+            {
+                longExposure_EMP=std::min(retinalEMP->getEMP()/exposureTime, EMP);
+                multiPulseMainEffect=mainEffect(retinalEMP->getEMP()/exposureTime, EMP);
+            }
         }
         else
         {
             if(retinalEMP->getFormulaEMP()=="H")
+            {
                 longExposure_EMP_Sort=std::min(retinalEMP->getEMP()/numberOfPulses, EMP);
+                multiPulseMainEffect=mainEffect(retinalEMP->getEMP()/numberOfPulses, EMP);
+            }
             else
-                longExposure_EMP_Sort=std::min(retinalEMP->getEMP()/numberOfPulses*exposureTime, EMP);
+            {
+                longExposure_EMP=std::min(retinalEMP->getEMP()/numberOfPulses*exposureTime, EMP);
+                multiPulseMainEffect=mainEffect(retinalEMP->getEMP()/numberOfPulses*exposureTime, EMP);
+            }
         }
     }
     else
-        longExposure_EMP_Sort=0.0;
+        longExposure_EMP=0.0;
+}
+
+std::string BeamInspector::mainEffect(const double& meanEMP, const double& pulseEMP)
+{
+    std::string mainEffect;
+    if(meanEMP<pulseEMP)
+        mainEffect="medio";
+    else
+        mainEffect="impulsivo";
+
+    return mainEffect;
 }
 
 void BeamInspector::inspectorUpdate()

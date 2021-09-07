@@ -60,6 +60,10 @@ public:
     std::string getLongExposureEMP_Sort()const;
     InspectorLink* getBeamInspectorLink();
     double getLinkInspectorPhase()const;
+    double getT1()const;
+    double getT2()const;
+    std::string getNotes()const;
+
     void setDescription(const QString&);
     QString getDescription()const;
     void inspectorUpdate();
@@ -71,6 +75,7 @@ public:
     double getDivergence()const;
 
     void setLaserOperation(const DockControls::operation&);
+    DockControls::operation getLaserOperation()const;
     void setPowerErg(const double& _powerErg);
 
     void setBeamDiameter(const double&);
@@ -105,6 +110,8 @@ public:
     void compute_d_r_FarField();
     void computePercentError();
     void computeForLongExposure();
+    std::string mainEffect(const double& meanEMP, const double& pulseEMP);
+    std::string getMainEffect()const;
     bool isLongExposure();
     bool isRetinalHazard();
     bool isFmFocusable();
@@ -190,6 +197,7 @@ private:
     std::string EMP_Unit;
     std::string longExposure_EMP_Sort;
     std::string longExposure_EMP_Unit;
+    std::string notes;
 
     //parte dedicata ai dati membro relativi alle caratteristiche del fascio
 
@@ -206,7 +214,9 @@ private:
     std::string formula;
     double T1;
     double T2;
+    std::string multiPulseMainEffect;
     DockControls::operation laserOperation;
+    bool photochemical;
 };
 
 #endif

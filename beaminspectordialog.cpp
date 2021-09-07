@@ -94,22 +94,45 @@ void BeamInspectorDialog::setUpBeamInspector()
         apparentSourceLabel->setText(QString::number(beamInspector->get_d_s()));
         EMP_Label->setVisible(!beamInspector->isFarField());
         tEMP_Label->setVisible(!beamInspector->isFarField());
-        Formula_Label->setVisible(!beamInspector->isFarField());
-        tFormula_Label->setVisible(!beamInspector->isFarField());
+
+        Formula_Label->setVisible(beamInspector->isLongExposure());
+        tFormula_Label->setVisible(beamInspector->isLongExposure());
+        T1_Label->setVisible(beamInspector->isLongExposure());
+        tT1_Label->setVisible(beamInspector->isLongExposure());
+        T2_Label->setVisible(beamInspector->isLongExposure());
+        tT2_Label->setVisible(beamInspector->isLongExposure());
+        Notes_Label->setVisible(beamInspector->isLongExposure());
+        tNotes_Label->setVisible(beamInspector->isLongExposure());
+        MainMultiPulseEffect_Label->setVisible((beamInspector->isLongExposure())&&
+                    (beamInspector->getLaserOperation()==DockControls::operation::MULTI_PULSE));
+        tMainMultiPulseEffect_Label->setVisible((beamInspector->isLongExposure())&&
+                    (beamInspector->getLaserOperation()==DockControls::operation::MULTI_PULSE));
+
         if(!beamInspector->isFarField())
         {
             if(beamInspector->isLongExposure())
             {
-                EMP_Label->setText(QString::number(beamInspector->getLongExposureEMP()));
-                tEMP_Label->setText(QString::fromStdString(beamInspector->getEMP_Sort()+beamInspector->getEMP_Unit()));
+                EMP_Label->setText(QString::number(beamInspector->getLongExposureEMP(), 'e', 2));
+                tEMP_Label->setText(QString::fromStdString(beamInspector->getLongExposureEMP_Sort()+beamInspector->getLongExposureEMP_Unit()));
+                Formula_Label->setText(QString::fromStdString(beamInspector->getFormula()));
+                T1_Label->setText(QString::number(beamInspector->getT1()));
+                T2_Label->setText(QString::number(beamInspector->getT2()));
+                Notes_Label->setText(QString::fromStdString(beamInspector->getNotes()));
+
+                if(beamInspector->getLaserOperation()==DockControls::operation::MULTI_PULSE)
+                    MainMultiPulseEffect_Label->setText(QString::fromStdString(beamInspector->getMainEffect()));
             }
             else
             {
-                EMP_Label->setText(QString::number(beamInspector->getAugmentedEMP()));
-                tEMP_Label->setText(QString::fromStdString(beamInspector->getLongExposition_EMP_Sort()+beamInspector->getEMP_Unit()));
+                EMP_Label->setText(QString::number(beamInspector->getAugmentedEMP(), 'e', 2));
+                tEMP_Label->setText(QString::fromStdString(beamInspector->getEMP_Sort()+beamInspector->getEMP_Unit()));
+                Formula_Label->setText("");
+                tFormula_Label->setText("");
+                T1_Label->setText("");
+                T2_Label->setText("");
+                Notes_Label->setText("");
+                MainMultiPulseEffect_Label->setText("");
             }
-            Formula_Label->setText(QString::fromStdString(beamInspector->getFormula()));
-            tFormula_Label->setText(QString::fromStdString(beamInspector->getFormula()));
         }
     }
 }
@@ -477,13 +500,61 @@ void BeamInspectorDialog::setUpWidget()
         tFormula_Label->setObjectName(QString::fromUtf8("tFormula_Label"));
         tFormula_Label->setFont(boldFont);
         tFormula_Label->setStyleSheet(nameStyle);
-        retinalGridLayout->addWidget(tFormula_Label, 1, 10, 1, 1);
+        retinalGridLayout->addWidget(tFormula_Label, 2, 0, 1, 1);
 
         Formula_Label = new QLabel(retinalGroupBox);
         Formula_Label->setObjectName(QString::fromUtf8("Formula_Label"));
         Formula_Label->setFont(font);
         Formula_Label->setStyleSheet(valueStyle);
-        retinalGridLayout->addWidget(Formula_Label, 1, 11, 1, 1);
+        retinalGridLayout->addWidget(Formula_Label, 2, 1, 1, 1);
+
+        tT1_Label = new QLabel(retinalGroupBox);
+        tT1_Label->setObjectName(QString::fromUtf8("tT1_Label"));
+        tT1_Label->setFont(boldFont);
+        tT1_Label->setStyleSheet(nameStyle);
+        retinalGridLayout->addWidget(tT1_Label, 2, 2, 1, 1);
+
+        T1_Label = new QLabel(retinalGroupBox);
+        T1_Label->setObjectName(QString::fromUtf8("T1_Label"));
+        T1_Label->setFont(font);
+        T1_Label->setStyleSheet(valueStyle);
+        retinalGridLayout->addWidget(T1_Label, 2, 3, 1, 1);
+
+        tT2_Label = new QLabel(retinalGroupBox);
+        tT2_Label->setObjectName(QString::fromUtf8("tT2_Label"));
+        tT2_Label->setFont(boldFont);
+        tT2_Label->setStyleSheet(nameStyle);
+        retinalGridLayout->addWidget(tT2_Label, 2, 4, 1, 1);
+
+        T2_Label = new QLabel(retinalGroupBox);
+        T2_Label->setObjectName(QString::fromUtf8("T2_Label"));
+        T2_Label->setFont(font);
+        T2_Label->setStyleSheet(valueStyle);
+        retinalGridLayout->addWidget(T2_Label, 2, 5, 1, 1);
+
+        tNotes_Label = new QLabel(retinalGroupBox);
+        tNotes_Label->setObjectName(QString::fromUtf8("tNotes_Label"));
+        tNotes_Label->setFont(boldFont);
+        tNotes_Label->setStyleSheet(nameStyle);
+        retinalGridLayout->addWidget(tNotes_Label, 2, 6, 1, 1);
+
+        Notes_Label = new QLabel(retinalGroupBox);
+        Notes_Label->setObjectName(QString::fromUtf8("Notes_Label"));
+        Notes_Label->setFont(font);
+        Notes_Label->setStyleSheet(valueStyle);
+        retinalGridLayout->addWidget(Notes_Label, 2, 7, 1, 1);
+
+        tMainMultiPulseEffect_Label = new QLabel(retinalGroupBox);
+        tMainMultiPulseEffect_Label->setObjectName(QString::fromUtf8("tMainMultiPulseEffect_Label"));
+        tMainMultiPulseEffect_Label->setFont(boldFont);
+        tMainMultiPulseEffect_Label->setStyleSheet(nameStyle);
+        retinalGridLayout->addWidget(tMainMultiPulseEffect_Label, 2, 8, 1, 1);
+
+        MainMultiPulseEffect_Label = new QLabel(retinalGroupBox);
+        MainMultiPulseEffect_Label->setObjectName(QString::fromUtf8("MainMultiPulseEffect_Label"));
+        MainMultiPulseEffect_Label->setFont(font);
+        MainMultiPulseEffect_Label->setStyleSheet(valueStyle);
+        retinalGridLayout->addWidget(MainMultiPulseEffect_Label, 2, 9, 1, 1);
 
         dockGridLayout->addWidget(retinalGroupBox, 3, 0, 1, 2);
 }
@@ -517,6 +588,15 @@ void BeamInspectorDialog::setUpWidget()
             tApparentSourceLabel->setText("d<sub>s</sub>[mm]");
             tAlphaLabel->setText("<p>&alpha;[mrad]</p>");
             tCE_Label->setText("C<sub>E</sub>");
+            if(beamInspector->isLongExposure())
+            {
+                tFormula_Label->setText("Esposizione lunga");
+                tT1_Label->setText("T<sub>1</sub>");
+                tT2_Label->setText("T<sub>2</sub>");
+                tNotes_Label->setText("note");
+                if(beamInspector->getLaserOperation()==DockControls::operation::MULTI_PULSE)
+                    tMainMultiPulseEffect_Label->setText("Effetto prevalente");
+            }
         }
 
         resize(sizeHint());

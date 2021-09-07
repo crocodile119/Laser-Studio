@@ -5103,4 +5103,5 @@ void MainWindow::updateForBeamInspection()
         ++myIterator;
     }
     inspectorsModel->myDataHasChanged();
+    laserModel->myDataHasChanged();
 }

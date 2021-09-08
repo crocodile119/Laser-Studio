@@ -144,23 +144,6 @@ MainWindow::MainWindow()
     laserWindow->myDockReflectorsList->ui->laserListView->setModel(laserModel);
     laserWindow->myDockReflectorsList->ui->laserListView->setItemDelegate(laserHtmlDelegate);
     laserSelectionModel=laserWindow->myDockReflectorsList->ui->laserListView->selectionModel();
-    setupLaserProspective();
-
-    externalFile=false;
-    externalFile=(QCoreApplication::arguments().size()>1);
-
-    QString fileName;
-    if (externalFile==true)
-    {
-        fileName = QApplication::arguments().at(1);
-        timer = new QTimer(this);
-        timer->setSingleShot(true);
-        timer->start(100);
-        loadFile(fileName);
-        connect(timer, SIGNAL(timeout()), this, SLOT(makeSceneOfSavedItems()));
-    }
-
-    readSettings();
 
     connect(laserWindow->myDockControls, SIGNAL(NOHD_Changed()), this, SLOT(setDNRO_ForLaserpoint()));
     connect(laserWindow->myDockControls, SIGNAL(NOHD_Changed()), this, SLOT(setDNRO_ForReflector()));
@@ -210,6 +193,22 @@ MainWindow::MainWindow()
     connect(laserWindow->graphicsView->scene, &GraphicsScene::graphicItemMoved, this, &MainWindow::graphicItemMoveToStack);
     connect(undoStack, &QUndoStack::indexChanged, this, &MainWindow::updateUndoStackList);
     connect(this, SIGNAL(beamInspectorListChanged()), this, SLOT(addInspectorList()));
+
+    externalFile=false;
+    externalFile=(QCoreApplication::arguments().size()>1);
+
+    QString fileName;
+    if (externalFile==true)
+    {
+        fileName = QApplication::arguments().at(1);
+        timer = new QTimer(this);
+        timer->setSingleShot(true);
+        timer->start(100);
+        loadFile(fileName);
+        connect(timer, SIGNAL(timeout()), this, SLOT(setOpenFile()));
+    }
+
+    readSettings();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -362,7 +361,6 @@ void MainWindow::newFile()
         setPolygon();
         setPolygonAct->setChecked(true);
 
-        setupLaserProspective();
         laserSettingsAction->setChecked(true);
 
         undoStack->clear();
@@ -408,47 +406,52 @@ void MainWindow::open()
         if (!fileName.isEmpty())
         {
             loadFile(fileName);
-            makeSceneOfSavedItems();
-
-            setupLaserProspective();
-            laserSettingsAction->setChecked(true);
-            undoStack->clear();
-            laserWindow->setUndoStack(undoStack);
-
-            connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(updateActions()));
-            connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(laserModified()));
-            connect(laserWindow->graphicsView->scene, SIGNAL(laserSelected()), this, SLOT(laserpointSelectionFromGraphics()));
-            connect(laserWindow->graphicsView->scene, SIGNAL(reflectorSelected()), this, SLOT(listSelectionFromGraphics()));
-            connect(laserWindow->graphicsView->scene, SIGNAL(binocularSelected()), this, SLOT(binocularListSelectionFromGraphics()));
-            connect(laserWindow->graphicsView->scene, SIGNAL(inspectorSelected()), this, SLOT(inspectorListSelectionFromGraphics()));
-            connect(laserWindow->graphicsView->scene, SIGNAL(labroomSelected()), this, SLOT(labroomSelectionFromGraphics()));
-            connect(laserWindow->graphicsView->scene, SIGNAL(deselected()), this, SLOT(listDeselectionFromGraphics()));
-            connect(laserWindow->graphicsView->scene, SIGNAL(footprintRelease()), this, SLOT(shadowZoneForLaser()));
-            connect(laserWindow->graphicsView->scene, SIGNAL(changed(const QList<QRectF> &)),this, SLOT(setViewportRect()));
-
-            connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setUpdatedPosition()));
-            connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setUpdatedPosition()));
-            connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setDistanceForReflector()));
-            connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setDistanceForReflector()));
-            connect(laserpoint, SIGNAL(xChanged()), this, SLOT(updateList()));
-            connect(laserpoint, SIGNAL(yChanged()), this, SLOT(updateList()));
-            connect(laserpoint, SIGNAL(xChanged()), this, SLOT(updateLaserList()));
-            connect(laserpoint, SIGNAL(yChanged()), this, SLOT(updateLaserList()));
-            connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setDistanceForBinocular()));
-            connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setDistanceForBinocular()));
-            connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setDistanceForFootprint()));
-            connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setDistanceForFootprint()));
-            connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setShadowZone()));
-            connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setShadowZone()));
-            connect(laserWindow->graphicsView->scene, &GraphicsScene::graphicItemMoved, this, &MainWindow::graphicItemMoveToStack);
-
-            laserpoint->setPos(laserpoint->pos()+QPointF(-1,-1));
-            laserpoint->setPos(laserpoint->pos()+QPointF(1,1));
-            laserWindow->graphicsView->centerOn(laserpoint->pos());
-
-            laserWindow->graphicsView->update();
+            setOpenFile();
         }
     }
+}
+
+void MainWindow::setOpenFile()
+{
+    makeSceneOfSavedItems();
+
+    laserSettingsAction->setChecked(true);
+    undoStack->clear();
+    laserWindow->setUndoStack(undoStack);
+
+    connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(updateActions()));
+    connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(laserModified()));
+    connect(laserWindow->graphicsView->scene, SIGNAL(laserSelected()), this, SLOT(laserpointSelectionFromGraphics()));
+    connect(laserWindow->graphicsView->scene, SIGNAL(reflectorSelected()), this, SLOT(listSelectionFromGraphics()));
+    connect(laserWindow->graphicsView->scene, SIGNAL(binocularSelected()), this, SLOT(binocularListSelectionFromGraphics()));
+    connect(laserWindow->graphicsView->scene, SIGNAL(inspectorSelected()), this, SLOT(inspectorListSelectionFromGraphics()));
+    connect(laserWindow->graphicsView->scene, SIGNAL(labroomSelected()), this, SLOT(labroomSelectionFromGraphics()));
+    connect(laserWindow->graphicsView->scene, SIGNAL(deselected()), this, SLOT(listDeselectionFromGraphics()));
+    connect(laserWindow->graphicsView->scene, SIGNAL(footprintRelease()), this, SLOT(shadowZoneForLaser()));
+    connect(laserWindow->graphicsView->scene, SIGNAL(changed(const QList<QRectF> &)),this, SLOT(setViewportRect()));
+
+    connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setUpdatedPosition()));
+    connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setUpdatedPosition()));
+    connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setDistanceForReflector()));
+    connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setDistanceForReflector()));
+    connect(laserpoint, SIGNAL(xChanged()), this, SLOT(updateList()));
+    connect(laserpoint, SIGNAL(yChanged()), this, SLOT(updateList()));
+    connect(laserpoint, SIGNAL(xChanged()), this, SLOT(updateLaserList()));
+    connect(laserpoint, SIGNAL(yChanged()), this, SLOT(updateLaserList()));
+    connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setDistanceForBinocular()));
+    connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setDistanceForBinocular()));
+    connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setDistanceForFootprint()));
+    connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setDistanceForFootprint()));
+    connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setShadowZone()));
+    connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setShadowZone()));
+    connect(laserWindow->graphicsView->scene, &GraphicsScene::graphicItemMoved, this, &MainWindow::graphicItemMoveToStack);
+
+    laserpoint->setPos(laserpoint->pos()+QPointF(-1,-1));
+    laserpoint->setPos(laserpoint->pos()+QPointF(1,1));
+    laserWindow->graphicsView->centerOn(laserpoint->pos());
+
+    laserWindow->graphicsView->update();
+
 }
 
 bool MainWindow::save()
@@ -488,7 +491,7 @@ void MainWindow::openRecentFile()
             loadFile(action->data().toString());
 
         makeSceneOfSavedItems();
-        setupLaserProspective();
+
         laserSettingsAction->setChecked(true);
 
         connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setUpdatedPosition()));

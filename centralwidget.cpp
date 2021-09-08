@@ -253,7 +253,6 @@ bool CentralWidget::readFile(const QString &fileName)
     myDockControls->ui->prfControl->setValue(0); //clear
 
     qreal powerErgControl;
-    qreal alphaControl;
     qreal pulseControl;
     qreal divergenceControl;
     qreal beamDiameterControl;
@@ -273,7 +272,7 @@ bool CentralWidget::readFile(const QString &fileName)
 
     in  >> myLabRoomInserted >> scintillationBool >> atmEffectsBool >> meteoRange >> a_coefficient >> atmoshericEffectsCoefficient
         >> scaleIndex >> scale >> force >> customer >> uasl >> uaslAssistant >> laserDescription >> placeDescription >> gridState >> goggleMaterial
-        >> powerErgControl >> alphaControl >> pulseControl >> divergenceControl >> beamDiameterControl >> prfControl >> wavelengthScrollBar
+        >> powerErgControl >> pulseControl >> divergenceControl >> beamDiameterControl >> prfControl >> wavelengthScrollBar
         >> operationCombo >> isGaussianBeamChecked >> comboBox >> T_SkinSpinBox >> teControl >> isTeChecked >> isInternalWaistChecked
         >> lambertianMax >> laserEMP >> laserBeamDiameter >> laserPowerErg >> laserPosition >> laserZValue >> aperture >> installation
         >> filterOn >> transmittance >> posVect >> TypeVect >> TextVect >> ReflectorDescriptionVect

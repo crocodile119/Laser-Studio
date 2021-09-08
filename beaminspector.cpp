@@ -639,10 +639,15 @@ bool BeamInspector::isSafePosition()
         safePosition=attenuatedDNRO<inspectorDistance;
     else
     {
-        if(!photochemical)
-            safePosition=EMP_PoweErgRatio<CE;
+        if(isLongExposure())
+            safePosition=EMP_PoweErgRatio<1;
         else
-            safePosition=false;
+        {
+            if(!photochemical)
+                safePosition=EMP_PoweErgRatio<CE;
+            else
+                safePosition=EMP_PoweErgRatio<1;
+        }
     }
     return safePosition;
 }
@@ -673,7 +678,7 @@ void BeamInspector::valuateLongExposurePosition()
         else
         {
             if(exposureTime<=T2)
-                longExposurePowerErg=(4*longExposurePowerErg)/(PI*pow(1e-03*spotDiameter,2)*longExposure_EMP/numberOfPulses);
+                EMP_PoweErgRatio=(4*longExposurePowerErg)/(PI*pow(1e-03*spotDiameter,2)*longExposure_EMP/numberOfPulses);
             else
                 EMP_PoweErgRatio=(4*longExposurePowerErg)/(PI*pow(1e-03*spotDiameter,2)*longExposure_EMP*exposureTime/numberOfPulses);
         }

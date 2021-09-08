@@ -89,6 +89,7 @@ private slots:
     bool save();
     bool saveAs();
     void open();
+    void setOpenFile();
     void setCurrentDirectory();
     void newFile();
     void openRecentFile();

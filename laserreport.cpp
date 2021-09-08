@@ -600,6 +600,12 @@ void LaserReport::firstPageReport()
     else
     filterStr="Filtro montato su ottica: assente";
 
+    if(qualityFactor<1)
+    {
+        QString noPhysicalString="Fascio fisicamente non realizzabile :dr";
+        laser.append(noPhysicalString);
+    }
+
     laser.append(laserPositionStr);
     laser.append(qualityFactorString);
     laser.append(rayleighDistanceString);
@@ -809,8 +815,11 @@ QString LaserReport::htmlLaserInstallation()
         QString title = fields[0];
         QString body = fields[1];
 
-        html +="<tr><td bgcolor=\"#fbfbfb\"><b>" + title + "</b></td>\n"
-                "<td>" + body + "</td></tr>\n";
+        if(body=="dr")
+            html +="<tr>\n<td colspan=\"2\"><i>" + title + "</i></td>\n</tr>\n";
+        else
+            html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b>\n</td>\n"
+                   "<td>" + body + "</td>\n</tr>";
     }
     html += "</table><br>\n";
 

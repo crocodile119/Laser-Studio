@@ -331,6 +331,8 @@ void MainWindow::newFile()
 
         laserWindow->clearInstallationDesription();
         setLaserPoint();
+        createRoom();
+
         showGridAction->setChecked(false);
 
         onlyReflectorGoggleAction->setChecked(true);
@@ -533,8 +535,7 @@ void MainWindow::about()
 
 void MainWindow::onLineHelp()
 {
-    //qHtmlHelp("Laser Safety.chm","generalita.html");
-    //qDebug() << QUrl("file:Laser Safety.chm").isRelative();
+    //QDesktopServices::openUrl(QUrl("http://www.techspotlighter.com/help/index.php"));
     QUrl helpFile;
     helpFile.setPath("LaserStudio.chm", QUrl::TolerantMode);
     QDesktopServices::openUrl(helpFile);

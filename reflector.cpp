@@ -287,12 +287,12 @@ QVariant Reflector::itemChange(GraphicsItemChange change,
         {
             reflectorDistance=link->linkLenght();
             link->trackNodes();
-            laserPhase=-link->LinkPhase();
+            laserPhase=link->LinkPhase();
 
             if(myTarget==LAMBERTIAN_TARGET)
-            correctPositioning=positioning+laserPhase;
+            correctPositioning=positioning-laserPhase;
                 else
-            correctPositioning=2*(positioning+laserPhase);
+            correctPositioning=2*(positioning-laserPhase);
 
             reflectorOperation();
             setStringDetails();
@@ -313,12 +313,12 @@ void Reflector::laserParametersChanged()
     {
         reflectorDistance=link->linkLenght();
         link->trackNodes();
-        laserPhase=-link->LinkPhase();
+        laserPhase=link->LinkPhase();
 
         if(myTarget==LAMBERTIAN_TARGET)
-            correctPositioning=positioning+laserPhase;
+            correctPositioning=positioning-laserPhase;
         else
-            correctPositioning=2*(positioning+laserPhase);
+            correctPositioning=2*(positioning-laserPhase);
 
         reflectorOperation();
         setTipString();

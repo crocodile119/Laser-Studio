@@ -1,4 +1,5 @@
 #include "sliderscrolllabel.h"
+#include "scientificnumber.h"
 #include <cmath>
 #include <QDebug>
 
@@ -117,14 +118,15 @@ void SliderScrollLabel::setValue(const double& _value)
 {
     double value=_value;
     scientNotLabel->setText(QString::number(value, 'e', 2));
-    mantissa=QString::number(value, 'e', 2).leftRef(4).toDouble();
+    ScientificNumber scientificNumber(value);
+    mantissa=scientificNumber.getMantissa();
     qDebug()<< "Mantissa: " << mantissa;
     slider->setValue(static_cast<int>(mantissa*100));
 
     if(value>=1)
-        exponent=+QString::number(value, 'e', 2).rightRef(2).toInt();
+        exponent=+scientificNumber.getExponent();
     else
-        exponent=-(QString::number(value, 'e', 2).rightRef(2).toInt());
+        exponent=-(scientificNumber.getExponent());
 
     scrollBar->setValue(-exponent);
 

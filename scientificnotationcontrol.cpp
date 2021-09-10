@@ -1,4 +1,5 @@
 #include "scientificnotationcontrol.h"
+#include "scientificnumber.h"
 #include <cmath>
 #include <QDebug>
 
@@ -111,7 +112,8 @@ void ScientificNotationControl::setValue(const double& _value)
 {
     double value=_value;
     scientNotLabel->setText(QString::number(value, 'e', 2));
-    mantissa=QString::number(value, 'e', 2).leftRef(4).toDouble();
+    ScientificNumber scientificNumber(value);
+    mantissa=scientificNumber.getMantissa();
     qDebug()<< "Mantissa: " << mantissa;
 
     int minimumExponent=getMinimumExponent();
@@ -119,7 +121,7 @@ void ScientificNotationControl::setValue(const double& _value)
 
     if(value>=1)
     {
-        exponent=+QString::number(value, 'e', 2).rightRef(2).toInt();
+        exponent=+scientificNumber.getExponent();
         if(exponent>maximumExponent)
         {
             mantissa=mantissa*pow(10, exponent-maximumExponent);
@@ -128,7 +130,7 @@ void ScientificNotationControl::setValue(const double& _value)
     }
     else
     {
-        exponent=-(QString::number(value, 'e', 2).rightRef(2).toInt());
+        exponent=-(scientificNumber.getExponent());
         if(exponent<minimumExponent)
         {
             mantissa=mantissa*pow(10, exponent-minimumExponent);

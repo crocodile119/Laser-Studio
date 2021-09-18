@@ -28,6 +28,11 @@ QModelIndex ReflectorsQList::getModelBeamInspectorIndex()
     return inspectorIndex;
 }
 
+QModelIndex ReflectorsQList::getTreeViewIndex()
+{
+    return treeViewIndex;
+}
+
 void ReflectorsQList::on_listView_clicked(const QModelIndex &index)
 {
     this->index=index;
@@ -76,4 +81,15 @@ void ReflectorsQList::on_environmentListView_clicked(const QModelIndex &index)
 void ReflectorsQList::on_environmentListView_doubleClicked(const QModelIndex &index)
 {
     environmentIndex=index;
+}
+
+void ReflectorsQList::on_treeView_clicked(const QModelIndex &index)
+{
+    treeViewIndex=index;
+}
+
+
+void ReflectorsQList::on_treeView_doubleClicked(const QModelIndex &index)
+{
+    treeViewIndex=index;
 }

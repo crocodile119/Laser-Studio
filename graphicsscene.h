@@ -35,7 +35,8 @@ signals:
     void inspectorSelected();
     void labroomSelected();
     void deselected();
-    void footprintRelease();
+    void footprintRelease();  
+    void graphicItemSelected(QGraphicsItem *movingItem);
     void graphicItemMoved(QGraphicsItem *movingItem, const QPointF& oldPos);
 };
 

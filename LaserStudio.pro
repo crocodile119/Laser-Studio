@@ -80,6 +80,8 @@ SOURCES +=\
     scrollbarcontrol.cpp \
     sliderscrolllabel.cpp \
     tablescontroller.cpp \
+    treeitem.cpp \
+    treemodel.cpp \
     undo_commands/addbeaminspectorcommand.cpp \
     undo_commands/addbinocularcommand.cpp \
     undo_commands/addbinocularpropertycommand.cpp \
@@ -181,6 +183,8 @@ HEADERS  += mainwindow.h \
     scrollbarcontrol.h \
     sliderscrolllabel.h \
     tablescontroller.h \
+    treeitem.h \
+    treemodel.h \
     undo_commands/addbeaminspectorcommand.h \
     undo_commands/addbinocularcommand.h \
     undo_commands/addbinocularpropertycommand.h \

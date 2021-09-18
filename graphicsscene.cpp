@@ -83,6 +83,8 @@ void GraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
         }
         else
             emit deselected();
+
+        emit graphicItemSelected(movingItem);
     }
 
     QGraphicsScene::mousePressEvent(mouseEvent);

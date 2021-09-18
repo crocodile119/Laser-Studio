@@ -41,6 +41,7 @@
 #include "objectlink.h"
 #include "gridlines.h"
 #include "laserreport.h"
+#include "treemodel.h"
 
 #if defined(QT_PRINTSUPPORT_LIB)
 #include <QtPrintSupport/qtprintsupportglobal.h>
@@ -187,6 +188,7 @@ private slots:
     void setReflectorBeamDiameterForDiffusion();
     void labroomSelectionFromGraphics();
     void listSelectionFromGraphics();
+    void treeSelectionFromGraphics(QGraphicsItem *item);
     void binocularListSelectionFromGraphics();
     void inspectorListSelectionFromGraphics();
     void listMultipleSelectionFromGraphics();
@@ -201,6 +203,7 @@ private slots:
     void goToSelectedBinocular();
     void goToSelectedBeamInspector();
     void gotToLaserpoint();
+    void goToGraphicsItem(QModelIndex index);
     void updateList();
     void updateLabList();
     void updateLaserList();
@@ -210,6 +213,7 @@ private slots:
     void selectFromList();
     void selectBinocularFromList();
     void selectInspectorFromList();
+    void selectItemFromTree(QModelIndex index);
     void propertyFromList();
     void environmentFromList();
     void setLaserpointShapePathForReflectors();
@@ -223,6 +227,12 @@ private slots:
     //scene
 
     void addBeamInspectorLink();
+    void setTreeModel();
+    bool insertGraphicsItem(TreeModel::GraphicsItem graphicsItem);
+    bool updateGraphicsItem(TreeModel::GraphicsItem graphicsItem);
+    bool updateGraphicsItemList();
+    bool updateEnvironmentItem();
+    void removeRow();
 
 
 private:
@@ -280,12 +290,14 @@ private:
     BinocularsListModel *binocularsModel;
     InspectorsListModel *inspectorsModel;
     LaserListModel *laserModel;
+    TreeModel *treeModel;
     EnvironmentListModel *environmentModel;
     QItemSelectionModel *reflectorsSelectionModel;
     QItemSelectionModel *laserSelectionModel;
     QItemSelectionModel *inspectorsSelectionModel;
     QItemSelectionModel *binocularsSelectionModel; 
     QItemSelectionModel *environmentSelectionModel;
+    QItemSelectionModel *treeSelectionModel;
 
     QString curFile;
     QString curDirectoryFile;
@@ -404,6 +416,7 @@ private:
     bool dragModeState;
     bool myLabRoomInserted;
     bool state;
+    bool environmentState;
 
     QAction *addBinocularAct;
     QAction *addLabAct;
@@ -448,6 +461,7 @@ private:
     QList <LabRoom*> labroomList;
     QPointF pointPosition;
 
+    QModelIndex selectedIndex;
     QFont sceneFont;
     QTransform myTransform;
 

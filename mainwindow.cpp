@@ -108,6 +108,7 @@ MainWindow::MainWindow()
     qDebug()<<"Rettangolo anteprima di stampa" << previewRect;
 
     state=false;
+    environmentState=false;
     reflectorsModel= new ReflectorsListModel(myReflectors, this);
     binocularsModel= new BinocularsListModel(myBinoculars, this);
     inspectorsModel= new InspectorsListModel(myBeamInspectors, this);
@@ -143,7 +144,9 @@ MainWindow::MainWindow()
 
     laserWindow->myDockReflectorsList->ui->laserListView->setModel(laserModel);
     laserWindow->myDockReflectorsList->ui->laserListView->setItemDelegate(laserHtmlDelegate);
+    setTreeModel();
     laserSelectionModel=laserWindow->myDockReflectorsList->ui->laserListView->selectionModel();
+    treeSelectionModel=laserWindow->myDockReflectorsList->ui->treeView->selectionModel();
 
     connect(laserWindow->myDockControls, SIGNAL(NOHD_Changed()), this, SLOT(setDNRO_ForLaserpoint()));
     connect(laserWindow->myDockControls, SIGNAL(NOHD_Changed()), this, SLOT(setDNRO_ForReflector()));
@@ -174,6 +177,10 @@ MainWindow::MainWindow()
     connect(laserWindow->myDockReflectorsList->ui->binocularListView, SIGNAL(clicked(QModelIndex)), this, SLOT(goToSelectedBinocular()));
     connect(laserWindow->myDockReflectorsList->ui->inspectorListView, SIGNAL(clicked(QModelIndex)), this, SLOT(goToSelectedBeamInspector()));
     connect(laserWindow->myDockReflectorsList->ui->laserListView, SIGNAL(clicked(QModelIndex)), this, SLOT(gotToLaserpoint()));
+
+    connect(laserWindow->myDockReflectorsList->ui->treeView, SIGNAL(clicked(QModelIndex)), this, SLOT(goToGraphicsItem(QModelIndex)));
+    connect(laserWindow->myDockReflectorsList->ui->treeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(selectItemFromTree(QModelIndex)));
+
     connect(laserWindow->myDockReflectorsList->ui->environmentListView, SIGNAL(clicked(QModelIndex)), this, SLOT(goToLab()));
     connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(updateActions()));
     connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(laserModified()));
@@ -181,9 +188,11 @@ MainWindow::MainWindow()
     connect(laserWindow->graphicsView->scene, SIGNAL(reflectorSelected()), this, SLOT(listSelectionFromGraphics()));
     connect(laserWindow->graphicsView->scene, SIGNAL(inspectorSelected()), this, SLOT(inspectorListSelectionFromGraphics()));
     connect(laserWindow->graphicsView->scene, SIGNAL(binocularSelected()), this, SLOT(binocularListSelectionFromGraphics()));
-    connect(laserWindow->graphicsView->scene, SIGNAL(labroomSelected()), this, SLOT(labroomSelectionFromGraphics()));
+    connect(laserWindow->graphicsView->scene, SIGNAL(labroomSelected()), this, SLOT(labroomSelectionFromGraphics()));   
+    connect(laserWindow->graphicsView->scene, &GraphicsScene::graphicItemSelected, this, &MainWindow::treeSelectionFromGraphics);
     connect(laserWindow->graphicsView->scene, SIGNAL(deselected()), this, SLOT(listDeselectionFromGraphics()));
     connect(laserWindow->graphicsView->scene, SIGNAL(footprintRelease()), this, SLOT(shadowZoneForLaser()));
+
     connect(laserWindow->graphicsView, SIGNAL(mouseRelease()), this, SLOT(listMultipleSelectionFromGraphics()));
     connect(laserWindow->myDockControls, SIGNAL(noFeasibleInput()), this, SLOT(noFeasibleInputFunction()));
     connect(laserWindow->myDockControls, SIGNAL(operationChanged()), this, SLOT(deletedViewCenter()));
@@ -363,6 +372,9 @@ void MainWindow::newFile()
         setPolygon();
         setPolygonAct->setChecked(true);
 
+        environmentState=false;
+        updateEnvironmentItem();
+        updateGraphicsItemList();
         laserSettingsAction->setChecked(true);
 
         undoStack->clear();
@@ -671,6 +683,102 @@ void MainWindow::environmentFromList()
 
         LabEditDialog dialog(myLabRoom, this);
         dialog.exec();
+    }
+}
+
+
+void MainWindow::selectItemFromTree(QModelIndex index)
+{
+    QModelIndex parentIndex=laserWindow->myDockReflectorsList->ui->treeView->model()->parent(index);
+    if(parentIndex.row()==0)
+    {
+        if(environmentModel->getState())
+        {
+            laserWindow->graphicsView->scene->clearSelection();
+            myLabRoom->setSelected(true);
+
+            LabEditDialog dialog(myLabRoom, this);
+            dialog.exec();
+        }
+    }
+    if(parentIndex.row()==1)
+    {
+        laserWindow->graphicsView->scene->clearSelection();
+        laserpoint->setSelected(true);
+
+        LaserPropertiesDialog dialog(laserpoint, this);
+        dialog.exec();
+
+        if(dialog.result()==QDialog::Accepted)
+            updateForCondMeteo();
+    }
+    if(parentIndex.row()==2)
+    {
+        reflector=myReflectors.at(index.row()).first;
+        if(reflector)
+        {
+            laserWindow->graphicsView->scene->clearSelection();
+            reflector->setSelected(true);
+
+            ReflectorPropertiesDialog dialog(reflector, this);
+            dialog.exec();
+        }
+    }
+    if(parentIndex.row()==3)
+    {
+        binocular=myBinoculars.at(index.row()).first;
+        if(binocular)
+        {
+            laserWindow->graphicsView->scene->clearSelection();
+            binocular->setSelected(true);
+
+            BinocularPropertiesDialog dialog(binocular, laserWindow->myDockControls->getWavelength(), this);
+            dialog.exec();
+
+            if(dialog.result()==QDialog::Accepted)
+            {
+                double exendedOpticalDiameter=binocular->getExendedOpticalDiameter();
+                bool binocularInZone=laserpoint->shapeEnhacedPathContainsPoint(laserpoint->mapFromScene(binocular->pos()), exendedOpticalDiameter);
+                binocular->setInZone(binocularInZone);
+                binocular->laserParametersChanged();
+                setMaxEhnacedOpticalDiameter();
+
+                if(footprint!=nullptr)
+                {
+                    QList<FootprintObject*>::iterator myIterator; // iterator
+                    myIterator = myFootprints.begin();
+
+                    while (myIterator != myFootprints.end() )
+                    {
+                        footprint=*myIterator;
+                        footprint->laserParameterChanged();
+                        ++myIterator;
+                    }
+                }
+                setShadowZone();
+            }
+        }
+    }
+    if(parentIndex.row()==4)
+    {
+        beamInspector=myBeamInspectors.at(index.row()).first;
+        if(beamInspector)
+        {
+            laserWindow->graphicsView->scene->clearSelection();
+            beamInspector->setSelected(true);
+
+            BeamInspectorDialog dialog(beamInspector, this);
+            QPointF position=beamInspector->pos();
+            dialog.exec();
+
+            if(dialog.result()==QDialog::Rejected)
+                beamInspector->setPos(position);
+            else
+            {
+                beamInspector->setDescription(dialog.descriptionTextEdit->toPlainText());
+                qDebug()<< "Descrizione segnaposto: "<<dialog.descriptionTextEdit->toPlainText();
+            }
+        }
     }
 }
 
@@ -2650,7 +2758,7 @@ void MainWindow::addBinocular()
 
     setMaxEhnacedOpticalDiameter();
     binocular->laserParametersChanged();
-
+    insertGraphicsItem(TreeModel::GraphicsItem::BINOCULAR);
     binSeqNumber++;
 
     if(footprint!=nullptr)
@@ -2667,6 +2775,7 @@ void MainWindow::addBinocular()
     }
 
     setShadowZone();
+    treeSelectionModel->clear();
     setWindowModified(true);
 
     connect(binocular, SIGNAL(xChanged()), this, SLOT(updateBinocularList()));
@@ -2702,15 +2811,17 @@ void MainWindow::addBeamInspector()
     setLaserpointShapePathForInspectors();
     setDistanceForInspector();
     beamInspector->laserParametersChanged();
+    insertGraphicsItem(TreeModel::GraphicsItem::BEAM_INSPECTOR);
+
     inspectorSeqNumber++;
 
+    treeSelectionModel->clear();
     setWindowModified(true);
 
     connect(beamInspector, SIGNAL(xChanged()), this, SLOT(updateInspectorList()));
     connect(beamInspector, SIGNAL(yChanged()), this, SLOT(updateInspectorList()));
     connect(beamInspector, SIGNAL(xChanged()), this, SLOT(setLaserpointShapePathForInspectors()));
     connect(beamInspector, SIGNAL(yChanged()), this, SLOT(setLaserpointShapePathForInspectors()));
-
 }
 
 void MainWindow::addReflector(const target &target)
@@ -2743,8 +2854,11 @@ void MainWindow::addReflector(const target &target)
     setMaxEhnacedOpticalDiameter();
     setLaserpointShapePathForReflectors();
 
+    insertGraphicsItem(TreeModel::GraphicsItem::REFLECTOR);
+
     seqNumber++;
 
+    treeSelectionModel->clear();
     connect(reflector, SIGNAL(xChanged()), this, SLOT(updateList()));
     connect(reflector, SIGNAL(yChanged()), this, SLOT(updateList()));
     connect(reflector, SIGNAL(xChanged()), this, SLOT(setLaserpointShapePathForReflectors()));
@@ -2795,7 +2909,9 @@ void MainWindow::del()
         deleteReflectorCommand = new DeleteReflectorCommand(reflector, link, scale, laserWindow,
             laserpoint, &myReflectors, reflectorsModel, deleletePosition);
 
-    undoStack->push(deleteReflectorCommand);
+        undoStack->push(deleteReflectorCommand);
+        removeRow();
+        updateGraphicsItem(TreeModel::GraphicsItem::REFLECTOR);
     }
 
      else if (binocular)
@@ -2807,6 +2923,8 @@ void MainWindow::del()
 
     undoStack->push(deleteBinocularCommand);
     setMaxEhnacedOpticalDiameter();
+    removeRow();
+    updateGraphicsItem(TreeModel::GraphicsItem::BINOCULAR);
     }
 
     else if (beamInspector)
@@ -2817,6 +2935,8 @@ void MainWindow::del()
            laserpoint, &myBeamInspectors, inspectorsModel, deleletePosition);
 
    undoStack->push(deleteBeamInspectorCommand);
+   removeRow();
+   updateGraphicsItem(TreeModel::GraphicsItem::BEAM_INSPECTOR);
    }
 
     else if (footprint)
@@ -2874,6 +2994,7 @@ void MainWindow::setZValue(int z)
     Reflector *reflector = selectedReflector();
     LaserPoint *laserpoint = selectedLaserPoint();
     Binocular *binocular = selectedBinocular();
+    BeamInspector *beamInspector = selectedBeamInspector();
     FootprintObject *footprint = selectedFootprint();
     QGraphicsItem *myLab = selectedLab();
 
@@ -2883,6 +3004,8 @@ void MainWindow::setZValue(int z)
         laserpoint->setZValue(z);
     else if (binocular)
         binocular->setZValue(z);
+    else if (beamInspector)
+        beamInspector->setZValue(z);
     else if (footprint)
         footprint->setZValue(z);
     else if(myLab)
@@ -3143,6 +3266,8 @@ double MainWindow::attenuatedDistance(const double & _distance)
         double transmittance=laserpoint->getTransmittance();
         attenuatedlDistance=sqrtf(transmittance)*distance;
         laserModel->myDataHasChanged();
+        updateGraphicsItem(TreeModel::GraphicsItem::LASERPOINT);
+
     }
 
     laserpoint->setStrings();
@@ -3154,15 +3279,21 @@ void MainWindow::setDNRO_ForLaserpoint()
     double attenuatedDNRO=attenuatedDistance(laserWindow->myDockControls->getOpticalDistance());
     laserpoint->setOpticalDiameter(attenuatedDNRO);
     laserModel->myDataHasChanged();
+    updateGraphicsItem(TreeModel::GraphicsItem::LASERPOINT);
+
     reflectorsModel->myDataHasChanged();
+    updateGraphicsItem(TreeModel::GraphicsItem::REFLECTOR);
 }
 
 void MainWindow::setDNRC_ForLaserpoint()
 {
     double attenuatedDNRC=attenuatedDistance(laserWindow->myDockControls->getSkinDistances());
     laserpoint->setSkinDistance(attenuatedDNRC);
-    laserModel->myDataHasChanged();
+    laserModel->myDataHasChanged();   
+    updateGraphicsItem(TreeModel::GraphicsItem::LASERPOINT);
+
     reflectorsModel->myDataHasChanged();
+    updateGraphicsItem(TreeModel::GraphicsItem::REFLECTOR);
 }
 
 void MainWindow::setDNRO_ForReflector()
@@ -3193,6 +3324,9 @@ void MainWindow::setDNRO_ForReflector()
         ++myIterator;
     }
     updateActions();
+
+    updateGraphicsItem(TreeModel::GraphicsItem::REFLECTOR);
+
     reflectorsModel->myDataHasChanged();
 }
 
@@ -3217,6 +3351,9 @@ void MainWindow::setDNRO_ForBinocular()
         ++myIterator;
     }
     updateActions();
+
+    updateGraphicsItem(TreeModel::GraphicsItem::BINOCULAR);
+
     binocularsModel->myDataHasChanged();
 }
 
@@ -3298,6 +3435,8 @@ void MainWindow::setDNRO_ForInspector()
         ++myIterator;
     }
     inspectorsModel->myDataHasChanged();
+
+    updateGraphicsItem(TreeModel::GraphicsItem::BEAM_INSPECTOR);
 }
 
 void MainWindow::setDivergenceForReflector()
@@ -3331,6 +3470,8 @@ void MainWindow::setDivergenceForBinocular()
         ++myIterator;
     }
     binocularsModel->myDataHasChanged();
+
+    updateGraphicsItem(TreeModel::GraphicsItem::BINOCULAR);
 }
 
 void MainWindow::setWavelengthForBinocular()
@@ -3348,6 +3489,8 @@ void MainWindow::setWavelengthForBinocular()
         ++myIterator;
     }
     binocularsModel->myDataHasChanged();
+
+    updateGraphicsItem(TreeModel::GraphicsItem::BINOCULAR);
 }
 
 
@@ -3432,7 +3575,10 @@ void MainWindow::setDistanceForBinocular()
         binocular->laserPositionChanged();
         ++myIterator;
     }
-    binocularsModel->myDataHasChanged();
+    binocularsModel->myDataHasChanged();  
+
+    updateGraphicsItem(TreeModel::GraphicsItem::BINOCULAR);
+
     updateActions();
 }
 
@@ -3451,7 +3597,10 @@ void MainWindow::setDistanceForInspector()
         beamInspector->laserPositionChanged();
         ++myIterator;
     }
-    inspectorsModel->myDataHasChanged();
+    inspectorsModel->myDataHasChanged(); 
+
+    updateGraphicsItem(TreeModel::GraphicsItem::BEAM_INSPECTOR);
+
     updateActions();
 }
 
@@ -3485,6 +3634,9 @@ void MainWindow::setBeamDiameterForBinocular()
         ++myIterator;
     }
     binocularsModel->myDataHasChanged();
+
+    updateGraphicsItem(TreeModel::GraphicsItem::BINOCULAR);
+
     updateActions();
 }
 
@@ -3998,6 +4150,7 @@ void MainWindow::makeSceneOfSavedItems()
 
         environmentModel->addDescriptor(*myLabRoom);
         environmentModel->setState(true);
+        environmentState=true;
 
         meteoWidgets(meteoWidgetsON, meteoWidgetsON, meteoWidgetsON);
         updateForCondMeteo();
@@ -4020,10 +4173,14 @@ void MainWindow::makeSceneOfSavedItems()
         atmosphericEffectsOn(isAtmEffects);
         scintillationOn(isScintillation);
         environmentModel->setState(false);
+        environmentState=false;
         setPolygonAct->setChecked(true);
     }
 
     environmentModel->myDataHasChanged();
+
+    updateEnvironmentItem();
+    updateGraphicsItemList();
 
     laserWindow->myDockControls->updateGoggle();
     laserWindow->myDockControls->updateAllCompositeControlsFunctions();
@@ -4097,6 +4254,8 @@ void MainWindow::addInspectorList()
     beamInspector->setInspectorSeqNumber(modelIndex);
 
     inspectorsModel->myDataHasChanged();
+
+    updateGraphicsItem(TreeModel::GraphicsItem::BEAM_INSPECTOR);
 }
 
 
@@ -4190,23 +4349,75 @@ void MainWindow::gotToLaserpoint()
     laserpoint->setSelected(true);
 }
 
+void MainWindow::goToGraphicsItem(QModelIndex index)
+{
+    QModelIndex parentIndex=laserWindow->myDockReflectorsList->ui->treeView->model()->parent(index);
+    if(parentIndex.row()==1)
+    {
+        laserWindow->graphicsView->centerOn(laserpoint->pos());
+        reflectorsSelectionModel->clear();
+        binocularsSelectionModel->clear();
+        environmentSelectionModel->clear();
+        inspectorsSelectionModel->clear();
+        laserWindow->graphicsView->scene->clearSelection();
+        laserpoint->setSelected(true);
+    }
+    if(parentIndex.row()==2)
+    {
+        reflector=myReflectors.at(index.row()).first;
+        if(reflector)
+        {
+            laserWindow->graphicsView->centerOn(reflector->pos());
+            laserWindow->graphicsView->scene->clearSelection();
+            reflector->setSelected(true);
+        }
+    }
+    if(parentIndex.row()==3)
+    {
+        binocular=myBinoculars.at(index.row()).first;
+        if(binocular)
+        {
+            laserWindow->graphicsView->centerOn(binocular->pos());
+            laserWindow->graphicsView->scene->clearSelection();
+            binocular->setSelected(true);
+        }
+    }
+    if(parentIndex.row()==4)
+    {
+        beamInspector=myBeamInspectors.at(index.row()).first;
+        if(beamInspector)
+        {
+            laserWindow->graphicsView->centerOn(beamInspector->pos());
+            laserWindow->graphicsView->scene->clearSelection();
+            beamInspector->setSelected(true);
+        }
+    }
+}
+
 void MainWindow::updateList()
 {
+    updateGraphicsItem(TreeModel::GraphicsItem::REFLECTOR);
+
     reflectorsModel->myDataHasChanged();
 }
 
 void MainWindow::updateBinocularList()
 {
+    updateGraphicsItem(TreeModel::GraphicsItem::BINOCULAR);
+
     binocularsModel->myDataHasChanged();
 }
 
 void MainWindow::updateInspectorList()
 {
+    updateGraphicsItem(TreeModel::GraphicsItem::BEAM_INSPECTOR);
+
     inspectorsModel->myDataHasChanged();
 }
 
 void MainWindow::updateLaserList()
 {
+    updateGraphicsItem(TreeModel::GraphicsItem::LASERPOINT);
     laserModel->myDataHasChanged();
 }
 
@@ -4240,6 +4451,79 @@ void MainWindow::listSelectionFromGraphics()
     reflectorsSelectionModel->select(selectedIndex, QItemSelectionModel::Clear | QItemSelectionModel::Select);
 }
 
+void MainWindow::treeSelectionFromGraphics(QGraphicsItem *item)
+{
+    LaserPoint *laserpoint= qgraphicsitem_cast<LaserPoint*>(item);
+    Reflector *reflector= qgraphicsitem_cast<Reflector*>(item);
+    Binocular *binocular= qgraphicsitem_cast<Binocular*>(item);
+    BeamInspector *beamInspector= qgraphicsitem_cast<BeamInspector*>(item);
+
+    if(laserpoint)
+    {
+        QAbstractItemModel *model=laserWindow->myDockReflectorsList->ui->treeView->model();
+        QModelIndex parentIndex=model->index(1, 0);
+        selectedIndex=treeModel->index(0, 0, parentIndex);
+    }
+    else if(reflector)
+    {
+        int reflectorIndex;
+        QModelIndex parentIndex=laserWindow->myDockReflectorsList->ui->treeView->model()->index(2, 0);
+        QList<pair<Reflector*, int>>::iterator myIterator; // iterator
+        myIterator = myReflectors.begin();
+        while (myIterator != myReflectors.end())
+        {
+            reflector=myIterator->first;
+            if(reflector->isSelected())
+            {
+                reflectorIndex=myReflectors.indexOf(*myIterator);
+                selectedIndex=treeModel->index(reflectorIndex, 0, parentIndex);
+                updateActions();
+             }
+             ++myIterator;
+        }
+    }
+    else if(binocular)
+    {
+        int binocularIndex;
+        QModelIndex parentIndex=laserWindow->myDockReflectorsList->ui->treeView->model()->index(3, 0);
+        QList<pair<Binocular*, int>>::iterator myIterator; // iterator
+        myIterator = myBinoculars.begin();
+        while (myIterator != myBinoculars.end())
+        {
+            binocular=myIterator->first;
+            if(binocular->isSelected())
+            {
+                binocularIndex=myBinoculars.indexOf(*myIterator);
+                selectedIndex=treeModel->index(binocularIndex, 0, parentIndex);
+                updateActions();
+             }
+             ++myIterator;
+        }
+    }
+    else if(beamInspector)
+    {
+        int inspectorIndex;
+        QAbstractItemModel* model=laserWindow->myDockReflectorsList->ui->treeView->model();
+        QModelIndex parentIndex=model->index(static_cast<int>(TreeModel::GraphicsItem::BEAM_INSPECTOR), 0);
+        QList<pair<BeamInspector*, int>>::iterator myIterator; // iterator
+        myIterator = myBeamInspectors.begin();
+        while (myIterator != myBeamInspectors.end())
+        {
+            beamInspector=myIterator->first;
+            if(beamInspector->isSelected())
+            {
+                inspectorIndex=myBeamInspectors.indexOf(*myIterator);
+                selectedIndex=treeModel->index(inspectorIndex, 0, parentIndex);
+                updateActions();
+             }
+             ++myIterator;
+        }
+    }
+    else
+        selectedIndex=QModelIndex();
+
+    treeSelectionModel->setCurrentIndex(selectedIndex, QItemSelectionModel::ClearAndSelect);
+}
 
 void MainWindow::binocularListSelectionFromGraphics()
 {
@@ -4434,6 +4718,7 @@ void MainWindow::setPolygon()
     {
         laserWindow->graphicsView->scene->removeItem(myLabRoom);
         environmentModel->setState(false);
+        environmentState=false;
         environmentModel->setMeteoVisibility(laserWindow->getMeteoRange());
         environmentModel->addDescriptor(*myFakeRoom);
         environmentModel->myDataHasChanged();
@@ -4445,6 +4730,7 @@ void MainWindow::setPolygon()
         setWindowModified(true);
         undoStack->clear();
         laserWindow->setUndoStack(undoStack);
+        updateGraphicsItem(TreeModel::GraphicsItem::ENVIRONMENT);
     }
 }
 
@@ -4459,6 +4745,7 @@ void MainWindow::addRoom()
     menuSceneScaleChanged("8000%", 15);
 
     environmentModel->setState(true);
+    environmentState=true;
     laserWindow->graphicsView->scene->addItem(myLabRoom);
     labroomList.append(myLabRoom);
     myLabRoom->setPos(laserpoint->pos().x(), laserpoint->pos().y());
@@ -4490,6 +4777,8 @@ void MainWindow::addRoom()
 
     undoStack->clear();
     laserWindow->setUndoStack(undoStack);
+
+    updateGraphicsItem(TreeModel::GraphicsItem::ENVIRONMENT);
 
     emit myLabRoomListChanged();
 }
@@ -4848,7 +5137,6 @@ void MainWindow::undo()
     */
     int index=undoStack->index();
     bool addFootprintCmd=undoStack->command(index)==addFootprintCommand;
-    bool addReflectorCmd=undoStack->command(index)==addReflectorCommand;
     bool addBinocularCmd=undoStack->command(index)==addBinocularCommand;
     bool deleteFootprintCmd=undoStack->command(index)==deleteFootprintCommand;
     bool deleteReflectorCmd=undoStack->command(index)==deleteReflectorCommand;
@@ -4886,13 +5174,10 @@ void MainWindow::undo()
         }
         footprintsCount=myFootprints.count();
     }
-    else if(addReflectorCmd)
-    {
-
-    }
     else if(addBinocularCmd)
+    {
         setMaxEhnacedOpticalDiameter();
-
+    }
     else if(deleteReflectorCmd)
     {
         if(!myReflectors.isEmpty())
@@ -4911,11 +5196,14 @@ void MainWindow::undo()
         }
     }
     else if(deleteBinocularCmd)
+    {
         setMaxEhnacedOpticalDiameter();
+    }
 
     if((!addFootprintCmd)&&(!deleteFootprintCmd))
         setShadowZone();
 
+    updateGraphicsItemList();
     statusBar()->showMessage(commandUndoTriggered(), 2000);
 }
 
@@ -5010,7 +5298,10 @@ void MainWindow::redo()
         }
     }
     else if(deleteBinocularCmd)
+    {
         setMaxEhnacedOpticalDiameter();
+        updateGraphicsItemList();
+    }
 
     else if(deleteBeamInspectorCmd)
     {
@@ -5023,6 +5314,8 @@ void MainWindow::redo()
 
     if((!addFootprintCmd)&&(!deleteFootprintCmd))
         setShadowZone();
+
+    updateGraphicsItemList();
 
     statusBar()->showMessage(commandRedoTriggered(), 2000);
 }
@@ -5107,5 +5400,466 @@ void MainWindow::updateForBeamInspection()
         ++myIterator;
     }
     inspectorsModel->myDataHasChanged();
+
+    updateGraphicsItem(TreeModel::GraphicsItem::BEAM_INSPECTOR);
+
     laserModel->myDataHasChanged();
+    updateGraphicsItem(TreeModel::GraphicsItem::LASERPOINT);
+}
+
+void MainWindow::setTreeModel()
+{
+    treeModel=new TreeModel();
+    insertGraphicsItem(TreeModel::GraphicsItem::ENVIRONMENT);
+    insertGraphicsItem(TreeModel::GraphicsItem::LASERPOINT);
+
+    HtmlDelegate* treeHtmlDelegate = new HtmlDelegate();
+    laserWindow->myDockReflectorsList->ui->treeView->setModel(treeModel);
+    laserWindow->myDockReflectorsList->ui->treeView->setItemDelegate(treeHtmlDelegate);
+
+    QModelIndex modelIndex;
+    int rows=treeModel->rowCount();
+
+    for(int i=0; i<rows; i++)
+    {
+        modelIndex=treeModel->index(i,0);
+        laserWindow->myDockReflectorsList->ui->treeView->setExpanded(modelIndex, true);
+    }
+}
+
+bool MainWindow::insertGraphicsItem(TreeModel::GraphicsItem graphicsItem)
+{
+    int row= static_cast<int>(graphicsItem);
+    bool inserted=false;
+    const int ROWS=1;
+
+    switch(graphicsItem)
+    {
+    case(TreeModel::GraphicsItem::ENVIRONMENT):
+    {
+        QModelIndex environmentHeaderIndex=treeModel->index(row, TreeModel::COLUMNS-1);
+
+        if(treeModel->insertRows(0, ROWS, environmentHeaderIndex))
+        {
+            QModelIndex environmentIndex=treeModel->index(0, TreeModel::COLUMNS-1, environmentHeaderIndex);
+
+            QString meteoVisibilityStr=QString::number(laserWindow->getMeteoRange());
+            QString environmentDescriptor;
+
+            if(environmentState)
+                environmentDescriptor=labroomList.at(0)->getTextLabel();
+            else
+            {
+                environmentDescriptor=QString("Poligono di tiro militare. <br>Visibilità meteorologica: %1 km")
+                    .arg(meteoVisibilityStr);
+            }
+
+            QList<QVariant> inputList={QVariant(environmentDescriptor), QVariant(static_cast<int>(graphicsItem)),
+                                   QVariant(static_cast<int>(TreeModel::ReflectorKind::INDENT))};
+            QVariant inputData=QVariant(inputList);
+            treeModel->setData(environmentIndex, inputData);
+            inserted=true;
+        }
+    }
+    break;
+    case(TreeModel::GraphicsItem::LASERPOINT):
+    {
+        QModelIndex laserpointHeaderIndex=treeModel->index(row, TreeModel::COLUMNS-1);
+
+        if(treeModel->insertRows(0, ROWS, laserpointHeaderIndex))
+        {
+            QModelIndex laserpointIndex=treeModel->index(0, TreeModel::COLUMNS-1, laserpointHeaderIndex);
+            QList<QVariant> inputList={QVariant(laserpoint->getStringPosition()), QVariant(static_cast<int>(graphicsItem)),
+                                   QVariant(static_cast<int>(TreeModel::ReflectorKind::INDENT))};
+
+            QVariant inputData=QVariant(inputList);
+            inserted=treeModel->setData(laserpointIndex, inputData);
+        }
+    }
+    break;
+    case(TreeModel::GraphicsItem::REFLECTOR):
+    {
+        pair<Reflector*, int> reflectorPair=myReflectors.last();
+        QModelIndex reflectorHeaderIndex=treeModel->index(row, TreeModel::COLUMNS-1);
+
+        if(treeModel->insertRows(reflectorPair.second, ROWS, reflectorHeaderIndex))
+        {
+            QModelIndex reflectorIndex=treeModel->index(reflectorPair.second, TreeModel::COLUMNS-1, reflectorHeaderIndex);
+            QString reflectorString =reflectorPair.first->getStringDetails();
+
+            target reflectorObjectKind=reflectorPair.first->getReflectorKind();
+            TreeModel::ReflectorKind reflectorKind;
+
+            if(reflectorObjectKind==WET_TARGET)
+                reflectorKind=TreeModel::ReflectorKind::WET;
+            else if(reflectorObjectKind==GLASS_TARGET)
+                reflectorKind=TreeModel::ReflectorKind::GLASS;
+            else if(reflectorObjectKind==LAMBERTIAN_TARGET)
+                reflectorKind=TreeModel::ReflectorKind::LAMBERTIAN;
+            else if(reflectorObjectKind==MIRROR_TARGET)
+                reflectorKind=TreeModel::ReflectorKind::MIRROR;
+            else
+                reflectorKind=TreeModel::ReflectorKind::NO_REFLECTOR;
+
+            QList<QVariant> inputList={QVariant(reflectorString), QVariant(static_cast<int>(graphicsItem)),
+                                       QVariant(static_cast<int>(reflectorKind))};
+
+            QVariant inputData=QVariant(inputList);
+            inserted=treeModel->setData(reflectorIndex, inputData);
+        }
+    }
+    break;
+    case(TreeModel::GraphicsItem::BINOCULAR):
+    {
+        pair<Binocular*, int> binocularPair=myBinoculars.last();
+        QModelIndex binocularHeaderIndex=treeModel->index(row, TreeModel::COLUMNS-1);
+
+        if(treeModel->insertRows(binocularPair.second, ROWS, binocularHeaderIndex))
+        {
+            QModelIndex binocularIndex=treeModel->index(binocularPair.second, TreeModel::COLUMNS-1, binocularHeaderIndex);
+            QString binocularString =binocularPair.first->getStringPosition();
+
+            QList<QVariant> inputList={QVariant(binocularString), QVariant(static_cast<int>(graphicsItem)),
+                                       QVariant(static_cast<int>(TreeModel::ReflectorKind::INDENT))};
+
+            QVariant inputData=QVariant(inputList);
+            inserted=treeModel->setData(binocularIndex, inputData);
+        }
+    }
+    break;
+    case(TreeModel::GraphicsItem::BEAM_INSPECTOR):
+    {
+        pair<BeamInspector*, int> inspectorPair=myBeamInspectors.last();
+        QModelIndex inspectorHeaderIndex=treeModel->index(row, TreeModel::COLUMNS-1);
+
+        if(treeModel->insertRows(inspectorPair.second, ROWS, inspectorHeaderIndex))
+        {
+            QModelIndex inspectorIndex=treeModel->index(inspectorPair.second, TreeModel::COLUMNS-1, inspectorHeaderIndex);
+            QString inspectorString =inspectorPair.first->getStringPosition();
+
+            QList<QVariant> inputList={QVariant(inspectorString), QVariant(static_cast<int>(graphicsItem)),
+                                       QVariant(static_cast<int>(TreeModel::ReflectorKind::INDENT))};
+
+            QVariant inputData=QVariant(inputList);
+            inserted=treeModel->setData(inspectorIndex, inputData);
+        }
+    }
+        break;
+    default:
+        inserted=false;
+        break;
+    }
+    return inserted;
+}
+
+bool MainWindow::updateGraphicsItem(TreeModel::GraphicsItem graphicsItem)
+{
+    bool changed=false;
+    int row=static_cast<int>(graphicsItem);
+    int rows;
+    switch(graphicsItem)
+    {
+        case(TreeModel::GraphicsItem::ENVIRONMENT):
+        {
+            QModelIndex environmentHeaderIndex=treeModel->index(row, TreeModel::COLUMNS-1);
+            QModelIndex environmentIndex;
+            QList<QVariant> inputList;
+            QVariant inputData;
+
+            environmentIndex=treeModel->index(0, TreeModel::COLUMNS-1, environmentHeaderIndex);
+
+            QString meteoVisibilityStr=QString::number(laserWindow->getMeteoRange());
+            QString environmentDescriptor;
+
+            if(environmentState)
+            {
+                environmentDescriptor=myLabRoom->getTextLabel();
+                inputList={QVariant(environmentDescriptor), QVariant(static_cast<int>(graphicsItem)),
+                                   QVariant(static_cast<int>(TreeModel::ReflectorKind::LAB))};
+            }
+            else
+            {
+                environmentDescriptor=QString("Poligono di tiro militare. <br>Visibilità meteorologica: %1 km")
+                        .arg(meteoVisibilityStr);
+                inputList={QVariant(environmentDescriptor), QVariant(static_cast<int>(graphicsItem)),
+                                       QVariant(static_cast<int>(TreeModel::ReflectorKind::INDENT))};
+            }
+
+            inputData=QVariant(inputList);
+            changed=treeModel->setData(environmentIndex, inputData);
+
+            if(!changed)
+                break;
+        }
+        break;
+        case(TreeModel::GraphicsItem::LASERPOINT):
+        {
+            QModelIndex laserpointHeaderIndex=treeModel->index(row, TreeModel::COLUMNS-1);
+            QModelIndex laserpointIndex;
+            QList<QVariant> inputList;
+            QVariant inputData;
+
+            laserpointIndex=treeModel->index(0, TreeModel::COLUMNS-1, laserpointHeaderIndex);
+            inputList={QVariant(laserpoint->getStringPosition()), QVariant(static_cast<int>(graphicsItem)),
+                                               QVariant(static_cast<int>(TreeModel::ReflectorKind::INDENT))};
+
+            inputData=QVariant(inputList);
+            changed=treeModel->setData(laserpointIndex, inputData);
+
+            if(!changed)
+                break;
+        }
+        break;
+        case(TreeModel::GraphicsItem::REFLECTOR):
+        {
+            rows=myReflectors.count();
+            if(rows>0)
+            {
+                QString reflectorString;
+                QModelIndex reflectorHeaderIndex=treeModel->index(row, TreeModel::COLUMNS-1);
+                QModelIndex reflectorIndex;
+                target reflectorObjectKind;
+                TreeModel::ReflectorKind reflectorKind;
+                QList<QVariant> inputList;
+                QVariant inputData;
+
+                for(int i=0; i<rows; i++)
+                {
+                    reflectorIndex=treeModel->index(i, TreeModel::COLUMNS-1, reflectorHeaderIndex);
+                    reflectorString =myReflectors.at(i).first->getStringDetails();
+
+                    reflectorObjectKind=myReflectors.at(i).first->getReflectorKind();
+
+                    if(reflectorObjectKind==WET_TARGET)
+                        reflectorKind=TreeModel::ReflectorKind::WET;
+                    else if(reflectorObjectKind==GLASS_TARGET)
+                        reflectorKind=TreeModel::ReflectorKind::GLASS;
+                    else if(reflectorObjectKind==LAMBERTIAN_TARGET)
+                        reflectorKind=TreeModel::ReflectorKind::LAMBERTIAN;
+                    else if(reflectorObjectKind==MIRROR_TARGET)
+                        reflectorKind=TreeModel::ReflectorKind::MIRROR;
+                    else
+                        reflectorKind=TreeModel::ReflectorKind::NO_REFLECTOR;
+
+                    inputList={QVariant(reflectorString), QVariant(static_cast<int>(graphicsItem)),
+                                                   QVariant(static_cast<int>(reflectorKind))};
+
+                    inputData=QVariant(inputList);
+                    changed=treeModel->setData(reflectorIndex, inputData);
+
+                    if(!changed)
+                        break;
+                }
+            }
+        }
+        break;
+        case(TreeModel::GraphicsItem::BINOCULAR):
+        {
+            rows=myBinoculars.count();
+            if(rows>0)
+            {
+                QString binocularString;
+                QModelIndex binocularHeaderIndex=treeModel->index(row, TreeModel::COLUMNS-1);
+                QModelIndex binocularIndex;
+                QList<QVariant> inputList;
+                QVariant inputData;
+
+                for(int i=0; i<rows; i++)
+                {
+                    binocularIndex=treeModel->index(i, TreeModel::COLUMNS-1, binocularHeaderIndex);
+
+                    binocularString =myBinoculars.at(i).first->getStringPosition();
+                    inputList={QVariant(binocularString), QVariant(static_cast<int>(graphicsItem)),
+                                           QVariant(static_cast<int>(TreeModel::ReflectorKind::INDENT))};
+
+                    inputData=QVariant(inputList);
+                    changed=treeModel->setData(binocularIndex, inputData);
+
+                    if(!changed)
+                        break;
+                }
+            }
+        }
+        break;
+        case(TreeModel::GraphicsItem::BEAM_INSPECTOR):
+        {
+            rows=myBeamInspectors.count();
+            if(rows>0)
+            {
+                QString inspectorString;
+                QModelIndex inspectorHeaderIndex=treeModel->index(row, TreeModel::COLUMNS-1);
+                QModelIndex inspectorIndex;
+                QList<QVariant> inputList;
+                QVariant inputData;
+
+                for(int i=0; i<rows; i++)
+                {
+                    inspectorIndex=treeModel->index(i, TreeModel::COLUMNS-1, inspectorHeaderIndex);
+
+                    inspectorString =myBeamInspectors.at(i).first->getStringPosition();
+                    inputList={QVariant(inspectorString), QVariant(static_cast<int>(graphicsItem)),
+                                               QVariant(static_cast<int>(TreeModel::ReflectorKind::INDENT))};
+
+                    inputData=QVariant(inputList);
+                    changed=treeModel->setData(inspectorIndex, inputData);
+
+                    if(!changed)
+                        break;
+                }
+            }
+        }
+        break;
+        default:
+            changed=false;
+        break;
+    }
+    return changed;
+}
+bool MainWindow::updateGraphicsItemList()
+{
+    int row;
+    bool updated=false;
+    int rows;
+    int rowToDelete;
+    QModelIndex headerIndex;
+
+    rows=myReflectors.count();
+    row= static_cast<int>(TreeModel::GraphicsItem::REFLECTOR);
+    headerIndex=treeModel->index(row, TreeModel::COLUMNS-1);
+    rowToDelete=treeModel->rowCount(headerIndex);
+
+    treeModel->removeRows(0, rowToDelete, headerIndex);
+    if(rows>0)
+    {
+        if(treeModel->insertRows(0, rows, headerIndex))
+        {
+            for(int i=0; i < rows; i++)
+            {
+                QModelIndex reflectorIndex=treeModel->index(i, TreeModel::COLUMNS-1, headerIndex);
+                QString reflectorString =myReflectors.at(i).first->getStringDetails();
+
+                target reflectorObjectKind=myReflectors.at(i).first->getReflectorKind();
+                TreeModel::ReflectorKind reflectorKind;
+
+                if(reflectorObjectKind==WET_TARGET)
+                    reflectorKind=TreeModel::ReflectorKind::WET;
+                else if(reflectorObjectKind==GLASS_TARGET)
+                    reflectorKind=TreeModel::ReflectorKind::GLASS;
+                else if(reflectorObjectKind==LAMBERTIAN_TARGET)
+                    reflectorKind=TreeModel::ReflectorKind::LAMBERTIAN;
+                else if(reflectorObjectKind==MIRROR_TARGET)
+                    reflectorKind=TreeModel::ReflectorKind::MIRROR;
+                else
+                    reflectorKind=TreeModel::ReflectorKind::NO_REFLECTOR;
+
+                 QList<QVariant> inputList={QVariant(reflectorString), QVariant(static_cast<int>(TreeModel::GraphicsItem::REFLECTOR)),
+                                               QVariant(static_cast<int>(reflectorKind))};
+
+                 QVariant inputData=QVariant(inputList);
+                 updated=treeModel->setData(reflectorIndex, inputData);
+
+                 if(!updated)
+                     break;
+            }
+        }
+    }
+
+    rows=myBinoculars.count();
+    row= static_cast<int>(TreeModel::GraphicsItem::BINOCULAR);
+    headerIndex=treeModel->index(row, TreeModel::COLUMNS-1);
+    rowToDelete=treeModel->rowCount(headerIndex);
+
+    treeModel->removeRows(0, rowToDelete, headerIndex);
+
+    if(rows>0)
+    {
+        if(treeModel->insertRows(0, rows, headerIndex))
+        {
+            for(int i=0; i < rows; i++)
+            {
+                QModelIndex binocularIndex=treeModel->index(i, TreeModel::COLUMNS-1, headerIndex);
+                QString binocularString =myBinoculars.at(i).first->getStringPosition();
+
+                QList<QVariant> inputList={QVariant(binocularString), QVariant(static_cast<int>(TreeModel::GraphicsItem::BINOCULAR)),
+                                           QVariant(static_cast<int>(TreeModel::ReflectorKind::INDENT))};
+
+                QVariant inputData=QVariant(inputList);
+                updated=treeModel->setData(binocularIndex, inputData);
+
+                if(!updated)
+                    break;
+            }
+        }
+    }
+    rows=myBeamInspectors.count();
+    row= static_cast<int>(TreeModel::GraphicsItem::BEAM_INSPECTOR);
+    headerIndex=treeModel->index(row, TreeModel::COLUMNS-1);
+    rowToDelete=treeModel->rowCount(headerIndex);
+
+    treeModel->removeRows(0, rowToDelete, headerIndex);
+
+    if(rows>0)
+    {
+        if(treeModel->insertRows(0, rows, headerIndex))
+        {
+            for(int i=0; i < rows; i++)
+            {
+                QModelIndex inspectorIndex=treeModel->index(i, TreeModel::COLUMNS-1, headerIndex);
+                QString inspectorString =myBeamInspectors.at(i).first->getStringPosition();
+
+                QList<QVariant> inputList={QVariant(inspectorString), QVariant(static_cast<int>(TreeModel::GraphicsItem::BEAM_INSPECTOR)),
+                                           QVariant(static_cast<int>(TreeModel::ReflectorKind::INDENT))};
+
+                QVariant inputData=QVariant(inputList);
+                updated=treeModel->setData(inspectorIndex, inputData);
+
+                if(!updated)
+                    break;
+            }
+        }
+    }
+    return updated;
+}
+
+bool MainWindow::updateEnvironmentItem()
+{
+    bool changed=false;
+    int row=static_cast<int>(TreeModel::GraphicsItem::ENVIRONMENT);
+
+    QModelIndex environmentHeaderIndex=treeModel->index(row, TreeModel::COLUMNS-1);
+    QModelIndex environmentIndex;
+    QList<QVariant> inputList;
+    QVariant inputData;
+
+    environmentIndex=treeModel->index(0, TreeModel::COLUMNS-1, environmentHeaderIndex);
+
+    QString meteoVisibilityStr=QString::number(laserWindow->getMeteoRange());
+    QString environmentDescriptor;
+
+    if(environmentState)
+    {
+        environmentDescriptor=myLabRoom->getTextLabel();
+        inputList={QVariant(environmentDescriptor), QVariant(static_cast<int>(TreeModel::GraphicsItem::ENVIRONMENT)),
+                QVariant(static_cast<int>(TreeModel::ReflectorKind::LAB))};
+    }
+    else
+    {
+        environmentDescriptor=QString("Poligono di tiro militare. <br>Visibilità meteorologica: %1 km")
+                .arg(meteoVisibilityStr);
+        inputList={QVariant(environmentDescriptor), QVariant(static_cast<int>(TreeModel::GraphicsItem::ENVIRONMENT)),
+                QVariant(static_cast<int>(TreeModel::ReflectorKind::INDENT))};
+    }
+
+    inputData=QVariant(inputList);
+    changed=treeModel->setData(environmentIndex, inputData);
+
+    return changed;
+}
+
+void MainWindow::removeRow()
+{
+    const QModelIndex index = treeSelectionModel->currentIndex();
+    qDebug()<<"Indice valido: " << index.isValid();
+    QAbstractItemModel *model = laserWindow->myDockReflectorsList->ui->treeView->model();
+    model->removeRow(index.row(), index.parent());
 }

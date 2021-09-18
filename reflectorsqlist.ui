@@ -12,7 +12,7 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>168</width>
+    <width>201</width>
     <height>260</height>
    </size>
   </property>
@@ -35,6 +35,9 @@
   </property>
   <property name="styleSheet">
    <string notr="true">QListView {show-decoration-selected: 1;
+                  selection-color: white;
+                  selection-background-color: #0068d9;}
+QTreeView {show-decoration-selected: 1;
                   selection-color: white;
                   selection-background-color: #0068d9;}</string>
   </property>
@@ -62,8 +65,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>477</width>
-         <height>726</height>
+         <width>271</width>
+         <height>720</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
@@ -996,6 +999,28 @@ QLabel {margin-right: 10px}</string>
         </item>
        </layout>
       </widget>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QTreeView" name="treeView">
+      <property name="editTriggers">
+       <set>QAbstractItemView::NoEditTriggers</set>
+      </property>
+      <property name="selectionBehavior">
+       <enum>QAbstractItemView::SelectItems</enum>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>40</width>
+        <height>40</height>
+       </size>
+      </property>
+      <property name="horizontalScrollMode">
+       <enum>QAbstractItemView::ScrollPerItem</enum>
+      </property>
+      <property name="headerHidden">
+       <bool>true</bool>
+      </property>
      </widget>
     </item>
    </layout>

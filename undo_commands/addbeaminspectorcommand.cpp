@@ -2,10 +2,10 @@
 
 AddBeamInspectorCommand::AddBeamInspectorCommand(double _inspectorDistance, double _scale, int _inspectorSeqNumber,
                                          CentralWidget *_laserWindow, LaserPoint *_laserpoint, QList <pair<BeamInspector *, int>>*_myBeamInspectors,
-                                         InspectorsListModel *_inspectorsModel, QPointF _initialPosition, double _attenuatedDNRO, QUndoCommand *parent)
+                                         QPointF _initialPosition, double _attenuatedDNRO, QUndoCommand *parent)
                                          : QUndoCommand(parent), inspectorDistance(_inspectorDistance), scale(_scale), inspectorSeqNumber(_inspectorSeqNumber),
                                          laserWindow(_laserWindow), laserpoint(_laserpoint), myBeamInspectors(_myBeamInspectors),
-                                         inspectorsModel(_inspectorsModel), initialPosition(_initialPosition), attenuatedDNRO(_attenuatedDNRO)
+                                         initialPosition(_initialPosition), attenuatedDNRO(_attenuatedDNRO)
 {  
     double _wavelength=laserWindow->myDockControls->getWavelength();
     double _divergence=laserWindow->myDockControls->getDivergence();
@@ -44,8 +44,6 @@ void AddBeamInspectorCommand::undo()
             myBeamInspectors->push_back(make_pair(undoBeamInspectors, index));
         }
     }
-    inspectorsModel->setElementList(*myBeamInspectors);
-    inspectorsModel->myDataHasChanged();
 }
 
 void AddBeamInspectorCommand::redo()
@@ -61,11 +59,7 @@ void AddBeamInspectorCommand::redo()
     QGraphicsItem *item =laserWindow->graphicsView->scene->itemAt(shiftPosition, QTransform());
     beamInspectorOnScene= qgraphicsitem_cast<BeamInspector*>(item);
 
-    int modelIndex=inspectorsModel->addElement(*beamInspectorOnScene);
-    myBeamInspectors->append(make_pair(beamInspectorOnScene, modelIndex));
-    beamInspectorOnScene->setInspectorSeqNumber(modelIndex);
-
-    inspectorsModel->myDataHasChanged();
+    myBeamInspectors->append(make_pair(beamInspectorOnScene, inspectorSeqNumber));
 
     laserpoint->setSelected(false);
 
@@ -73,6 +67,7 @@ void AddBeamInspectorCommand::redo()
     //imposto la NOHD del punto laser
     laserpoint->setOpticalDiameter(laserWindow->myDockControls->getOpticalDistance());
 
+    beamInspector->setSelected(true);
     beamInspectorOnScene->update();
 }
 

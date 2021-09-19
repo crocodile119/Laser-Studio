@@ -5,17 +5,14 @@
 #include <QPair>
 #include "../binocular.h"
 #include "../laserpoint.h"
-#include "../binocularslistmodel.h"
 #include "centralwidget.h"
-
-
 
 class AddBinocularCommand : public QUndoCommand
 {
 public:
     AddBinocularCommand(double _attenuatedDNRO, double _binocularDistance, double _scale,
                int _binSeqNumber, CentralWidget *_laserWindow, LaserPoint *_laserpoint,
-               QList<pair<Binocular *, int> > *_myBinoculars, BinocularsListModel *_binocularsModel,
+               QList<pair<Binocular *, int> > *_myBinoculars,
                QPointF _initialPosition, QUndoCommand *parent = nullptr);
 
     ~AddBinocularCommand();
@@ -38,7 +35,6 @@ private:
     CentralWidget *laserWindow;
     LaserPoint *laserpoint;
     QList <pair<Binocular *, int>>*myBinoculars;
-    BinocularsListModel *binocularsModel;
     QPointF initialPosition;
     BinocularLink *binocularLink=nullptr;
     Binocular *binocularOnScene=nullptr;

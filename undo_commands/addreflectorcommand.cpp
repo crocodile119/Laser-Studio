@@ -2,11 +2,10 @@
 
 AddReflectorCommand::AddReflectorCommand(double _attenuatedDNRO, double _attenuatedDNRC, double _reflectorDistance, double _scale,
                                          int _seqNumber, target _myTarget, CentralWidget *_laserWindow, LaserPoint *_laserpoint,
-                                         QList <pair<Reflector *, int>>*_myReflectors, ReflectorsListModel *_reflectorsModel,
-                                         QPointF _initialPosition, QUndoCommand *parent)
+                                         QList <pair<Reflector *, int>>*_myReflectors, QPointF _initialPosition, QUndoCommand *parent)
                       : QUndoCommand(parent), attenuatedDNRO(_attenuatedDNRO), attenuatedDNRC(_attenuatedDNRC), reflectorDistance(_reflectorDistance),
                         scale(_scale), seqNumber(_seqNumber), myTarget(_myTarget), laserWindow(_laserWindow), laserpoint(_laserpoint),
-                        myReflectors(_myReflectors), reflectorsModel(_reflectorsModel), initialPosition(_initialPosition)
+                        myReflectors(_myReflectors), initialPosition(_initialPosition)
 {
     double divergence = laserWindow->myDockControls->getDivergence();
     double beamDiameter = laserWindow->myDockControls->getBeamDiameter();
@@ -61,8 +60,6 @@ void AddReflectorCommand::undo()
         myReflectors->push_back(make_pair(undoReflectors, index));
         }
     }
-    reflectorsModel->setElementList(*myReflectors);
-    reflectorsModel->myDataHasChanged();
 }
 
 void AddReflectorCommand::redo()
@@ -74,12 +71,9 @@ void AddReflectorCommand::redo()
 
     QGraphicsItem *item =laserWindow->graphicsView->scene->itemAt(initialPosition, QTransform());
     reflectorOnScene= qgraphicsitem_cast<Reflector*>(item);
+;
+    myReflectors->append(make_pair(reflectorOnScene, seqNumber));
 
-    int modelIndex=reflectorsModel->addElement(*reflectorOnScene);
-    myReflectors->append(make_pair(reflectorOnScene, modelIndex));
-    reflectorOnScene->setSeqNumber(modelIndex);
-
-    reflectorsModel->myDataHasChanged();
 
     laserpoint->setSelected(false);
 

@@ -2,11 +2,11 @@
 
 AddBinocularCommand::AddBinocularCommand(double _attenuatedDNRO, double _binocularDistance, double _scale,
                                          int _binSeqNumber, CentralWidget *_laserWindow, LaserPoint *_laserpoint,
-                                         QList <pair<Binocular *, int>>*_myBinoculars, BinocularsListModel *_binocularsModel,
-                                         QPointF _initialPosition, QUndoCommand *parent)
-                      : QUndoCommand(parent), attenuatedDNRO(_attenuatedDNRO), binocularDistance(_binocularDistance),
-                        scale(_scale), binSeqNumber(_binSeqNumber), laserWindow(_laserWindow), laserpoint(_laserpoint),
-                        myBinoculars(_myBinoculars), binocularsModel(_binocularsModel), initialPosition(_initialPosition)
+                                         QList <pair<Binocular *, int>>*_myBinoculars, QPointF _initialPosition,
+                                         QUndoCommand *parent):QUndoCommand(parent), attenuatedDNRO(_attenuatedDNRO),
+                                         binocularDistance(_binocularDistance), scale(_scale), binSeqNumber(_binSeqNumber),
+                                         laserWindow(_laserWindow), laserpoint(_laserpoint), myBinoculars(_myBinoculars),
+                                         initialPosition(_initialPosition)
 {  
     double wavelength=laserWindow->myDockControls->getWavelength();
     double divergence=laserWindow->myDockControls->getDivergence();
@@ -52,8 +52,6 @@ void AddBinocularCommand::undo()
         myBinoculars->push_back(make_pair(undoBinoculars, index));
         }
     }
-    binocularsModel->setElementList(*myBinoculars);
-    binocularsModel->myDataHasChanged();
 }
 
 void AddBinocularCommand::redo()
@@ -69,12 +67,7 @@ void AddBinocularCommand::redo()
 
     QGraphicsItem *item =laserWindow->graphicsView->scene->itemAt(initialPosition, QTransform());
     binocularOnScene= qgraphicsitem_cast<Binocular*>(item);
-
-    int modelIndex=binocularsModel->addElement(*binocularOnScene);
-    myBinoculars->append(make_pair(binocularOnScene, modelIndex));
-    binocularOnScene->setBinSeqNumber(modelIndex);
-
-    binocularsModel->myDataHasChanged();
+    myBinoculars->append(make_pair(binocularOnScene, binSeqNumber));
 
     laserpoint->setSelected(false);
 

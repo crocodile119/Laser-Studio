@@ -1,10 +1,9 @@
 #include "deletebinocularcommand.h"
 
 DeleteBinocularCommand::DeleteBinocularCommand(Binocular *_binocularOnScene, BinocularLink *_binocularLink, double _scale, CentralWidget *_laserWindow, LaserPoint *_laserpoint,
-                             QList <pair<Binocular *, int>>*_myBinoculars, BinocularsListModel *_binocularsModel,
-                             QPointF _deletePosition, QUndoCommand *parent)
+                             QList <pair<Binocular *, int>>*_myBinoculars, QPointF _deletePosition, QUndoCommand *parent)
           : QUndoCommand(parent), binocularOnScene(_binocularOnScene), binocularLink(_binocularLink), scale(_scale), laserWindow(_laserWindow), laserpoint(_laserpoint),
-            myBinoculars(_myBinoculars), binocularsModel(_binocularsModel), deletePosition(_deletePosition)
+            myBinoculars(_myBinoculars), deletePosition(_deletePosition)
 {
     setText(QObject::tr("Elimino %1")
         .arg(createDeleteBinocularCommandString(deletePosition)));
@@ -24,11 +23,7 @@ void DeleteBinocularCommand::undo()
     laserWindow->graphicsView->scene->clearSelection();
     laserWindow->graphicsView->scene->update();
 
-    int modelIndex=binocularsModel->addElement(*binocularOnScene);
-    myBinoculars->append(make_pair(binocularOnScene, modelIndex));
-    binocularOnScene->setBinSeqNumber(modelIndex);
-
-    binocularsModel->myDataHasChanged();
+    myBinoculars->append(make_pair(binocularOnScene, binocularOnScene->getBinSeqNumber()));
 
     laserpoint->setSelected(false);
 
@@ -61,8 +56,6 @@ void DeleteBinocularCommand::redo()
             myBinoculars->push_back(make_pair(undoBinoculars, index));
         }
     }
-        binocularsModel->setElementList(*myBinoculars);
-        binocularsModel->myDataHasChanged();
 }
 
 QString createDeleteBinocularCommandString(const QPointF &pos)

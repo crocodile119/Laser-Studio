@@ -31,11 +31,6 @@
 #include "wetchartdialog.h"
 #include "fresnelchartdialog.h"
 #include "lambertianchartdialog.h"
-#include "reflectorslistmodel.h"
-#include "laserlistmodel.h"
-#include "binocularslistmodel.h"
-#include "environmentlistmodel.h"
-#include "inspectorslistmodel.h"
 #include "labroom.h"
 #include "footprintobject.h"
 #include "objectlink.h"
@@ -81,10 +76,6 @@ protected:
 
 signals:
     void nohdModified();
-    void reflectorListChanged();
-    void binocularListChanged();
-    void myLabRoomListChanged();
-    void beamInspectorListChanged();
 
 private slots:
     bool save();
@@ -131,9 +122,6 @@ private slots:
     void setGuiDarkTheme();
     void changeGuiTheme();
     void setThemeOnStart();
-    void addLabList();
-    void addBinocularList();
-    void addInspectorList();
     void addBinocularLink();
     void addObjectLink();
     void addLink();
@@ -186,36 +174,13 @@ private slots:
     void setReflectorEMP_ForDiffusion();
     void setReflectorPowerErgForDiffusion();
     void setReflectorBeamDiameterForDiffusion();
-    void labroomSelectionFromGraphics();
-    void listSelectionFromGraphics();
     void treeSelectionFromGraphics(QGraphicsItem *item);
-    void binocularListSelectionFromGraphics();
-    void inspectorListSelectionFromGraphics();
-    void listMultipleSelectionFromGraphics();
-    void laserpointSelectionFromGraphics();
     void listDeselectionFromGraphics();
 
-    void addElementList();
-    void goToLab();
-
     void setGoggleMaterial(LaserGoggle::material);
-    void goToSelectedReflector();
-    void goToSelectedBinocular();
-    void goToSelectedBeamInspector();
-    void gotToLaserpoint();
     void goToGraphicsItem(QModelIndex index);
-    void updateList();
-    void updateLabList();
-    void updateLaserList();
-    void updateBinocularList();
-    void updateInspectorList();
     void updateForCondMeteo();
-    void selectFromList();
-    void selectBinocularFromList();
-    void selectInspectorFromList();
     void selectItemFromTree(QModelIndex index);
-    void propertyFromList();
-    void environmentFromList();
     void setLaserpointShapePathForReflectors();
     void setLaserpointShapePathForBinoculars();
     void setLaserpointShapePathForInspectors();
@@ -286,17 +251,7 @@ private:
 
     QPainterPath laserpointShapePath();
 
-    ReflectorsListModel *reflectorsModel;
-    BinocularsListModel *binocularsModel;
-    InspectorsListModel *inspectorsModel;
-    LaserListModel *laserModel;
     TreeModel *treeModel;
-    EnvironmentListModel *environmentModel;
-    QItemSelectionModel *reflectorsSelectionModel;
-    QItemSelectionModel *laserSelectionModel;
-    QItemSelectionModel *inspectorsSelectionModel;
-    QItemSelectionModel *binocularsSelectionModel; 
-    QItemSelectionModel *environmentSelectionModel;
     QItemSelectionModel *treeSelectionModel;
 
     QString curFile;

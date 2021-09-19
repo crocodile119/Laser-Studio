@@ -14,7 +14,6 @@ SOURCES +=\
     binocular.cpp \
     binocularlink.cpp \
     binocularpropertiesdialog.cpp \
-    binocularslistmodel.cpp \
     centralwidget.cpp \
     chart.cpp \
     chartview.cpp \
@@ -33,7 +32,6 @@ SOURCES +=\
     dockresults.cpp \
     dockskin.cpp \
     empleatables.cpp \
-    environmentlistmodel.cpp \
     footprintdialog.cpp \
     footprintobject.cpp \
     fresnelchartdialog.cpp \
@@ -44,7 +42,6 @@ SOURCES +=\
     gridlines.cpp \
     htmldelegate.cpp \
     inspectorlink.cpp \
-    inspectorslistmodel.cpp \
     labeditdialog.cpp \
     labroom.cpp \
     lambertianchartdialog.cpp \
@@ -55,7 +52,6 @@ SOURCES +=\
     laserclassmp.cpp \
     laserclasssp.cpp \
     lasergoggle.cpp \
-    laserlistmodel.cpp \
     laserpoint.cpp \
     laserpropertiesdialog.cpp \
     laserreport.cpp \
@@ -72,7 +68,6 @@ SOURCES +=\
     objectlink.cpp \
     reflector.cpp \
     reflectorpropertiesdialog.cpp \
-    reflectorslistmodel.cpp \
     reflectorsqlist.cpp \
     scalenumbersmodelview.cpp \
     scientificnotationcontrol.cpp \
@@ -117,7 +112,6 @@ HEADERS  += mainwindow.h \
     binocular.h \
     binocularlink.h \
     binocularpropertiesdialog.h \
-    binocularslistmodel.h \
     centralwidget.h \
     chart.h \
     chartview.h \
@@ -137,7 +131,6 @@ HEADERS  += mainwindow.h \
     dockskin.h \
     empdata.h \
     empleatables.h \
-    environmentlistmodel.h \
     footprintdialog.h \
     footprintobject.h \
     fresnelchartdialog.h \
@@ -148,7 +141,6 @@ HEADERS  += mainwindow.h \
     gridlines.h \
     htmldelegate.h \
     inspectorlink.h \
-    inspectorslistmodel.h \
     labeditdialog.h \
     labroom.h \
     lambertianchartdialog.h \
@@ -159,7 +151,6 @@ HEADERS  += mainwindow.h \
     laserclassmp.h \
     laserclasssp.h \
     lasergoggle.h \
-    laserlistmodel.h \
     laserpoint.h \
     laserpropertiesdialog.h \
     laserreport.h \
@@ -175,7 +166,6 @@ HEADERS  += mainwindow.h \
     objectlink.h \
     reflector.h \
     reflectorpropertiesdialog.h \
-    reflectorslistmodel.h \
     reflectorsqlist.h \
     scalenumbersmodelview.h \
     scientificnotationcontrol.h \

@@ -5,14 +5,13 @@
 
 #include "../reflector.h"
 #include "../laserpoint.h"
-#include "../reflectorslistmodel.h"
 #include "centralwidget.h"
 
 class DeleteReflectorCommand : public QUndoCommand
 {
 public:
     DeleteReflectorCommand(Reflector *_reflector, Link *_link, double _scale, CentralWidget *_laserWindow, LaserPoint *_laserpoint,
-                  QList<pair<Reflector *, int> > *_myReflecotrs, ReflectorsListModel *_reflectorsModel,
+                  QList<pair<Reflector *, int> > *_myReflecotrs,
                   QPointF _deletePosition, QUndoCommand *parent = nullptr);
     ~DeleteReflectorCommand();
 
@@ -29,9 +28,7 @@ private:
     CentralWidget *laserWindow;
     LaserPoint *laserpoint;
     QList <pair<Reflector *, int>>*myReflectors;
-    ReflectorsListModel *reflectorsModel;
     QPointF deletePosition;
-    int modelIndex;
 };
 
 QString createDeleteCommandString(Reflector *item, const QPointF &pos);

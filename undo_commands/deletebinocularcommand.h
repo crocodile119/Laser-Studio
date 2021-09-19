@@ -5,7 +5,6 @@
 
 #include "../binocular.h"
 #include "../laserpoint.h"
-#include "../binocularslistmodel.h"
 #include "centralwidget.h"
 
 class DeleteBinocularCommand : public QUndoCommand
@@ -13,7 +12,7 @@ class DeleteBinocularCommand : public QUndoCommand
 public:
     DeleteBinocularCommand(Binocular *_binocular, BinocularLink *_binocularLink, double _scale,
                   CentralWidget *_laserWindow, LaserPoint *_laserpoint,
-                  QList<pair<Binocular *, int> > *_myBinocular, BinocularsListModel *_binocularsModel,
+                  QList<pair<Binocular *, int> > *_myBinocular,
                   QPointF _deletePosition, QUndoCommand *parent = nullptr);
     ~DeleteBinocularCommand();
 
@@ -30,9 +29,7 @@ private:
     CentralWidget *laserWindow;
     LaserPoint *laserpoint;
     QList <pair<Binocular *, int>>*myBinoculars;
-    BinocularsListModel *binocularsModel;
     QPointF deletePosition;
-    int modelIndex;
 };
 
 QString createDeleteBinocularCommandString(const QPointF &pos);

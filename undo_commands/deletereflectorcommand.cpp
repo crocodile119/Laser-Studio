@@ -1,10 +1,9 @@
 #include "deletereflectorcommand.h"
 
 DeleteReflectorCommand::DeleteReflectorCommand(Reflector *_reflectorOnScene, Link *_link, double _scale, CentralWidget *_laserWindow, LaserPoint *_laserpoint,
-                             QList <pair<Reflector *, int>>*_myReflectors, ReflectorsListModel *_reflectorsModel,
-                             QPointF _deletePosition, QUndoCommand *parent)
+                             QList <pair<Reflector *, int>>*_myReflectors, QPointF _deletePosition, QUndoCommand *parent)
           : QUndoCommand(parent), reflectorOnScene(_reflectorOnScene), link(_link), scale(_scale), laserWindow(_laserWindow), laserpoint(_laserpoint),
-            myReflectors(_myReflectors), reflectorsModel(_reflectorsModel), deletePosition(_deletePosition)
+            myReflectors(_myReflectors), deletePosition(_deletePosition)
 {
     setText(QObject::tr("Elimino %1")
         .arg(createDeleteCommandString(reflectorOnScene, deletePosition)));
@@ -24,11 +23,7 @@ void DeleteReflectorCommand::undo()
     laserWindow->graphicsView->scene->clearSelection();
     laserWindow->graphicsView->scene->update();
 
-    int modelIndex=reflectorsModel->addElement(*reflectorOnScene);
-    myReflectors->append(make_pair(reflectorOnScene, modelIndex));
-    reflectorOnScene->setSeqNumber(modelIndex);
-
-    reflectorsModel->myDataHasChanged();
+    myReflectors->append(make_pair(reflectorOnScene, reflectorOnScene->getSeqNumber()));
 
     laserWindow->graphicsView->scene->clearSelection();
     //imposto la NOHD del punto laser
@@ -59,8 +54,6 @@ void DeleteReflectorCommand::redo()
             myReflectors->push_back(make_pair(undoReflectors, index));
         }
     }
-        reflectorsModel->setElementList(*myReflectors);
-        reflectorsModel->myDataHasChanged();
 }
 
 QString createDeleteCommandString(Reflector *item, const QPointF &pos)

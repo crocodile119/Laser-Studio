@@ -15,8 +15,7 @@ class MoveCommand : public QUndoCommand
 public:
     enum { Id = 20 };
 
-    MoveCommand(QGraphicsItem *itemMoved, const QPointF &oldPos,
-                QUndoCommand *parent = nullptr);
+    MoveCommand(QGraphicsItem *itemMoved, const QPointF &oldPos, QUndoCommand *parent = nullptr);
 
     void undo() override;
     void redo() override;

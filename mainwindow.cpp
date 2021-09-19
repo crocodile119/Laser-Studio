@@ -109,43 +109,12 @@ MainWindow::MainWindow()
 
     state=false;
     environmentState=false;
-    reflectorsModel= new ReflectorsListModel(myReflectors, this);
-    binocularsModel= new BinocularsListModel(myBinoculars, this);
-    inspectorsModel= new InspectorsListModel(myBeamInspectors, this);
-    environmentModel= new EnvironmentListModel(labroomList, state, this);
-    HtmlDelegate* laserHtmlDelegate = new HtmlDelegate();
-    HtmlDelegate* reflectorsHtmlDelegate = new HtmlDelegate();
-    HtmlDelegate* binocularsHtmlDelegate = new HtmlDelegate();
-    HtmlDelegate* inspectorsHtmlDelegate = new HtmlDelegate();
-    HtmlDelegate* environmentHtmlDelegate = new HtmlDelegate();
 
     QRectF fakeRect= QRectF(0.0, 0.0, 0.0, 0.0);
     myFakeRoom=new LabRoom(fakeRect);
-    environmentModel->addDescriptor(*myFakeRoom);
-
-    laserWindow->myDockReflectorsList->ui->listView->setModel(reflectorsModel);  
-    laserWindow->myDockReflectorsList->ui->listView->setItemDelegate(reflectorsHtmlDelegate);
-    laserWindow->myDockReflectorsList->ui->binocularListView->setModel(binocularsModel);
-    laserWindow->myDockReflectorsList->ui->binocularListView->setItemDelegate(binocularsHtmlDelegate);
-    laserWindow->myDockReflectorsList->ui->inspectorListView->setModel(inspectorsModel);
-    laserWindow->myDockReflectorsList->ui->inspectorListView->setItemDelegate(inspectorsHtmlDelegate);
-    laserWindow->myDockReflectorsList->ui->environmentListView->setModel(environmentModel);
-    laserWindow->myDockReflectorsList->ui->environmentListView->setItemDelegate(environmentHtmlDelegate);
-
-    reflectorsSelectionModel=laserWindow->myDockReflectorsList->ui->listView->selectionModel();
-    binocularsSelectionModel=laserWindow->myDockReflectorsList->ui->binocularListView->selectionModel();
-    inspectorsSelectionModel=laserWindow->myDockReflectorsList->ui->inspectorListView->selectionModel();
-    environmentSelectionModel=laserWindow->myDockReflectorsList->ui->environmentListView->selectionModel();
 
     laserPointList.clear();
-
-    laserModel= new LaserListModel(laserPointList, this);
-    laserModel->addDescriptor(*laserpoint);
-
-    laserWindow->myDockReflectorsList->ui->laserListView->setModel(laserModel);
-    laserWindow->myDockReflectorsList->ui->laserListView->setItemDelegate(laserHtmlDelegate);
     setTreeModel();
-    laserSelectionModel=laserWindow->myDockReflectorsList->ui->laserListView->selectionModel();
     treeSelectionModel=laserWindow->myDockReflectorsList->ui->treeView->selectionModel();
 
     connect(laserWindow->myDockControls, SIGNAL(NOHD_Changed()), this, SLOT(setDNRO_ForLaserpoint()));
@@ -168,20 +137,9 @@ MainWindow::MainWindow()
     connect(laserWindow->myDockControls, SIGNAL(wavelengthChanged()), this, SLOT(setWavelengthForBinocular()));
     connect(this, SIGNAL(reflectorListChanged()), this, SLOT(addElementList()));
     connect(this, SIGNAL(myLabRoomListChanged()), this, SLOT(addLabList()));
-    connect(laserWindow->myDockReflectorsList->ui->laserListView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(propertyFromList()));
-    connect(laserWindow->myDockReflectorsList->ui->listView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(selectFromList()));
-    connect(laserWindow->myDockReflectorsList->ui->environmentListView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(environmentFromList()));
-    connect(laserWindow->myDockReflectorsList->ui->binocularListView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(selectBinocularFromList()));    
-    connect(laserWindow->myDockReflectorsList->ui->inspectorListView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(selectInspectorFromList()));
-    connect(laserWindow->myDockReflectorsList->ui->listView, SIGNAL(clicked(QModelIndex)), this, SLOT(goToSelectedReflector()));
-    connect(laserWindow->myDockReflectorsList->ui->binocularListView, SIGNAL(clicked(QModelIndex)), this, SLOT(goToSelectedBinocular()));
-    connect(laserWindow->myDockReflectorsList->ui->inspectorListView, SIGNAL(clicked(QModelIndex)), this, SLOT(goToSelectedBeamInspector()));
-    connect(laserWindow->myDockReflectorsList->ui->laserListView, SIGNAL(clicked(QModelIndex)), this, SLOT(gotToLaserpoint()));
-
     connect(laserWindow->myDockReflectorsList->ui->treeView, SIGNAL(clicked(QModelIndex)), this, SLOT(goToGraphicsItem(QModelIndex)));
     connect(laserWindow->myDockReflectorsList->ui->treeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(selectItemFromTree(QModelIndex)));
 
-    connect(laserWindow->myDockReflectorsList->ui->environmentListView, SIGNAL(clicked(QModelIndex)), this, SLOT(goToLab()));
     connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(updateActions()));
     connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(laserModified()));
     connect(laserWindow->graphicsView->scene, SIGNAL(laserSelected()), this, SLOT(laserpointSelectionFromGraphics()));
@@ -316,26 +274,10 @@ void MainWindow::newFile()
         laserWindow->setNewScene();
 
         myReflectors.clear();
-        reflectorsModel->deleteList();
-        reflectorsSelectionModel->clear();
-
         myBinoculars.clear();
-        binocularsModel->deleteList();
-        binocularsSelectionModel->clear();
-
         myBeamInspectors.clear();
-        inspectorsModel->deleteList();
-        inspectorsSelectionModel->clear();
-
         labroomList.clear();
-        environmentModel->deleteList();
-        environmentSelectionModel->clear();
-        environmentModel->addDescriptor(*myFakeRoom);
-
         laserPointList.clear();
-        laserModel->deleteList();
-        laserSelectionModel->clear();
-
         myFootprints.clear();
 
         laserWindow->clearInstallationDesription();
@@ -349,8 +291,6 @@ void MainWindow::newFile()
 
         menuSceneScaleChanged("100%", 4);
 
-        laserModel->addDescriptor(*laserpoint);
-        laserSelectionModel->select(laserModel->index(0, 0), QItemSelectionModel::Select);
         setControls();
         laserWindow->myDockControls->setVIS();
 
@@ -364,10 +304,6 @@ void MainWindow::newFile()
         QFont font;
         font.setPointSize(8);
         setFont(font);
-
-        environmentModel->setState(false);
-        environmentModel->setMeteoVisibility(laserWindow->getMeteoRange());
-        environmentModel->myDataHasChanged();
 
         setPolygon();
         setPolygonAct->setChecked(true);
@@ -553,146 +489,12 @@ void MainWindow::onLineHelp()
     QDesktopServices::openUrl(helpFile);
 }
 
-void MainWindow::selectFromList()
-{
-    if(reflector==0)
-        return;
-
-    QModelIndex index=laserWindow->myDockReflectorsList->getModelIndex();
-    int listRow=index.row();
-
-    qDebug() << "valore di listrow: " <<listRow;
-    QList<pair<Reflector*, int>>::iterator myIterator; // iterator
-    myIterator = myReflectors.begin();
-
-    while (myIterator != myReflectors.end())
-    {
-        if(myIterator->second==listRow)
-            reflector=myIterator->first;
-
-        ++myIterator;
-    }
-
-    laserWindow->graphicsView->scene->clearSelection();
-    reflector->setSelected(true);
-
-    ReflectorPropertiesDialog dialog(reflector, this);
-    dialog.exec();
-}
-
-void MainWindow::selectBinocularFromList()
-{
-    if(binocular==0)
-        return;
-
-    QModelIndex index=laserWindow->myDockReflectorsList->getModelBinocularIndex();
-    int listRow=index.row();
-    QList<pair<Binocular*, int>>::iterator myIterator; // iterator
-    myIterator = myBinoculars.begin();
-
-    while (myIterator != myBinoculars.end() )
-    {
-        if(myIterator->second==listRow)
-            binocular=myIterator->first;
-
-        ++myIterator;
-    }
-
-    laserWindow->graphicsView->scene->clearSelection();
-    binocular->setSelected(true);
-
-    BinocularPropertiesDialog dialog(binocular, laserWindow->myDockControls->getWavelength(), this);
-    dialog.exec();
-
-    if(dialog.result()==QDialog::Accepted)
-    {
-        double exendedOpticalDiameter=binocular->getExendedOpticalDiameter();
-        bool binocularInZone=laserpoint->shapeEnhacedPathContainsPoint(laserpoint->mapFromScene(binocular->pos()), exendedOpticalDiameter);
-        binocular->setInZone(binocularInZone);
-        binocular->laserParametersChanged();
-        setMaxEhnacedOpticalDiameter();
-
-        if(footprint!=nullptr)
-        {
-            QList<FootprintObject*>::iterator myIterator; // iterator
-            myIterator = myFootprints.begin();
-
-            while (myIterator != myFootprints.end() )
-            {
-                footprint=*myIterator;
-                footprint->laserParameterChanged();
-                ++myIterator;
-            }
-        }
-        setShadowZone();
-    }
-}
-
-void MainWindow::selectInspectorFromList()
-{
-    if(beamInspector==0)
-        return;
-
-    QModelIndex index=laserWindow->myDockReflectorsList->getModelBeamInspectorIndex();
-    int listRow=index.row();
-    QList<pair<BeamInspector*, int>>::iterator myIterator; // iterator
-    myIterator = myBeamInspectors.begin();
-
-    while (myIterator != myBeamInspectors.end() )
-    {
-        if(myIterator->second==listRow)
-            beamInspector=myIterator->first;
-
-        ++myIterator;
-    }
-
-    laserWindow->graphicsView->scene->clearSelection();
-    beamInspector->setSelected(true);
-
-    BeamInspectorDialog dialog(beamInspector, this);
-    QPointF position=beamInspector->pos();
-    dialog.exec();
-
-    if(dialog.result()==QDialog::Rejected)
-        beamInspector->setPos(position);
-    else
-    {
-        beamInspector->setDescription(dialog.descriptionTextEdit->toPlainText());
-        qDebug()<< "Descrizione segnaposto: "<<dialog.descriptionTextEdit->toPlainText();
-    }
-}
-
-void MainWindow::propertyFromList()
-{
-    laserWindow->graphicsView->scene->clearSelection();
-    laserpoint->setSelected(true);
-
-    LaserPropertiesDialog dialog(laserpoint, this);
-    dialog.exec();
-
-    if(dialog.result()==QDialog::Accepted)
-        updateForCondMeteo();
-}
-
-void MainWindow::environmentFromList()
-{
-    if(environmentModel->getState())
-    {
-        laserWindow->graphicsView->scene->clearSelection();
-        myLabRoom->setSelected(true);
-
-        LabEditDialog dialog(myLabRoom, this);
-        dialog.exec();
-    }
-}
-
-
 void MainWindow::selectItemFromTree(QModelIndex index)
 {
     QModelIndex parentIndex=laserWindow->myDockReflectorsList->ui->treeView->model()->parent(index);
     if(parentIndex.row()==0)
     {
-        if(environmentModel->getState())
+        if(environmentState)
         {
             laserWindow->graphicsView->scene->clearSelection();
             myLabRoom->setSelected(true);
@@ -793,7 +595,7 @@ void MainWindow::setCondMeteo()
         double V = dialog.getV();
         double atmAttCoeff = dialog.getAtmAttCoeff();
         addMeteoCommand = new AddMeteoCommand(laserWindow, wavelength, A,
-                                        V, atmAttCoeff, environmentModel);
+                                        V, atmAttCoeff);
         undoStack->push(addMeteoCommand);
 
         updateForCondMeteo();
@@ -2037,8 +1839,7 @@ void MainWindow::exportReport()
     myLaserReport->setReflectorsList(myReflectors);
     myLaserReport->setFootprintsList(myFootprints);
     myLaserReport->setBeamInspectorsList(myBeamInspectors);
-    myLaserReport->setBinocularsList(myBinoculars);
-    myLaserReport->setIndoor(environmentModel->getState());
+    myLaserReport->setBinocularsList(myBinoculars);;
 
     saveReportImages();
 
@@ -2077,7 +1878,6 @@ void MainWindow::printReport(QPrinter *printer)
         myLaserReport->setFootprintsList(myFootprints);
         myLaserReport->setBeamInspectorsList(myBeamInspectors);
         myLaserReport->setBinocularsList(myBinoculars);
-        myLaserReport->setIndoor(environmentModel->getState());
 
         saveReportImages();
 
@@ -2748,8 +2548,7 @@ void MainWindow::addBinocular()
 
     addBinocularCommand = new AddBinocularCommand(attenuatedDNRO, binocularDistance, scale,
                                                             binSeqNumber, laserWindow, laserpoint,
-                                                            &myBinoculars, binocularsModel,
-                                                            binocularPos);
+                                                            &myBinoculars, binocularPos);
 
     undoStack->push(addBinocularCommand);
 
@@ -2775,7 +2574,8 @@ void MainWindow::addBinocular()
     }
 
     setShadowZone();
-    treeSelectionModel->clear();
+    binocular->setSelected(true);
+    treeSelectionFromGraphics(binocular);
     setWindowModified(true);
 
     connect(binocular, SIGNAL(xChanged()), this, SLOT(updateBinocularList()));
@@ -2800,7 +2600,7 @@ void MainWindow::addBeamInspector()
     double attenuatedDNRO=attenuatedDistance(laserWindow->myDockControls->getOpticalDistance());
 
     addBeamInspectorCommand = new AddBeamInspectorCommand(inspectorDistance, scale, inspectorSeqNumber, laserWindow,
-                                   laserpoint, &myBeamInspectors, inspectorsModel,  inspectorPos, attenuatedDNRO);
+                                   laserpoint, &myBeamInspectors, inspectorPos, attenuatedDNRO);
 
     undoStack->push(addBeamInspectorCommand);
     QPointF shiftPosition =inspectorPos-BeamInspector::positionShift(scale);
@@ -2815,7 +2615,8 @@ void MainWindow::addBeamInspector()
 
     inspectorSeqNumber++;
 
-    treeSelectionModel->clear();
+    beamInspector->setSelected(true);
+    treeSelectionFromGraphics(beamInspector);
     setWindowModified(true);
 
     connect(beamInspector, SIGNAL(xChanged()), this, SLOT(updateInspectorList()));
@@ -2842,8 +2643,7 @@ void MainWindow::addReflector(const target &target)
 
     addReflectorCommand = new AddReflectorCommand(attenuatedDNRO, attenuatedDNRC, reflectorDistance, scale,
                                                             seqNumber, target, laserWindow, laserpoint,
-                                                            &myReflectors, reflectorsModel,
-                                                            QPointF(reflectorPosX, reflectorPosY));
+                                                            &myReflectors, QPointF(reflectorPosX, reflectorPosY));
     undoStack->push(addReflectorCommand);
     //int index=undoStack->index();
     //const AddCommand* command=dynamic_cast<const AddCommand*>(undoStack->command(index-1));
@@ -2858,7 +2658,8 @@ void MainWindow::addReflector(const target &target)
 
     seqNumber++;
 
-    treeSelectionModel->clear();
+    reflector->setSelected(true);
+    treeSelectionFromGraphics(reflector);
     connect(reflector, SIGNAL(xChanged()), this, SLOT(updateList()));
     connect(reflector, SIGNAL(yChanged()), this, SLOT(updateList()));
     connect(reflector, SIGNAL(xChanged()), this, SLOT(setLaserpointShapePathForReflectors()));
@@ -2907,7 +2708,7 @@ void MainWindow::del()
         QPointF deleletePosition=reflector->pos();
         Link *link=reflector->getLink();
         deleteReflectorCommand = new DeleteReflectorCommand(reflector, link, scale, laserWindow,
-            laserpoint, &myReflectors, reflectorsModel, deleletePosition);
+            laserpoint, &myReflectors, deleletePosition);
 
         undoStack->push(deleteReflectorCommand);
         removeRow();
@@ -2919,7 +2720,7 @@ void MainWindow::del()
         QPointF deleletePosition=binocular->pos();
         BinocularLink *binocularLink=binocular->getBinocularLink();
         deleteBinocularCommand = new DeleteBinocularCommand(binocular, binocularLink, scale, laserWindow,
-            laserpoint, &myBinoculars, binocularsModel, deleletePosition);
+            laserpoint, &myBinoculars, deleletePosition);
 
     undoStack->push(deleteBinocularCommand);
     setMaxEhnacedOpticalDiameter();
@@ -2932,7 +2733,7 @@ void MainWindow::del()
        QPointF deleletePosition=beamInspector->pos();
        InspectorLink *inspectorLink=beamInspector->getBeamInspectorLink();
        deleteBeamInspectorCommand = new DeleteBeamInspectorCommand(beamInspector, inspectorLink, scale, laserWindow,
-           laserpoint, &myBeamInspectors, inspectorsModel, deleletePosition);
+           laserpoint, &myBeamInspectors, deleletePosition);
 
    undoStack->push(deleteBeamInspectorCommand);
    removeRow();
@@ -3265,7 +3066,6 @@ double MainWindow::attenuatedDistance(const double & _distance)
     {
         double transmittance=laserpoint->getTransmittance();
         attenuatedlDistance=sqrtf(transmittance)*distance;
-        laserModel->myDataHasChanged();
         updateGraphicsItem(TreeModel::GraphicsItem::LASERPOINT);
 
     }
@@ -3278,21 +3078,15 @@ void MainWindow::setDNRO_ForLaserpoint()
 {
     double attenuatedDNRO=attenuatedDistance(laserWindow->myDockControls->getOpticalDistance());
     laserpoint->setOpticalDiameter(attenuatedDNRO);
-    laserModel->myDataHasChanged();
     updateGraphicsItem(TreeModel::GraphicsItem::LASERPOINT);
-
-    reflectorsModel->myDataHasChanged();
     updateGraphicsItem(TreeModel::GraphicsItem::REFLECTOR);
 }
 
 void MainWindow::setDNRC_ForLaserpoint()
 {
     double attenuatedDNRC=attenuatedDistance(laserWindow->myDockControls->getSkinDistances());
-    laserpoint->setSkinDistance(attenuatedDNRC);
-    laserModel->myDataHasChanged();   
+    laserpoint->setSkinDistance(attenuatedDNRC); 
     updateGraphicsItem(TreeModel::GraphicsItem::LASERPOINT);
-
-    reflectorsModel->myDataHasChanged();
     updateGraphicsItem(TreeModel::GraphicsItem::REFLECTOR);
 }
 
@@ -3326,8 +3120,6 @@ void MainWindow::setDNRO_ForReflector()
     updateActions();
 
     updateGraphicsItem(TreeModel::GraphicsItem::REFLECTOR);
-
-    reflectorsModel->myDataHasChanged();
 }
 
 void MainWindow::setDNRO_ForBinocular()
@@ -3353,8 +3145,6 @@ void MainWindow::setDNRO_ForBinocular()
     updateActions();
 
     updateGraphicsItem(TreeModel::GraphicsItem::BINOCULAR);
-
-    binocularsModel->myDataHasChanged();
 }
 
 void MainWindow::setDNRO_ForFootprint()
@@ -3434,8 +3224,6 @@ void MainWindow::setDNRO_ForInspector()
 
         ++myIterator;
     }
-    inspectorsModel->myDataHasChanged();
-
     updateGraphicsItem(TreeModel::GraphicsItem::BEAM_INSPECTOR);
 }
 
@@ -3469,7 +3257,6 @@ void MainWindow::setDivergenceForBinocular()
 
         ++myIterator;
     }
-    binocularsModel->myDataHasChanged();
 
     updateGraphicsItem(TreeModel::GraphicsItem::BINOCULAR);
 }
@@ -3488,7 +3275,6 @@ void MainWindow::setWavelengthForBinocular()
         binocular->laserParametersChanged();
         ++myIterator;
     }
-    binocularsModel->myDataHasChanged();
 
     updateGraphicsItem(TreeModel::GraphicsItem::BINOCULAR);
 }
@@ -3575,7 +3361,6 @@ void MainWindow::setDistanceForBinocular()
         binocular->laserPositionChanged();
         ++myIterator;
     }
-    binocularsModel->myDataHasChanged();  
 
     updateGraphicsItem(TreeModel::GraphicsItem::BINOCULAR);
 
@@ -3597,7 +3382,6 @@ void MainWindow::setDistanceForInspector()
         beamInspector->laserPositionChanged();
         ++myIterator;
     }
-    inspectorsModel->myDataHasChanged(); 
 
     updateGraphicsItem(TreeModel::GraphicsItem::BEAM_INSPECTOR);
 
@@ -3633,7 +3417,6 @@ void MainWindow::setBeamDiameterForBinocular()
         binocular->setBeamDiameter(myBeamDiameter);
         ++myIterator;
     }
-    binocularsModel->myDataHasChanged();
 
     updateGraphicsItem(TreeModel::GraphicsItem::BINOCULAR);
 
@@ -3834,25 +3617,10 @@ void MainWindow::makeSceneOfSavedItems()
     laserWindow->setNewScene();
 
     myReflectors.clear();
-    reflectorsModel->deleteList();
-    reflectorsSelectionModel->clear();
-
     myBinoculars.clear();
-    binocularsModel->deleteList();
-    binocularsSelectionModel->clear();
-
     myBeamInspectors.clear();
-    inspectorsModel->deleteList();
-    inspectorsSelectionModel->clear();
-
     labroomList.clear();
-    environmentModel->deleteList();
-    environmentSelectionModel->clear();
-
     laserPointList.clear();
-    laserModel->deleteList();
-    laserSelectionModel->clear();
-
     myFootprints.clear();
 
     //riporto la variabile contatore degli elementi inseriti a 0
@@ -4079,10 +3847,7 @@ void MainWindow::makeSceneOfSavedItems()
 
     laserWindow->graphicsView->scene->clearSelection();
     laserPointList.clear();
-    laserModel->addDescriptor(*laserpoint);
-    reflectorsModel->setElementList(myReflectors);
-    binocularsModel->setElementList(myBinoculars);
-    inspectorsModel->setElementList(myBeamInspectors);
+
     int NumberOfFootprint= footprintPosVect.size();
     int k=0;
 
@@ -4138,7 +3903,6 @@ void MainWindow::makeSceneOfSavedItems()
 
     menuSceneScaleChanged(scaleString, index);
     labroomList.append(myFakeRoom);
-    environmentModel->addDescriptor(*myFakeRoom);
 
     if(laserWindow->isLabRoomInserted())
     {
@@ -4148,8 +3912,6 @@ void MainWindow::makeSceneOfSavedItems()
         laserWindow->graphicsView->scene->addItem(myLabRoom);
         labroomList.append(myLabRoom);
 
-        environmentModel->addDescriptor(*myLabRoom);
-        environmentModel->setState(true);
         environmentState=true;
 
         meteoWidgets(meteoWidgetsON, meteoWidgetsON, meteoWidgetsON);
@@ -4172,12 +3934,8 @@ void MainWindow::makeSceneOfSavedItems()
 
         atmosphericEffectsOn(isAtmEffects);
         scintillationOn(isScintillation);
-        environmentModel->setState(false);
-        environmentState=false;
         setPolygonAct->setChecked(true);
     }
-
-    environmentModel->myDataHasChanged();
 
     updateEnvironmentItem();
     updateGraphicsItemList();
@@ -4237,33 +3995,6 @@ void MainWindow::goToPoint()
     laserWindow->graphicsView->centerOn(center);
 }
 
-void MainWindow::addElementList()
-{
-//    reflectorsModel->addElement(*reflector);
-}
-
-void MainWindow::addBinocularList()
-{
-    binocularsModel->addElement(*binocular);
-}
-
-void MainWindow::addInspectorList()
-{
-    int modelIndex=inspectorsModel->addElement(*beamInspector);
-    myBeamInspectors.append(make_pair(beamInspector, modelIndex));
-    beamInspector->setInspectorSeqNumber(modelIndex);
-
-    inspectorsModel->myDataHasChanged();
-
-    updateGraphicsItem(TreeModel::GraphicsItem::BEAM_INSPECTOR);
-}
-
-
-void MainWindow::addLabList()
-{
-    environmentModel->addDescriptor(*myLabRoom);
-}
-
 void MainWindow::meteoWidgets(bool meteoEnabled, bool isAtmEffects, bool isScintillation)
 {
     atmosphericEffectsOn(isAtmEffects);
@@ -4275,79 +4006,6 @@ void MainWindow::meteoWidgets(bool meteoEnabled, bool isAtmEffects, bool isScint
     changeMeteoAct->setEnabled(meteoEnabled);
 }
 
-void MainWindow::goToSelectedReflector()
-{
-    QModelIndex index;
-    laserSelectionModel->clear();
-    binocularsSelectionModel->clear();
-    inspectorsSelectionModel->clear();
-    environmentSelectionModel->clear();
-    index=reflectorsSelectionModel->currentIndex();
-    qDebug()<< "Numero di riflettori della lista: " << myReflectors.count();
-    reflector=myReflectors.at(index.row()).first;
-    laserWindow->graphicsView->centerOn(reflector->pos());
-    laserWindow->graphicsView->scene->clearSelection();
-    reflector->setSelected(true);
-}
-
-void MainWindow::goToSelectedBinocular()
-{
-    QModelIndex index;
-    laserSelectionModel->clear();
-    reflectorsSelectionModel->clear();
-    environmentSelectionModel->clear();
-    inspectorsSelectionModel->clear();
-    index=binocularsSelectionModel->currentIndex();
-    binocular=myBinoculars.at(index.row()).first;
-    laserWindow->graphicsView->centerOn(binocular->pos());
-    laserWindow->graphicsView->scene->clearSelection();
-    binocular->setSelected(true);
-}
-
-void MainWindow::goToSelectedBeamInspector()
-{
-    QModelIndex index;
-    laserSelectionModel->clear();
-    reflectorsSelectionModel->clear();
-    binocularsSelectionModel->clear();
-    environmentSelectionModel->clear();
-    index=inspectorsSelectionModel->currentIndex();
-    beamInspector=myBeamInspectors.at(index.row()).first;
-    laserWindow->graphicsView->centerOn(beamInspector->pos());
-    laserWindow->graphicsView->scene->clearSelection();
-    beamInspector->setSelected(true);
-}
-
-void MainWindow::goToLab()
-{
-    laserSelectionModel->clear();
-    reflectorsSelectionModel->clear();
-    binocularsSelectionModel->clear();
-    inspectorsSelectionModel->clear();
-
-    if(environmentModel->getState())
-    {
-        QModelIndex index;
-
-        index=environmentSelectionModel->currentIndex();
-        myLabRoom=labroomList.at(index.row());
-        sceneScaleChanged("8000%");
-        laserWindow->graphicsView->centerOn(myLabRoom->pos());
-        laserWindow->graphicsView->scene->clearSelection();
-        myLabRoom->setSelected(true);
-    }
-}
-
-void MainWindow::gotToLaserpoint()
-{
-    laserWindow->graphicsView->centerOn(laserpoint->pos());
-    reflectorsSelectionModel->clear();
-    binocularsSelectionModel->clear();    
-    environmentSelectionModel->clear();
-    inspectorsSelectionModel->clear();
-    laserWindow->graphicsView->scene->clearSelection();
-    laserpoint->setSelected(true);
-}
 
 void MainWindow::goToGraphicsItem(QModelIndex index)
 {
@@ -4355,10 +4013,6 @@ void MainWindow::goToGraphicsItem(QModelIndex index)
     if(parentIndex.row()==1)
     {
         laserWindow->graphicsView->centerOn(laserpoint->pos());
-        reflectorsSelectionModel->clear();
-        binocularsSelectionModel->clear();
-        environmentSelectionModel->clear();
-        inspectorsSelectionModel->clear();
         laserWindow->graphicsView->scene->clearSelection();
         laserpoint->setSelected(true);
     }
@@ -4392,63 +4046,6 @@ void MainWindow::goToGraphicsItem(QModelIndex index)
             beamInspector->setSelected(true);
         }
     }
-}
-
-void MainWindow::updateList()
-{
-    updateGraphicsItem(TreeModel::GraphicsItem::REFLECTOR);
-
-    reflectorsModel->myDataHasChanged();
-}
-
-void MainWindow::updateBinocularList()
-{
-    updateGraphicsItem(TreeModel::GraphicsItem::BINOCULAR);
-
-    binocularsModel->myDataHasChanged();
-}
-
-void MainWindow::updateInspectorList()
-{
-    updateGraphicsItem(TreeModel::GraphicsItem::BEAM_INSPECTOR);
-
-    inspectorsModel->myDataHasChanged();
-}
-
-void MainWindow::updateLaserList()
-{
-    updateGraphicsItem(TreeModel::GraphicsItem::LASERPOINT);
-    laserModel->myDataHasChanged();
-}
-
-
-void MainWindow::updateLabList()
-{
-    environmentModel->myDataHasChanged();
-}
-
-void MainWindow::listSelectionFromGraphics()
-{
-    int reflectorIndex;
-    QList<pair<Reflector*, int>>::iterator myIterator; // iterator
-    myIterator = myReflectors.begin();
-    QModelIndex selectedIndex;
-    while (myIterator != myReflectors.end() )
-    {
-        reflector=myIterator->first;
-        if(reflector->isSelected())
-        {
-            reflectorIndex=myIterator->second;
-            selectedIndex=reflectorsModel->index(reflectorIndex,0);
-            updateActions();
-         }
-         ++myIterator;
-    }
-    laserSelectionModel->clear();
-    binocularsSelectionModel->clear();
-    inspectorsSelectionModel->clear();
-    environmentSelectionModel->clear();
-    reflectorsSelectionModel->select(selectedIndex, QItemSelectionModel::Clear | QItemSelectionModel::Select);
 }
 
 void MainWindow::treeSelectionFromGraphics(QGraphicsItem *item)
@@ -4525,138 +4122,6 @@ void MainWindow::treeSelectionFromGraphics(QGraphicsItem *item)
     treeSelectionModel->setCurrentIndex(selectedIndex, QItemSelectionModel::ClearAndSelect);
 }
 
-void MainWindow::binocularListSelectionFromGraphics()
-{
-    int binocularIndex;
-    QList<pair<Binocular*, int>>::iterator myIterator; // iterator
-    myIterator = myBinoculars.begin();
-    QModelIndex selectedIndex;
-    while (myIterator != myBinoculars.end() )
-    {
-        binocular=myIterator->first;
-        if(binocular->isSelected())
-        {
-            binocularIndex=myIterator->second;
-            selectedIndex=binocularsModel->index(binocularIndex,0);
-            updateActions();
-        }
-        ++myIterator;
-    }
-    laserSelectionModel->clear();
-    reflectorsSelectionModel->clear();
-    inspectorsSelectionModel->clear();
-    environmentSelectionModel->clear();
-    binocularsSelectionModel->select(selectedIndex, QItemSelectionModel::Clear | QItemSelectionModel::Select);
-}
-
-void MainWindow::inspectorListSelectionFromGraphics()
-{
-    int inspectorIndex;
-    QList<pair<BeamInspector*, int>>::iterator myIterator; // iterator
-    myIterator = myBeamInspectors.begin();
-    QModelIndex selectedIndex;
-    while (myIterator != myBeamInspectors.end() )
-    {
-        beamInspector=myIterator->first;
-        if(beamInspector->isSelected())
-        {
-            inspectorIndex=myIterator->second;
-            selectedIndex=inspectorsModel->index(inspectorIndex,0);
-            updateActions();
-        }
-        ++myIterator;
-    }
-    laserSelectionModel->clear();
-    reflectorsSelectionModel->clear();
-    environmentSelectionModel->clear();
-    binocularsSelectionModel->clear();
-    inspectorsSelectionModel->select(selectedIndex, QItemSelectionModel::Clear | QItemSelectionModel::Select);
-}
-
-void MainWindow::listMultipleSelectionFromGraphics()
-{
-    int reflectorIndex;
-    QList<pair<Reflector*, int>>::iterator myIterator; // iterator
-    myIterator = myReflectors.begin();
-    reflectorsSelectionModel->clear();
-    QModelIndex selectedIndex;
-    while (myIterator != myReflectors.end() )
-    {
-        reflector=myIterator->first;
-        if(reflector->isSelected())
-        {
-            reflectorIndex=myIterator->second;
-            selectedIndex=reflectorsModel->index(reflectorIndex,0);
-            reflectorsSelectionModel->select(selectedIndex,QItemSelectionModel::Select);
-        }
-        ++myIterator;
-    }
-
-    int binocularIndex;
-    QList<pair<Binocular*, int>>::iterator myBinocularIterator; // iterator
-    myBinocularIterator = myBinoculars.begin();
-    binocularsSelectionModel->clear();
-    QModelIndex binocularSelectedIndex;
-    while (myBinocularIterator != myBinoculars.end() )
-    {
-        binocular=myBinocularIterator->first;
-        if(binocular->isSelected())
-        {
-            binocularIndex=myBinocularIterator->second;
-            binocularSelectedIndex=binocularsModel->index(binocularIndex,0);
-            binocularsSelectionModel->select(binocularSelectedIndex,QItemSelectionModel::Select);
-        }
-        ++myBinocularIterator;
-    }
-
-    int inspectorIndex;
-    QList<pair<BeamInspector*, int>>::iterator myBeamInspectorIterator; // iterator
-    myBeamInspectorIterator = myBeamInspectors.begin();
-    inspectorsSelectionModel->clear();
-    QModelIndex inspectorSelectedIndex;
-    while (myBeamInspectorIterator != myBeamInspectors.end() )
-    {
-        beamInspector=myBeamInspectorIterator->first;
-        if(beamInspector->isSelected())
-        {
-            inspectorIndex=myBeamInspectorIterator->second;
-            inspectorSelectedIndex=inspectorsModel->index(inspectorIndex,0);
-            inspectorsSelectionModel->select(inspectorSelectedIndex,QItemSelectionModel::Select);
-        }
-        ++myBeamInspectorIterator;
-    }
-
-    if(laserpoint->isSelected())
-        laserSelectionModel->select(laserModel->index(0, 0), QItemSelectionModel::Clear | QItemSelectionModel::Select);
-
-    if(!labroomList.empty())
-    {
-        if(myLabRoom)
-        {
-            if(myLabRoom->isSelected())
-                environmentSelectionModel->select(environmentModel->index(0, 0), QItemSelectionModel::Clear | QItemSelectionModel::Select);
-        }
-    }
-}
-
-void MainWindow::laserpointSelectionFromGraphics()
-{
-    reflectorsSelectionModel->clear();
-    binocularsSelectionModel->clear();
-    environmentSelectionModel->clear();
-    laserSelectionModel->select(laserModel->index(0, 0), QItemSelectionModel::Clear | QItemSelectionModel::Select);
-    updateActions();
-}
-
-void MainWindow::labroomSelectionFromGraphics()
-{
-    reflectorsSelectionModel->clear();
-    binocularsSelectionModel->clear();
-    laserSelectionModel->clear();
-    environmentSelectionModel->select(laserModel->index(0, 0), QItemSelectionModel::Clear | QItemSelectionModel::Select);
-    updateActions();
-}
-
 QPainterPath MainWindow::laserpointShapePath()
 {
     QPainterPath laserShape;
@@ -4714,14 +4179,10 @@ void MainWindow::deletedViewCenter()
 
 void MainWindow::setPolygon()
 {
-    if ((myLabRoom)&&(environmentModel->getState()))
+    if ((myLabRoom)&&(environmentState))
     {
         laserWindow->graphicsView->scene->removeItem(myLabRoom);
-        environmentModel->setState(false);
         environmentState=false;
-        environmentModel->setMeteoVisibility(laserWindow->getMeteoRange());
-        environmentModel->addDescriptor(*myFakeRoom);
-        environmentModel->myDataHasChanged();
         labroomList.clear();
         addScintillationAct->setEnabled(true);
         addAtmosphericEffectsAct->setEnabled(true);
@@ -4736,7 +4197,7 @@ void MainWindow::setPolygon()
 
 void MainWindow::addRoom()
 {
-    if(environmentModel->getState())
+    if(environmentState)
     {
         statusBar()->showMessage(tr("Ambiente chiuso già presente"), 2000);
         return;
@@ -4744,7 +4205,6 @@ void MainWindow::addRoom()
 
     menuSceneScaleChanged("8000%", 15);
 
-    environmentModel->setState(true);
     environmentState=true;
     laserWindow->graphicsView->scene->addItem(myLabRoom);
     labroomList.append(myLabRoom);
@@ -4779,8 +4239,6 @@ void MainWindow::addRoom()
     laserWindow->setUndoStack(undoStack);
 
     updateGraphicsItem(TreeModel::GraphicsItem::ENVIRONMENT);
-
-    emit myLabRoomListChanged();
 }
 
 void MainWindow::createRoom()
@@ -4812,11 +4270,7 @@ void MainWindow::scintillationOn(bool _scintillationBool)
 void MainWindow::listDeselectionFromGraphics()
 {
     laserWindow->graphicsView->scene->clearSelection();
-    laserSelectionModel->clearSelection();
-    reflectorsSelectionModel->clearSelection();
-    binocularsSelectionModel->clearSelection();
-    environmentSelectionModel->clearSelection();
-    inspectorsSelectionModel->clearSelection();
+    treeSelectionModel->clearSelection();
 }
 
 void MainWindow::addObjectLink()
@@ -5144,6 +4598,7 @@ void MainWindow::undo()
     bool deleteBeamInspectorCmd=undoStack->command(index)==deleteBeamInspectorCommand;
     qDebug()<<"undoStack->command(index)==addFootprintCommand: "<<addFootprintCmd;
     qDebug()<<"undoStack->command(index)==deleteFootprintCommand: "<<deleteFootprintCmd;
+
     if(addFootprintCmd)
     {
         if(myFootprints.count()<footprintsCount)
@@ -5182,7 +4637,6 @@ void MainWindow::undo()
     {
         if(!myReflectors.isEmpty())
         {
-            reflector=myReflectors.last().first;
             setMaxEhnacedOpticalDiameter();
             setLaserpointShapePathForReflectors();
         }
@@ -5191,7 +4645,6 @@ void MainWindow::undo()
     {
         if(!myBeamInspectors.isEmpty())
         {
-            beamInspector=myBeamInspectors.last().first;
             setLaserpointShapePathForInspectors();
         }
     }
@@ -5204,6 +4657,13 @@ void MainWindow::undo()
         setShadowZone();
 
     updateGraphicsItemList();
+    if(laserWindow->graphicsView->scene->selectedItems().count()!=0)
+    {
+        QGraphicsItem *item=laserWindow->graphicsView->scene->selectedItems().first();
+        if(item)
+            treeSelectionFromGraphics(item);
+    }
+
     statusBar()->showMessage(commandUndoTriggered(), 2000);
 }
 
@@ -5227,6 +4687,7 @@ void MainWindow::redo()
     bool deleteBeamInspectorCmd=undoStack->command(index-1)==deleteBeamInspectorCommand;
     qDebug()<<"undoStack->command(index-1)==addFootprintCommand: "<<addFootprintCmd;
     qDebug()<<"undoStack->command(index-1)==deleteFootprintCommand: "<<deleteFootprintCmd;
+
     if(addFootprintCmd)
     {
         if(myFootprints.count()>footprintsCount)
@@ -5316,6 +4777,12 @@ void MainWindow::redo()
         setShadowZone();
 
     updateGraphicsItemList();
+    if(laserWindow->graphicsView->scene->selectedItems().count()!=0)
+    {
+        QGraphicsItem *item=laserWindow->graphicsView->scene->selectedItems().first();
+        if(item)
+            treeSelectionFromGraphics(item);
+    }
 
     statusBar()->showMessage(commandRedoTriggered(), 2000);
 }
@@ -5328,8 +4795,6 @@ void MainWindow::updateUndoStackList(int idx)
     setShadowZone();
     footprintsCount=myFootprints.count();
 
-    environmentModel->setMeteoVisibility(laserWindow->getMeteoRange());
-    environmentModel->myDataHasChanged();
     updateForCondMeteo();
 }
 
@@ -5399,11 +4864,8 @@ void MainWindow::updateForBeamInspection()
 
         ++myIterator;
     }
-    inspectorsModel->myDataHasChanged();
 
     updateGraphicsItem(TreeModel::GraphicsItem::BEAM_INSPECTOR);
-
-    laserModel->myDataHasChanged();
     updateGraphicsItem(TreeModel::GraphicsItem::LASERPOINT);
 }
 

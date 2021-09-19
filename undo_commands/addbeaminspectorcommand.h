@@ -5,17 +5,14 @@
 #include <QPair>
 #include "../beaminspector.h"
 #include "../laserpoint.h"
-#include "../inspectorslistmodel.h"
 #include "centralwidget.h"
-
-
 
 class AddBeamInspectorCommand : public QUndoCommand
 {
 public:
     AddBeamInspectorCommand(double _inspectorDistance, double _scale,
                int _inspectorSeqNumber, CentralWidget *_laserWindow, LaserPoint *_laserpoint,
-               QList<pair<BeamInspector *, int> > *_myBeamInspectors, InspectorsListModel *_inspectorsModel,
+               QList<pair<BeamInspector *, int> > *_myBeamInspectors,
                QPointF _initialPosition, double _attenuatedDNRO, QUndoCommand *parent = nullptr);
 
     ~AddBeamInspectorCommand();
@@ -36,7 +33,6 @@ private:
     CentralWidget *laserWindow;
     LaserPoint *laserpoint;
     QList <pair<BeamInspector *, int>>*myBeamInspectors;
-    InspectorsListModel *inspectorsModel;
     QPointF initialPosition;
     InspectorLink *inspectorLink=nullptr;
     BeamInspector *beamInspectorOnScene=nullptr;

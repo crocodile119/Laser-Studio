@@ -3,14 +3,12 @@
 
 #include <QUndoCommand>
 #include "../centralwidget.h"
-#include "../environmentlistmodel.h"
 
 class AddMeteoCommand : public QUndoCommand
 {
 public:
     AddMeteoCommand(CentralWidget *_laserWindow, double _wavelength,  double _A, double _V,
-                    double _atmAttCoeff,  EnvironmentListModel *_environmentModel,
-                    QUndoCommand *parent = nullptr);
+                    double _atmAttCoeff, QUndoCommand *parent = nullptr);
 
     ~AddMeteoCommand();
 
@@ -23,7 +21,6 @@ double wavelength;
 double A;
 double V;
 double atmAttCoeff;
-EnvironmentListModel *environmentModel;
 
 double old_A;
 double old_V;

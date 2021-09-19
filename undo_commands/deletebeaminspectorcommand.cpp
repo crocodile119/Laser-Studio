@@ -2,10 +2,9 @@
 
 DeleteBeamInspectorCommand::DeleteBeamInspectorCommand(BeamInspector *_beamInspector, InspectorLink *_inspectorLink, double _scale,
                   CentralWidget *_laserWindow, LaserPoint *_laserpoint,
-                  QList<pair<BeamInspector *, int> > *_myBeamInspectors, InspectorsListModel *_inspectorsModel,
-                  QPointF _deletePosition, QUndoCommand *parent)
+                  QList<pair<BeamInspector *, int> > *_myBeamInspectors, QPointF _deletePosition, QUndoCommand *parent)
           : QUndoCommand(parent), beamInspectorOnScene(_beamInspector), inspectorLink(_inspectorLink), scale(_scale), laserWindow(_laserWindow), laserpoint(_laserpoint),
-            myBeamInspectors(_myBeamInspectors), inspectorsModel(_inspectorsModel), deletePosition(_deletePosition)
+            myBeamInspectors(_myBeamInspectors), deletePosition(_deletePosition)
 {
     setText(QObject::tr("Elimino %1")
         .arg(createDeleteInspectorCommandString(deletePosition)));
@@ -25,12 +24,7 @@ void DeleteBeamInspectorCommand::undo()
     laserWindow->graphicsView->scene->clearSelection();
     laserWindow->graphicsView->scene->update();
 
-    int modelIndex=inspectorsModel->addElement(*beamInspectorOnScene);
-    myBeamInspectors->append(make_pair(beamInspectorOnScene, modelIndex));
-    beamInspectorOnScene->setInspectorSeqNumber(modelIndex);
-
-    inspectorsModel->myDataHasChanged();
-
+    myBeamInspectors->append(make_pair(beamInspectorOnScene, beamInspectorOnScene->getInspectorSeqNumber()));
     laserpoint->setSelected(false);
 
     laserWindow->graphicsView->scene->clearSelection();
@@ -62,8 +56,6 @@ void DeleteBeamInspectorCommand::redo()
             myBeamInspectors->push_back(make_pair(undoBeamInspectors, index));
         }
     }
-        inspectorsModel->setElementList(*myBeamInspectors);
-        inspectorsModel->myDataHasChanged();
 }
 
 QString createDeleteInspectorCommandString(const QPointF &pos)

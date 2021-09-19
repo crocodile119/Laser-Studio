@@ -11,8 +11,7 @@ class DeleteReflectorCommand : public QUndoCommand
 {
 public:
     DeleteReflectorCommand(Reflector *_reflector, Link *_link, double _scale, CentralWidget *_laserWindow, LaserPoint *_laserpoint,
-                  QList<pair<Reflector *, int> > *_myReflecotrs,
-                  QPointF _deletePosition, QUndoCommand *parent = nullptr);
+                  QList<Reflector *> *_myReflecotrs, QPointF _deletePosition, QUndoCommand *parent = nullptr);
     ~DeleteReflectorCommand();
 
     void undo() override;
@@ -27,7 +26,7 @@ private:
     double scale;
     CentralWidget *laserWindow;
     LaserPoint *laserpoint;
-    QList <pair<Reflector *, int>>*myReflectors;
+    QList <Reflector *>*myReflectors;
     QPointF deletePosition;
 };
 

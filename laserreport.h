@@ -55,10 +55,10 @@ public:
     void setIndoor(bool);
     bool isIndoor();
 
-    void setReflectorsList(const QList<pair<Reflector *, int> > &);
+    void setReflectorsList(const QList<Reflector *> &);
     void setFootprintsList(const QList<FootprintObject *> &);
-    void setBinocularsList(const QList<pair<Binocular*, int>> &);
-    void setBeamInspectorsList(const QList<pair<BeamInspector*, int>> &_);
+    void setBinocularsList(const QList<Binocular*> &);
+    void setBeamInspectorsList(const QList<BeamInspector*> &);
     void setReflectorsFilenameList(const QStringList &);
     void setReflectorsGraphImageList(const QList<QImage> &);
     void setInspectorsFilenameList(const QStringList &);
@@ -97,9 +97,9 @@ private:
     QList<QImage> inspectorsGraphImage;
     QRect previewRect;
 
-    QList<pair<Reflector*, int>> myReflectors;
-    QList<pair<Binocular*, int>> myBinoculars;
-    QList<pair<BeamInspector*, int>> myBeamInspectors;
+    QList<Reflector*> myReflectors;
+    QList<Binocular*> myBinoculars;
+    QList<BeamInspector*> myBeamInspectors;
     QList<FootprintObject*> myFootprints;
 
     bool indoor;

@@ -2,7 +2,7 @@
 
 DeleteBeamInspectorCommand::DeleteBeamInspectorCommand(BeamInspector *_beamInspector, InspectorLink *_inspectorLink, double _scale,
                   CentralWidget *_laserWindow, LaserPoint *_laserpoint,
-                  QList<pair<BeamInspector *, int> > *_myBeamInspectors, QPointF _deletePosition, QUndoCommand *parent)
+                  QList<BeamInspector *> *_myBeamInspectors, QPointF _deletePosition, QUndoCommand *parent)
           : QUndoCommand(parent), beamInspectorOnScene(_beamInspector), inspectorLink(_inspectorLink), scale(_scale), laserWindow(_laserWindow), laserpoint(_laserpoint),
             myBeamInspectors(_myBeamInspectors), deletePosition(_deletePosition)
 {
@@ -24,7 +24,7 @@ void DeleteBeamInspectorCommand::undo()
     laserWindow->graphicsView->scene->clearSelection();
     laserWindow->graphicsView->scene->update();
 
-    myBeamInspectors->append(make_pair(beamInspectorOnScene, beamInspectorOnScene->getInspectorSeqNumber()));
+    myBeamInspectors->append(beamInspectorOnScene);
     laserpoint->setSelected(false);
 
     laserWindow->graphicsView->scene->clearSelection();
@@ -44,16 +44,13 @@ void DeleteBeamInspectorCommand::redo()
 
     QList<QGraphicsItem *> items = laserWindow->graphicsView->scene->items();
 
-    int index;
-
     QMutableListIterator<QGraphicsItem *> k(items);
     while (k.hasNext())
     {
         BeamInspector *undoBeamInspectors = dynamic_cast<BeamInspector*>(k.next());
         if (undoBeamInspectors)
         {
-            index=undoBeamInspectors->getInspectorSeqNumber();
-            myBeamInspectors->push_back(make_pair(undoBeamInspectors, index));
+            myBeamInspectors->push_back(undoBeamInspectors);
         }
     }
 }

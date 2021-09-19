@@ -12,8 +12,8 @@ class AddBinocularCommand : public QUndoCommand
 public:
     AddBinocularCommand(double _attenuatedDNRO, double _binocularDistance, double _scale,
                int _binSeqNumber, CentralWidget *_laserWindow, LaserPoint *_laserpoint,
-               QList<pair<Binocular *, int> > *_myBinoculars,
-               QPointF _initialPosition, QUndoCommand *parent = nullptr);
+               QList<Binocular *> *_myBinoculars, QPointF _initialPosition,
+               QUndoCommand *parent = nullptr);
 
     ~AddBinocularCommand();
 
@@ -34,7 +34,7 @@ private:
     Binocular *binocular=nullptr;
     CentralWidget *laserWindow;
     LaserPoint *laserpoint;
-    QList <pair<Binocular *, int>>*myBinoculars;
+    QList <Binocular *>*myBinoculars;
     QPointF initialPosition;
     BinocularLink *binocularLink=nullptr;
     Binocular *binocularOnScene=nullptr;

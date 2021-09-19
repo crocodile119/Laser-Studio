@@ -198,6 +198,9 @@ private slots:
     bool updateGraphicsItemList();
     bool updateEnvironmentItem();
     void removeRow();
+    void updateReflectorItem();
+    void updateBeamInspectorItem();
+    void updateBinocularItem();
 
 
 private:
@@ -408,9 +411,9 @@ private:
     QUndoCommand *deleteBeamInspectorCommand;
 
     QGraphicsView *view;
-    QList <pair<Reflector *, int>> myReflectors;
-    QList <pair<Binocular *, int>> myBinoculars;
-    QList <pair<BeamInspector*, int>> myBeamInspectors;
+    QList <Reflector *> myReflectors;
+    QList <Binocular *> myBinoculars;
+    QList <BeamInspector*> myBeamInspectors;
     QList <FootprintObject*> myFootprints;
     QList <LaserPoint*> laserPointList;
     QList <LabRoom*> labroomList;

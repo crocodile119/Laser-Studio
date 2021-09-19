@@ -1,7 +1,7 @@
 #include "addbeaminspectorcommand.h"
 
 AddBeamInspectorCommand::AddBeamInspectorCommand(double _inspectorDistance, double _scale, int _inspectorSeqNumber,
-                                         CentralWidget *_laserWindow, LaserPoint *_laserpoint, QList <pair<BeamInspector *, int>>*_myBeamInspectors,
+                                         CentralWidget *_laserWindow, LaserPoint *_laserpoint, QList<BeamInspector *> *_myBeamInspectors,
                                          QPointF _initialPosition, double _attenuatedDNRO, QUndoCommand *parent)
                                          : QUndoCommand(parent), inspectorDistance(_inspectorDistance), scale(_scale), inspectorSeqNumber(_inspectorSeqNumber),
                                          laserWindow(_laserWindow), laserpoint(_laserpoint), myBeamInspectors(_myBeamInspectors),
@@ -32,16 +32,13 @@ void AddBeamInspectorCommand::undo()
 
     QList<QGraphicsItem *> items = laserWindow->graphicsView->scene->items();
 
-    int index;
-
     QMutableListIterator<QGraphicsItem *> k(items);
     while (k.hasNext())
     {
         BeamInspector *undoBeamInspectors = dynamic_cast<BeamInspector *>(k.next());
         if (undoBeamInspectors)
         {
-            index=undoBeamInspectors->getInspectorSeqNumber();
-            myBeamInspectors->push_back(make_pair(undoBeamInspectors, index));
+            myBeamInspectors->push_back(undoBeamInspectors);
         }
     }
 }
@@ -59,7 +56,7 @@ void AddBeamInspectorCommand::redo()
     QGraphicsItem *item =laserWindow->graphicsView->scene->itemAt(shiftPosition, QTransform());
     beamInspectorOnScene= qgraphicsitem_cast<BeamInspector*>(item);
 
-    myBeamInspectors->append(make_pair(beamInspectorOnScene, inspectorSeqNumber));
+    myBeamInspectors->append(beamInspectorOnScene);
 
     laserpoint->setSelected(false);
 

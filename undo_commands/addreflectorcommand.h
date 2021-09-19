@@ -13,8 +13,7 @@ class AddReflectorCommand : public QUndoCommand
 public:
     AddReflectorCommand(double _attenuatedDNRO, double _attenuatedDNRC, double _reflectorDistance, double _scale,
                int _seqNumber, target _myTarget, CentralWidget *_laserWindow, LaserPoint *_laserpoint,
-               QList<pair<Reflector *, int> > *_myReflecotrs,
-               QPointF _initialPosition, QUndoCommand *parent = nullptr);
+               QList<Reflector *> *_myReflecotrs, QPointF _initialPosition, QUndoCommand *parent = nullptr);
 
     ~AddReflectorCommand();
 
@@ -36,7 +35,7 @@ private:
     Reflector *reflector=nullptr;
     CentralWidget *laserWindow;
     LaserPoint *laserpoint;
-    QList <pair<Reflector *, int>>*myReflectors;
+    QList <Reflector *>*myReflectors;
     QPointF initialPosition;
     Link *link=nullptr;
     Reflector *reflectorOnScene=nullptr;

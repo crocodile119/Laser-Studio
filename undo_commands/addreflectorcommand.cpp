@@ -2,7 +2,7 @@
 
 AddReflectorCommand::AddReflectorCommand(double _attenuatedDNRO, double _attenuatedDNRC, double _reflectorDistance, double _scale,
                                          int _seqNumber, target _myTarget, CentralWidget *_laserWindow, LaserPoint *_laserpoint,
-                                         QList <pair<Reflector *, int>>*_myReflectors, QPointF _initialPosition, QUndoCommand *parent)
+                                         QList<Reflector *> *_myReflectors, QPointF _initialPosition, QUndoCommand *parent)
                       : QUndoCommand(parent), attenuatedDNRO(_attenuatedDNRO), attenuatedDNRC(_attenuatedDNRC), reflectorDistance(_reflectorDistance),
                         scale(_scale), seqNumber(_seqNumber), myTarget(_myTarget), laserWindow(_laserWindow), laserpoint(_laserpoint),
                         myReflectors(_myReflectors), initialPosition(_initialPosition)
@@ -48,16 +48,13 @@ void AddReflectorCommand::undo()
 
     QList<QGraphicsItem *> items = laserWindow->graphicsView->scene->items();
 
-    int index;
-
     QMutableListIterator<QGraphicsItem *> k(items);
     while (k.hasNext())
     {
         Reflector *undoReflectors = dynamic_cast<Reflector *>(k.next());
         if (undoReflectors)
         {
-        index=undoReflectors->getSeqNumber();
-        myReflectors->push_back(make_pair(undoReflectors, index));
+        myReflectors->push_back(undoReflectors);
         }
     }
 }
@@ -72,7 +69,7 @@ void AddReflectorCommand::redo()
     QGraphicsItem *item =laserWindow->graphicsView->scene->itemAt(initialPosition, QTransform());
     reflectorOnScene= qgraphicsitem_cast<Reflector*>(item);
 ;
-    myReflectors->append(make_pair(reflectorOnScene, seqNumber));
+    myReflectors->append(reflectorOnScene);
 
 
     laserpoint->setSelected(false);

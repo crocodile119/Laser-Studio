@@ -12,8 +12,7 @@ class DeleteBinocularCommand : public QUndoCommand
 public:
     DeleteBinocularCommand(Binocular *_binocular, BinocularLink *_binocularLink, double _scale,
                   CentralWidget *_laserWindow, LaserPoint *_laserpoint,
-                  QList<pair<Binocular *, int> > *_myBinocular,
-                  QPointF _deletePosition, QUndoCommand *parent = nullptr);
+                  QList<Binocular *> *_myBinocular, QPointF _deletePosition, QUndoCommand *parent = nullptr);
     ~DeleteBinocularCommand();
 
     void undo() override;
@@ -28,7 +27,7 @@ private:
     double scale;
     CentralWidget *laserWindow;
     LaserPoint *laserpoint;
-    QList <pair<Binocular *, int>>*myBinoculars;
+    QList <Binocular *>*myBinoculars;
     QPointF deletePosition;
 };
 

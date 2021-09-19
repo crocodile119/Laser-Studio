@@ -2,7 +2,7 @@
 
 AddBinocularCommand::AddBinocularCommand(double _attenuatedDNRO, double _binocularDistance, double _scale,
                                          int _binSeqNumber, CentralWidget *_laserWindow, LaserPoint *_laserpoint,
-                                         QList <pair<Binocular *, int>>*_myBinoculars, QPointF _initialPosition,
+                                         QList<Binocular *> *_myBinoculars, QPointF _initialPosition,
                                          QUndoCommand *parent):QUndoCommand(parent), attenuatedDNRO(_attenuatedDNRO),
                                          binocularDistance(_binocularDistance), scale(_scale), binSeqNumber(_binSeqNumber),
                                          laserWindow(_laserWindow), laserpoint(_laserpoint), myBinoculars(_myBinoculars),
@@ -39,17 +39,13 @@ void AddBinocularCommand::undo()
     myBinoculars->clear();
 
     QList<QGraphicsItem *> items = laserWindow->graphicsView->scene->items();
-
-    int index;
-
     QMutableListIterator<QGraphicsItem *> k(items);
     while (k.hasNext())
     {
         Binocular *undoBinoculars = dynamic_cast<Binocular *>(k.next());
         if (undoBinoculars)
         {
-        index=undoBinoculars->getBinSeqNumber();
-        myBinoculars->push_back(make_pair(undoBinoculars, index));
+        myBinoculars->push_back(undoBinoculars);
         }
     }
 }
@@ -67,7 +63,7 @@ void AddBinocularCommand::redo()
 
     QGraphicsItem *item =laserWindow->graphicsView->scene->itemAt(initialPosition, QTransform());
     binocularOnScene= qgraphicsitem_cast<Binocular*>(item);
-    myBinoculars->append(make_pair(binocularOnScene, binSeqNumber));
+    myBinoculars->append(binocularOnScene);
 
     laserpoint->setSelected(false);
 

@@ -1,7 +1,7 @@
 #include "deletebinocularcommand.h"
 
 DeleteBinocularCommand::DeleteBinocularCommand(Binocular *_binocularOnScene, BinocularLink *_binocularLink, double _scale, CentralWidget *_laserWindow, LaserPoint *_laserpoint,
-                             QList <pair<Binocular *, int>>*_myBinoculars, QPointF _deletePosition, QUndoCommand *parent)
+                             QList <Binocular *>*_myBinoculars, QPointF _deletePosition, QUndoCommand *parent)
           : QUndoCommand(parent), binocularOnScene(_binocularOnScene), binocularLink(_binocularLink), scale(_scale), laserWindow(_laserWindow), laserpoint(_laserpoint),
             myBinoculars(_myBinoculars), deletePosition(_deletePosition)
 {
@@ -23,7 +23,7 @@ void DeleteBinocularCommand::undo()
     laserWindow->graphicsView->scene->clearSelection();
     laserWindow->graphicsView->scene->update();
 
-    myBinoculars->append(make_pair(binocularOnScene, binocularOnScene->getBinSeqNumber()));
+    myBinoculars->append(binocularOnScene);
 
     laserpoint->setSelected(false);
 
@@ -44,16 +44,13 @@ void DeleteBinocularCommand::redo()
 
     QList<QGraphicsItem *> items = laserWindow->graphicsView->scene->items();
 
-    int index;
-
     QMutableListIterator<QGraphicsItem *> k(items);
     while (k.hasNext())
     {
         Binocular *undoBinoculars = dynamic_cast<Binocular*>(k.next());
         if (undoBinoculars)
         {
-            index=undoBinoculars->getBinSeqNumber();
-            myBinoculars->push_back(make_pair(undoBinoculars, index));
+            myBinoculars->push_back(undoBinoculars);
         }
     }
 }

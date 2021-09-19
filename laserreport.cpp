@@ -1032,13 +1032,13 @@ void LaserReport::buidReflectorsDocumentPart()
     if(!myReflectors.empty())
     {
         html +="<br><h2>Elementi riflettori presenti nell'area di sgombero</h2>";
-        QList<pair<Reflector*, int>>::iterator myIterator; // iterator
+        QList<Reflector*>::iterator myIterator; // iterator
         myIterator = myReflectors.begin();
         int i =1;
 
         while (myIterator != myReflectors.end() )
         {
-            reflector=myIterator->first;
+            reflector=*myIterator;
             myCursor.insertHtml(htmlReflectors(i));
 
             if(reflector->getReflectorKind()!=MIRROR_TARGET)
@@ -1249,13 +1249,13 @@ void LaserReport::buidInspectorsDocumentPart()
     if(!myBeamInspectors.empty())
     {
         html +="<br><h2>Segnaposti presenti nell'area</h2>";
-        QList<pair<BeamInspector*, int>>::iterator myIterator; // iterator
+        QList<BeamInspector*>::iterator myIterator; // iterator
         myIterator = myBeamInspectors.begin();
         int i =1;
 
         while (myIterator != myBeamInspectors.end() )
         {
-            beamInspector=myIterator->first;
+            beamInspector=*myIterator;
             myCursor.insertHtml(htmlInspectors(i));
 
             if((beamInspector->isRetinalHazard())&&(beamInspector->isInZone()))
@@ -1313,13 +1313,13 @@ QString LaserReport::htmlBinoculars()
     {
         html +="<br><h2>Dispositivi ottici presenti</h2>";
 
-        QList<pair<Binocular*, int>>::iterator myIterator; // iterator
+        QList<Binocular*>::iterator myIterator; // iterator
         myIterator = myBinoculars.begin();
         int i =1;
 
         while(myIterator != myBinoculars.end())
         {
-            binocular=myIterator->first;
+            binocular=*myIterator;
             binoculars.clear();
             binocularsValuation();
 
@@ -1428,7 +1428,7 @@ QString LaserReport::htmlMeteo()
      return htmlMeteo;
 }
 
-void LaserReport::setReflectorsList(const QList<pair<Reflector*, int>> &_myReflectors)
+void LaserReport::setReflectorsList(const QList<Reflector*> &_myReflectors)
 {
     myReflectors=_myReflectors;
 }
@@ -1438,12 +1438,12 @@ void LaserReport::setFootprintsList(const QList<FootprintObject*> &_myFootprints
    myFootprints=_myFootprints;
 }
 
-void LaserReport::setBinocularsList(const QList<pair<Binocular*, int>> &_myBinoculars)
+void LaserReport::setBinocularsList(const QList<Binocular*> &_myBinoculars)
 {
     myBinoculars=_myBinoculars;
 }
 
-void LaserReport::setBeamInspectorsList(const QList<pair<BeamInspector*, int>> &_myBeamInspectors)
+void LaserReport::setBeamInspectorsList(const QList<BeamInspector*> &_myBeamInspectors)
 {
     myBeamInspectors=_myBeamInspectors;
 }

@@ -1,7 +1,7 @@
 #include "deletereflectorcommand.h"
 
 DeleteReflectorCommand::DeleteReflectorCommand(Reflector *_reflectorOnScene, Link *_link, double _scale, CentralWidget *_laserWindow, LaserPoint *_laserpoint,
-                             QList <pair<Reflector *, int>>*_myReflectors, QPointF _deletePosition, QUndoCommand *parent)
+                             QList<Reflector *> *_myReflectors, QPointF _deletePosition, QUndoCommand *parent)
           : QUndoCommand(parent), reflectorOnScene(_reflectorOnScene), link(_link), scale(_scale), laserWindow(_laserWindow), laserpoint(_laserpoint),
             myReflectors(_myReflectors), deletePosition(_deletePosition)
 {
@@ -23,7 +23,7 @@ void DeleteReflectorCommand::undo()
     laserWindow->graphicsView->scene->clearSelection();
     laserWindow->graphicsView->scene->update();
 
-    myReflectors->append(make_pair(reflectorOnScene, reflectorOnScene->getSeqNumber()));
+    myReflectors->append(reflectorOnScene);
 
     laserWindow->graphicsView->scene->clearSelection();
     //imposto la NOHD del punto laser
@@ -42,16 +42,13 @@ void DeleteReflectorCommand::redo()
 
     QList<QGraphicsItem *> items = laserWindow->graphicsView->scene->items();
 
-    int index;
-
     QMutableListIterator<QGraphicsItem *> k(items);
     while (k.hasNext())
     {
         Reflector *undoReflectors = dynamic_cast<Reflector *>(k.next());
         if (undoReflectors)
         {
-            index=undoReflectors->getSeqNumber();
-            myReflectors->push_back(make_pair(undoReflectors, index));
+            myReflectors->push_back(undoReflectors);
         }
     }
 }

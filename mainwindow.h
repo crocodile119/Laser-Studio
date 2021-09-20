@@ -195,9 +195,10 @@ private slots:
     void setTreeModel();
     bool insertGraphicsItem(TreeModel::GraphicsItem graphicsItem);
     bool updateGraphicsItem(TreeModel::GraphicsItem graphicsItem);
-    bool updateGraphicsItemList();
-    bool updateEnvironmentItem();
+    void updateGraphicsItemList();
+    void updateEnvironmentItem();
     void removeRow();
+    void updateLaserItem();
     void updateReflectorItem();
     void updateBeamInspectorItem();
     void updateBinocularItem();

@@ -217,6 +217,10 @@ void MainWindow::setLaserPoint()
 
     connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setUpdatedPosition()));
     connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setUpdatedPosition()));
+    connect(laserpoint, SIGNAL(xChanged()), this, SLOT(updateLaserItem()));
+    connect(laserpoint, SIGNAL(yChanged()), this, SLOT(updateLaserItem()));
+    connect(laserpoint, SIGNAL(xChanged()), this, SLOT(updateGraphicsItemList()));
+    connect(laserpoint, SIGNAL(yChanged()), this, SLOT(updateGraphicsItemList()));
     connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setDistanceForReflector()));
     connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setDistanceForReflector()));
     connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setDistanceForInspector()));
@@ -370,8 +374,10 @@ void MainWindow::setOpenFile()
     connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setUpdatedPosition()));
     connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setDistanceForReflector()));
     connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setDistanceForReflector()));
-    connect(laserpoint, SIGNAL(xChanged()), this, SLOT(updateList()));
-    connect(laserpoint, SIGNAL(yChanged()), this, SLOT(updateList()));
+    connect(laserpoint, SIGNAL(xChanged()), this, SLOT(updateGraphicsItemList()));
+    connect(laserpoint, SIGNAL(yChanged()), this, SLOT(updateGraphicsItemList()));
+    connect(laserpoint, SIGNAL(xChanged()), this, SLOT(updateLaserItem()));
+    connect(laserpoint, SIGNAL(yChanged()), this, SLOT(updateLaserItem()));
     connect(laserpoint, SIGNAL(xChanged()), this, SLOT(updateLaserList()));
     connect(laserpoint, SIGNAL(yChanged()), this, SLOT(updateLaserList()));
     connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setDistanceForBinocular()));
@@ -4241,6 +4247,9 @@ void MainWindow::createRoom()
     labRect.translate(-center);
 
     myLabRoom=new LabRoom(labRect);
+
+    connect(myLabRoom, SIGNAL(xChanged()), this, SLOT(updateEnvironmentItem()));
+    connect(myLabRoom, SIGNAL(yChanged()), this, SLOT(updateEnvironmentItem()));
 }
 
 void MainWindow::atmosphericEffectsOn(bool _atmEffectsBool)
@@ -5167,10 +5176,9 @@ bool MainWindow::updateGraphicsItem(TreeModel::GraphicsItem graphicsItem)
     }
     return changed;
 }
-bool MainWindow::updateGraphicsItemList()
+void MainWindow::updateGraphicsItemList()
 {
     int row;
-    bool updated=false;
     int rows;
     int rowToDelete;
     QModelIndex headerIndex;
@@ -5208,10 +5216,7 @@ bool MainWindow::updateGraphicsItemList()
                                                QVariant(static_cast<int>(reflectorKind))};
 
                  QVariant inputData=QVariant(inputList);
-                 updated=treeModel->setData(reflectorIndex, inputData);
-
-                 if(!updated)
-                     break;
+                 treeModel->setData(reflectorIndex, inputData);
             }
         }
     }
@@ -5236,10 +5241,7 @@ bool MainWindow::updateGraphicsItemList()
                                            QVariant(static_cast<int>(TreeModel::ReflectorKind::INDENT))};
 
                 QVariant inputData=QVariant(inputList);
-                updated=treeModel->setData(binocularIndex, inputData);
-
-                if(!updated)
-                    break;
+                treeModel->setData(binocularIndex, inputData);
             }
         }
     }
@@ -5263,19 +5265,14 @@ bool MainWindow::updateGraphicsItemList()
                                            QVariant(static_cast<int>(TreeModel::ReflectorKind::INDENT))};
 
                 QVariant inputData=QVariant(inputList);
-                updated=treeModel->setData(inspectorIndex, inputData);
-
-                if(!updated)
-                    break;
+                treeModel->setData(inspectorIndex, inputData);
             }
         }
     }
-    return updated;
 }
 
-bool MainWindow::updateEnvironmentItem()
+void MainWindow::updateEnvironmentItem()
 {
-    bool changed=false;
     int row=static_cast<int>(TreeModel::GraphicsItem::ENVIRONMENT);
 
     QModelIndex environmentHeaderIndex=treeModel->index(row, TreeModel::COLUMNS-1);
@@ -5303,9 +5300,24 @@ bool MainWindow::updateEnvironmentItem()
     }
 
     inputData=QVariant(inputList);
-    changed=treeModel->setData(environmentIndex, inputData);
+    treeModel->setData(environmentIndex, inputData);
+}
 
-    return changed;
+void MainWindow::updateLaserItem()
+{
+    int row=static_cast<int>(TreeModel::GraphicsItem::LASERPOINT);
+    QModelIndex laserHeaderIndex=treeModel->index(row, TreeModel::COLUMNS-1);
+    QModelIndex laserIndex=treeModel->index(0, TreeModel::COLUMNS-1, laserHeaderIndex);
+    QList<QVariant> inputList;
+    QVariant inputData;
+    QString laserString;
+    laserString =laserpoint->getStringPosition();
+
+    inputList={QVariant(laserString), QVariant(static_cast<int>(TreeModel::GraphicsItem::LASERPOINT)),
+                                                               QVariant(static_cast<int>(TreeModel::ReflectorKind::INDENT))};
+
+    inputData=QVariant(inputList);
+    treeModel->setData(laserIndex, inputData);
 }
 
 void MainWindow::updateReflectorItem()

@@ -5324,20 +5324,26 @@ void MainWindow::updateReflectorItem()
     rows=myReflectors.count();
     if(rows>0)
     {
-        reflectorIndex=treeModel->index(rows-1, TreeModel::COLUMNS-1, reflectorHeaderIndex);
-        reflectorString =myReflectors.at(rows-1)->getStringDetails();
-        reflectorObjectKind=myReflectors.at(rows-1)->getReflectorKind();
+        for(int i=0; i < rows; i++)
+        {
+            if(myReflectors.at(i)->isSelected())
+            {
+                reflectorIndex=treeModel->index(i, TreeModel::COLUMNS-1, reflectorHeaderIndex);
+                reflectorString =myReflectors.at(i)->getStringDetails();
+                reflectorObjectKind=myReflectors.at(i)->getReflectorKind();
 
-        if(reflectorObjectKind==WET_TARGET)
-          reflectorKind=TreeModel::ReflectorKind::WET;
-        else if(reflectorObjectKind==GLASS_TARGET)
-          reflectorKind=TreeModel::ReflectorKind::GLASS;
-        else if(reflectorObjectKind==LAMBERTIAN_TARGET)
-          reflectorKind=TreeModel::ReflectorKind::LAMBERTIAN;
-        else if(reflectorObjectKind==MIRROR_TARGET)
-          reflectorKind=TreeModel::ReflectorKind::MIRROR;
-        else
-          reflectorKind=TreeModel::ReflectorKind::NO_REFLECTOR;
+                if(reflectorObjectKind==WET_TARGET)
+                  reflectorKind=TreeModel::ReflectorKind::WET;
+                else if(reflectorObjectKind==GLASS_TARGET)
+                  reflectorKind=TreeModel::ReflectorKind::GLASS;
+                else if(reflectorObjectKind==LAMBERTIAN_TARGET)
+                  reflectorKind=TreeModel::ReflectorKind::LAMBERTIAN;
+                else if(reflectorObjectKind==MIRROR_TARGET)
+                  reflectorKind=TreeModel::ReflectorKind::MIRROR;
+                else
+                  reflectorKind=TreeModel::ReflectorKind::NO_REFLECTOR;
+            }
+        }
 
         inputList={QVariant(reflectorString), QVariant(static_cast<int>(TreeModel::GraphicsItem::REFLECTOR)),
                                                QVariant(static_cast<int>(reflectorKind))};
@@ -5361,8 +5367,14 @@ void MainWindow::updateBeamInspectorItem()
     rows=myBeamInspectors.count();
     if(rows>0)
     {
-        inspectorIndex=treeModel->index(rows-1, TreeModel::COLUMNS-1, inspectorHeaderIndex);
-        inspectorString =myBeamInspectors.at(rows-1)->getStringPosition();
+        for(int i=0; i < rows; i++)
+        {
+            if(myBeamInspectors.at(i)->isSelected())
+            {
+                inspectorIndex=treeModel->index(i, TreeModel::COLUMNS-1, inspectorHeaderIndex);
+                inspectorString =myBeamInspectors.at(i)->getStringPosition();
+            }
+        }
 
         inputList={QVariant(inspectorString), QVariant(static_cast<int>(TreeModel::GraphicsItem::BEAM_INSPECTOR)),
                                                QVariant(static_cast<int>(TreeModel::ReflectorKind::INDENT))};
@@ -5386,14 +5398,20 @@ void MainWindow::updateBinocularItem()
     rows=myBinoculars.count();
     if(rows>0)
     {
-        binocularIndex=treeModel->index(rows-1, TreeModel::COLUMNS-1, binocularHeaderIndex);
-        binocularString =myBinoculars.at(rows-1)->getStringPosition();
+        for(int i=0; i < rows; i++)
+        {
+            if(myBinoculars.at(i)->isSelected())
+            {
+                binocularIndex=treeModel->index(i, TreeModel::COLUMNS-1, binocularHeaderIndex);
+                binocularString =myBinoculars.at(i)->getStringPosition();
+            }
+        }
 
-        inputList={QVariant(binocularString), QVariant(static_cast<int>(TreeModel::GraphicsItem::BINOCULAR)),
+    inputList={QVariant(binocularString), QVariant(static_cast<int>(TreeModel::GraphicsItem::BINOCULAR)),
                                                QVariant(static_cast<int>(TreeModel::ReflectorKind::INDENT))};
 
-        inputData=QVariant(inputList);
-        treeModel->setData(binocularIndex, inputData);
+    inputData=QVariant(inputList);
+    treeModel->setData(binocularIndex, inputData);
     }
 }
 

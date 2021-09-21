@@ -135,6 +135,8 @@ MainWindow::MainWindow()
     connect(laserWindow->myDockControls, SIGNAL(powerErgChanged()), this, SLOT(setReflectorPowerErgForDiffusion()));
     connect(laserWindow->myDockControls, SIGNAL(EMP_Changed()), this, SLOT(setReflectorEMP_ForDiffusion()));
     connect(laserWindow->myDockControls, SIGNAL(wavelengthChanged()), this, SLOT(setWavelengthForBinocular()));
+    connect(laserWindow->myDockControls, SIGNAL(noFeasibleInput()), this, SLOT(noFeasibleInputFunction()));
+    connect(laserWindow->myDockControls, SIGNAL(operationChanged()), this, SLOT(deletedViewCenter()));
     connect(laserWindow->myDockReflectorsList->ui->treeView, SIGNAL(clicked(QModelIndex)), this, SLOT(goToGraphicsItem(QModelIndex)));
     connect(laserWindow->myDockReflectorsList->ui->treeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(selectItemFromTree(QModelIndex)));
 
@@ -143,12 +145,10 @@ MainWindow::MainWindow()
     connect(laserWindow->graphicsView->scene, &GraphicsScene::graphicItemSelected, this, &MainWindow::treeSelectionFromGraphics);
     connect(laserWindow->graphicsView->scene, SIGNAL(deselected()), this, SLOT(listDeselectionFromGraphics()));
     connect(laserWindow->graphicsView->scene, SIGNAL(footprintRelease()), this, SLOT(shadowZoneForLaser()));
-
-    connect(laserWindow->myDockControls, SIGNAL(noFeasibleInput()), this, SLOT(noFeasibleInputFunction()));
-    connect(laserWindow->myDockControls, SIGNAL(operationChanged()), this, SLOT(deletedViewCenter()));
-    connect(laserWindow->graphicsView->scene, SIGNAL(changed(const QList<QRectF> &)),this, SLOT(setViewportRect()));
-    connect(laserWindow->graphicsView, SIGNAL(viewportChanged()),this, SLOT(setViewportRect()));
     connect(laserWindow->graphicsView->scene, &GraphicsScene::graphicItemMoved, this, &MainWindow::graphicItemMoveToStack);
+    connect(laserWindow->graphicsView->scene, SIGNAL(changed(const QList<QRectF> &)),this, SLOT(setViewportRect()));
+
+    connect(laserWindow->graphicsView, SIGNAL(viewportChanged()),this, SLOT(setViewportRect()));
     connect(undoStack, &QUndoStack::indexChanged, this, &MainWindow::updateUndoStackList);
 
     externalFile=false;
@@ -307,11 +307,7 @@ void MainWindow::newFile()
 
         connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(updateActions()));
         connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(laserModified()));
-        connect(laserWindow->graphicsView->scene, SIGNAL(laserSelected()), this, SLOT(laserpointSelectionFromGraphics()));
-        connect(laserWindow->graphicsView->scene, SIGNAL(reflectorSelected()), this, SLOT(listSelectionFromGraphics()));
-        connect(laserWindow->graphicsView->scene, SIGNAL(binocularSelected()), this, SLOT(binocularListSelectionFromGraphics()));
-        connect(laserWindow->graphicsView->scene, SIGNAL(inspectorSelected()), this, SLOT(inspectorListSelectionFromGraphics()));
-        connect(laserWindow->graphicsView->scene, SIGNAL(labroomSelected()), this, SLOT(labroomSelectionFromGraphics()));
+        connect(laserWindow->graphicsView->scene, &GraphicsScene::graphicItemSelected, this, &MainWindow::treeSelectionFromGraphics);
         connect(laserWindow->graphicsView->scene, SIGNAL(deselected()), this, SLOT(listDeselectionFromGraphics()));
         connect(laserWindow->graphicsView->scene, SIGNAL(footprintRelease()), this, SLOT(shadowZoneForLaser()));
         connect(laserWindow->graphicsView->scene, SIGNAL(changed(const QList<QRectF> &)),this, SLOT(setViewportRect()));
@@ -359,34 +355,31 @@ void MainWindow::setOpenFile()
     undoStack->clear();
     laserWindow->setUndoStack(undoStack);
 
+
     connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(updateActions()));
     connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(laserModified()));
-    connect(laserWindow->graphicsView->scene, SIGNAL(laserSelected()), this, SLOT(laserpointSelectionFromGraphics()));
-    connect(laserWindow->graphicsView->scene, SIGNAL(reflectorSelected()), this, SLOT(listSelectionFromGraphics()));
-    connect(laserWindow->graphicsView->scene, SIGNAL(binocularSelected()), this, SLOT(binocularListSelectionFromGraphics()));
-    connect(laserWindow->graphicsView->scene, SIGNAL(inspectorSelected()), this, SLOT(inspectorListSelectionFromGraphics()));
-    connect(laserWindow->graphicsView->scene, SIGNAL(labroomSelected()), this, SLOT(labroomSelectionFromGraphics()));
+    connect(laserWindow->graphicsView->scene, &GraphicsScene::graphicItemSelected, this, &MainWindow::treeSelectionFromGraphics);
     connect(laserWindow->graphicsView->scene, SIGNAL(deselected()), this, SLOT(listDeselectionFromGraphics()));
     connect(laserWindow->graphicsView->scene, SIGNAL(footprintRelease()), this, SLOT(shadowZoneForLaser()));
     connect(laserWindow->graphicsView->scene, SIGNAL(changed(const QList<QRectF> &)),this, SLOT(setViewportRect()));
+    connect(laserWindow->graphicsView->scene, &GraphicsScene::graphicItemMoved, this, &MainWindow::graphicItemMoveToStack);
 
     connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setUpdatedPosition()));
     connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setUpdatedPosition()));
-    connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setDistanceForReflector()));
-    connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setDistanceForReflector()));
-    connect(laserpoint, SIGNAL(xChanged()), this, SLOT(updateGraphicsItemList()));
-    connect(laserpoint, SIGNAL(yChanged()), this, SLOT(updateGraphicsItemList()));
     connect(laserpoint, SIGNAL(xChanged()), this, SLOT(updateLaserItem()));
     connect(laserpoint, SIGNAL(yChanged()), this, SLOT(updateLaserItem()));
-    connect(laserpoint, SIGNAL(xChanged()), this, SLOT(updateLaserList()));
-    connect(laserpoint, SIGNAL(yChanged()), this, SLOT(updateLaserList()));
+    connect(laserpoint, SIGNAL(xChanged()), this, SLOT(updateGraphicsItemList()));
+    connect(laserpoint, SIGNAL(yChanged()), this, SLOT(updateGraphicsItemList()));
+    connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setDistanceForReflector()));
+    connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setDistanceForReflector()));
+    connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setDistanceForInspector()));
+    connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setDistanceForInspector()));
     connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setDistanceForBinocular()));
     connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setDistanceForBinocular()));
     connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setDistanceForFootprint()));
     connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setDistanceForFootprint()));
     connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setShadowZone()));
     connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setShadowZone()));
-    connect(laserWindow->graphicsView->scene, &GraphicsScene::graphicItemMoved, this, &MainWindow::graphicItemMoveToStack);
 
     laserpoint->setPos(laserpoint->pos()+QPointF(-1,-1));
     laserpoint->setPos(laserpoint->pos()+QPointF(1,1));
@@ -5329,7 +5322,7 @@ void MainWindow::updateReflectorItem()
     QModelIndex reflectorIndex;
     QString reflectorString;
     target reflectorObjectKind;
-    TreeModel::ReflectorKind reflectorKind;
+    TreeModel::ReflectorKind reflectorKind=TreeModel::ReflectorKind::NO_REFLECTOR;
     QList<QVariant> inputList;
     QVariant inputData;
 

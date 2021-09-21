@@ -188,7 +188,7 @@ void LaserPoint::paint(QPainter *painter,
 
     painter->setPen(beamPen);
     painter->setBrush(myBackgroundColor);
-    double firstPie=(360-aperture/2-pillow)*16;
+    double firstPie=(360-aperture/2.0-pillow)*16;
     double secondPie=(aperture+pillow)*16;
 
     if(opticalDiameter>skinDiameter)
@@ -282,7 +282,7 @@ QRectF LaserPoint::outlineRect() const
 
 QRectF LaserPoint::selectionOpticalRect() const
 {
-    QSize rectSize(opticalDiameter, opticalDiameter);
+    QSizeF rectSize(opticalDiameter, opticalDiameter);
     QPointF center(outlineRect().center());
     QRectF rect(center, rectSize);
     rect.translate(-rect.center());
@@ -291,7 +291,7 @@ QRectF LaserPoint::selectionOpticalRect() const
 
 QRectF LaserPoint::selectionSkinRect() const
 {
-    QSize rectSize(skinDiameter, skinDiameter);
+    QSizeF rectSize(skinDiameter, skinDiameter);
     QPointF center(outlineRect().center());
     QRectF rect(center, rectSize);
     rect.translate(-rect.center());

@@ -23,13 +23,27 @@ int ScientificNumber::exponent(double number, int &exp)
         exp++;
         return exponent(number, exp);
     }
+    else if((number>=10)||(number<=-10))
+    {
+        number=number/10;
+        exp++;
+        return exponent(number, exp);
+    }
     else
         return exp;
 }
 
 double ScientificNumber::mantissa(double number, const int &exp)
 {
-    return number*pow(10, exp);
+    double value;
+    if((number<1)&&(number>-1)&&(number!=0))
+        value=number*pow(10, exp);
+    else if((number>=10)||(number<=-10))
+        value=number*pow(10, -exp);
+    else
+        value=number*pow(10, 0);
+
+    return value;
 }
 
 void ScientificNumber::setFloatNumber(const double _floatNumber)

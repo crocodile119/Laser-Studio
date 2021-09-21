@@ -104,7 +104,7 @@ void ScientificNotationControl::on_verticalScrollBar_valueChanged(int value)
 
 void ScientificNotationControl::setScientificNumber()
 {
-    scientificNumber=mantissa*powf(10, exponent);
+    scientificNumber=mantissa*std::pow(10, exponent);
     scientNotLabel->setText(QString::number(scientificNumber,'e', 2));
 }
 
@@ -112,8 +112,8 @@ void ScientificNotationControl::setValue(const double& _value)
 {
     double value=_value;
     scientNotLabel->setText(QString::number(value, 'e', 2));
-    ScientificNumber scientificNumber(value);
-    mantissa=scientificNumber.getMantissa();
+    ScientificNumber scientificNumberCalcolator(value);
+    mantissa=scientificNumberCalcolator.getMantissa();
     qDebug()<< "Mantissa: " << mantissa;
 
     int minimumExponent=getMinimumExponent();
@@ -121,19 +121,19 @@ void ScientificNotationControl::setValue(const double& _value)
 
     if(value>=1)
     {
-        exponent=+scientificNumber.getExponent();
+        exponent=+scientificNumberCalcolator.getExponent();
         if(exponent>maximumExponent)
         {
-            mantissa=mantissa*pow(10, exponent-maximumExponent);
+            mantissa=mantissa*std::pow(10, exponent-maximumExponent);
             exponent=maximumExponent;
         }
     }
     else
     {
-        exponent=-(scientificNumber.getExponent());
+        exponent=-(scientificNumberCalcolator.getExponent());
         if(exponent<minimumExponent)
         {
-            mantissa=mantissa*pow(10, exponent-minimumExponent);
+            mantissa=mantissa*std::pow(10, exponent-minimumExponent);
             exponent=minimumExponent;
         }
     }

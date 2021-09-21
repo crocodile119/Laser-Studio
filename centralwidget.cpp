@@ -290,7 +290,11 @@ bool CentralWidget::readFile(const QString &fileName)
      myDockControls->ui->beamDiameterControl->setValue(beamDiameterControl);
      myDockControls->ui->wavelengthScrollBar->setValue(wavelengthScrollBar);
      myDockControls->ui->teControl->setDialNumber(teControl);
-     myDockControls->ui->prfControl->setValue(prfControl);
+     if(operationCombo==2)
+         myDockControls->ui->prfControl->setValue(prfControl);
+     else
+         myDockControls->ui->prfControl->setValue(0.0);
+
      myDockControls->ui->internalWaist_checkBox->setChecked(isInternalWaistChecked);
      myDockControls->ui->T_SkinControl->setValue(T_SkinSpinBox);
      myDockControls->ui->checkGaussianBeam->setChecked(isGaussianBeamChecked);

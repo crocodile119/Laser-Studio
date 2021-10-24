@@ -74,6 +74,10 @@ public:
 protected:
     void closeEvent(QCloseEvent *event) override;
 
+#ifndef QT_NO_CONTEXTMENU
+    void contextMenuEvent(QContextMenuEvent *event) override;
+#endif // QT_NO_CONTEXTMENU
+
 signals:
     void nohdModified();
 
@@ -215,7 +219,6 @@ private:
     void createActions();
     void createMenus();
     void createToolBars();
-    void createContextMenu();
     void createUndoView();
     void clearScene();
     void setZValue(int z);

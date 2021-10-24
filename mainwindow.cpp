@@ -93,7 +93,6 @@ MainWindow::MainWindow()
     createActions();
     createStatusBar();
     createToolBars();
-    createContextMenu();
     updateActions();
 
     setCurrentFile("");
@@ -1667,13 +1666,16 @@ void MainWindow::createStatusBar()
     statusBar()->addWidget(statusLabel);
 }
 
-void MainWindow::createContextMenu()
+#ifndef QT_NO_CONTEXTMENU
+void MainWindow::contextMenuEvent(QContextMenuEvent *event)
 {
-    laserWindow->setContextMenuPolicy(Qt::ActionsContextMenu);
-    laserWindow->addAction(deleteAction);
-    laserWindow->addAction(propertiesAction);
-    laserWindow->addAction(changeMeteoAct);
+    QMenu menu(this);
+    menu.addAction(deleteAction);
+    menu.addAction(propertiesAction);
+    menu.addAction(changeMeteoAct);
+    menu.exec(event->globalPos());
 }
+#endif // QT_NO_CONTEXTMENU
 
 void MainWindow::setCurrentFile(const QString &fileName)
 {

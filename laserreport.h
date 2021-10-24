@@ -47,6 +47,7 @@ public:
     QString htmlBinoculars();
     QString htmlClassifier();
     QString htmlMeteo();
+    QString htmlSymbols();
 
     QString printSpecularReflectorCoefficients( vector< pair <double,double> > myVector);
     QString printReflectorTable( vector< pair <double,double> > myVector);

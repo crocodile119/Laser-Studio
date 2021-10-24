@@ -330,7 +330,7 @@ void BeamInspector::setStringPosition()
         if(isFarField())
         {
             farFieldString="Campo lontano";
-            position ="Segnaposto di indagine" + QString(" (%1,%2) <br>dist[m]: %3 D<sub>b</sub>[mm]: %4 C<sub>E</sub>: %5 <br>%8, %9")
+            position ="Segnaposto di indagine" + QString(" (%1,%2) <br>dist[m]: %3 d<sub>b</sub>[mm]: %4 C<sub>E</sub>: %5 <br>%8, %9")
                                         .arg(xString)
                                         .arg(yString)
                                         .arg(inspectorDistanceString)
@@ -342,7 +342,7 @@ void BeamInspector::setStringPosition()
             else
             {
                 farFieldString="Campo vicino";
-                position ="Segnaposto di indagine" + QString(" (%1,%2) <br>dist[m]: %3 D<sub>b</sub>[mm]: %4 C<sub>E</sub>: %5 %6=%7<br>%8, %9")
+                position ="Segnaposto di indagine" + QString(" (%1,%2) <br>dist[m]: %3 d<sub>b</sub>[mm]: %4 C<sub>E</sub>: %5 %6=%7<br>%8, %9")
                                             .arg(xString)
                                             .arg(yString)
                                             .arg(inspectorDistanceString)
@@ -361,7 +361,7 @@ void BeamInspector::setStringPosition()
             else
                 farFieldString="Campo lontano";
 
-            position ="Segnaposto di indagine" + QString(" (%1,%2) <br>dist[m]: %3 D<sub>b</sub>[mm]: %4<br>%5, %6")
+            position ="Segnaposto di indagine" + QString(" (%1,%2) <br>dist[m]: %3 d<sub>b</sub>[mm]: %4<br>%5, %6")
                                         .arg(xString)
                                         .arg(yString)
                                         .arg(inspectorDistanceString)
@@ -588,7 +588,7 @@ std::string BeamInspector::getNotes()const
 
 void BeamInspector::computeTEM00_RayleighDistance(const double& _wavelength, const double& _beamDiameter)
 {
-    TEM00_RayleighDistance=PI/2*pow(_beamDiameter,2)/(_wavelength)*1e+03;
+    TEM00_RayleighDistance=PI/2*std::pow(_beamDiameter,2)/(_wavelength)*1e+03;
 }
 
 void BeamInspector::computeQualityFactor(const double& _beamDiameter, const double& _divergence)
@@ -618,7 +618,7 @@ double BeamInspector::getQualityFactor()
 
 void BeamInspector::computeCurvaureRadius(const double& distance)
 {
-    curvatureRadius=distance+pow(rayleighDistance, 2)/distance;
+    curvatureRadius=distance+std::pow(rayleighDistance, 2)/distance;
 }
 
 bool BeamInspector::isFmFocusable()
@@ -666,21 +666,21 @@ void BeamInspector::valuateLongExposurePosition()
                 longExposurePowerErg=powerErg;
         }
 
-        EMP_PoweErgRatio=(4*longExposurePowerErg)/(PI*pow(1e-03*spotDiameter,2)*longExposure_EMP);
+        EMP_PoweErgRatio=(4*longExposurePowerErg)/(PI*std::pow(1e-03*spotDiameter,2)*longExposure_EMP);
     }
     else if(laserOperation==DockControls::operation::MULTI_PULSE)
     {
         if(alpha_r<1.5)
         {
             longExposurePowerErg=powerErg;
-            EMP_PoweErgRatio=(4*longExposurePowerErg)/(PI*pow(1e-03*spotDiameter,2)*longExposure_EMP*exposureTime/numberOfPulses);
+            EMP_PoweErgRatio=(4*longExposurePowerErg)/(PI*std::pow(1e-03*spotDiameter,2)*longExposure_EMP*exposureTime/numberOfPulses);
         }
         else
         {
             if(exposureTime<=T2)
-                EMP_PoweErgRatio=(4*longExposurePowerErg)/(PI*pow(1e-03*spotDiameter,2)*longExposure_EMP/numberOfPulses);
+                EMP_PoweErgRatio=(4*longExposurePowerErg)/(PI*std::pow(1e-03*spotDiameter,2)*longExposure_EMP/numberOfPulses);
             else
-                EMP_PoweErgRatio=(4*longExposurePowerErg)/(PI*pow(1e-03*spotDiameter,2)*longExposure_EMP*exposureTime/numberOfPulses);
+                EMP_PoweErgRatio=(4*longExposurePowerErg)/(PI*std::pow(1e-03*spotDiameter,2)*longExposure_EMP*exposureTime/numberOfPulses);
         }
     }
     else
@@ -689,7 +689,7 @@ void BeamInspector::valuateLongExposurePosition()
 
 void BeamInspector::valuatePosition()
 {
-    EMP_PoweErgRatio=(4*powerErgForEMP)/(PI*pow(1e-03*spotDiameter,2)*EMP);
+    EMP_PoweErgRatio=(4*powerErgForEMP)/(PI*std::pow(1e-03*spotDiameter,2)*EMP);
 }
 
 void BeamInspector::computeFm()
@@ -714,13 +714,13 @@ void BeamInspector::compute_d_r()
     {
         if(isFmFocusable())
         {
-            d_r=beamDiameter*1.0e-03*Le/sqrt(pow(inspectorDistance,2)+pow(rayleighDistance,2));
+            d_r=beamDiameter*1.0e-03*Le/std::sqrt(std::pow(inspectorDistance,2)+std::pow(rayleighDistance,2));
         }
         else
         {
-            double zR_L1_square=pow(inspectorDistance,2)+pow(rayleighDistance,2);
-            d_r=beamDiameter*1.0e-03/sqrt(zR_L1_square)*sqrt(pow(Le, 2)+pow((zR_L1_square/rayleighDistance),2)*
-                                                    pow((1-Le/fm+(beamDiameter*1.0e-03*Le)/zR_L1_square),2));
+            double zR_L1_square=std::pow(inspectorDistance,2)+std::pow(rayleighDistance,2);
+            d_r=beamDiameter*1.0e-03/std::sqrt(zR_L1_square)*std::sqrt(std::pow(Le, 2)+std::pow((zR_L1_square/rayleighDistance),2)*
+                                                    std::pow((1-Le/fm+(beamDiameter*1.0e-03*Le)/zR_L1_square),2));
         }
     }
     else
@@ -733,14 +733,14 @@ void BeamInspector::compute_alpha_r()
         {
         if(isFmFocusable())
         {
-            alpha_r=beamDiameter/sqrt(pow(inspectorDistance,2)+pow(rayleighDistance,2));
+            alpha_r=beamDiameter/std::sqrt(std::pow(inspectorDistance,2)+std::pow(rayleighDistance,2));
         }
 
         else
         {
-            double zR_L1_square=pow(inspectorDistance,2)+pow(rayleighDistance,2);
-            alpha_r=beamDiameter/sqrt(zR_L1_square)*sqrt(1+pow((zR_L1_square/rayleighDistance),2)*
-                                                        pow((1/Le-1/fm+(inspectorDistance/zR_L1_square)),2));
+            double zR_L1_square=std::pow(inspectorDistance,2)+std::pow(rayleighDistance,2);
+            alpha_r=beamDiameter/std::sqrt(zR_L1_square)*std::sqrt(1+std::pow((zR_L1_square/rayleighDistance),2)*
+                                                        std::pow((1/Le-1/fm+(inspectorDistance/zR_L1_square)),2));
         }
     }
     else
@@ -990,4 +990,10 @@ void BeamInspector::inspectorUpdate()
             }
         }
     }
+}
+
+void BeamInspector::setBeamInspectorObjectName(const QPointF& position)
+{
+    QString beamInspectorName=QString("BeamInspector (%1,%2)").arg(position.x()).arg(position.y());
+    setObjectName(beamInspectorName);
 }

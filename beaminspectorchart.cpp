@@ -68,9 +68,9 @@ void BeamInspectorChart::setAxisX()
     ScientificNumber apparentDiameterScientificNumber(apparentSeries->at(0).x());
     double exponent =beamDiameterScientificNumber.getExponent();
 
-    axisX->setMin(std::min(beamDiameterScientificNumber.numberLimit()+pow(10, exponent-2),
+    axisX->setMin(std::min(beamDiameterScientificNumber.numberLimit()+std::pow(10, exponent-2),
                            apparentDiameterScientificNumber.numberLimit()));
-    axisX->setMax(std::max(beamDiameterScientificNumber.numberLimit()+pow(10, exponent-2),
+    axisX->setMax(std::max(beamDiameterScientificNumber.numberLimit()+std::pow(10, exponent-2),
                            apparentDiameterScientificNumber.numberLimit()));
 
     chart->addAxis(axisX, Qt::AlignBottom);

@@ -43,6 +43,7 @@ public:
     void setRadialMax(const double);
     double getRadialMax()const;
     void setTableSeries(std::vector<std::pair<double, double>>);
+    void setChartBackgroundBrush(QColor color);
 
 private:
 

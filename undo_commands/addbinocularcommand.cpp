@@ -18,8 +18,8 @@ AddBinocularCommand::AddBinocularCommand(double _attenuatedDNRO, double _binocul
                               laserWindow->myDockControls->getBeamDiameter());
 
     binocular->setPixScale(scale);
-    binocular->setPos(initialPosition);
-
+    binocular->setPos(initialPosition);  
+    binocular->setBinocularObjectName(initialPosition);
     binocularLink=addBinocularLink();
 
     double exendedOpticalDiameter=binocular->getExendedOpticalDiameter();
@@ -60,9 +60,26 @@ void AddBinocularCommand::redo()
     binocular->setTextLabel();
     binocular->setStringPosition();
     binocular->setBinSeqNumber(binSeqNumber);
-
+    QString binocularName=binocular->objectName();
     QGraphicsItem *item =laserWindow->graphicsView->scene->itemAt(initialPosition, QTransform());
     binocularOnScene= qgraphicsitem_cast<Binocular*>(item);
+
+    if(binocularOnScene==nullptr)
+    {
+        QList<QGraphicsItem*>items=laserWindow->graphicsView->scene->collidingItems(item);
+
+        QMutableListIterator<QGraphicsItem *> k(items);
+        while (k.hasNext())
+        {
+            binocularOnScene = dynamic_cast<Binocular *>(k.next());
+            if(binocularOnScene!=nullptr)
+            {
+                if(binocularOnScene->objectName()==binocularName)
+                break;
+            }
+        }
+    }
+
     myBinoculars->append(binocularOnScene);
 
     laserpoint->setSelected(false);

@@ -7,11 +7,10 @@ class DiffusionHazard
 {
 public:
     enum class kindOfSurface{MEDIUM, LARGE, POINT};
-    DiffusionHazard(double, double, double, double, double);
-    void computeSpotDiameter();
+    DiffusionHazard(double, double, double);
     void computeAlpha();
     void computeCE();
-    void computeExendedReflection(double);
+    bool computeExendedReflection(double);
     void computeReflectorHazardDistance();
     void computeAlphaIndicator();
     void setPowerErg(const double&);
@@ -19,14 +18,8 @@ public:
     double getReflectorHazardDistance()const;
     void setReflectorDistance(const double&);
     double getReflectorDistance()const;
-    double getDivergence()const;
-    void setDivergence(const double&);
-    double getBeamDiameter()const;
-    void setBeamDiameter(const double&);
     double getEMP()const;
     void setEMP(const double&);
-    double getLaserDistance()const;
-    void setLaserDistance(const double&);
     double getEps()const;
     void setEps(const double&);
     double getSpotDiameter()const;
@@ -48,12 +41,11 @@ public:
     const static double PI_GRECO;
 
 private:
-    double beamDiameter;
+    double spotDiameter;
     double reflectorHazardDistance;
     double divergence;
     double laserDistance;
     double reflectorDistance;
-    double spotDiameter;
     double alpha;
     double EMP;
     double diffuseRadiance;

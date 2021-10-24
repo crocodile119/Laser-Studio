@@ -7,6 +7,7 @@
 #include <iostream>
 #include <cmath>
 #include "tablescontroller.h"
+#include "floatcomparison.h"
 
 using namespace std;
 
@@ -85,9 +86,10 @@ void ComputeLEA::selectLea_1M_Row(const std::array<leadata, EmpLeaTables::TABLER
         wavelenght2=myLeaStructValues.at(index).wavelenght2;
         time1=myLeaStructValues.at(index).time1;
         time2=myLeaStructValues.at(index).time2;
+        bool isAlmostEqual=almostEqualUlps(pulseWidth, time1);
 
-
-        if(((wavelength>wavelenght1)and(wavelength<=wavelenght2))and((pulseWidth>=time1)and(pulseWidth<time2 )))
+        if(((wavelength>wavelenght1)and(wavelength<=wavelenght2))and
+                (((pulseWidth>time1)or isAlmostEqual)and(pulseWidth<time2 )))
          {
             myLeaData_1M=myLeaStructValues.at(index);
             break;
@@ -111,9 +113,11 @@ void ComputeLEA::selectLea_3R_Row(const std::array<leadata, EmpLeaTables::TABLER
         wavelenght2=myLeaStructValues.at(index).wavelenght2;
         time1=myLeaStructValues.at(index).time1;
         time2=myLeaStructValues.at(index).time2;
+        bool isAlmostEqual=almostEqualUlps(pulseWidth, time1);
 
-        if(((wavelength>wavelenght1)and(wavelength<=wavelenght2))and((pulseWidth>=time1)and(pulseWidth<time2 )))
-        {
+        if(((wavelength>wavelenght1)and(wavelength<=wavelenght2))and
+                (((pulseWidth>time1)or isAlmostEqual)and(pulseWidth<time2 )))
+         {
 			myLeaData_3R=myLeaStructValues.at(index);
             break;
         }
@@ -137,8 +141,11 @@ void ComputeLEA::selectLea_3B_Row(const std::array<leadata, EmpLeaTables::TABLER
         time1=myLeaStructValues.at(index).time1;
         time2=myLeaStructValues.at(index).time2;
 
-        if(((wavelength>wavelenght1)and(wavelength<=wavelenght2))and((pulseWidth>=time1)and(pulseWidth<time2 )))
-		{
+        bool isAlmostEqual=almostEqualUlps(pulseWidth, time1);
+
+        if(((wavelength>wavelenght1)and(wavelength<=wavelenght2))and
+                (((pulseWidth>time1)or isAlmostEqual)and(pulseWidth<time2 )))
+         {
 			myLeaData_3B=myLeaStructValues.at(index);
 			break;
         }
@@ -153,7 +160,9 @@ void ComputeLEA::LEA()
 
     //Correggo le formule nel caso in cui siano previsti due pssibili valori
 
-    if(((wavelength>302.5)and(wavelength<=315))and((pulseWidth>=1.0e-009)and(pulseWidth<10 )))
+    if(((wavelength>302.5)and(wavelength<=315))
+            and(((pulseWidth>1.0e-009)or(almostEqualUlps(pulseWidth, 1.0e-009)))
+                and(pulseWidth<10 )))
     {
         if(pulseWidth>T1)
         {
@@ -162,7 +171,9 @@ void ComputeLEA::LEA()
         }
     }
 
-    if(((wavelength>450)and(wavelength<=500))and((pulseWidth>=1.0e+001)and(pulseWidth<1.0e+002 )))
+    if(((wavelength>450)and(wavelength<=500))
+            and(((pulseWidth>1.0e+001)or(almostEqualUlps(pulseWidth, 1.0e+001)))
+                 and(pulseWidth<1.0e+002)))
     {
         if(3.9e-003*C3>3.9e-004*pulseWidth)
         {
@@ -172,7 +183,9 @@ void ComputeLEA::LEA()
         }
     }
 
-    if(((wavelength>302.5)and(wavelength<=315))and((pulseWidth>=1.0e-009)and(pulseWidth<10 )))
+    if(((wavelength>302.5)and(wavelength<=315))
+            and(((pulseWidth>1.0e-009)or(almostEqualUlps(pulseWidth, 1.0e-009)))
+             and(pulseWidth<10 )))
     {
         if(pulseWidth>T1)
         {
@@ -181,7 +194,9 @@ void ComputeLEA::LEA()
         }
     }
 
-    if(((wavelength>400)and(wavelength<=700))and((pulseWidth>=5.0e-006)and(pulseWidth<0.35 )))
+    if(((wavelength>400)and(wavelength<=700))
+            and(((pulseWidth>5.0e-006)or(almostEqualUlps(pulseWidth, 5.0e-006)))
+                and(pulseWidth<0.35 )))
     {
         if(pulseWidth>=0.25)
         {
@@ -191,16 +206,20 @@ void ComputeLEA::LEA()
         }
     }
 
-    if(((wavelength>400)and(wavelength<=700))and((pulseWidth>=1.0e-009)and(pulseWidth<0.25 )))
+    if(((wavelength>400)and(wavelength<=700))
+            and(((pulseWidth>1.0e-009)or(almostEqualUlps(pulseWidth, 1.0e-009)))
+                and(pulseWidth<0.25 )))
     {
-        if(pulseWidth>=0.06)
+        if((pulseWidth>0.06) or(almostEqualUlps(pulseWidth, 0.06)))
         {
             myLeaData_3B.formula=0.5;
             myLeaData_3B.sort=3;
         }
     }
 
-    if(((wavelength>700)and(wavelength<=1050))and((pulseWidth>=1.0e-009)and(pulseWidth<0.25 )))
+    if(((wavelength>700)and(wavelength<=1050))
+            and(((pulseWidth>1.0e-009)or(almostEqualUlps(pulseWidth, 1.0e-009)))
+                and(pulseWidth<0.25 )))
     {
         if(pulseWidth>=0.06*C4)
         {
@@ -541,7 +560,7 @@ void ComputeLEA::computeParameters()
 	}
 	else if ((wavelength>=700) and (wavelength<=1050))
 	{         
-		C4=pow(10,0.002*(wavelength-700));
+        C4=std::pow(10,0.002*(wavelength-700));
 	}
 	else if((wavelength>1050) and (wavelength<1400))
 	{
@@ -558,7 +577,7 @@ void ComputeLEA::computeParameters()
 	} 
 	else if ((wavelength>=450) and (wavelength<=600))
 	{
-		C3=pow(10,0.02*(wavelength-450));
+        C3=std::pow(10,0.02*(wavelength-450));
 	}
 	else
 	{						
@@ -571,11 +590,11 @@ void ComputeLEA::computeParameters()
 	} 
 	else if ((wavelength>=1150) and (wavelength<1200))
 	{	
-		C7=pow(10,0.018*(wavelength-1150));
+        C7=std::pow(10,0.018*(wavelength-1150));
 	}
 	else if ((wavelength>=1200) and (wavelength<=1400))
 	{
-		C7=8+pow(10,0.04*(wavelength-1250));
+        C7=8+std::pow(10,0.04*(wavelength-1250));
 	}
 	else
 	{
@@ -588,14 +607,14 @@ void ComputeLEA::computeParameters()
 	}
 	else if ((wavelength>=302.5) and (wavelength<315))
 	{
-		C2=pow(10, 0.2*(wavelength-295));
+        C2=std::pow(10, 0.2*(wavelength-295));
 	}
 	else
 		C2=1;
 
     if ((wavelength>=180) and (wavelength<400))
 	{
-		C1=5.6*pow(10,3)*pow(pulseWidth, 0.25);
+        C1=5.6*std::pow(10,3)*std::pow(pulseWidth, 0.25);
 	}
 	else
 	{
@@ -615,7 +634,7 @@ void ComputeLEA::computeParameters()
 		}
 		else if (alpha>alpha_max)
 		{
-			C6=pow(alpha,2)/(ALPHA_MIN*alpha_max);
+            C6=std::pow(alpha,2)/(ALPHA_MIN*alpha_max);
 		}
 	}
 	else
@@ -625,7 +644,7 @@ void ComputeLEA::computeParameters()
 					
     if ((wavelength>=302.5) and (wavelength<=315))
 	{
-		T1=pow(10,0.8*(wavelength-295))*1.0e-015;
+        T1=std::pow(10,0.8*(wavelength-295))*1.0e-015;
 	}
 	else
 		T1=std::nan("Nessun valore");
@@ -637,7 +656,7 @@ void ComputeLEA::computeParameters()
 	}
 	else if ((alpha>=ALPHA_MIN) and (alpha<=alpha_max))
 	{
-		T2=10*pow(10,0.02*((alpha-ALPHA_MIN)/98.5));
+        T2=10*std::pow(10,0.02*((alpha-ALPHA_MIN)/98.5));
 	}
 	else if (alpha>alpha_max)
 	{
@@ -652,9 +671,9 @@ double ComputeLEA::compute_t(leadata &myLeaData)
     double t_exp;
 
     if (myLeaData.t==1){
-        t_exp=pow(pulseWidth, 0.75);}
+        t_exp=std::pow(pulseWidth, 0.75);}
     else if (myLeaData.t==2){
-        t_exp=pow(pulseWidth, 0.25);}
+        t_exp=std::pow(pulseWidth, 0.25);}
     else if (myLeaData.t==3){
         t_exp=pulseWidth;}
     else{t_exp=1;}
@@ -692,9 +711,9 @@ void ComputeLEA::computePhotoGamma()
 {
     if (((wavelength>=400) and (wavelength<=600)) and ((pulseWidth>10) and (pulseWidth<100)))
 		photoGamma =11;
-	else if (((wavelength>=400) and (wavelength<=600)) and ((pulseWidth>=100) and (pulseWidth<10000)))
-		photoGamma =11*pow(pulseWidth,0.5);
-	else if (((wavelength>=400) and (wavelength<=600)) and ((pulseWidth>=10000) and (pulseWidth<=30000)))
+    else if (((wavelength>=400) and (wavelength<=600)) and (((pulseWidth>100)or(almostEqualUlps(pulseWidth, 100))) and (pulseWidth<10000)))
+        photoGamma =11*std::pow(pulseWidth,0.5);
+    else if (((wavelength>=400) and (wavelength<=600)) and (((pulseWidth>10000)or(almostEqualUlps(pulseWidth, 10000))) and (pulseWidth<=30000)))
 		photoGamma =110;
 	else
 		photoGamma=std::nan("N.A.");
@@ -704,9 +723,9 @@ void ComputeLEA::computeAlpha_max()
 {
 	if(pulseWidth<6.25e-004)
 		alpha_max=5;
-	else if((pulseWidth>=6.25e-004)and(pulseWidth<0.25))
-		alpha_max=200*pow(pulseWidth, 0.5);
-    else if(pulseWidth>=0.25)
+    else if(((pulseWidth>6.25e-004)or(almostEqualUlps(pulseWidth, 6.25e-004))) and(pulseWidth<0.25))
+        alpha_max=200*std::pow(pulseWidth, 0.5);
+    else if((pulseWidth>0.25)or(almostEqualUlps(pulseWidth, 0.25)))
 		alpha_max=100;
 }
 
@@ -944,10 +963,10 @@ void ComputeLEA::valuateCondition_3()
 
 void ComputeLEA::valuateApertureCondition_3()
 {
-	if(pulseWidth<=0.35)
+    if((pulseWidth<0.35)or(almostEqualUlps(pulseWidth, 0.35)))
 		apertureThirdCondition=1;
 	else if((pulseWidth>0.35)and(pulseWidth<10))
-		apertureThirdCondition=powf(pulseWidth, 3/8);
+        apertureThirdCondition=std::pow(pulseWidth, 3/8);
 	else
 		apertureThirdCondition=3.5;
 }

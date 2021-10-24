@@ -40,6 +40,7 @@ public:
     /**< Dati non corrispondenti ad alcuna classifica. */
     };
 
+    enum class FormulaKind {IRRADIANCE=1, EXPOSURE_ENERGY, POWER, PULSE_ENERGY};
     void calculate();/*!<Segue l'istanza della classe e calcola i parametri del dispositivo invocando la funzione membro protetta
     * computeParameters(), individua gli effetti biologici invocando la funzione membro protetta bioEffects(), calcola i LEA per
     * i quattro casi previsti invocando la funzione membro LEA().

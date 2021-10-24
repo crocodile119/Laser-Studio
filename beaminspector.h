@@ -143,6 +143,7 @@ public:
     double get_d_s()const;
     double getCE()const;
     std::string getFormula()const;
+    void setBeamInspectorObjectName(const QPointF& position);
 
 protected:
     QVariant itemChange(GraphicsItemChange change,

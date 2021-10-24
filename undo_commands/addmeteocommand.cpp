@@ -8,7 +8,7 @@ AddMeteoCommand::AddMeteoCommand(CentralWidget *_laserWindow,  double _wavelengt
     old_A=laserWindow->getAtmoshericEffectsCoefficient();
     old_V=laserWindow->getMeteoRange();
     old_wavelength=laserWindow->myDockControls->getWavelength();
-    old_atmAttCoeff=3.91/(old_V)*powf(550.0/(old_wavelength), old_A);
+    old_atmAttCoeff=3.91/(old_V)*std::pow(550.0/(old_wavelength), old_A);
 }
 
 void AddMeteoCommand::undo()

@@ -16,12 +16,18 @@ public:
     ReflectorPropertiesDialog(Reflector *reflector, QWidget *parent = 0);
     ~ReflectorPropertiesDialog();
     Ui::ReflectorPropertiesDialog *ui;
+    static double MAX_DEFLECTION;
 
 private slots:
     void on_positioningSlider_valueChanged(int value);
+    void on_xSpinBox_valueChanged(double arg1);
+    void on_ySpinBox_valueChanged(double arg1);
+    void on_ZRLcheckBox_clicked(bool checked);
 
 private:
     Reflector *reflector;
+    bool lambertian;
+    double semiLaserAperture;
 };
 
 #endif

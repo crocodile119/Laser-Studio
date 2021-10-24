@@ -21,7 +21,7 @@
 #include <QAction>
 #include <QGraphicsItem>
 #include <QGraphicsView>
-#include "link.h"
+#include "reflectorlink.h"
 #include "laserpoint.h"
 #include "reflector.h"
 #include "binocular.h"
@@ -43,7 +43,7 @@
 #endif
 
 
-class Link;
+class ReflectorLink;
 class LaserPoint;
 class Reflector;
 class Binocular;
@@ -124,7 +124,7 @@ private slots:
     void setThemeOnStart();
     void addBinocularLink();
     void addObjectLink();
-    void addLink();
+    void addReflectorLink();
     void setPolygon();
     void del();
     void cut();
@@ -205,7 +205,7 @@ private slots:
 
 
 private:
-    typedef QPair<LaserPoint *, Reflector *> NodePair;
+    typedef QPair<LaserPoint *, Reflector *> ReflectorNodePair;
     typedef QPair<LaserPoint *, Binocular *> BinocularNodePair;   
     typedef QPair<LaserPoint *, FootprintObject *> ObjectNodePair;
     typedef QPair<LaserPoint *, BeamInspector *> InspectorNodePair;
@@ -222,11 +222,11 @@ private:
     Reflector *selectedReflector() const;
     LaserPoint *selectedLaserPoint() const;   
     Binocular *selectedBinocular() const;
-    Link *selectedLink() const;
+    ReflectorLink *selectedLink() const;
     LabRoom *selectedLab() const;
     FootprintObject *selectedFootprint()const;
     BeamInspector *selectedBeamInspector() const;
-    NodePair selectedNodePair() const;
+    ReflectorNodePair selectedReflectorNodePair() const;
     BinocularNodePair selectedBinocularNodePair() const;
     ObjectNodePair selectedObjectNodePair() const;
     BeamInspector selectedBeamInspectorNodePair() const;
@@ -251,7 +251,6 @@ private:
     void printHtml(const QString&);
     QString commandUndoTriggered()const;
     QString commandRedoTriggered()const;
-
 
     QPainterPath laserpointShapePath();
 
@@ -295,7 +294,7 @@ private:
     QMenu *settingsMenu;
     QMenu *viewMenu;
     QMenu *reflectorsMenu;
-    QMenu *reflectorsEditMenu;
+    QMenu *sceneDetailsMenu;
     QMenu *helpMenu;
     QMenu *prospectiveMenu;
     QMenu *zoomMenu;

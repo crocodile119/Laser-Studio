@@ -2,15 +2,16 @@
 #include "ui_lambertianchartdialog.h"
 #include "lambertianchartview.h"
 #include <QDebug>
+#include <cmath>
 
-LambertianChartDialog::LambertianChartDialog(Reflector *reflector, QWidget *parent)
+LambertianChartDialog::LambertianChartDialog(Reflector *reflector, bool _thema, QWidget *parent)
     : QDialog(parent)
       , ui(new Ui::LambertianChartDialog)
 {
     ui->setupUi(this);
 
     this->reflector=reflector;
-
+    thema=_thema;
     distance=reflector->getReflectorDistance();
     dnro=reflector->getOpticalDiameter();
     divergence=reflector->getDivergence();
@@ -42,7 +43,11 @@ LambertianChartDialog::LambertianChartDialog(Reflector *reflector, QWidget *pare
     if(!reflector->isExendedDiffusion())
     {
         setPointDiffusionChart();
-        ui->kindLabel->setText("Puntiforme");
+
+        if(reflector->getPositioningElement()>0)
+            ui->kindLabel->setText("Puntiforme");
+        else
+            ui->kindLabel->setText("Non pericolosa");
 
         bool DNRO_scientNot;
         DNRO_scientNot=reflector->getOpticalDiameter()>1.0e+03;
@@ -52,17 +57,28 @@ LambertianChartDialog::LambertianChartDialog(Reflector *reflector, QWidget *pare
         else
             ui->DNRO_Label->setText(QString::number(reflector->getOpticalDiameter(),'f', 1));
 
-        ui->distanceLabel->setText(QString::number(reflector->getPositioningElement(),'e', 2));
+        ui->opticalDistanceLabel->setText(QString::number(reflector->getPositioningElement(),'e', 2));
         ui->spotDiameterLabel->setText(QString::number(reflector->getSpotDiameter(),'e', 2));
         ui->alphaLabel->setText(QString::number(reflector->getAlpha(),'e', 2));
-        ui->constPosLabel->setText(QString::number(reflector->getPositioning()));
-        ui->label_34->setText("Posizionamento [gradi]");
+
+        double positiveCorrectPositioning;
+        if(reflector->getCorrectPositioning()<0)
+            positiveCorrectPositioning=round(reflector->getCorrectPositioning()+360.0);
+        else
+            positiveCorrectPositioning=reflector->getCorrectPositioning();
+
+        ui->constPosLabel->setText(QString::number(positiveCorrectPositioning, 'f', 1));
+        ui->tConstPosLabel->setText("&psi;<sub>R</sub> [gradi]");
 
         setWidgetsVisible(false);
     }
     else
     {
-        ui->kindLabel->setText("Estesa");
+        if(reflector->getReflectorHazardDistance()>0)
+            ui->kindLabel->setText("Estesa");
+        else
+            ui->kindLabel->setText("Non pericolosa");
+
         bool DNRO_scientNot;
 
         DNRO_scientNot=reflector->getOpticalDiameter()>1.0e+03;
@@ -71,29 +87,29 @@ LambertianChartDialog::LambertianChartDialog(Reflector *reflector, QWidget *pare
         else
             ui->DNRO_Label->setText(QString::number(reflector->getOpticalDiameter(),'f', 1));
 
-        ui->distanceLabel->setText(QString::number(reflector->getReflectorHazardDistance(),'e', 2));
+        ui->opticalDistanceLabel->setText(QString::number(reflector->getReflectorHazardDistance(),'e', 2));
 
         setWidgetsVisible(true);
         ui->constPosLabel->setText(QString::number(reflector->getConstant(),'e', 2));
-        ui->label_34->setText("costante:");
+        ui->tConstPosLabel->setText("K");
 
         ui->spotDiameterLabel->setText(QString::number(reflector->getSpotDiameter(),'e', 2));
-        ui->label_36->setText("Diametro spot [mm]");
+        ui->tSpotDiameterLabel->setText("d<sub>b</sub> [mm]");
 
         ui->alphaLabel->setText(QString::number(reflector->getAlpha(),'e', 2));
-        ui->label_37->setText("α [mrad]");
+        ui->tAlphaLabel->setText("α<sub>d</sub> [mrad]");
 
         ui->CE_Label->setText(QString::number(reflector->getCE()));
-        ui->label_38->setText("CE");
+        ui->tCE_Label->setText("C<sub>E</sub>");
 
         ui->surfaceLabel->setText(reflector->getKindOfSurface());
-        ui->label_39->setText("Tipo di superficie");
+        ui->tSurfaceLabel->setText("Tipo di superficie");
 
         ui->newRapLabel->setText(QString::number(reflector->getNewRapSolution()));
-        ui->label_40->setText("Risultato NewRap");
+        ui->tNewRapLabel->setText("x<sub>0</sub>");
 
         ui->indicatorLabel->setText(QString::number(reflector->getAlphaIndicator()));
-        ui->label_41->setText("Indicatore α");
+        ui->tIndicatorLabel->setText("α<sub>i</sub>");
         //Per questo grafico non occore una nuova classe basta una funzione
         setExendedDiffusionChart();
     }
@@ -141,71 +157,49 @@ void LambertianChartDialog::setLabelDNRO()
 
 void LambertianChartDialog::setExendedDiffusionChart()
 {
-    QtCharts::QPolarChart *exendedReflection = new QtCharts::QPolarChart();
-    double hazardDistance = reflector->getReflectorHazardDistance();
-    QtCharts::QLineSeries *series = new QtCharts::QLineSeries();
+    double reflectorDistance=reflector->getReflectorHazardDistance();
 
-    series->append(0, hazardDistance);
-    series->append(10, hazardDistance);
-    series->append(20, hazardDistance);
-    series->append(30, hazardDistance);
-    series->append(40, hazardDistance);
-    series->append(50, hazardDistance);
-    series->append(60, hazardDistance);
-    series->append(70, hazardDistance);
-    series->append(80, hazardDistance);
-    series->append(90, hazardDistance);
-    series->append(90, 0);
-    series->append(270, 0);
-    series->append(270, hazardDistance);
-    series->append(280, hazardDistance);
-    series->append(290, hazardDistance);
-    series->append(300, hazardDistance);
-    series->append(310, hazardDistance);
-    series->append(320, hazardDistance);
-    series->append(330, hazardDistance);
-    series->append(340, hazardDistance);
-    series->append(350, hazardDistance);
-    series->append(360, hazardDistance);
-    series->append(360, 0);
+    exendedChartView = new ExendedChartView(0, reflectorDistance);
+    exendedChartView->setRenderHint(QPainter::Antialiasing);
+    if(thema)
+    {
+        exendedChartView->setStyleSheet("QGraphicsView{background-color:#fafafa;}");
+        exendedChartView->setChartBackgroundBrush(QColor::fromRgb(250, 250, 250));
+    }
+    else
+    {
+        exendedChartView->setStyleSheet("QGraphicsView{background-color:#ffffff;}");
+        exendedChartView->setChartBackgroundBrush(QColor::fromRgb(255, 255, 255));
+    }
 
-    series->setName("Distanza di rischio riflessione estesa su superficie lambertiana [m]");
-    exendedReflection->addSeries(series);
-
-    QValueAxis *radialAxis = new QValueAxis();
-    radialAxis->setTickCount(9);
-    radialAxis->setLabelFormat("%.1e");
-    radialAxis->setRange(0, 1.2*hazardDistance);
-    exendedReflection->addAxis(radialAxis, QPolarChart::PolarOrientationRadial);
-    series->attachAxis(radialAxis);
-
-    QValueAxis *angularAxis = new QValueAxis();
-    angularAxis->setTickCount(9); // First and last ticks are co-located on 0/360 angle.
-    angularAxis->setLabelFormat("%.1f");
-    angularAxis->setShadesVisible(true);
-    angularAxis->setShadesBrush(QBrush(QColor(249, 249, 255)));
-    angularAxis->setRange(0, 360);
-    exendedReflection->addAxis(angularAxis, QPolarChart::PolarOrientationAngular);
-    series->attachAxis(angularAxis);
-
-    exendedReflection->setBackgroundBrush(QColor::fromRgb(240, 240, 240));
-    exendedReflection->setMinimumSize(640, 480);
-
-    QPen pen (QColor::fromRgb(0, 216, 0), 2, Qt::SolidLine, Qt::SquareCap, Qt::MiterJoin);
-    series->setPen(pen);
-    chartView = new QChartView(exendedReflection);
-    chartView->setRenderHint(QPainter::Antialiasing);
-
-    ui->gridLayout->addWidget(chartView, 1, 0, Qt::AlignCenter);
+    ui->gridLayout->addWidget(exendedChartView, 1, 0, Qt::AlignTop);
+    resize(sizeHint());
 }
 
 void LambertianChartDialog::setPointDiffusionChart()
 {
-    polarChartView = new LambertianChartView(0, dataVector, maxElement, correctPositioning);
-    polarChartView->setRenderHint(QPainter::Antialiasing);
-    //polarChartView->setDistance(distance);
-    //polarChartView->distanceDataSerie();
-    ui->gridLayout->addWidget(polarChartView, 1, 0, Qt::AlignCenter);
+    if(maxElement>0)
+    {
+        polarChartView = new LambertianChartView(0, dataVector, maxElement, correctPositioning);
+        polarChartView->setRenderHint(QPainter::Antialiasing);        
+        if(thema)
+        {
+            polarChartView->setStyleSheet("QGraphicsView{background-color:#fafafa;}");
+            polarChartView->setChartBackgroundBrush(QColor::fromRgb(250, 250, 250));
+        }
+        else
+        {
+            polarChartView->setStyleSheet("QGraphicsView{background-color:#ffffff;}");
+            polarChartView->setChartBackgroundBrush(QColor::fromRgb(255, 255, 255));
+        }
+        ui->gridLayout->addWidget(polarChartView, 1, 0, Qt::AlignTop);
+        resize(sizeHint());
+    }
+    else
+    {
+        ui->chartWidget->setVisible(false);
+        resize(400,200);
+    }
 }
 
 LambertianChartView* LambertianChartDialog::getLambertianPointChart()
@@ -221,17 +215,22 @@ QChartView* LambertianChartDialog::getLambertianExendedChart()
 void LambertianChartDialog::setWidgetsVisible(bool visible)
 {
     ui->indicatorLabel->setVisible(visible);
-    ui->label_38->setVisible(visible);
+    ui->tIndicatorLabel->setVisible(visible);
 
     ui->alphaLabel->setVisible(visible);
-    ui->label_37->setVisible(visible);
+    ui->tAlphaLabel->setVisible(visible);
 
     ui->CE_Label->setVisible(visible);
-    ui->label_39->setVisible(visible);
+    ui->tCE_Label->setVisible(visible);
 
     ui->surfaceLabel->setVisible(visible);
-    ui->label_40->setVisible(visible);
+    ui->tSurfaceLabel->setVisible(visible);
 
     ui->newRapLabel->setVisible(visible);
-    ui->label_41->setVisible(visible);
+    ui->tNewRapLabel->setVisible(visible);
+}
+
+void LambertianChartDialog::on_pushButton_clicked()
+{
+    close();
 }

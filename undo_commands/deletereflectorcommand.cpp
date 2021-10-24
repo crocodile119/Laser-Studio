@@ -1,8 +1,8 @@
 #include "deletereflectorcommand.h"
 
-DeleteReflectorCommand::DeleteReflectorCommand(Reflector *_reflectorOnScene, Link *_link, double _scale, CentralWidget *_laserWindow, LaserPoint *_laserpoint,
+DeleteReflectorCommand::DeleteReflectorCommand(Reflector *_reflectorOnScene, ReflectorLink *_reflectorlink, double _scale, CentralWidget *_laserWindow, LaserPoint *_laserpoint,
                              QList<Reflector *> *_myReflectors, QPointF _deletePosition, QUndoCommand *parent)
-          : QUndoCommand(parent), reflectorOnScene(_reflectorOnScene), link(_link), scale(_scale), laserWindow(_laserWindow), laserpoint(_laserpoint),
+          : QUndoCommand(parent), reflectorOnScene(_reflectorOnScene), reflectorlink(_reflectorlink), scale(_scale), laserWindow(_laserWindow), laserpoint(_laserpoint),
             myReflectors(_myReflectors), deletePosition(_deletePosition)
 {
     setText(QObject::tr("Elimino %1")
@@ -17,7 +17,7 @@ DeleteReflectorCommand::~DeleteReflectorCommand()
 
 void DeleteReflectorCommand::undo()
 {
-    laserWindow->graphicsView->scene->addItem(link);
+    laserWindow->graphicsView->scene->addItem(reflectorlink);
     laserWindow->graphicsView->scene->addItem(reflectorOnScene);
     reflectorOnScene->setPos(deletePosition);
     laserWindow->graphicsView->scene->clearSelection();
@@ -35,7 +35,7 @@ void DeleteReflectorCommand::undo()
 
 void DeleteReflectorCommand::redo()
 {
-    laserWindow->graphicsView->scene->removeItem(link);
+    laserWindow->graphicsView->scene->removeItem(reflectorlink);
     laserWindow->graphicsView->scene->removeItem(reflectorOnScene);
 
     myReflectors->clear();

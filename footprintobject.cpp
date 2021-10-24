@@ -732,6 +732,12 @@ void FootprintObject::setUndoStack(QUndoStack* _undoStack)
     undoStack=_undoStack;
 }
 
+void FootprintObject::setFootprintObjectName(const QPointF& position)
+{
+    QString footprintName=QString("Footprint (%1,%2)").arg(position.x()).arg(position.y());
+    setObjectName(footprintName);
+}
+
 void FootprintObject::paintFootprint(bool _paint)
 {
     myPaint=_paint;

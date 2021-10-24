@@ -15,6 +15,7 @@ AddBeamInspectorCommand::AddBeamInspectorCommand(double _inspectorDistance, doub
 
     beamInspector->setPixScale(scale);
     beamInspector->setPos(initialPosition);
+    beamInspector->setBeamInspectorObjectName(initialPosition);
 
     inspectorLink=addInspectorLink();
 
@@ -55,6 +56,24 @@ void AddBeamInspectorCommand::redo()
     QPointF shiftPosition =initialPosition-BeamInspector::positionShift(scale);
     QGraphicsItem *item =laserWindow->graphicsView->scene->itemAt(shiftPosition, QTransform());
     beamInspectorOnScene= qgraphicsitem_cast<BeamInspector*>(item);
+
+    QString reflectorName=beamInspector->objectName();
+
+    if(beamInspectorOnScene==nullptr)
+    {
+        QList<QGraphicsItem*>items=laserWindow->graphicsView->scene->collidingItems(item);
+
+        QMutableListIterator<QGraphicsItem *> k(items);
+        while (k.hasNext())
+        {
+            beamInspectorOnScene = dynamic_cast<BeamInspector *>(k.next());
+            if(beamInspectorOnScene!=nullptr)
+            {
+                if(beamInspectorOnScene->objectName()==reflectorName)
+                break;
+            }
+        }
+    }
 
     myBeamInspectors->append(beamInspectorOnScene);
 

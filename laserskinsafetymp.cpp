@@ -165,7 +165,7 @@ void LaserSkinSafetyMP::computeMeanPower_NSHD()
     //si applica la formula pe il calcolo della NSHD
 
     underroot=(4*ForNSHD)/(PI*powerSkinEMP);//si impiega l'EMP per gli effetti medi
-    meanPower_NSHD=(sqrt(underroot)-(beamDiameter/1000))/(divergence/1000);
+    meanPower_NSHD=(std::sqrt(underroot)-(beamDiameter/1000))/(divergence/1000);
     if(meanPower_NSHD<0)// se il risultato è minore di zero allora la NSHD viene impostato a zero.
         meanPower_NSHD=0;
 }
@@ -186,7 +186,7 @@ void LaserSkinSafetyMP::computeSinglePulse_NSHD()
     double underroot;
     //si applica la formula pe il calcolo della NSHD
     underroot=(4*ForNSHD)/(PI*SP_EMP_Result);//si impiega l'EMP del singolo impulso
-    singlePulse_NSHD=(sqrt(underroot)-(beamDiameter/1000))/(divergence/1000);
+    singlePulse_NSHD=(std::sqrt(underroot)-(beamDiameter/1000))/(divergence/1000);
 
     if (singlePulse_NSHD<0)// se il risultato è minore di zero allora la NSHD viene impostato a zero.
         singlePulse_NSHD=0;

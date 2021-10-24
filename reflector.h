@@ -4,7 +4,6 @@
 #include <QApplication>
 #include <QColor>
 #include <QGraphicsItem>
-#include <QSet>
 #include <utility>
 #include <vector>
 #include <QObject>
@@ -14,8 +13,9 @@
 #include "fresnelreflector.h"
 #include "wetreflector.h"
 #include "lambertianreflector.h"
+#include "laserpoint.h"
 
-class Link;
+class ReflectorLink;
 enum target{WET_TARGET, GLASS_TARGET, LAMBERTIAN_TARGET, MIRROR_TARGET};
 
 class Reflector : public QGraphicsObject
@@ -40,11 +40,9 @@ public:
     target getReflectorKind();
     void setReflectorColor();
     void setPixmap();
-    void addLink(Link *link);
-    void removeLink();
-    Link* getLink();
-    double getRefractionIndex();
-    void setRefractionIndex(const double);
+    void addReflectorLink(ReflectorLink *reflectorlink);
+    void removeReflectorLink();
+    ReflectorLink* getReflectorLink();
     void setOpticalDiameter(double);
     double getOpticalDiameter()const;
     void setSkinDistance(double);
@@ -116,8 +114,8 @@ public:
     void setPositioning(const int&);
     int getPositioning()const;
 
-    int getCorrectPositioning()const;
-    void setCorrectPositioning(const int&);
+    double getCorrectPositioning()const;
+    QPointF getLaserPosition()const;
 
     void setDescription(const QString& _description);
     QString getDescription() const;
@@ -125,12 +123,18 @@ public:
     void setAtmoshericEffectsCoefficient(const double&);
     double setAtmoshericEffectsCoefficient() const;
     double getLaserPhase()const;
-    void setCorrectPositioning();
 
     void setUndoStack(QUndoStack *);
 
     std::vector< std::pair <double,double> >getZsVect();
     std::vector< std::pair <double,double> >getRho_sVect();
+
+    void setReflectorObjectName(const QPointF& position);
+    QPolygonF createPolygon( vector< pair <double,double> > myVector);   
+    bool isZRLShown();
+    void setZRL(bool _showZRL);
+    double retrieveLaserAperture()const;
+
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)override;
@@ -148,7 +152,7 @@ private:
     QRectF unitedBounding() const;
     int roundness(double size) const;
 
-    QList<Link *> myLinks;
+    QList<ReflectorLink *> myReflectorLinks;
     double reflectorDistance; //la distanza di un probabile esposto dal riflettore
     QColor myTextColor;
     QColor myBackgroundColor;
@@ -186,16 +190,19 @@ private:
     double newRapSolution;
     double alphaIndicator;
     bool exendedDiffusion;
+    bool pointSourceDiffusion;
+    bool identifiedDiffusion;
     QPixmap reflectorPix;
     QRectF myTextRect;
     bool inHazardZone;
     QPainterPath laserShapePath;
     int positioning;
-    int correctPositioning;
+    double correctPositioning;
     double scale;    
     double atmoshericEffectsCoefficient;
     double phaseAngle;
     QUndoStack *undoStack=nullptr;
+    QPointF laserPosition;
 
     FresnelReflector* MyFresnelReflector_ptr;
     WetReflector* MyWetReflector_ptr;
@@ -204,6 +211,7 @@ private:
     vector< pair <double, double> > myZsVector;
     vector< pair <double, double> >rho_sVect;
     target myTarget;
+    bool showZRL;
    };
 
 #endif //end REFLECTOR_H

@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QDialog>
 #include "wetchartview.h"
+#include "ui_wetchartdialog.h"
 #include "reflector.h"
 
 
@@ -14,13 +15,14 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class WetChartDialog; }
 QT_END_NAMESPACE
 
-class WetChartDialog : public QDialog
+class WetChartDialog : public QDialog, private Ui::WetChartDialog
 {
     Q_OBJECT
 
 public:
-    WetChartDialog(Reflector *reflector, QWidget *parent = 0);
+    WetChartDialog(Reflector *reflector, bool _thema, QWidget *parent = 0);
     ~WetChartDialog();
+    Ui::WetChartDialog *ui;
 
 private slots:
     double getDistance() const;
@@ -33,11 +35,12 @@ private slots:
     void setLabelDivergence();
     void setLabelRefraction();
     void setLabelHazard();
-    void setLabelPositioning();
+    void setLabelCorrectPositioning();
     void setRefraction(const double);
 
+    void on_pushButton_clicked();
+
 private:
-    Ui::WetChartDialog *ui;
     WetChartView *polarChartView;
     double distance;
     double dnro;
@@ -45,9 +48,10 @@ private:
     double divergence;
     double maxElement;
     int positioning;
-    int correctPositioning;
+    double correctPositioning;
     double positioningElement;
     Reflector *reflector;
+    bool thema;
     std::vector<std::pair<double, double>> dataVector;
 };
 #endif // WETCHARTDIALOG_H

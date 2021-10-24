@@ -32,12 +32,15 @@ SOURCES +=\
     dockresults.cpp \
     dockskin.cpp \
     empleatables.cpp \
+    exendedchartview.cpp \
+    floatcomparison.cpp \
     footprintdialog.cpp \
     footprintobject.cpp \
     fresnelchartdialog.cpp \
     fresnelchartview.cpp \
     fresnelreflector.cpp \
     gotopointdialog.cpp \
+    graphicsitemtree.cpp \
     graphicsscene.cpp \
     gridlines.cpp \
     htmldelegate.cpp \
@@ -60,15 +63,14 @@ SOURCES +=\
     lasersafetymp.cpp \
     laserskinsafety.cpp \
     laserskinsafetymp.cpp \
-    link.cpp \
     main.cpp \
     mainwindow.cpp \
     mychartview.cpp \
     mycombobox.cpp \
     objectlink.cpp \
     reflector.cpp \
+    reflectorlink.cpp \
     reflectorpropertiesdialog.cpp \
-    reflectorsqlist.cpp \
     scalenumbersmodelview.cpp \
     scientificnotationcontrol.cpp \
     scientificnumber.cpp \
@@ -131,12 +133,15 @@ HEADERS  += mainwindow.h \
     dockskin.h \
     empdata.h \
     empleatables.h \
+    exendedchartview.h \
+    floatcomparison.h \
     footprintdialog.h \
     footprintobject.h \
     fresnelchartdialog.h \
     fresnelchartview.h \
     fresnelreflector.h \
     gotopointdialog.h \
+    graphicsitemtree.h \
     graphicsscene.h \
     gridlines.h \
     htmldelegate.h \
@@ -160,13 +165,12 @@ HEADERS  += mainwindow.h \
     laserskinsafety.h \
     laserskinsafetymp.h \
     leadata.h \
-    link.h \
     mychartview.h \
     mycombobox.h \
     objectlink.h \
     reflector.h \
+    reflectorlink.h \
     reflectorpropertiesdialog.h \
-    reflectorsqlist.h \
     scalenumbersmodelview.h \
     scientificnotationcontrol.h \
     scientificnumber.h \
@@ -218,11 +222,11 @@ FORMS    += \
     footprintdialog.ui \
     fresnelchartdialog.ui \
     gotopointdialog.ui \
+    graphicsitemtree.ui \
     labeditdialog.ui \
     lambertianchartdialog.ui \
     laserpropertiesdialog.ui \
     reflectorpropertiesdialog.ui \
-    reflectorsqlist.ui \
     wetchartdialog.ui
 
 DISTFILES += \

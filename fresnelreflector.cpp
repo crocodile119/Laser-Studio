@@ -25,8 +25,8 @@ void FresnelReflector::computeTrigonometricReflection()
         myAngle=90.0/(180.0)*i;
         myReflectionAngle=asin(1/n*sin(myAngle*radDeg));
 
-        double myNumerator=pow(sin(myAngle*radDeg-myReflectionAngle),2);
-        double myDenominator=pow(sin(myAngle*radDeg+myReflectionAngle),2);
+        double myNumerator=std::pow(sin(myAngle*radDeg-myReflectionAngle),2);
+        double myDenominator=std::pow(sin(myAngle*radDeg+myReflectionAngle),2);
 
         if(myDenominator==0)
             rho_i=0;
@@ -110,7 +110,7 @@ void FresnelReflector::computeZs(vector< pair <double,double> > myVector, double
     {
         myRho_s=iterator->second;
         myRho_s *=materialCoeff;
-        sqrt_myRho_s=pow(myRho_s, 0.5);
+        sqrt_myRho_s=std::sqrt(myRho_s);
         myZsVector_second=sqrt_myRho_s*_dnro-_objectDistance;
         myZsAngle=i;
 
@@ -121,11 +121,11 @@ void FresnelReflector::computeZs(vector< pair <double,double> > myVector, double
 
         i++;
       }
-    for (reverse_iterator = myVector.rbegin()+1; reverse_iterator != myVector.rend(); ++reverse_iterator )
+    for (reverse_iterator = myVector.rbegin()+1; reverse_iterator != myVector.rend()-1; ++reverse_iterator )
     {
         myRho_s=reverse_iterator->second;
         myRho_s*=materialCoeff;
-        sqrt_myRho_s=pow(myRho_s, 0.5);
+        sqrt_myRho_s=std::sqrt(myRho_s);
         myZsVector_second=sqrt_myRho_s*_dnro-_objectDistance;
         myZsAngle=i;
 
@@ -136,7 +136,7 @@ void FresnelReflector::computeZs(vector< pair <double,double> > myVector, double
 
         i++;
       }
-    printVector(myZsVector);
+    //printVector(myZsVector);
 }
 
 vector< pair <double,double> > FresnelReflector::getZsVect()

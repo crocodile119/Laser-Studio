@@ -11,8 +11,8 @@
 #include "dockskin.h"
 #include "docklea.h"
 #include "displayscene.h"
-#include "reflectorsqlist.h"
-#include "link.h"
+#include "graphicsitemtree.h"
+#include "reflectorlink.h"
 #include "reflector.h"
 #include "labroom.h"
 
@@ -76,7 +76,7 @@ public:
     DockSkin *myDockSkin;
     DockLea *myDockLea;
     DockGoggle *myDockGoggle;
-    ReflectorsQList *myDockReflectorsList;
+    GraphicsItemTree *myGraphicsItemTree;
     DisplayScene *graphicsView;
     QLabel *label;
     QGridLayout *gridLayout;
@@ -135,6 +135,8 @@ public:
     void setGridState(const bool&);
 
     bool isLabRoomInserted();
+    QDate getCompilingDate()const;
+    void setCompilingDate(const QDate& _compilingDate);
 
 signals:
     void modified();
@@ -216,6 +218,8 @@ private:
     QVector <QString> footprintDescriptionVect;
 
     bool atmEffectsBool;
-    bool scintillationBool;
+    bool scintillationBool;   
+
+    QDate compilingDate;
 };
 #endif // CENTRALWIDGET_H

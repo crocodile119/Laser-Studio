@@ -10,6 +10,7 @@ AddFootprintCommand::AddFootprintCommand(double _attenuatedDNRO, double _scale, 
     footprint= new FootprintObject(scale);
 
     footprint->setPos(initialPosition);
+    footprint->setFootprintObjectName(initialPosition);
     footprint->rectangle().setRect(-20, -20, 40, 40);
 
     footprint->setDNRO_Diameter(attenuatedDNRO);
@@ -54,10 +55,25 @@ void AddFootprintCommand::redo()
     laserWindow->graphicsView->scene->clearSelection();
 
     laserWindow->graphicsView->scene->addItem(objectLink);
-
+    QString footprintName=footprint->objectName();
     QGraphicsItem *item =laserWindow->graphicsView->scene->itemAt(initialPosition, QTransform());
     footprintOnScene= qgraphicsitem_cast<FootprintObject*>(item);
 
+    if(footprintOnScene==nullptr)
+    {
+        QList<QGraphicsItem*>items=laserWindow->graphicsView->scene->collidingItems(item);
+
+        QMutableListIterator<QGraphicsItem *> k(items);
+        while (k.hasNext())
+        {
+            footprintOnScene = dynamic_cast<FootprintObject *>(k.next());
+            if(footprintOnScene!=nullptr)
+            {
+                if(footprintOnScene->objectName()==footprintName)
+                break;
+            }
+        }
+    }
     myFootprints->append(footprintOnScene);
 
 

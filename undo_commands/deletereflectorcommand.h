@@ -10,7 +10,7 @@
 class DeleteReflectorCommand : public QUndoCommand
 {
 public:
-    DeleteReflectorCommand(Reflector *_reflector, Link *_link, double _scale, CentralWidget *_laserWindow, LaserPoint *_laserpoint,
+    DeleteReflectorCommand(Reflector *_reflector, ReflectorLink *_reflectorlink, double _scale, CentralWidget *_laserWindow, LaserPoint *_laserpoint,
                   QList<Reflector *> *_myReflecotrs, QPointF _deletePosition, QUndoCommand *parent = nullptr);
     ~DeleteReflectorCommand();
 
@@ -22,7 +22,7 @@ private:
     NodePair selectedNodePair() const;
 
     Reflector *reflectorOnScene=nullptr;
-    Link *link=nullptr;
+    ReflectorLink *reflectorlink=nullptr;
     double scale;
     CentralWidget *laserWindow;
     LaserPoint *laserpoint;

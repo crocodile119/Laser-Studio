@@ -21,7 +21,6 @@ private:
     QRectF m_rect;
 };
 
-#include <QObject>
 #include <QGraphicsItem>
 #include <QGraphicsObject>
 #include <QGraphicsSceneMouseEvent>
@@ -90,6 +89,7 @@ public:
     void setTextLabel();
     void setUndoStack(QUndoStack* _undoStack);
     void paintFootprint(bool _paint);
+    void setFootprintObjectName(const QPointF& position);
 
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event)override;

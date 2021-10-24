@@ -34,7 +34,7 @@ std::vector<std::pair <double,double> > BeamInspectorDialog::apparentSourceDiame
 {
     std::vector< std::pair <double,double> > dataApparentSourceDiameterVector;
     double apparentSourceDiameter=beamInspector->get_d_s();
-    double apparentSourceAbscissa=pow(beamInspector->getRayleighDistance(),2)/beamInspector->getInspectorDistance();
+    double apparentSourceAbscissa=std::pow(beamInspector->getRayleighDistance(),2)/beamInspector->getInspectorDistance();
     dataApparentSourceDiameterVector.push_back( std::make_pair(-apparentSourceAbscissa, apparentSourceDiameter/2));
     dataApparentSourceDiameterVector.push_back( std::make_pair(-apparentSourceAbscissa, 0.0));
     dataApparentSourceDiameterVector.push_back( std::make_pair(-apparentSourceAbscissa, -apparentSourceDiameter/2));
@@ -77,7 +77,7 @@ void BeamInspectorDialog::setUpBeamInspector()
     else
         farFieldLabel->setText(tr("Campo vicino"));
 
-    inspectorPhaseLabel->setText(QString::number(beamInspector->getLinkInspectorPhase()));
+    inspectorPhaseLabel->setText(QString::number(beamInspector->getLinkInspectorPhase()*180.0/BeamInspector::PI, 'f', 1));
 
     if(isRetinalHazard())
     {
@@ -228,7 +228,7 @@ void BeamInspectorDialog::setUpWidget()
 
     beamPointGroupBox = new QGroupBox(this);
     beamPointGroupBox->setObjectName(QString::fromUtf8("beamPointGroupBox"));
-    beamPointGroupBox->setMaximumSize(QSize(247, 16777215));
+    beamPointGroupBox->setMaximumSize(QSize(255, 16777215));
     beamPointGroupBox->setFont(font);
     beamPointGridLayout = new QGridLayout(beamPointGroupBox);
     beamPointGridLayout->setObjectName(QString::fromUtf8("beamPointGridLayout"));
@@ -566,11 +566,11 @@ void BeamInspectorDialog::setUpWidget()
 
         setWindowTitle("Segnaposto di ispezione");
         beamPointGroupBox->setTitle("Fascio nel punto");
-        tSpotDiameterLabel->setText("d <sub>b</sub> [mm]");
+        tSpotDiameterLabel->setText("d<sub>b</sub> [mm]");
         tDescriptionTextEdit->setText("Descrizione");
         tRayleighDistanceLabel->setText("z<sub>R</sub> [m]");
         tApertureDistanceLabel->setText("L [m]");
-        tInspectorPhaseLabel->setText("&phi;<sub>Inspector</sub>[rad]");
+        tInspectorPhaseLabel->setText("&phi;<sub>Inspector</sub>[gradi]");
         tQualityFactorLabel->setText("M<sup>2</sup>");
         tXLabel->setText("X:");
         tYLabel->setText("Y:");
@@ -579,11 +579,11 @@ void BeamInspectorDialog::setUpWidget()
         if(isRetinalHazard())
         {
             retinalGroupBox->setTitle("Dati relativi al danno retinico e alla sorgente apparente");
-            tFarFieldRatioLabel->setText("z <sub>r</sub>/L");
-            tErrorLabel->setText("errore");
-            tEyeFocusLengthLabel->setText("f <sub>m</sub> [m]");
+            tFarFieldRatioLabel->setText("z<sub>R</sub>/L");
+            tErrorLabel->setText("ε");
+            tEyeFocusLengthLabel->setText("f<sub>m</sub> [m]");
             tRetinalDiameterLabel->setText("d <sub>r</sub> [&mu;m]");
-            tRetinalDiameterLabel_2->setText("d <sub>ff</sub> [&mu;m]");
+            tRetinalDiameterLabel_2->setText("d<sub>ff</sub> [&mu;m]");
             tCurvatureRadiusLabel->setText("r<sub>s</sub> [m]");
             tApparentSourceLabel->setText("d<sub>s</sub>[mm]");
             tAlphaLabel->setText("<p>&alpha;[mrad]</p>");

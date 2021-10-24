@@ -1,17 +1,17 @@
-#ifndef LINK_H
-#define LINK_H
+#ifndef REFLECTORLINK_H
+#define REFLECTORLINK_H
 
 #include <QGraphicsLineItem>
 
 class LaserPoint;
 class Reflector;
 
-class Link : public QGraphicsLineItem
+class ReflectorLink : public QGraphicsLineItem
 {
 public:
     enum { Type = UserType + 6 };
-    Link(LaserPoint *fromNode, Reflector *toNode);
-    ~Link();
+    ReflectorLink(LaserPoint *fromNode, Reflector *toNode);
+    ~ReflectorLink();
 
     const static double degRad;
 
@@ -23,8 +23,8 @@ public:
     QColor color() const;
     QLineF getTrack();
     void trackNodes();
-    double linkLenght();
-    double LinkPhase();
+    double reflectorLinkLenght();
+    double reflectorLinkPhase();
 
 private:
     LaserPoint *fromMyLaser;

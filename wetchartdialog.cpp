@@ -3,14 +3,14 @@
 #include "wetchartview.h"
 #include <QDebug>
 
-WetChartDialog::WetChartDialog(Reflector *reflector, QWidget *parent)
+WetChartDialog::WetChartDialog(Reflector *reflector, bool _thema, QWidget *parent)
     : QDialog(parent)
       , ui(new Ui::WetChartDialog)
 {
     ui->setupUi(this);
 
     this->reflector=reflector;
-
+    thema=_thema;
     distance=reflector->getReflectorDistance();
     dnro=reflector->getOpticalDiameter();
     divergence=reflector->getDivergence();
@@ -21,20 +21,37 @@ WetChartDialog::WetChartDialog(Reflector *reflector, QWidget *parent)
     correctPositioning=reflector->getCorrectPositioning();
     positioningElement=reflector->getPositioningElement();
 
-    polarChartView = new WetChartView(0, dataVector, maxElement, correctPositioning);
+    double maxReflectorDistance=reflector->getMaxElement();
+    if(maxReflectorDistance>0)
+    {
+        polarChartView = new WetChartView(0, dataVector, maxElement, correctPositioning);
+        if(thema)
+        {
+            polarChartView->setStyleSheet("QGraphicsView{background-color:#fafafa;}");
+            polarChartView->setChartBackgroundBrush(QColor::fromRgb(250, 250, 250));
+        }
+        else
+        {
+            polarChartView->setStyleSheet("QGraphicsView{background-color:#ffffff;}");
+            polarChartView->setChartBackgroundBrush(QColor::fromRgb(255, 255, 255));
+        }
+        polarChartView->setRenderHint(QPainter::Antialiasing);
 
-    polarChartView->setRenderHint(QPainter::Antialiasing);
-    //polarChartView->setDistance(distance);
-    //polarChartView->distanceDataSerie();
-
-    ui->gridLayout->addWidget(polarChartView, 1, 0, Qt::AlignCenter);
+        ui->gridLayout->addWidget(polarChartView, 1, 0, Qt::AlignCenter);
+        resize(sizeHint());
+    }
+    else
+    {
+        ui->chartWidget->setVisible(false);
+        resize(400,200);
+    }
 
     setLabelDistance();
     setLabelDivergence();
     setLabelDNRO();
     setLabelRefraction();
     setLabelHazard();
-    setLabelPositioning();
+    setLabelCorrectPositioning();
 
     qDebug() << "Divergenza: " << divergence;
     qDebug() << "Distanza: " << distance;
@@ -76,7 +93,7 @@ double WetChartDialog::getDivergence()const
 
 void WetChartDialog::setLabelDistance()
 {
-    ui->distanceLabel->setText(QString::number(distance));
+    ui->distanceLabel->setText(QString::number(distance,'e', 2));
 }
 
 void WetChartDialog::setLabelDNRO()
@@ -104,7 +121,18 @@ void WetChartDialog::setLabelHazard()
     ui->hazardLabel->setText(QString::number(positioningElement, 'e', 2));
 }
 
-void WetChartDialog::setLabelPositioning()
+void WetChartDialog::setLabelCorrectPositioning()
 {
-    ui->positioningLabel->setText(QString::number(positioning));
+    double positiveCorrectPositioning;
+    if(correctPositioning<0)
+        positiveCorrectPositioning=correctPositioning+360.0;
+    else
+        positiveCorrectPositioning=correctPositioning;
+
+    ui->correctPositioningLabel->setText(QString::number(positiveCorrectPositioning, 'f', 1));
+}
+
+void WetChartDialog::on_pushButton_clicked()
+{
+    close();
 }

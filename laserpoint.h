@@ -9,7 +9,7 @@
 #include <QGraphicsEllipseItem>
 #include <QUndoStack>
 
-class Link;
+class ReflectorLink;
 class BinocularLink;
 class ObjectLink;
 class InspectorLink;
@@ -48,11 +48,11 @@ public:
     void setStringPosition();
     int type() const override;
 
-    void addLink(Link *link);
+    void addReflectorLink(ReflectorLink *reflectorlink);
     void addBinocularLink(BinocularLink *binocularlink);
     void addObjectLink(ObjectLink *objectLink);
     void addInspectorLink(InspectorLink *inspectorLink);
-    void removeLink(Link *link);
+    void removeReflectorLink(ReflectorLink *reflectorlink);
     void removeBinocularLink(BinocularLink *binocularlink);
     void removeObjectLink(ObjectLink *objectLink);
     void removeInspectorLink(InspectorLink *inspectorLink);
@@ -105,7 +105,7 @@ private:
     double rayleighDistance;
     double qualityFactor;
 
-    QSet<Link *> myLinks;
+    QSet<ReflectorLink *> myReflectorLinks;
     QSet<BinocularLink *> myBinocularLinks;
     QSet<ObjectLink *> myObjectLinks;
     QSet<InspectorLink *> myInspectorLinks;

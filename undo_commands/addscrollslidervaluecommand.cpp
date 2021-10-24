@@ -55,7 +55,7 @@ void AddScrollSliderValueCommand::undo()
 
 QString AddScrollSliderValueCommand::scientificNumber(const double & mantissa, const int & exponent)
 {
-    double scientificNumber=mantissa*powf(10, -exponent);
+    double scientificNumber=mantissa*std::pow(10, -exponent);
     return QString::number(scientificNumber,'e',2);
 }
 

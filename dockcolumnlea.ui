@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DockLea</class>
- <widget class="QDockWidget" name="DockLea">
+ <class>DockColumnLea</class>
+ <widget class="QDockWidget" name="DockColumnLea">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>318</width>
-    <height>503</height>
+    <width>306</width>
+    <height>568</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -21,11 +21,6 @@
     <width>107</width>
     <height>137</height>
    </size>
-  </property>
-  <property name="font">
-   <font>
-    <family>MS Shell Dlg 2</family>
-   </font>
   </property>
   <property name="autoFillBackground">
    <bool>false</bool>
@@ -59,8 +54,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>296</width>
-         <height>451</height>
+         <width>288</width>
+         <height>522</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_16">

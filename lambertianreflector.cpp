@@ -70,8 +70,8 @@ void LambertianReflector::computeZs(double _lambertianMax, double reflectionCoef
       {
         myZsAngle=i;
         myRho_s=iterator->second;
-                sqrt_myRho_s=sqrt(myRho_s);
-                myZsVector_second=sqrt_myRho_s*_lambertianMax*pow(reflectionCoeff,0.5);
+                sqrt_myRho_s=std::sqrt(myRho_s);
+                myZsVector_second=sqrt_myRho_s*_lambertianMax*std::pow(reflectionCoeff,0.5);
             myZsVector.push_back(make_pair(myZsAngle, myZsVector_second));
          i++;
       }
@@ -79,7 +79,8 @@ void LambertianReflector::computeZs(double _lambertianMax, double reflectionCoef
 
 bool LambertianReflector::evaluateDiffusionDistance()
 {
-    myDiffusionHazard=new DiffusionHazard(laserBeamDiameter, laserDivergence, laserDistance, laserEMP, laserPowerErg); //beamDiameter, divergence, EMP, powerErg. laserDistance
+    bool isExendex=false;
+    myDiffusionHazard=new DiffusionHazard(spotDiameter, laserEMP, laserPowerErg); //beamDiameter, divergence, EMP, powerErg. laserDistance
 
     qDebug()<< "Diametro del fascio laser" << laserBeamDiameter;
     qDebug()<< "Divergenza del fascio laser" << laserDivergence;
@@ -87,51 +88,13 @@ bool LambertianReflector::evaluateDiffusionDistance()
     qDebug()<< "Potenza/enegia del laser" << laserPowerErg;
     qDebug()<< "Distanza dal laser" << laserDistance;
 
-    myDiffusionHazard->setKindOfSurface(DiffusionHazard::kindOfSurface::MEDIUM);
-    myDiffusionHazard->computeConstant();
-    myDiffusionHazard->computeSpotDiameter();
 
-    double myConst;
-
-    myConst=myDiffusionHazard->getConstant();
-
-    qDebug()<< "Termine a secondo membro dell'equazione: "<< myConst;
-
-    /**************************************************************************************************************************
-    * Nell'ipotesi di reflessioni diffuse da superficie non puntiforme l'angolo alpha non può essere maggiore di PI_GRECO     *
-    * (corrispondente a metà angolo solido), quindi l'argomento del coseno è al più pari a PI_GRECO/2.                        *
-    * Ciò significa che:                                                                                                      *
-    *   - quando l'angolo alpha è uguale a PI_GRECO, la funzione x/(1-cos(x/2)) assume valore PI_GRECO;                       *
-    *   - la funzione ha un asintoto verticale in 0 per + infinito;                                                           *
-    *   - la funzione è inoltre strettamente decrescente.                                                                     *
-    * Ne consegue che affinchè possa essere applicata l'equazione per il calcolo della diffusione da superficie estesa è      *
-    * necessario che la costante ricavata sia maggiore di PI_GRECO in caso contrario l'algoritmo per il calcolo della         *
-    * soluzione certamente non converge, qualunque sia il valore del valore di prova.                                                                                      *
-    ***************************************************************************************************************************/
-
-    if(myConst<DiffusionHazard::PI_GRECO)
+    if(myDiffusionHazard->computeExendedReflection(1.0e-02))            //1.0e-02 è la eps
     {
-        return false;
-    }
-    else
-    {
-       myDiffusionHazard->computeExendedReflection(1.0e-02);            //1.0e-02 è la eps
-    }
 
-    myDiffusionHazard->computeAlpha();
+        qDebug()<<"Alpha: "<< myDiffusionHazard->getAlpha();
+        qDebug()<<"Alpha indicator: "<< myDiffusionHazard->getAlphaIndicator();
 
-    if(myDiffusionHazard->getAlpha()>=100)
-        return false;
-
-    qDebug()<<"Alpha: "<< myDiffusionHazard->getAlpha();
-    qDebug()<<"Alpha indicator: "<< myDiffusionHazard->getAlphaIndicator();
-
-    if(myDiffusionHazard->getAlphaIndicator()<1)
-    {
-        return false;
-    }
-    else
-    {
         constant=myDiffusionHazard->getConstant();
         reflectorDistance=myDiffusionHazard->getReflectorDistance();
         spotDiameter=myDiffusionHazard->getSpotDiameter();
@@ -142,9 +105,10 @@ bool LambertianReflector::evaluateDiffusionDistance()
         alpha=myDiffusionHazard->getAlpha();
         alphaIndicator=myDiffusionHazard->getAlphaIndicator();
         reflectorHazardDistance=reflectance*myDiffusionHazard->getReflectorHazardDistance();
-
-        return true;
+        isExendex=true;
     }
+
+    return isExendex;
 }
 
 double LambertianReflector::getLaserBeamDiameter()const
@@ -197,6 +161,10 @@ void LambertianReflector::setLaserDistance(const double& _laserDistance)
     laserDistance=_laserDistance;
 }
 
+void LambertianReflector::setCorrectPositioning(const double & _correctPositioning)
+{
+    correctPositioning=_correctPositioning;
+}
 
 double LambertianReflector::getConstant()const
 {
@@ -248,12 +216,12 @@ void LambertianReflector::setExendedDiffusion()
     //Imposto i dati membro necessari per il calcolo della diffusione estesa
     myDiffusionHazard->setEMP(laserEMP);
     myDiffusionHazard->setPowerErg(laserPowerErg);
-    myDiffusionHazard->setDivergence(laserDivergence);
-    myDiffusionHazard->setLaserDistance(laserDistance);
-    myDiffusionHazard->setBeamDiameter(laserBeamDiameter);
 }
 
 void LambertianReflector::computeSpotDiameter()
 {
-    spotDiameter=laserBeamDiameter+laserDistance*laserDivergence;
+    double positioningCosine=cos(radDeg*correctPositioning);
+    qDebug()<<"coseno dell'angolo complessivo formato dal riflettore rispetto al fascio:"<<positioningCosine;
+    qDebug()<<"angolo complessivo formato dal riflettore rispetto al fascio: "<<correctPositioning;
+    spotDiameter=(laserBeamDiameter+laserDistance*laserDivergence)*positioningCosine;
 }

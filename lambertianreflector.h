@@ -26,6 +26,7 @@ public:
     void setLaserPowerErg(const double&);
     void setLaserDivergence(const double&);
     void setLaserDistance(const double&);
+    void setCorrectPositioning(const double&);
     bool evaluateDiffusionDistance();
     void setExendedDiffusion();
 
@@ -53,6 +54,7 @@ private:
     double reflectorDistance;
     double reflectorHazardDistance;
     double spotDiameter;
+    double correctPositioning;
     double alpha;
     double CE;
     QString kindOfSurface;

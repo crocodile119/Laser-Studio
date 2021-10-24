@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ReflectorsQList</class>
- <widget class="QDockWidget" name="ReflectorsQList">
+ <class>GraphicsItemTree</class>
+ <widget class="QDockWidget" name="GraphicsItemTree">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -34,10 +34,7 @@
    </font>
   </property>
   <property name="styleSheet">
-   <string notr="true">QListView {show-decoration-selected: 1;
-                  selection-color: white;
-                  selection-background-color: #0068d9;}
-QTreeView {show-decoration-selected: 1;
+   <string notr="true">QTreeView {show-decoration-selected: 1;
                   selection-color: white;
                   selection-background-color: #0068d9;}</string>
   </property>
@@ -65,8 +62,8 @@ QTreeView {show-decoration-selected: 1;
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>473</width>
-         <height>720</height>
+         <width>477</width>
+         <height>726</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
@@ -80,8 +77,8 @@ QTreeView {show-decoration-selected: 1;
           </property>
           <property name="iconSize">
            <size>
-            <width>40</width>
-            <height>40</height>
+            <width>45</width>
+            <height>45</height>
            </size>
           </property>
           <property name="horizontalScrollMode">

@@ -7,7 +7,7 @@
 #include <array>
 #include <algorithm>
 #include "tablescontroller.h"
-
+#include "floatcomparison.h"
 
 using namespace std;
 
@@ -80,8 +80,10 @@ void ComputeEMP::selectLeaRow()
         wavelenght2=empStructValues.at(index).wavelenght2;
         time1=empStructValues.at(index).time1;
         time2=empStructValues.at(index).time2;
+        bool isAlmostEqual =(almostEqualUlps(pulseWidth, time2));
 
-        if(((wavelength>wavelenght1)and(wavelength<=wavelenght2))and((pulseWidth>time1)and(pulseWidth<=time2 )))
+        if(((wavelength>wavelenght1)and(wavelength<=wavelenght2))
+                and((pulseWidth>time1)and((pulseWidth<time2 )or(isAlmostEqual))))
         {
             myEmpData=empStructValues.at(index);
             break;
@@ -265,7 +267,7 @@ void ComputeEMP::ComputeParameters()
     }
     else if ((wavelength>=700) and (wavelength<=1050))
     {
-        CA=pow(10,0.002*(wavelength-700));
+        CA=std::pow(10,0.002*(wavelength-700));
     }
     else if((wavelength>1050) and (wavelength<1400))
     {
@@ -282,7 +284,7 @@ void ComputeEMP::ComputeParameters()
     }
     else if ((wavelength>=450) and (wavelength<=700))
     {
-        CB=pow(10,0.02*(wavelength-450));
+        CB=std::pow(10,0.02*(wavelength-450));
     }
     else
     {
@@ -295,7 +297,7 @@ void ComputeEMP::ComputeParameters()
     }
     else if ((wavelength>=1150) and (wavelength<1200))
     {
-        CC=pow(10,0.018*(wavelength-1150));
+        CC=std::pow(10,0.018*(wavelength-1150));
     }
     else if ((wavelength>=1200) and (wavelength<=1400))
     {
@@ -318,7 +320,7 @@ void ComputeEMP::ComputeParameters()
         }
         else if (alpha>ALPHA_MAX)
         {
-            CE=pow(alpha,2)/(ALPHA_MIN*ALPHA_MAX);
+            CE=std::pow(alpha,2)/(ALPHA_MIN*ALPHA_MAX);
         }
     }
     else
@@ -332,7 +334,7 @@ void ComputeEMP::ComputeParameters()
     }
     else if ((wavelength>=450) and (wavelength<=500))
     {
-        T1=10*pow(10,0.02*(wavelength-450));
+        T1=10*std::pow(10,0.02*(wavelength-450));
     }
     else if (wavelength>500)
     {
@@ -345,7 +347,7 @@ void ComputeEMP::ComputeParameters()
     }
     else if ((alpha>=ALPHA_MIN) and (alpha<=ALPHA_MAX))
     {
-        T2=10*pow(10,(alpha-ALPHA_MIN)/98.5);
+        T2=10*std::pow(10,(alpha-ALPHA_MIN)/98.5);
     }
     else if (alpha>ALPHA_MAX)
     {
@@ -353,11 +355,11 @@ void ComputeEMP::ComputeParameters()
     }
     if (myEmpData.t==1)
     {
-        t_exp=pow(pulseWidth, 0.75);
+        t_exp=std::pow(pulseWidth, 0.75);
     }
     else if (myEmpData.t==2)
     {
-    t_exp=pow(pulseWidth, 0.25);
+    t_exp=std::pow(pulseWidth, 0.25);
     }
     else
     {
@@ -399,13 +401,14 @@ void ComputeEMP::PhotoEffects()
     photoEmpData.sort=1;
 	}
 	else
-    if (((wavelength>=400) and (wavelength<=600)) and ((pulseWidth>=100) and (pulseWidth<10000)))
+    if (((wavelength>=400) and (wavelength<=600)) and
+            (((pulseWidth>100)or almostEqualUlps(pulseWidth, 100)) and (pulseWidth<10000)))
 	{	
 	_PhotoEMP= 1*CB;
 	_PhotoFormulaSort="E";
     _PhotoFormula="E = 1 C<sub>B</sub>";
     _PhotoEMPH=pulseWidth*_PhotoEMP;
-    _PhotoGamma =1.1*pow(pulseWidth,0.5);
+    _PhotoGamma =1.1*std::pow(pulseWidth,0.5);
     photoEmpData.formulaNumber=81;
     photoEmpData.wavelenght1=400;
     photoEmpData.wavelenght1=600;
@@ -421,7 +424,8 @@ void ComputeEMP::PhotoEffects()
     photoEmpData.sort=0;
 	}
 	else
-    if (((wavelength>=400) and (wavelength<=600)) and ((pulseWidth>=10000) and (pulseWidth<=30000)))
+    if (((wavelength>=400) and (wavelength<=600)) and (((pulseWidth>10000)or almostEqualUlps(pulseWidth, 10000))
+                                                       and (pulseWidth<=30000)))
 	{	
 	_PhotoEMP= 1*CB;
 	_PhotoFormulaSort="E";
@@ -476,7 +480,7 @@ void ComputeEMP::ThermoEffects()
         {
             if (pulseWidth<=T2)
             {
-                _ThermoEMP=18*CE*pow(pulseWidth,0.75);
+                _ThermoEMP=18*CE*std::pow(pulseWidth,0.75);
                 _ThermoFormulaSort="H";
                 _ThermoFormula="H = 18 C<sub>E</sub> t<sup>0.75</sup>";
                 _ThermoEMPH=_ThermoEMP;
@@ -497,7 +501,7 @@ void ComputeEMP::ThermoEffects()
             else
             if (pulseWidth>T2)
             {
-                _ThermoEMP=18*CE*pow(T2,(-0.25));
+                _ThermoEMP=18*CE*std::pow(T2,(-0.25));
                 _ThermoFormulaSort="E";
                 _ThermoFormula="E = 18 C<sub>E</sub> T<sub>2</sub><sup>(-0.25)</sup>";
                 _ThermoEMPH=_ThermoEMP*pulseWidth;
@@ -544,7 +548,7 @@ void ComputeEMP::ThermoEffects()
         {
             if (pulseWidth<=T2)
             {
-                _ThermoEMP=18*CA*CC*CE*pow(pulseWidth,0.75);
+                _ThermoEMP=18*CA*CC*CE*std::pow(pulseWidth,0.75);
                 _ThermoEMPH=_ThermoEMP;
                 _ThermoFormulaSort="H";
                 _ThermoFormula="H = 18 C<sub>A</sub> C<sub>C</sub> C<sub>E</sub> t<sup>0.75</sup>";
@@ -565,7 +569,7 @@ void ComputeEMP::ThermoEffects()
             else
             if (pulseWidth>T2)
             {
-                _ThermoEMP=18*CA*CC*CE*pow(T2,(-0.25));
+                _ThermoEMP=18*CA*CC*CE*std::pow(T2,(-0.25));
                 if(_ThermoEMP>=1000)
                     _ThermoEMP=1000;
 
@@ -734,19 +738,22 @@ void ComputeEMP::adaptForSkinEMP()
         }
        if((wavelength >= 400) && (wavelength < 1400))
        {
-            if((pulseWidth>=1.0e-09) && (pulseWidth<1.0e-07))
+        if((pulseWidth>1.0e-09 or (almostEqualUlps(pulseWidth, 1.0e-09)))
+                    && (pulseWidth<1.0e-07))
             {
             EMP_Result=200*CA;
             formula="H = 200 C<sub>A</sub>";
             formulaSort="H";
             }
-       if((pulseWidth>=1.0e-07) && (pulseWidth<10))
+        if((pulseWidth>1.0e-07 or (almostEqualUlps(pulseWidth, 1.0e-07)))
+               && (pulseWidth<10))
            {
-           EMP_Result=1.1*1.0e+04*CA*pow(pulseWidth,0.25);
+           EMP_Result=1.1*1.0e+04*CA*std::pow(pulseWidth,0.25);
            formula="H = 1.1 10<sup>4</sup> C<sub>A</sub> t<sup>0.25</sup>";
            formulaSort="H";
            }
-       if((pulseWidth>=1.0e+01) && (pulseWidth<3.0e+04))
+            if((pulseWidth>1.0e+01 or (almostEqualUlps(pulseWidth, 1.0e+01)))
+               && (pulseWidth<3.0e+04))
            {
            EMP_Result=2.0e+03*CA;
            formula="E = 2 10<sup>3</sup> C<sub>A</sub>";

@@ -35,97 +35,100 @@ LambertianChartView::LambertianChartView(QWidget *parent, std::vector<std::pair<
     setRadialAxis();
     setAngularAxis();
 
-    chart->setBackgroundBrush(QColor::fromRgb(240, 240, 240));
-    chart->setMinimumSize(640, 480);
+    chart->setMinimumSize(520, 390);
 
     scene()->addItem(chart);
 }
 
-
-    QtCharts::QLineSeries* LambertianChartView::buildDataSerie()
+QtCharts::QLineSeries* LambertianChartView::buildDataSerie()
+{
+    series->clear();
+    for (std::vector<std::pair<double, double>>::iterator it = dataVector.begin() ; it != dataVector.end(); ++it)
     {
-        series->clear();
-        for (std::vector<std::pair<double, double>>::iterator it = dataVector.begin() ; it != dataVector.end(); ++it)
-        {
-            std::pair<double, double> myPair=*it;
-            series->append(myPair.first, myPair.second);
-        }
-
-        return series;
+        std::pair<double, double> myPair=*it;
+        series->append(myPair.first, myPair.second);
     }
 
-    double LambertianChartView::getDistance()const
-    {
-        return distance;
-    }
+    return series;
+}
 
-    void LambertianChartView::setDistance(const double& _distance)
-    {
-        distance=_distance;
-    }
+double LambertianChartView::getDistance()const
+{
+    return distance;
+}
 
-    void LambertianChartView::setRadialAxis()
-    {
-        radialAxis = new QValueAxis();
-        radialAxis->setTickCount(9);
-        radialAxis->setLabelFormat("%.1f");
-        radialAxis->setRange(radialMin, radialMax);
-        chart->addAxis(radialAxis, QPolarChart::PolarOrientationRadial);
-        series->attachAxis(radialAxis);
-        positioningSeries->attachAxis(radialAxis);
-    }
+void LambertianChartView::setDistance(const double& _distance)
+{
+    distance=_distance;
+}
 
-    void LambertianChartView::setAngularAxis()
-    {
-        angularAxis = new QValueAxis();
-        angularAxis->setTickCount(9); // First and last ticks are co-located on 0/360 angle.
-        angularAxis->setLabelFormat("%.1f");
-        angularAxis->setShadesVisible(true);
-        angularAxis->setShadesBrush(QBrush(QColor(249, 249, 255)));
-        angularAxis->setRange(angularMin, angularMax);
-        chart->addAxis(angularAxis, QPolarChart::PolarOrientationAngular);
-        series->attachAxis(angularAxis);
-        positioningSeries->attachAxis(angularAxis);
-    }
+void LambertianChartView::setRadialAxis()
+{
+    radialAxis = new QValueAxis();
+    radialAxis->setTickCount(9);
+    radialAxis->setLabelFormat("%.1f");
+    radialAxis->setRange(radialMin, radialMax);
+    chart->addAxis(radialAxis, QPolarChart::PolarOrientationRadial);
+    series->attachAxis(radialAxis);
+    positioningSeries->attachAxis(radialAxis);
+}
 
-    void LambertianChartView::updateChart(double _maxValue)
-    {
-        chart->removeAxis(radialAxis);
-        chart->removeAxis(angularAxis);
-        setRadialMax(_maxValue);
-        setRadialAxis();
-        setAngularAxis();
-    }
+void LambertianChartView::setAngularAxis()
+{
+    angularAxis = new QValueAxis();
+    angularAxis->setTickCount(9); // First and last ticks are co-located on 0/360 angle.
+    angularAxis->setLabelFormat("%.1f");
+    angularAxis->setShadesVisible(true);
+    angularAxis->setShadesBrush(QBrush(QColor(249, 249, 255)));
+    angularAxis->setRange(angularMin, angularMax);
+    chart->addAxis(angularAxis, QPolarChart::PolarOrientationAngular);
+    series->attachAxis(angularAxis);
+    positioningSeries->attachAxis(angularAxis);
+}
 
-    void LambertianChartView::setTableSeries(std::vector<std::pair<double, double>> myVector)
-    {
-        dataVector=myVector;
-    }
+void LambertianChartView::updateChart(double _maxValue)
+{
+    chart->removeAxis(radialAxis);
+    chart->removeAxis(angularAxis);
+    setRadialMax(_maxValue);
+    setRadialAxis();
+    setAngularAxis();
+}
 
-    void LambertianChartView::setRadialMax(const double _maxElement)
-    {
-        if(radialMax<_maxElement)
-            radialMax=_maxElement*1.2;
-        else if(radialMax>1.5*_maxElement)
-            radialMax=_maxElement/1.2;
-        else
-            radialMax=_maxElement*1.1;
-    }
+void LambertianChartView::setTableSeries(std::vector<std::pair<double, double>> myVector)
+{
+    dataVector=myVector;
+}
 
-    double LambertianChartView::getRadialMax()const
-    {
-        return radialMax;
-    }
+void LambertianChartView::setRadialMax(const double _maxElement)
+{
+    if(radialMax<_maxElement)
+        radialMax=_maxElement*1.2;
+    else if(radialMax>1.5*_maxElement)
+        radialMax=_maxElement/1.2;
+    else
+        radialMax=_maxElement*1.1;
+}
 
-    QtCharts::QLineSeries* LambertianChartView::buildPositioningSeries()
-    {
-        positioningSeries->clear();
-        positioningSeries->append(0.0, 0.0);
+double LambertianChartView::getRadialMax()const
+{
+    return radialMax;
+}
 
-        if(correctPositioning<=0)
-            correctPositioning=correctPositioning+360;
+QtCharts::QLineSeries* LambertianChartView::buildPositioningSeries()
+{
+    positioningSeries->clear();
+    positioningSeries->append(0.0, 0.0);
 
-        positioningSeries->append(correctPositioning, radialMax);
+    if(correctPositioning<=0)
+        correctPositioning=correctPositioning+360;
 
-        return positioningSeries;
-    }
+    positioningSeries->append(correctPositioning, radialMax);
+
+    return positioningSeries;
+}
+
+void LambertianChartView::setChartBackgroundBrush(QColor color)
+{
+    chart->setBackgroundBrush(color);
+}

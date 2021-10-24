@@ -130,7 +130,7 @@ void LaserSafetyMP::computeCP()
     if((wavelength>=400)and(wavelength<=1.0e+06))
     {
         if(pulseNumber!=0)
-            CP=pow(pulseNumber, (-0.25));
+            CP=std::pow(pulseNumber, (-0.25));
         else
             CP=1;
     }
@@ -389,7 +389,7 @@ void LaserSafetyMP::computeMeanPower_NOHD()
     double underroot;
 	//si applica la formula pe il calcolo della NOHD
     underroot=(4*ForNOHD)/(PI*powerEMP);//si impiega l'EMP per gli effetti medi
-    meanPower_NOHD=(sqrt(underroot)-(beamDiameter/1000))/(divergence/1000);
+    meanPower_NOHD=(std::sqrt(underroot)-(beamDiameter/1000))/(divergence/1000);
 
     if (meanPower_NOHD<0)// se il risultato è minore di zero allora la NOHD viene impostato a zero.
         meanPower_NOHD=0;
@@ -411,7 +411,7 @@ void LaserSafetyMP::computeSinglePulse_NOHD()
     double underroot;
 	//si applica la formula pe il calcolo della NOHD		
     underroot=(4*ForNOHD)/(PI*SP_EMP_Result);//si impiega l'EMP del singolo impulso
-    singlePulse_NOHD=(sqrt(underroot)-(beamDiameter/1000))/(divergence/1000);
+    singlePulse_NOHD=(std::sqrt(underroot)-(beamDiameter/1000))/(divergence/1000);
     if(singlePulse_NOHD<0)// se il risultato è minore di zero allora la NOHD viene impostato a zero.
         singlePulse_NOHD=0;
 }
@@ -442,7 +442,7 @@ void LaserSafetyMP::computePulseTrain_NOHD()
         double underroot;
         //si applica la formula pe il calcolo della NOHD
         underroot=(4*ForNOHD)/(PI*CP_EMP_Result);//si impiega l'EMP per gli effetti termici
-        pulseTrain_NOHD=(sqrt(underroot)-(beamDiameter/1000))/(divergence/1000);
+        pulseTrain_NOHD=(std::sqrt(underroot)-(beamDiameter/1000))/(divergence/1000);
         if (pulseTrain_NOHD<0)// se il risultato è minore di zero allora la NOHD viene impostato a zero.
             pulseTrain_NOHD=0;
     }
@@ -502,7 +502,7 @@ void LaserSafetyMP::computeMeanPowerLambertianMax()
     double underroot;
     //si applica la formula pe il calcolo della NOHD
     underroot=(forLambertianMax)/(PI*meanPow_EMP_Result);//si impiega l'EMP per gli effetti medi
-    meanPowerLambertianMax=(sqrt(underroot));
+    meanPowerLambertianMax=(std::sqrt(underroot));
 }
 
 void LaserSafetyMP::computeSinglePulseLambertianMax()
@@ -523,7 +523,7 @@ void LaserSafetyMP::computeSinglePulseLambertianMax()
     double underroot;
     //si applica la formula pe il calcolo della NOHD
     underroot=(ForLambertianMax)/(PI*SP_EMP_Result);//si impiega l'EMP del singolo impulso
-    singlePulseLambertianMax=(sqrt(underroot));
+    singlePulseLambertianMax=(std::sqrt(underroot));
 }
 
 void LaserSafetyMP::computePulseTrainLambertianMax()
@@ -554,7 +554,7 @@ void LaserSafetyMP::computePulseTrainLambertianMax()
     double underroot;
     //si applica la formula pe il calcolo della NOHD
     underroot=(ForLambertianMax)/(PI*CP_EMP_Result);//si impiega l'EMP per gli effetti termici
-    pulseTrainLambertianMax=(sqrt(underroot));
+    pulseTrainLambertianMax=(std::sqrt(underroot));
     }
     else
         pulseTrainLambertianMax=0;

@@ -20,6 +20,7 @@ LabRoom::LabRoom(QRectF _labRect):QGraphicsObject()
     scale=80.0;
     labRect=_labRect;
     setTextLabel();
+    setRoomTextLabel();
     setFlag(QGraphicsItem::ItemIsMovable, true);
     setFlag(QGraphicsItem::ItemIsSelectable, true);
     setFlag(QGraphicsItem::ItemSendsGeometryChanges, false);
@@ -111,6 +112,7 @@ void LabRoom::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
 
     setLabRectExt();
     setTextLabel();
+    setRoomTextLabel();
     painter->drawRect(labRect);
     painter->drawRect(labRectExt);
 
@@ -132,7 +134,7 @@ void LabRoom::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
     QRectF boundingRect=labelRect();
     painter->setPen(textPen);
 
-    painter->drawText(boundingRect, Qt::AlignLeft, textLabel, &boundingRect);
+    painter->drawText(boundingRect, Qt::AlignLeft, roomTextLabel, &boundingRect);
 
     painter->resetTransform();
     painter->restore();
@@ -147,6 +149,7 @@ QVariant LabRoom::itemChange(GraphicsItemChange change,
     if (change == ItemPositionHasChanged && scene())
     {
         setTextLabel();
+        setRoomTextLabel();
         return pos();
     }
 
@@ -190,8 +193,42 @@ void LabRoom::setTextLabel()
     labRectWidthString=QString::number(labRectWidth,'f', 1);
     labRectHeightString=QString::number(labRectHeight,'f', 1);
 
+    textLabel ="laboratorio "+QString("(%1,%2) <br>larghezza [m] %3, lunghezza [m] %4<br>")
+                                    .arg(xString)
+                                    .arg(yString)
+                                    .arg(labRectWidthString)
+                                    .arg(labRectHeightString);
+}
+
+QString LabRoom::getRoomTextLabel()const
+{
+    return roomTextLabel;
+}
+
+void LabRoom::setRoomTextLabel()
+{
+    double xCoordinate;
+    double yCoordinate;
+
+    double labRectWidth=labRect.width();
+    double labRectHeight=labRect.height();
+
+
+    xCoordinate=pos().x();//+labRect.width();
+    yCoordinate=pos().y();//+labRect.height();
+
+    QString xString;
+    QString yString;
+    QString labRectWidthString;
+    QString labRectHeightString;
+
+    xString=QString::number(xCoordinate,'f', 1);
+    yString=QString::number(yCoordinate,'f', 1);
+    labRectWidthString=QString::number(labRectWidth,'f', 1);
+    labRectHeightString=QString::number(labRectHeight,'f', 1);
+
     prepareGeometryChange();
-    textLabel ="laboratorio "+QString("(%1,%2) <br>larghezza [m] %3, lunghezza [m] %4")
+    roomTextLabel ="laboratorio "+QString("(%1,%2) larghezza [m] %3, lunghezza [m] %4")
                                     .arg(xString)
                                     .arg(yString)
                                     .arg(labRectWidthString)
@@ -199,11 +236,12 @@ void LabRoom::setTextLabel()
     update();
 }
 
+
 QRectF LabRoom::labelRect()
 {
     const int Padding = 10;
     QFontMetricsF metrics =(QFontMetricsF)qApp->font();
-    myTextRect = metrics.boundingRect(textLabel);
+    myTextRect = metrics.boundingRect(roomTextLabel);
     myTextRect.adjust(-Padding, -Padding, +Padding, +Padding);
     QPointF rectPoint((-labRectExt.width())*(1-scale)/2-Padding, labRectExt.height()*(1-scale)/2-myTextRect.height()/2-Padding);
     myTextRect.translate(-rectPoint);

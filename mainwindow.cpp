@@ -115,7 +115,7 @@ MainWindow::MainWindow()
 
     laserPointList.clear();
     setTreeModel();
-    treeSelectionModel=laserWindow->myDockReflectorsList->ui->treeView->selectionModel();
+    treeSelectionModel=laserWindow->myGraphicsItemTree->ui->treeView->selectionModel();
 
     connect(laserWindow->myDockControls, SIGNAL(NOHD_Changed()), this, SLOT(setDNRO_ForLaserpoint()));
     connect(laserWindow->myDockControls, SIGNAL(NOHD_Changed()), this, SLOT(setDNRO_ForReflector()));
@@ -137,8 +137,8 @@ MainWindow::MainWindow()
     connect(laserWindow->myDockControls, SIGNAL(wavelengthChanged()), this, SLOT(setWavelengthForBinocular()));
     connect(laserWindow->myDockControls, SIGNAL(noFeasibleInput()), this, SLOT(noFeasibleInputFunction()));
     connect(laserWindow->myDockControls, SIGNAL(operationChanged()), this, SLOT(deletedViewCenter()));
-    connect(laserWindow->myDockReflectorsList->ui->treeView, SIGNAL(clicked(QModelIndex)), this, SLOT(goToGraphicsItem(QModelIndex)));
-    connect(laserWindow->myDockReflectorsList->ui->treeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(selectItemFromTree(QModelIndex)));
+    connect(laserWindow->myGraphicsItemTree->ui->treeView, SIGNAL(clicked(QModelIndex)), this, SLOT(goToGraphicsItem(QModelIndex)));
+    connect(laserWindow->myGraphicsItemTree->ui->treeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(selectItemFromTree(QModelIndex)));
 
     connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(updateActions()));
     connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(laserModified()));
@@ -427,33 +427,33 @@ void MainWindow::openRecentFile()
 
         makeSceneOfSavedItems();
 
+        undoStack->clear();
         laserSettingsAction->setChecked(true);
+
+        connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(updateActions()));
+        connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(laserModified()));
+        connect(laserWindow->graphicsView->scene, &GraphicsScene::graphicItemSelected, this, &MainWindow::treeSelectionFromGraphics);
+        connect(laserWindow->graphicsView->scene, SIGNAL(deselected()), this, SLOT(listDeselectionFromGraphics()));
+        connect(laserWindow->graphicsView->scene, SIGNAL(footprintRelease()), this, SLOT(shadowZoneForLaser()));
+        connect(laserWindow->graphicsView->scene, SIGNAL(changed(const QList<QRectF> &)),this, SLOT(setViewportRect()));
+        connect(laserWindow->graphicsView->scene, &GraphicsScene::graphicItemMoved, this, &MainWindow::graphicItemMoveToStack);
 
         connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setUpdatedPosition()));
         connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setUpdatedPosition()));
+        connect(laserpoint, SIGNAL(xChanged()), this, SLOT(updateLaserItem()));
+        connect(laserpoint, SIGNAL(yChanged()), this, SLOT(updateLaserItem()));
+        connect(laserpoint, SIGNAL(xChanged()), this, SLOT(updateGraphicsItemList()));
+        connect(laserpoint, SIGNAL(yChanged()), this, SLOT(updateGraphicsItemList()));
         connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setDistanceForReflector()));
         connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setDistanceForReflector()));
-        connect(laserpoint, SIGNAL(xChanged()), this, SLOT(updateList()));
-        connect(laserpoint, SIGNAL(yChanged()), this, SLOT(updateList()));
-        connect(laserpoint, SIGNAL(xChanged()), this, SLOT(updateLaserList()));
-        connect(laserpoint, SIGNAL(yChanged()), this, SLOT(updateLaserList()));
+        connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setDistanceForInspector()));
+        connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setDistanceForInspector()));
         connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setDistanceForBinocular()));
         connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setDistanceForBinocular()));
         connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setDistanceForFootprint()));
         connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setDistanceForFootprint()));
         connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setShadowZone()));
         connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setShadowZone()));
-
-        connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(updateActions()));
-        connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(laserModified()));
-        connect(laserWindow->graphicsView->scene, SIGNAL(laserSelected()), this, SLOT(laserpointSelectionFromGraphics()));
-        connect(laserWindow->graphicsView->scene, SIGNAL(reflectorSelected()), this, SLOT(listSelectionFromGraphics()));
-        connect(laserWindow->graphicsView->scene, SIGNAL(binocularSelected()), this, SLOT(binocularListSelectionFromGraphics()));
-        connect(laserWindow->graphicsView->scene, SIGNAL(inspectorSelected()), this, SLOT(inspectorListSelectionFromGraphics()));
-        connect(laserWindow->graphicsView->scene, SIGNAL(labroomSelected()), this, SLOT(labroomSelectionFromGraphics()));
-        connect(laserWindow->graphicsView->scene, SIGNAL(deselected()), this, SLOT(listDeselectionFromGraphics()));
-        connect(laserWindow->graphicsView->scene, SIGNAL(footprintRelease()), this, SLOT(shadowZoneForLaser()));
-        connect(laserWindow->graphicsView->scene, SIGNAL(changed(const QList<QRectF> &)),this, SLOT(setViewportRect()));
     }
 }
 
@@ -476,7 +476,7 @@ void MainWindow::onLineHelp()
 
 void MainWindow::selectItemFromTree(QModelIndex index)
 {
-    QModelIndex parentIndex=laserWindow->myDockReflectorsList->ui->treeView->model()->parent(index);
+    QModelIndex parentIndex=laserWindow->myGraphicsItemTree->ui->treeView->model()->parent(index);
     if(parentIndex.row()==0)
     {
         if(environmentState)
@@ -813,6 +813,7 @@ void MainWindow::installationDescription()
     dialog.ui->UASL_AssistantTextEdit->setText(laserWindow->get_UASL_Assistant());
     dialog.ui->laserTextEdit->setText(laserWindow->getLaserDescription());
     dialog.ui->descriptionTextEdit->setText(laserWindow->getPlaceDescription());
+    dialog.ui->dateEdit->setDate(laserWindow->getCompilingDate());
 
     dialog.exec();
     if(dialog.result()==QDialog::Accepted)
@@ -823,6 +824,7 @@ void MainWindow::installationDescription()
         laserWindow->set_UASL_Assistant(dialog.ui->UASL_AssistantTextEdit->toPlainText());
         laserWindow->setLaserDescription(dialog.ui->laserTextEdit->toPlainText());
         laserWindow->setPlaceDescription(dialog.ui->descriptionTextEdit->toPlainText());
+        laserWindow->setCompilingDate(dialog.ui->dateEdit->date());
         setWindowModified(true);
       }
 }
@@ -834,6 +836,7 @@ void MainWindow::createActions()
     menuBar()->setFont(font);
     //Crea il menu file
     fileMenu = menuBar()->addMenu(tr("&File"));
+    fileMenu->setObjectName("File");
     fileMenu->setFont(font);
 
     newAct = new QAction(tr("&Nuovo"), this);
@@ -1014,7 +1017,7 @@ void MainWindow::createActions()
     showDockWidgetEffects->setStatusTip(tr("Visualizza parametri ed effetti"));
     viewMenu->addAction(showDockWidgetEffects);
 
-    addDockWidget(Qt::BottomDockWidgetArea, laserWindow->myDockLea);
+    addDockWidget(Qt::LeftDockWidgetArea, laserWindow->myDockLea);
     showDockLea = new QAction(tr("Visualizza risultati i risultati della classificazione CEI EN 60825-1"), this);
     showDockLea = laserWindow->myDockLea->toggleViewAction();
     showDockLea->setIcon(QIcon(":/images/classifier.png"));
@@ -1032,9 +1035,9 @@ void MainWindow::createActions()
     showDockWidgetGoggle->setStatusTip(tr("Visualizza calcolo marcatura occhiali protettori"));
     viewMenu->addAction(showDockWidgetGoggle);
 
-    addDockWidget(Qt::RightDockWidgetArea, laserWindow->myDockReflectorsList);
+    addDockWidget(Qt::RightDockWidgetArea, laserWindow->myGraphicsItemTree);
     showReflectorsList = new QAction(tr("Visualizza la lista dei riflettori"), this);
-    showReflectorsList = laserWindow->myDockReflectorsList->toggleViewAction();
+    showReflectorsList = laserWindow->myGraphicsItemTree->toggleViewAction();
     showReflectorsList->setIcon(QIcon(":/images/list.png"));
     showReflectorsList->setStatusTip(tr("Visualizza la lista dei riflettori"));
     viewMenu->addAction(showReflectorsList);
@@ -1046,7 +1049,7 @@ void MainWindow::createActions()
     showDockHistory->setStatusTip(tr("Visualizza la cronologia dei comandi"));
     viewMenu->addAction(showDockHistory);
 
-    tabifyDockWidget(laserWindow->myDockReflectorsList, laserWindow->myDockGoggle);  
+    tabifyDockWidget(laserWindow->myGraphicsItemTree, laserWindow->myDockGoggle);
     setTabPosition(Qt::RightDockWidgetArea, QTabWidget::North);
 
     viewMenu->addSeparator();
@@ -1073,79 +1076,82 @@ void MainWindow::createActions()
     darkThemeAct->setChecked(theme);
     viewMenu->addAction(darkThemeAct);
 
-    reflectorsEditMenu = menuBar()->addMenu(tr("&Dettagli scena"));
-    reflectorsEditMenu ->setFont(font);
+    sceneDetailsMenu = menuBar()->addMenu(tr("&Dettagli scena"));
+    sceneDetailsMenu->setObjectName("Dettagli");
+    sceneDetailsMenu ->setFont(font);
 
     undoAction = undoStack->createUndoAction(this, tr("&Annulla"));
     undoAction->setShortcuts(QKeySequence::Undo);
     undoAction->setIcon(QIcon(":/images/undo.png"));
     connect(undoAction, SIGNAL(triggered()), this, SLOT(undo()));
 
-    reflectorsEditMenu->addAction(undoAction);
+    sceneDetailsMenu->addAction(undoAction);
 
     redoAction = undoStack->createRedoAction(this, tr("&Ripristina"));
     redoAction->setShortcuts(QKeySequence::Redo);
     redoAction->setIcon(QIcon(":/images/redo.png"));
     connect(redoAction, SIGNAL(triggered()), this, SLOT(redo()));
 
-    reflectorsEditMenu->addAction(redoAction);
-
-    changeMeteoAct= new QAction(tr("Specifica meteo"), this);
-    changeMeteoAct->setIcon(QIcon(":/images/meteo.png"));
-    changeMeteoAct->setStatusTip(tr("Consente di specificare le condizioni meteo"));
-
-    connect(changeMeteoAct, SIGNAL(triggered()), this, SLOT(setCondMeteo()));
-    reflectorsEditMenu->addAction(changeMeteoAct);
+    sceneDetailsMenu->addAction(redoAction);
 
     bringToFrontAction = new QAction(tr("Metti in primo piano"), this);
     bringToFrontAction->setIcon(QIcon(":/images/bringtofront.png"));
     bringToFrontAction->setStatusTip(tr("Porta l'elemento grafico in primo piano"));
 
     connect(bringToFrontAction, SIGNAL(triggered()), this, SLOT(bringToFront()));
-    reflectorsEditMenu->addAction(bringToFrontAction);
+    sceneDetailsMenu->addAction(bringToFrontAction);
 
     sendToBackAction = new QAction(tr("&Metti in secondo piano"), this);
     sendToBackAction->setIcon(QIcon(":/images/sendtoback.png"));
     sendToBackAction->setStatusTip(tr("Porta l'elemento grafico in secondo piano"));
 
     connect(sendToBackAction, SIGNAL(triggered()), this, SLOT(sendToBack()));
-    reflectorsEditMenu->addAction(sendToBackAction);
+    sceneDetailsMenu->addAction(sendToBackAction);
 
     deleteAction = new QAction(tr("&Cancella"), this);
     deleteAction->setIcon(QIcon(":/images/delete.png"));
     deleteAction->setStatusTip(tr("Elimina l'elemento grafico"));
     deleteAction->setShortcut(tr("Del"));
+    deleteAction->setObjectName("deleteAction");
 
     connect(deleteAction, SIGNAL(triggered()), this, SLOT(del()));
     connect(deleteAction, SIGNAL(triggered()), this, SLOT(shadowZoneForLaser()));
-    reflectorsEditMenu->addAction(deleteAction);
+    sceneDetailsMenu->addAction(deleteAction);
+
+    changeMeteoAct= new QAction(tr("Specifica meteo"), this);
+    changeMeteoAct->setIcon(QIcon(":/images/meteo.png"));
+    changeMeteoAct->setStatusTip(tr("Consente di specificare le condizioni meteo"));
+
+    connect(changeMeteoAct, SIGNAL(triggered()), this, SLOT(setCondMeteo()));
+    sceneDetailsMenu->addAction(changeMeteoAct);
 
     wetTargetAction = new QAction(tr("Dettagli riflettore bagnato..."), this);
 
     connect(wetTargetAction, SIGNAL(triggered()), this, SLOT(wetTarget()));
     wetTargetAction->setStatusTip(tr("Dettagli del riflettore bagnato"));
-    reflectorsEditMenu->addAction(wetTargetAction);
+    sceneDetailsMenu->addAction(wetTargetAction);
 
     fresnelTargetAction = new QAction(tr("Dettagli riflettore di vetro..."), this);
 
     connect(fresnelTargetAction, SIGNAL(triggered()), this, SLOT(fresnelTarget()));
     fresnelTargetAction->setStatusTip(tr("Dettagli del riflettore di vetro"));
-    reflectorsEditMenu->addAction(fresnelTargetAction);
+    sceneDetailsMenu->addAction(fresnelTargetAction);
 
     lambertianTargetAction = new QAction(tr("Detagli riflettore lambertiano..."), this);
     connect(lambertianTargetAction, SIGNAL(triggered()),
             this, SLOT(lambertianTarget()));
     lambertianTargetAction->setStatusTip(tr("Dettagli del riflettore di lambertiano"));
-    reflectorsEditMenu->addAction(lambertianTargetAction);
+    sceneDetailsMenu->addAction(lambertianTargetAction);
 
-    reflectorsEditMenu->addSeparator();
+    sceneDetailsMenu->addSeparator();
     propertiesAction = new QAction(tr("Proprietà..."), this);
 
     connect(propertiesAction, SIGNAL(triggered()), this, SLOT(properties()));
     propertiesAction->setStatusTip(tr("Proprietà dell'elemento selezionato"));
-    reflectorsEditMenu->addAction(propertiesAction );
+    sceneDetailsMenu->addAction(propertiesAction );
 
     environmentMenu= menuBar()->addMenu(tr("&Ambiente"));
+    environmentMenu->setObjectName("Ambiente");
     environmentMenu ->setFont(font);
 
     placeMenu= environmentMenu ->addMenu(tr("Tipo"));
@@ -1207,6 +1213,7 @@ void MainWindow::createActions()
     onlyReflectorGoggleAction->setChecked(true);
 
     reflectorsMenu= environmentMenu ->addMenu(tr("Aggiungi riflettore"));
+    reflectorsMenu->setObjectName("Riflettori");
     reflectorsMenu->setFont(font);
 
     addPinInspectorAction = new QAction(tr("Segnaposto di ispezione"), this);
@@ -1218,6 +1225,7 @@ void MainWindow::createActions()
     addWetReflectorAction = new QAction(tr("Riflettore bagnato"), this);
     addWetReflectorAction->setIcon(QIcon(":/images/wet.png"));
     addWetReflectorAction->setStatusTip(tr("Aggiunge un riflettore bagnato alla scena"));
+    addWetReflectorAction->setObjectName("Riflettore bagnato");
     target myTarget= WET_TARGET;
 
     /*connessione con un'espressione lambda (una espressione lambda è una funzione senza nome).
@@ -1230,6 +1238,7 @@ void MainWindow::createActions()
     addGlassReflectorAction = new QAction(tr("Riflettore di vetro"), this);
     addGlassReflectorAction->setIcon(QIcon(":/images/window.png")); 
     addGlassReflectorAction->setStatusTip(tr("Aggiunge un riflettore di vetro alla scena"));
+    addGlassReflectorAction->setObjectName(tr("Riflettore di vetro)"));
     myTarget= GLASS_TARGET;
 
     /*connessione con un'espressione lambda (una espressione lambda è una funzione senza nome).
@@ -1265,6 +1274,7 @@ void MainWindow::createActions()
     reflectorsMenu->addAction(addMirrorReflectorAction);
 
     addBinocularAct = new QAction(tr("Dispositivo ottico"), this);
+    addBinocularAct->setObjectName("Binocolo");
     addBinocularAct->setIcon(QIcon(":/images/binocular.png"));
     addBinocularAct->setStatusTip(tr("Aggiunge un dispositivo ottico"));
     connect(addBinocularAct, SIGNAL(triggered()), this, SLOT(addBinocular()));
@@ -1301,22 +1311,18 @@ void MainWindow::createActions()
     laserSettingsAction = new QAction(tr("Valutazione esposizione"), this);
     connect(laserSettingsAction, SIGNAL(triggered()), this, SLOT(setupLaserProspective()));   
     laserSettingsAction->setStatusTip(tr("Valutazione dei valori di esposizione massima permessa"));
-    laserSettingsAction ->setCheckable(true);
 
     fieldSettingsAction = new QAction(tr("Studio dell'installazione"), this);
     connect(fieldSettingsAction, SIGNAL(triggered()), this, SLOT(setupFieldProspective()));
     fieldSettingsAction->setStatusTip(tr("Studio e verifica dell'installazione laser"));
-    fieldSettingsAction ->setCheckable(true);
 
     classifierSettingsAction = new QAction(tr("Classifica semplificata"), this);
     connect(classifierSettingsAction, SIGNAL(triggered()), this, SLOT(setupClassifierProspective()));
     classifierSettingsAction->setStatusTip(tr("Risultati classificazione apparecchiatura laser"));
-    classifierSettingsAction ->setCheckable(true);
 
     goggleSettingsAction = new QAction(tr("Scelta dispositivi di protezione"), this);
     connect(goggleSettingsAction, SIGNAL(triggered()), this, SLOT(setupGoggleProspective()));
     goggleSettingsAction->setStatusTip(tr("Scelta dispositivi di protezione con il calcolo della marcatura"));
-    goggleSettingsAction ->setCheckable(true);
 
     prospectiveMenu->addAction(laserSettingsAction);
     prospectiveMenu->addAction(goggleSettingsAction);
@@ -1329,7 +1335,6 @@ void MainWindow::createActions()
     prospectiveGroup->addAction(fieldSettingsAction);
     prospectiveGroup->addAction(goggleSettingsAction);
     prospectiveGroup->addAction(classifierSettingsAction);
-    laserSettingsAction->setChecked(true);
 
     helpMenu = menuBar()->addMenu(tr("&Aiuto"));
     helpMenu->setFont(font);
@@ -1573,7 +1578,7 @@ void MainWindow::setupLaserProspective()
     laserWindow->myDockGoggle->hide();
 
     showReflectorsList->setChecked(false);
-    laserWindow->myDockReflectorsList->hide();
+    laserWindow->myGraphicsItemTree->hide();
 
     showDockLea->setChecked(false);
     laserWindow->myDockLea->hide();
@@ -1597,7 +1602,7 @@ void MainWindow::setupFieldProspective()
     laserWindow->myDockGoggle->hide();
 
     showReflectorsList->setChecked(true);
-    laserWindow->myDockReflectorsList->show();
+    laserWindow->myGraphicsItemTree->show();
 
     showDockLea->setChecked(false);
     laserWindow->myDockLea->hide();
@@ -1621,7 +1626,7 @@ void MainWindow::setupGoggleProspective()
     laserWindow->myDockGoggle->show();
 
     showReflectorsList->setChecked(false);
-    laserWindow->myDockReflectorsList->hide();
+    laserWindow->myGraphicsItemTree->hide();
 
     showDockLea->setChecked(false);
     laserWindow->myDockLea->hide();
@@ -1645,7 +1650,7 @@ void MainWindow::setupClassifierProspective()
     laserWindow->myDockGoggle->hide();
 
     showReflectorsList->setChecked(false);
-    laserWindow->myDockReflectorsList->hide();
+    laserWindow->myGraphicsItemTree->hide();
 
     showDockLea->setChecked(true);
     laserWindow->myDockLea->show();
@@ -1996,7 +2001,7 @@ void MainWindow::saveReportImages()
 
                 std::vector< std::pair <double,double> > dataApparentSourceDiameterVector;
                 double apparentSourceDiameter=beamInspector->get_d_s();
-                double apparentSourceAbscissa=pow(beamInspector->getRayleighDistance(),2)/beamInspector->getInspectorDistance();
+                double apparentSourceAbscissa=std::pow(beamInspector->getRayleighDistance(),2)/beamInspector->getInspectorDistance();
                 dataApparentSourceDiameterVector.push_back( std::make_pair(-apparentSourceAbscissa, apparentSourceDiameter/2));
                 dataApparentSourceDiameterVector.push_back( std::make_pair(-apparentSourceAbscissa, 0.0));
                 dataApparentSourceDiameterVector.push_back( std::make_pair(-apparentSourceAbscissa, -apparentSourceDiameter/2));
@@ -2112,7 +2117,7 @@ void MainWindow::saveReportImages()
                 QSize imageChartSize;
                 if(!reflector->isExendedDiffusion())
                 {
-                    LambertianChartDialog dialog(reflector, this);
+                    LambertianChartDialog dialog(reflector, theme, this);
                     dialog.getLambertianPointChart();
 
                     imageChartSize=dialog.getLambertianPointChart()->size();
@@ -2131,7 +2136,7 @@ void MainWindow::saveReportImages()
                 }
                 else
                 {
-                    LambertianChartDialog dialog(reflector, this);
+                    LambertianChartDialog dialog(reflector, theme, this);
 
                     imageChartSize=dialog.getLambertianExendedChart()->size();
 
@@ -2479,11 +2484,11 @@ BeamInspector *MainWindow::selectedBeamInspector() const
         return 0;
 }
 
-Link *MainWindow::selectedLink() const
+ReflectorLink *MainWindow::selectedLink() const
 {
     QList<QGraphicsItem *> items = laserWindow->graphicsView->scene->selectedItems();
     if (items.count() == 1)
-        return dynamic_cast<Link *>(items.first());
+        return dynamic_cast<ReflectorLink *>(items.first());
     else
         return 0;
 }
@@ -2527,7 +2532,7 @@ void MainWindow::addBinocular()
     double laserPosX=laserpoint->pos().x();
     double laserPosY=laserpoint->pos().y();
 
-    double binocularDistance=sqrtf(powf((binocularPosX-laserPosX), 2)+powf((binocularPosY-laserPosY), 2));
+    double binocularDistance=std::sqrt(std::pow((binocularPosX-laserPosX), 2)+std::pow((binocularPosY-laserPosY), 2));
     double attenuatedDNRO= attenuatedDistance(laserWindow->myDockControls->getOpticalDistance());
 
 
@@ -2539,6 +2544,24 @@ void MainWindow::addBinocular()
 
     QGraphicsItem *item =laserWindow->graphicsView->scene->itemAt(binocularPos, QTransform());
     binocular= qgraphicsitem_cast<Binocular*>(item);
+
+    QString binocularName=QString("Binocular (%1,%2)").arg(binocularPos.x()).arg(binocularPos.y());
+
+    if(binocular==nullptr)
+    {
+        QList<QGraphicsItem*>items=laserWindow->graphicsView->scene->collidingItems(item);
+
+        QMutableListIterator<QGraphicsItem *> k(items);
+        while (k.hasNext())
+        {
+            binocular = dynamic_cast<Binocular *>(k.next());
+            if(binocular!=nullptr)
+            {
+                if(binocular->objectName()==binocularName)
+                break;
+            }
+        }
+    }
 
     setMaxEhnacedOpticalDiameter();
     binocular->laserParametersChanged();
@@ -2582,7 +2605,7 @@ void MainWindow::addBeamInspector()
     double laserPosX=laserpoint->pos().x();
     double laserPosY=laserpoint->pos().y();
 
-    double inspectorDistance=sqrtf(powf((inspectorPosX-laserPosX), 2)+powf((inspectorPosY-laserPosY), 2));
+    double inspectorDistance=std::sqrt(std::pow((inspectorPosX-laserPosX), 2)+std::pow((inspectorPosY-laserPosY), 2));
     double attenuatedDNRO=attenuatedDistance(laserWindow->myDockControls->getOpticalDistance());
 
     addBeamInspectorCommand = new AddBeamInspectorCommand(inspectorDistance, scale, inspectorSeqNumber, laserWindow,
@@ -2593,6 +2616,23 @@ void MainWindow::addBeamInspector()
     QGraphicsItem *item =laserWindow->graphicsView->scene->itemAt(shiftPosition, QTransform());
     beamInspector= qgraphicsitem_cast<BeamInspector*>(item);
 
+    QString beamInspectorName=QString("BeamInspector (%1,%2)").arg(inspectorPos.x()).arg(inspectorPos.y());
+
+    if(beamInspector==nullptr)
+    {
+        QList<QGraphicsItem*>items=laserWindow->graphicsView->scene->collidingItems(item);
+
+        QMutableListIterator<QGraphicsItem *> k(items);
+        while (k.hasNext())
+        {
+            beamInspector = dynamic_cast<BeamInspector *>(k.next());
+            if(beamInspector!=nullptr)
+            {
+                if(beamInspector->objectName()==beamInspectorName)
+                break;
+            }
+        }
+    }
     setDNRO_ForInspector();
     setLaserpointShapePathForInspectors();
     setDistanceForInspector();
@@ -2624,7 +2664,7 @@ void MainWindow::addReflector(const target &target)
     double laserPosX=laserpoint->pos().x();
     double laserPosY=laserpoint->pos().y();
 
-    double reflectorDistance=sqrtf(powf((reflectorPosX-laserPosX), 2)+powf((reflectorPosY-laserPosY), 2));
+    double reflectorDistance=std::sqrt(std::pow((reflectorPosX-laserPosX), 2)+std::pow((reflectorPosY-laserPosY), 2));
     double attenuatedDNRO= attenuatedDistance(laserWindow->myDockControls->getOpticalDistance());
     double attenuatedDNRC= attenuatedDistance(laserWindow->myDockControls->getSkinDistances());
 
@@ -2637,6 +2677,25 @@ void MainWindow::addReflector(const target &target)
     //reflector=command->getReflector();
     QGraphicsItem *item =laserWindow->graphicsView->scene->itemAt(reflectorPos, QTransform());
     reflector= qgraphicsitem_cast<Reflector*>(item);
+
+    QString reflectorName=QString("Reflector (%1,%2)").arg(reflectorPos.x()).arg(reflectorPos.y());
+
+    if(reflector==nullptr)
+    {
+        QList<QGraphicsItem*>items=laserWindow->graphicsView->scene->collidingItems(item);
+
+        QMutableListIterator<QGraphicsItem *> k(items);
+        while (k.hasNext())
+        {
+            reflector = dynamic_cast<Reflector *>(k.next());
+            if(reflector!=nullptr)
+            {
+                if(reflector->objectName()==reflectorName)
+                break;
+            }
+        }
+    }
+
     reflector->setUndoStack(undoStack);
     setMaxEhnacedOpticalDiameter();
     setLaserpointShapePathForReflectors();
@@ -2656,19 +2715,19 @@ void MainWindow::addReflector(const target &target)
     //emit reflectorListChanged();
 }
 
-void MainWindow::addLink()
+void MainWindow::addReflectorLink()
 {
-    NodePair nodes = selectedNodePair();
-    if (nodes == NodePair())
+    ReflectorNodePair reflectorNodes = selectedReflectorNodePair();
+    if (reflectorNodes == ReflectorNodePair())
         return;
 
-    Link *link = new Link(nodes.first, nodes.second);
-    laserWindow->graphicsView->scene->addItem(link);
+    ReflectorLink *reflectorlink = new ReflectorLink(reflectorNodes.first, reflectorNodes.second);
+    laserWindow->graphicsView->scene->addItem(reflectorlink);
 }
 
-MainWindow::NodePair MainWindow::selectedNodePair() const
+MainWindow::ReflectorNodePair MainWindow::selectedReflectorNodePair() const
 {
-    return NodePair(laserpoint, reflector);
+    return ReflectorNodePair(laserpoint, reflector);
 }
 
 void MainWindow::addBinocularLink()
@@ -2694,8 +2753,8 @@ void MainWindow::del()
     if (reflector)
     {
         QPointF deleletePosition=reflector->pos();
-        Link *link=reflector->getLink();
-        deleteReflectorCommand = new DeleteReflectorCommand(reflector, link, scale, laserWindow,
+        ReflectorLink *reflectorlink=reflector->getReflectorLink();
+        deleteReflectorCommand = new DeleteReflectorCommand(reflector, reflectorlink, scale, laserWindow,
             laserpoint, &myReflectors, deleletePosition);
 
         undoStack->push(deleteReflectorCommand);
@@ -2819,7 +2878,7 @@ void MainWindow::wetTarget()
 
     if (reflector)
     {
-        WetChartDialog dialog(reflector, this);
+        WetChartDialog dialog(reflector, theme, this);
         dialog.exec();
     }
 }
@@ -2830,7 +2889,7 @@ void MainWindow::fresnelTarget()
 
     if (reflector)
     {
-        FresnelChartDialog dialog(reflector, this);
+        FresnelChartDialog dialog(reflector, theme, this);
         dialog.exec();
     }
 }
@@ -2842,7 +2901,7 @@ void MainWindow::lambertianTarget()
 
     if (reflector)
     {
-        LambertianChartDialog dialog(reflector, this);
+        LambertianChartDialog dialog(reflector, theme, this);
         dialog.exec();
     }
 }
@@ -2925,7 +2984,7 @@ void MainWindow::updateActions()
     foreach (QAction *action, laserWindow->graphicsView->actions())
         laserWindow->graphicsView->removeAction(action);
 
-    foreach (QAction *action, reflectorsEditMenu->actions())
+    foreach (QAction *action, sceneDetailsMenu->actions())
     {
         if (action->isEnabled())
             laserWindow->graphicsView->addAction(action);
@@ -2964,9 +3023,9 @@ void MainWindow::createToolBars()
     viewToolBar->addAction(showDockLea);
     viewToolBar->addAction(showDockWidgetGoggle);
     viewToolBar->addAction(showReflectorsList);
+    viewToolBar->addAction(showDockHistory);
     viewToolBar->addAction(centerOnViewAction);
     viewToolBar->addAction(showGridAction);
-    viewToolBar->addAction(showDockHistory);
 
     sceneToolBar = addToolBar(tr("Scena"));
     sceneToolBar->setObjectName(tr("Scena"));
@@ -2981,12 +3040,12 @@ void MainWindow::createToolBars()
     environmentToolBar->setObjectName(tr("Ambiente"));
     environmentToolBar->addAction(setPolygonAct);
     environmentToolBar->addAction(addLabAct);
-    environmentToolBar->addAction(addBinocularAct);
     environmentToolBar->addAction(addWetReflectorAction);
-    environmentToolBar->addAction(addPinInspectorAction);
     environmentToolBar->addAction(addGlassReflectorAction);
     environmentToolBar->addAction(addLambertianReflectorAction);
     environmentToolBar->addAction(addMirrorReflectorAction);
+    environmentToolBar->addAction(addPinInspectorAction);
+    environmentToolBar->addAction(addBinocularAct);
     environmentToolBar->addAction(addFootprintAct);
     environmentToolBar->addAction(addAtmosphericEffectsAct);
     environmentToolBar->addAction(addScintillationAct);
@@ -3039,7 +3098,7 @@ double MainWindow::attenuatedDistance(const double & _distance)
         if((wavelength>=400)&&(wavelength<=2000))
         {
             double atmCoeff=laserWindow->getAtmoshericEffectsCoefficient();
-           attenuatedlDistance=distance/(2-powf(CentralWidget::NEPERO_N, (-0.5*atmCoeff*distance)));
+           attenuatedlDistance=distance/(2-std::pow(CentralWidget::NEPERO_N, (-0.5*atmCoeff*distance)));
         }
         else
             attenuatedlDistance=distance;
@@ -3053,7 +3112,7 @@ double MainWindow::attenuatedDistance(const double & _distance)
     if(laserpoint->isFilterOn())
     {
         double transmittance=laserpoint->getTransmittance();
-        attenuatedlDistance=sqrtf(transmittance)*distance;
+        attenuatedlDistance=std::sqrt(transmittance)*distance;
         updateGraphicsItem(TreeModel::GraphicsItem::LASERPOINT);
 
     }
@@ -3229,6 +3288,7 @@ void MainWindow::setDivergenceForReflector()
         qDebug()<< "Optical distance: " << laserWindow->myDockControls->getLambertianMax();
         ++myIterator;
     }
+    updateGraphicsItem(TreeModel::GraphicsItem::REFLECTOR);
 }
 
 void MainWindow::setDivergenceForBinocular()
@@ -3285,6 +3345,7 @@ void MainWindow::setLambertianMaxForReflector()
         }
     ++myIterator;
     }
+    updateGraphicsItem(TreeModel::GraphicsItem::REFLECTOR);
 }
 
 void MainWindow::setUpdatedPosition()
@@ -3325,6 +3386,7 @@ void MainWindow::setDistanceForReflector()
 
         ++myIterator;
     }
+    updateGraphicsItem(TreeModel::GraphicsItem::REFLECTOR);
     updateActions();
 }
 
@@ -3474,6 +3536,7 @@ void MainWindow::setReflectorEMP_ForDiffusion()
         }
     ++myIterator;
     }
+    updateGraphicsItem(TreeModel::GraphicsItem::REFLECTOR);
 }
 
 void MainWindow::setReflectorPowerErgForDiffusion()
@@ -3495,6 +3558,7 @@ void MainWindow::setReflectorPowerErgForDiffusion()
         }
     ++myIterator;
     }
+    updateGraphicsItem(TreeModel::GraphicsItem::REFLECTOR);
 }
 
 void MainWindow::setReflectorBeamDiameterForDiffusion()
@@ -3515,6 +3579,7 @@ void MainWindow::setReflectorBeamDiameterForDiffusion()
         }
     ++myIterator;
     }
+    updateGraphicsItem(TreeModel::GraphicsItem::REFLECTOR);
 }
 
 void MainWindow::makeSceneOfSavedItems()
@@ -3738,7 +3803,7 @@ void MainWindow::makeSceneOfSavedItems()
         if(myReflectorKind!=MIRROR_TARGET)
             reflector->setPositioning(myReflectorPositioning);
 
-        addLink();
+        addReflectorLink();
 
         myReflectors.append(reflector);
 
@@ -3748,6 +3813,7 @@ void MainWindow::makeSceneOfSavedItems()
         connect(reflector, SIGNAL(yChanged()), this, SLOT(setLaserpointShapePathForReflectors()));
 
         reflector->laserParametersChanged();
+        reflector->setUndoStack(undoStack);
         ++seqNumber;
         ++i;
     }
@@ -3763,7 +3829,7 @@ void MainWindow::makeSceneOfSavedItems()
         myBinocular_D0=binocular_D0Vect.at(j);
         myBinocularDescription=binocularDescriptionVect.at(j);
 
-        double binocularDistance=sqrtf(powf(myBinocularPos.x()-laserPosition.x(), 2)+powf((myBinocularPos.y()-laserPosition.y()), 2));
+        double binocularDistance=std::sqrt(std::pow(myBinocularPos.x()-laserPosition.x(), 2)+std::pow((myBinocularPos.y()-laserPosition.y()), 2));
 
         //Costruttore DNRO, binocularDistance, wavelength, divergence, beamDiameter
         binocular=new Binocular(laserWindow->myDockControls->getOpticalDistance(),
@@ -3803,7 +3869,7 @@ void MainWindow::makeSceneOfSavedItems()
         myBeamInspectorPos=beamInspectorPosVect.at(m);
         myBeamInspectorDescription=beamInspectorDescriptionVect.at(m);
 
-        double inspectorDistance=sqrtf(powf(myBeamInspectorPos.x()-laserPosition.x(), 2)+powf((myBeamInspectorPos.y()-laserPosition.y()), 2));
+        double inspectorDistance=std::sqrt(std::pow(myBeamInspectorPos.x()-laserPosition.x(), 2)+std::pow((myBeamInspectorPos.y()-laserPosition.y()), 2));
         double attenuatedDNRO= attenuatedDistance(laserWindow->myDockControls->getOpticalDistance());
         //Costruttore DNRO, binocularDistance, wavelength, divergence, beamDiameter
         beamInspector=new BeamInspector(inspectorDistance,
@@ -3873,7 +3939,7 @@ void MainWindow::makeSceneOfSavedItems()
         setMaxEhnacedOpticalDiameter();
         footprint->laserParameterChanged();
         setShadowZone();
-
+        footprint->setUndoStack(undoStack);
         connect(footprint, SIGNAL(xChanged()), this, SLOT(setShadowZone()));
         connect(footprint, SIGNAL(yChanged()), this, SLOT(setShadowZone()));
 
@@ -3897,6 +3963,7 @@ void MainWindow::makeSceneOfSavedItems()
         bool meteoWidgetsON=false;
         myLabRoom=new LabRoom(labRoomRect);
         myLabRoom->setPos(labRoomPos);
+        myLabRoom->setPixScale(scale);
         laserWindow->graphicsView->scene->addItem(myLabRoom);
         labroomList.append(myLabRoom);
 
@@ -3918,6 +3985,7 @@ void MainWindow::makeSceneOfSavedItems()
         bool isAtmEffects=laserWindow->getAtmEffectsBool();
         bool isScintillation=laserWindow->getScintillationBool();
 
+        environmentState=false;
         meteoWidgets(true, isAtmEffects, isScintillation);
 
         atmosphericEffectsOn(isAtmEffects);
@@ -3940,7 +4008,7 @@ void MainWindow::enableControlsAndItems(bool enabled)
     fileMenu->setEnabled(enabled);
     viewMenu->setEnabled(enabled);
     reflectorsMenu->setEnabled(enabled);
-    reflectorsEditMenu->setEnabled(enabled);
+    sceneDetailsMenu->setEnabled(enabled);
     helpMenu->setEnabled(enabled);
     prospectiveMenu->setEnabled(enabled);
     fileToolBar->setEnabled(enabled);
@@ -3997,7 +4065,7 @@ void MainWindow::meteoWidgets(bool meteoEnabled, bool isAtmEffects, bool isScint
 
 void MainWindow::goToGraphicsItem(QModelIndex index)
 {
-    QModelIndex parentIndex=laserWindow->myDockReflectorsList->ui->treeView->model()->parent(index);
+    QModelIndex parentIndex=laserWindow->myGraphicsItemTree->ui->treeView->model()->parent(index);
     if(parentIndex.row()==1)
     {
         laserWindow->graphicsView->centerOn(laserpoint->pos());
@@ -4045,14 +4113,14 @@ void MainWindow::treeSelectionFromGraphics(QGraphicsItem *item)
 
     if(laserpoint)
     {
-        QAbstractItemModel *model=laserWindow->myDockReflectorsList->ui->treeView->model();
+        QAbstractItemModel *model=laserWindow->myGraphicsItemTree->ui->treeView->model();
         QModelIndex parentIndex=model->index(1, 0);
         selectedIndex=treeModel->index(0, 0, parentIndex);
     }
     else if(reflector)
     {
         int reflectorIndex;
-        QModelIndex parentIndex=laserWindow->myDockReflectorsList->ui->treeView->model()->index(2, 0);
+        QModelIndex parentIndex=laserWindow->myGraphicsItemTree->ui->treeView->model()->index(2, 0);
         QList<Reflector*>::iterator myIterator; // iterator
         myIterator = myReflectors.begin();
         while (myIterator != myReflectors.end())
@@ -4070,7 +4138,7 @@ void MainWindow::treeSelectionFromGraphics(QGraphicsItem *item)
     else if(binocular)
     {
         int binocularIndex;
-        QModelIndex parentIndex=laserWindow->myDockReflectorsList->ui->treeView->model()->index(3, 0);
+        QModelIndex parentIndex=laserWindow->myGraphicsItemTree->ui->treeView->model()->index(3, 0);
         QList<Binocular*>::iterator myIterator; // iterator
         myIterator = myBinoculars.begin();
         while (myIterator != myBinoculars.end())
@@ -4088,7 +4156,7 @@ void MainWindow::treeSelectionFromGraphics(QGraphicsItem *item)
     else if(beamInspector)
     {
         int inspectorIndex;
-        QAbstractItemModel* model=laserWindow->myDockReflectorsList->ui->treeView->model();
+        QAbstractItemModel* model=laserWindow->myGraphicsItemTree->ui->treeView->model();
         QModelIndex parentIndex=model->index(static_cast<int>(TreeModel::GraphicsItem::BEAM_INSPECTOR), 0);
         QList<BeamInspector*>::iterator myIterator; // iterator
         myIterator = myBeamInspectors.begin();
@@ -4282,9 +4350,26 @@ void MainWindow::addFootprint()
                         laserpoint, &myFootprints, footprintPos);
 
     undoStack->push(addFootprintCommand);
+    QString footprintName=QString("Footprint (%1,%2)").arg(footprintPos.x()).arg(footprintPos.y());
 
     QGraphicsItem *item =laserWindow->graphicsView->scene->itemAt(footprintPos, QTransform());
     footprint= qgraphicsitem_cast<FootprintObject*>(item);
+
+    if(footprint==nullptr)
+    {
+        QList<QGraphicsItem*>items=laserWindow->graphicsView->scene->collidingItems(item);
+
+        QMutableListIterator<QGraphicsItem *> k(items);
+        while (k.hasNext())
+        {
+            footprint = dynamic_cast<FootprintObject *>(k.next());
+            if(footprint!=nullptr)
+            {
+                if(footprint->objectName()==footprintName)
+                break;
+            }
+        }
+    }
 
     footprint->setUndoStack(undoStack);
 //addFootprintCommand finisce qui
@@ -4379,10 +4464,10 @@ void MainWindow::clearScene()
     QMutableListIterator<QGraphicsItem *> i(items);
     while(i.hasNext())
     {
-        Link *link = qgraphicsitem_cast<Link *>(i.next());
-        if(link)
+        ReflectorLink *reflectorlink = qgraphicsitem_cast<ReflectorLink *>(i.next());
+        if(reflectorlink)
         {
-            delete link;
+            delete reflectorlink;
             i.remove();
         }
     }
@@ -4864,8 +4949,8 @@ void MainWindow::setTreeModel()
     insertGraphicsItem(TreeModel::GraphicsItem::LASERPOINT);
 
     HtmlDelegate* treeHtmlDelegate = new HtmlDelegate();
-    laserWindow->myDockReflectorsList->ui->treeView->setModel(treeModel);
-    laserWindow->myDockReflectorsList->ui->treeView->setItemDelegate(treeHtmlDelegate);
+    laserWindow->myGraphicsItemTree->ui->treeView->setModel(treeModel);
+    laserWindow->myGraphicsItemTree->ui->treeView->setItemDelegate(treeHtmlDelegate);
 
     QModelIndex modelIndex;
     int rows=treeModel->rowCount();
@@ -4873,7 +4958,7 @@ void MainWindow::setTreeModel()
     for(int i=0; i<rows; i++)
     {
         modelIndex=treeModel->index(i,0);
-        laserWindow->myDockReflectorsList->ui->treeView->setExpanded(modelIndex, true);
+        laserWindow->myGraphicsItemTree->ui->treeView->setExpanded(modelIndex, true);
     }
 }
 
@@ -4901,7 +4986,7 @@ bool MainWindow::insertGraphicsItem(TreeModel::GraphicsItem graphicsItem)
                 environmentDescriptor=labroomList.at(0)->getTextLabel();
             else
             {
-                environmentDescriptor=QString("Poligono di tiro militare. <br>Visibilità meteorologica: %1 km")
+                environmentDescriptor=QString("Poligono di tiro militare. <br>Visibilità meteorologica: %1 km<br>")
                     .arg(meteoVisibilityStr);
             }
 
@@ -5033,7 +5118,7 @@ bool MainWindow::updateGraphicsItem(TreeModel::GraphicsItem graphicsItem)
             }
             else
             {
-                environmentDescriptor=QString("Poligono di tiro militare. <br>Visibilità meteorologica: %1 km")
+                environmentDescriptor=QString("Poligono di tiro militare. <br>Visibilità meteorologica: %1 km<br>")
                         .arg(meteoVisibilityStr);
                 inputList={QVariant(environmentDescriptor), QVariant(static_cast<int>(graphicsItem)),
                                        QVariant(static_cast<int>(TreeModel::ReflectorKind::INDENT))};
@@ -5286,7 +5371,7 @@ void MainWindow::updateEnvironmentItem()
     }
     else
     {
-        environmentDescriptor=QString("Poligono di tiro militare. <br>Visibilità meteorologica: %1 km")
+        environmentDescriptor=QString("Poligono di tiro militare. <br>Visibilità meteorologica: %1 km<br>")
                 .arg(meteoVisibilityStr);
         inputList={QVariant(environmentDescriptor), QVariant(static_cast<int>(TreeModel::GraphicsItem::ENVIRONMENT)),
                 QVariant(static_cast<int>(TreeModel::ReflectorKind::INDENT))};
@@ -5424,6 +5509,6 @@ void MainWindow::removeRow()
 {
     const QModelIndex index = treeSelectionModel->currentIndex();
     qDebug()<<"Indice valido: " << index.isValid();
-    QAbstractItemModel *model = laserWindow->myDockReflectorsList->ui->treeView->model();
+    QAbstractItemModel *model = laserWindow->myGraphicsItemTree->ui->treeView->model();
     model->removeRow(index.row(), index.parent());
 }

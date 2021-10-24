@@ -12,7 +12,7 @@
 #include <cmath>
 #include <QMessageBox>
 
-#include "link.h"
+#include "reflectorlink.h"
 #include "reflector.h"
 #include "undo_commands/addnindexcommand.h"
 
@@ -31,8 +31,9 @@ Reflector::Reflector(double _opticalDiameter, double _divergence, double _reflec
 {
     laserPhase=0.0;
     positioning=0;
-    correctPositioning=0;
+    correctPositioning=0.0;
     scale=1.0;
+    showZRL=false;
 
     materialCoeff= 0.9;
 
@@ -47,8 +48,8 @@ Reflector::Reflector(double _opticalDiameter, double _divergence, double _reflec
 
     MyReflector=new LambertianReflector();
     MyLambertianReflector_ptr= MyReflector;
-    setReflectorKindString();
     reflectorOperation();
+    setReflectorKindString();
     setTipString();
     setToolTip(tipString);
     setStringDetails();
@@ -59,8 +60,8 @@ Reflector::Reflector(double _opticalDiameter, double _divergence, double _reflec
 
 Reflector::~Reflector()
 {
-    foreach (Link *link, myLinks)
-        delete link;
+    foreach (ReflectorLink *reflectorlink, myReflectorLinks)
+        delete reflectorlink;
 }
 
 void Reflector::setReflectorColor()
@@ -142,19 +143,19 @@ QColor Reflector::backgroundColor() const
     return myBackgroundColor;
 }
 
-void Reflector::addLink(Link *link)
+void Reflector::addReflectorLink(ReflectorLink *reflectorlink)
 {
-    myLinks.push_back(link);
+    myReflectorLinks.push_back(reflectorlink);
 }
 
-void Reflector::removeLink()
+void Reflector::removeReflectorLink()
 {
-    myLinks.clear();
+    myReflectorLinks.clear();
 }
 
-Link* Reflector::getLink()
+ReflectorLink* Reflector::getReflectorLink()
 {
-    return myLinks.first();
+    return myReflectorLinks.first();
 }
 
 QRectF Reflector::boundingRect() const
@@ -201,16 +202,42 @@ void Reflector::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         pen.setColor(Qt::darkGray);
         beamPen.setWidth(2);
     }
+    painter->setBrush(QColor(myBackgroundColor));
+
+    if(showZRL)
+    {
+        if((myTarget==LAMBERTIAN_TARGET&&(pointSourceDiffusion))||
+           (myTarget==WET_TARGET)||
+            (myTarget==GLASS_TARGET))
+        {
+            QPen zonePen(Qt::darkYellow);
+            zonePen.setStyle(Qt::DotLine);
+            zonePen.setCosmetic(true);
+            zonePen.setWidth(2);
+            painter->setPen(zonePen);
+            QPolygonF polygon=createPolygon(myZsVector);
+            painter->drawPolyline(polygon);
+
+            QLineF elementLine=QLineF(QPointF(0.0, 0.0), QPointF(-myPositioningElement*cos(correctPositioning*radDeg),
+                                                                  myPositioningElement*sin(correctPositioning*radDeg)));
+            painter->drawLine(elementLine);
+        }
+    }
 
     beamPen.setCosmetic(true);
     painter->setPen(beamPen);
-    painter->setBrush(QColor(myBackgroundColor));
-
     QPainterPath semiPath;
     QRectF myBoudingRect=QRectF(0.0, 0.0, selectionReflectorRect().width(), selectionReflectorRect().height());
     myBoudingRect.moveCenter(QPointF(0.0, 0.0));
 
     painter->drawEllipse(myBoudingRect);
+
+    QLineF line=QLineF(QPointF(0.0, 0.0), QPointF(-myBoudingRect.width()/2*cos((laserPhase-double(2*positioning))*radDeg),
+                                                  myBoudingRect.width()/2*sin((laserPhase-double(2*positioning))*radDeg)));
+
+    if(!(myTarget==LAMBERTIAN_TARGET&&(!identifiedDiffusion)&&(!pointSourceDiffusion)))
+        painter->drawLine(line);
+
     painter->setPen(pen);
     QRectF rect = outlineRect();
     painter->setBrush(Qt::NoBrush);
@@ -283,19 +310,20 @@ QVariant Reflector::itemChange(GraphicsItemChange change,
                           const QVariant &value)
 {
     if (change == ItemPositionHasChanged && scene()) {
-        foreach (Link *link, myLinks)
+        foreach (ReflectorLink *reflectorlink, myReflectorLinks)
         {
-            reflectorDistance=link->linkLenght();
-            link->trackNodes();
-            laserPhase=link->LinkPhase();
+            reflectorDistance=reflectorlink->reflectorLinkLenght();
+            reflectorlink->trackNodes();
+            laserPosition=reflectorlink->fromLaser()->pos();
+            laserPhase=reflectorlink->reflectorLinkPhase();
 
             if(myTarget==LAMBERTIAN_TARGET)
-            correctPositioning=positioning-laserPhase;
+            correctPositioning=laserPhase-positioning;
                 else
-            correctPositioning=2*(positioning-laserPhase);
+            correctPositioning=2*(laserPhase-positioning);
 
             reflectorOperation();
-            setStringDetails();
+            setReflectorKindString();
             setTextLabel();
             setTipString();
             setToolTip(tipString);
@@ -309,18 +337,20 @@ QVariant Reflector::itemChange(GraphicsItemChange change,
 
 void Reflector::laserParametersChanged()
 {
-    foreach (Link *link, myLinks)
+    foreach (ReflectorLink *reflectorlink, myReflectorLinks)
     {
-        reflectorDistance=link->linkLenght();
-        link->trackNodes();
-        laserPhase=link->LinkPhase();
+        reflectorDistance=reflectorlink->reflectorLinkLenght();
+        reflectorlink->trackNodes();
+        laserPhase=reflectorlink->reflectorLinkPhase();
 
         if(myTarget==LAMBERTIAN_TARGET)
-            correctPositioning=positioning-laserPhase;
+            correctPositioning=laserPhase-positioning;
         else
-            correctPositioning=2*(positioning-laserPhase);
+            correctPositioning=2*(laserPhase-positioning);
 
         reflectorOperation();
+        setReflectorKindString();
+        setTextLabel();
         setTipString();
         setToolTip(tipString);
     }
@@ -328,14 +358,20 @@ void Reflector::laserParametersChanged()
 
 void Reflector::laserPositionChanged()
 {
-    foreach (Link *link, myLinks)
+    foreach (ReflectorLink *reflectorlink, myReflectorLinks)
     {
-        reflectorDistance=link->linkLenght();
-        link->trackNodes();
-        laserPhase=link->LinkPhase();
+        reflectorDistance=reflectorlink->reflectorLinkLenght();
+        reflectorlink->trackNodes();
+        laserPhase=reflectorlink->reflectorLinkPhase();
+
+        if(myTarget==LAMBERTIAN_TARGET)
+            correctPositioning=laserPhase-positioning;
+        else
+            correctPositioning=2*(laserPhase-positioning);
+
         reflectorOperation();
-        setTextLabel();
         setReflectorKindString();
+        setTextLabel();
         setTipString();
         setToolTip(tipString);
     }
@@ -422,6 +458,7 @@ void Reflector::setStringDetails()
     QString myPositioningElementString;
     QString nString;
     QString myReflectionCoeffString;
+    QString myLambertianBeamDiameter;
 
     if(reflectorDistance>50)
     {
@@ -443,7 +480,8 @@ void Reflector::setStringDetails()
     myMaxElementString=QString::number(myMaxElement,'f',2);
     myPositioningElementString=QString::number(myPositioningElement,'f',2);
     nString=QString::number(n, 'f',2);
-    myReflectionCoeffString=QString::number(materialCoeff, 'f',2);
+    myReflectionCoeffString=QString::number(materialCoeff, 'f',2);   
+    myLambertianBeamDiameter=QString::number(MyLambertianReflector_ptr->getSpotDiameter(), 'e',2);
 
     switch(myTarget)
     {
@@ -478,13 +516,15 @@ void Reflector::setStringDetails()
 
         break;
         case(LAMBERTIAN_TARGET):
-        refrectorDetailsString =reflectionKindString + QString(" (%1,%2) <br>dist[m]: %3, DRO<sub>r</sub>[m]: %4, DRO<sub>r max</sub> [m]: %5 <br>ρ=%6")
+        refrectorDetailsString =reflectionKindString + QString(" (%1,%2) <br>dist[m]: %3, DRO<sub>r</sub>[m]: %4, DRO<sub>r max</sub> [m]: %5 <br>ρ=%6, d<sub>b</sub>[mm]=%7")
                                         .arg(xString)
                                         .arg(yString)
                                         .arg(reflectorDistanceString)
                                         .arg(myPositioningElementString)
                                         .arg(myMaxElementString)
-                                        .arg(myReflectionCoeffString);
+                                        .arg(myReflectionCoeffString)
+                                        .arg(myLambertianBeamDiameter);
+
 
         break;
         default:
@@ -628,6 +668,7 @@ void Reflector::reflectorOperation()
              MyLambertianReflector_ptr->setReflectance(materialCoeff);
              qDebug()<<"laserPoewErg"<<laserPowerErg;
              MyLambertianReflector_ptr->setLaserDistance(reflectorDistance);
+             MyLambertianReflector_ptr->setCorrectPositioning(correctPositioning);
              MyLambertianReflector_ptr->computeSpotDiameter();
              spotDiameter=MyLambertianReflector_ptr->getSpotDiameter();
 
@@ -644,7 +685,8 @@ void Reflector::reflectorOperation()
                 if(MyLambertianReflector_ptr->evaluateDiffusionDistance())
                 {
                     exendedDiffusion=true;
-                    reflectionKindString="Lambertiana Estesa";
+                    pointSourceDiffusion=false;
+                    identifiedDiffusion=true;
                     constant=MyLambertianReflector_ptr->getConstant();
                     alpha=MyLambertianReflector_ptr->getAlpha();
                     CE=MyLambertianReflector_ptr->getCE();
@@ -658,17 +700,41 @@ void Reflector::reflectorOperation()
                 else
                 {
                     exendedDiffusion=false;
-                    reflectionKindString="Lambertiana Puntiforme";
                     MyLambertianReflector_ptr->computeTrigonometricReflection();
                     MyLambertianReflector_ptr->computeZs(lambertianMax, materialCoeff);
                     myZsVector=MyLambertianReflector_ptr->getZsVect();
                     setMaxElement();
                     setPositioningElement();
+
+                    if(MyLambertianReflector_ptr->getSpotDiameter()/myPositioningElement<=1.08*DiffusionHazard::ALPHA_MIN)
+                    {
+                        pointSourceDiffusion=true;
+                        identifiedDiffusion=true;
+                    }
+                    else
+                    {
+                        identifiedDiffusion=false;
+
+                        if(kindOfSurface=="MEDIA")
+                            pointSourceDiffusion=true;
+                        else
+                        {
+                            pointSourceDiffusion=false;
+                            MyLambertianReflector_ptr->computeTrigonometricReflection();
+                            MyLambertianReflector_ptr->computeZs(0.0, materialCoeff);
+                            myZsVector=MyLambertianReflector_ptr->getZsVect();
+                            setMaxElement();
+                            setPositioningElement();
+                        }
+                    }
                 }
             }
             else
             {
-                reflectionKindString="Lambertiana";
+                exendedDiffusion=false;
+                pointSourceDiffusion=false;
+                identifiedDiffusion=false;
+                kindOfSurface="";
                 MyLambertianReflector_ptr->computeTrigonometricReflection();
                 MyLambertianReflector_ptr->computeZs(0.0, materialCoeff);
                 myZsVector=MyLambertianReflector_ptr->getZsVect();
@@ -703,13 +769,24 @@ double Reflector::getMaxElement()
 
 void Reflector::setPositioningElement()
 {
-   int myZsVectorRow;
-   myZsVectorRow=abs(correctPositioning)+1;
+    int myZsVectorRow;
+    if(myTarget==LAMBERTIAN_TARGET)
+        myZsVectorRow=abs(round(correctPositioning));
+    else
+    {
+        if(correctPositioning<0)
+            myZsVectorRow=round(correctPositioning+360);
+        else
+            myZsVectorRow=round(correctPositioning);
 
-   myPositioningElement=myZsVector.at(myZsVectorRow).second;
+        if(myZsVectorRow==360)
+            myZsVectorRow=0;
+    }
 
-   qDebug()<< "La riga del vettore myZsVectorRow: " << myZsVectorRow;
-   qDebug()<< "L'elemento nell'orientamento corrente: " << myPositioningElement;
+    myPositioningElement=myZsVector.at(myZsVectorRow).second;
+
+    qDebug()<< "La riga del vettore myZsVectorRow: " << myZsVectorRow;
+    qDebug()<< "L'elemento nell'orientamento corrente: " << myPositioningElement;
 }
 
 double Reflector::getPositioningElement()
@@ -749,19 +826,23 @@ void Reflector::setReflectorKindString()
         break;
 
         case(target::LAMBERTIAN_TARGET):
-        if(opticalDiameter==0.0)
-            reflectionKindString="Lambertiana";
-        else
         {
-            if(exendedDiffusion)
-                reflectionKindString="Lambertiana Estesa";
+            if((!exendedDiffusion)&&(!pointSourceDiffusion)&&(!identifiedDiffusion))
+                reflectionKindString="Lambertiana";
             else
-                reflectionKindString="Lambertiana Puntiforme";
+            {
+                if(exendedDiffusion)
+                    reflectionKindString=QString("Lambertiana Estesa %1").arg(kindOfSurface);
+                else if((pointSourceDiffusion)&&(identifiedDiffusion))
+                    reflectionKindString="Lambertiana Puntiforme";
+                else if((!exendedDiffusion)&&(pointSourceDiffusion)&&(!identifiedDiffusion))
+                    reflectionKindString="Lambertiana assunta puntiforme";
+            }
         }
         break;
 
         default:
-        qDebug()<< "Problems ;-)";
+        reflectionKindString="Lambertiana non valutata";
     }
 }
 
@@ -977,17 +1058,69 @@ double Reflector::getLaserPhase()const
     return laserPhase;
 }
 
-int Reflector::getCorrectPositioning()const
+QPointF Reflector::getLaserPosition()const
 {
-    return correctPositioning;
+    return laserPosition;
 }
 
-void Reflector::setCorrectPositioning()
+double Reflector::getCorrectPositioning()const
 {
-
+    return correctPositioning;
 }
 
 void Reflector::setUndoStack(QUndoStack *_undoStack)
 {
     undoStack=_undoStack;
+}
+
+void Reflector::setReflectorObjectName(const QPointF& position)
+{
+    QString reflectorName=QString("Reflector (%1,%2)").arg(position.x()).arg(position.y());
+    setObjectName(reflectorName);
+}
+
+QPolygonF Reflector::createPolygon(vector<pair<double,double>>myVector)
+{
+    vector< pair <double,double> > cartesianZone;
+    double cartesianX;
+    double cartesianY;
+    int step=5;
+    QPolygonF polygon;
+    vector< pair <double,double> >::const_iterator constIterator; // const_iterator
+    // display vector elements using const_iterator
+    for (constIterator = myVector.begin(); constIterator != myVector.end(); std::advance(constIterator, step ))
+    {
+        cartesianX=cos(radDeg*constIterator->first)*constIterator->second;
+        cartesianY=sin(radDeg*constIterator->first)*constIterator->second;
+
+        polygon << QPointF(-cartesianX, cartesianY);
+    }
+    if(myTarget==LAMBERTIAN_TARGET)
+    {
+        cartesianX=-cos(radDeg*myVector.at(0).first)*myVector.at(0).second;
+        cartesianY=sin(radDeg*myVector.at(0).first)*myVector.at(0).second;
+    }
+    else
+    {
+        cartesianX=0;
+        cartesianY=0;
+    }
+    polygon <<QPointF(cartesianX, cartesianY);
+
+    return polygon;
+}
+
+void Reflector::setZRL(bool _showZRL)
+{
+    showZRL=_showZRL;
+}
+
+bool Reflector::isZRLShown()
+{
+    return showZRL;
+}
+
+double Reflector::retrieveLaserAperture()const
+{
+    return myReflectorLinks.first()->fromLaser()->getAperture();
 }

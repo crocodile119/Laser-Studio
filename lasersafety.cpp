@@ -131,7 +131,7 @@ double LaserSafety::getLambertianMax() const
 
 void LaserSafety::computeBeamArea()
 {
-    beamArea=PI*pow(beamDiameter*1.0e-03, 2)/4;
+    beamArea=PI*std::pow(beamDiameter*1.0e-03, 2)/4;
 }
 
 double LaserSafety::getBeamArea() const
@@ -143,7 +143,7 @@ void LaserSafety::computeNOHD()
 {
     double underroot;
     underroot=(4*getPowerErgForEMP())/(PI*EMP_Result);
-    NOHD=(sqrt(underroot)-(beamDiameter/1000))/(divergence/1000);
+    NOHD=(std::sqrt(underroot)-(beamDiameter/1000))/(divergence/1000);
     if (NOHD<0)
         NOHD=0;
 }
@@ -183,7 +183,7 @@ void LaserSafety::computeLambertianMax()
     double underroot;
 
     underroot=(ForLambertianMax)/(PI*EMP_Result);
-    lambertianMax=(sqrt(underroot));
+    lambertianMax=(std::sqrt(underroot));
 }
 
 double LaserSafety::getCA() const

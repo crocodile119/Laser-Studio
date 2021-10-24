@@ -110,7 +110,7 @@ void SliderScrollLabel::on_scrollBar_valueChanged(int value)
 
 void SliderScrollLabel::setScientificNumber()
 {
-    scientificNumber=mantissa*powf(10, exponent);
+    scientificNumber=mantissa*std::pow(10, exponent);
     scientNotLabel->setText(QString::number(scientificNumber,'e', 2));
 }
 
@@ -118,19 +118,19 @@ void SliderScrollLabel::setValue(const double& _value)
 {
     double value=_value;
     scientNotLabel->setText(QString::number(value, 'e', 2));
-    ScientificNumber scientificNumber(value);
-    mantissa=scientificNumber.getMantissa();
+    ScientificNumber scientificNumberCalculator(value);
+    mantissa=scientificNumberCalculator.getMantissa();
     qDebug()<< "Mantissa: " << mantissa;
     slider->setValue(static_cast<int>(mantissa*100));
 
     if(value>=1)
-        exponent=+scientificNumber.getExponent();
+        exponent=+scientificNumberCalculator.getExponent();
     else
-        exponent=-(scientificNumber.getExponent());
+        exponent=-(scientificNumberCalculator.getExponent());
 
     scrollBar->setValue(-exponent);
 
-    scientificNumber=mantissa*powf(10, exponent);
+    scientificNumber=mantissa*std::pow(10, exponent);
 }
 
 double SliderScrollLabel::getScientificNumber()const

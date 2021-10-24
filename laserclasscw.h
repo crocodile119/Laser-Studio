@@ -131,7 +131,7 @@ void computeBeamArea(); /*!< Calcola l'area del fascio laser in m<sup>2</sup> co
     * la relazione approssimata:
     * \f[a_B = a + \varphi \cdot d\f]
     */
-    double valuateCouplingFactor(const double&, const double&);/*!< Calcola il valore del fattore di accoppiamento assegnati il diametro del diaframma
+    double valuateCouplingFactor(const double&, const double&, bool);/*!< Calcola il valore del fattore di accoppiamento assegnati il diametro del diaframma
     * ed il diametro del fascio per la distanza prevista.
     * Nel caso in cui 302,5 < <b>&lambda;</b> < 4000 nm si imipega la formula, valida per fasci gaussiani: \f[\eta= 1-e^{-\left(\frac{d_a}{db}\right)^2}\f]
     * in caso contrario il valore restitutito è pari a 1 (accoppiamento perfettto). */

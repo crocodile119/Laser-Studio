@@ -38,10 +38,13 @@ void LaserClassCW::classUpdate(laserOperation myLaserOperation, const double & t
     /*******************************************************************************
      * Per il calcolo del diametro del diametro del fascio e del fattore di        *
      * accoppiamento per la condizione 1 è necessario verificare quand'è che       *
-     * risulta applicabile (lunghezza d'onda >=302.5 e <=4000).                    *                                      *
-     * *****************************************************************************/
+     * risulta applicabile (lunghezza d'onda >=302.5 e <4000).                    *                                      *
+     * *****************************************************************************/   
 
-    if((wavelength>=302.5)and(wavelength<=4000)){
+     couplingFactor_Cond_1=valuateCouplingFactor(apCond_1, beamAtStop_Cond_1, true);
+
+     if((wavelength>=302.5)and(wavelength<4000))
+    {
     /**************************************************************************
      * Calcolo il diametro del fascio alla stessa distanza della condizione 1 *                                                *
      **************************************************************************/
@@ -50,14 +53,11 @@ void LaserClassCW::classUpdate(laserOperation myLaserOperation, const double & t
      * prelevo l'apertura calcolata per la condizione 1 e calcolo il fattore di *
      * accoppiamento corrispondente                                             *
      ****************************************************************************/
-
-        couplingFactor_Cond_1=valuateCouplingFactor(apCond_1, beamAtStop_Cond_1);
-        }
-        else
-            {
-             couplingFactor_Cond_1=1.0;
-             beamAtStop_Cond_1=std::nan("N.A.");
-            }
+    }
+    else
+    {
+        beamAtStop_Cond_1=std::nan("N.A.");
+    }
 
     /****************************************************************************
      * prelevo l'apertura calcolata per la condizione 1 e calcolo il fattore di *
@@ -71,7 +71,7 @@ void LaserClassCW::classUpdate(laserOperation myLaserOperation, const double & t
     beamAtStop_Cond_3=valuateBeamDiameterAtStop(distCond_3, divergence);
 
     apCond_3=myLaserClass.getApertureStopCond_3();
-    couplingFactor_Cond_3=valuateCouplingFactor(apCond_3, beamAtStop_Cond_3);
+    couplingFactor_Cond_3=valuateCouplingFactor(apCond_3, beamAtStop_Cond_3, false);
 
     /******************************************************************
      * correggo i valori relativi all'uscita del laser per i fattori  *
@@ -126,7 +126,7 @@ void LaserClassCW::setInternalWaist(bool _internalWaist)
 
 void LaserClassCW::computeBeamArea()
 {
-    beamArea=PI*pow(beamDiameter*1.0e-03, 2)/4;
+    beamArea=PI*std::pow(beamDiameter*1.0e-03, 2)/4;
 }
 
 double LaserClassCW::getBeamArea() const
@@ -142,13 +142,13 @@ array<double, ComputeLEA::N_LEA> LaserClassCW::leaPowerErgUnit(laserOperation my
     {
         for(size_t i=0; i<ComputeLEA::N_LEA; i++)
         {
-        if(_LEA_formulaSort[i]==1)
+        if(_LEA_formulaSort[i]==static_cast<int>(ComputeLEA::FormulaKind::IRRADIANCE))
             myPowerErgEq[i]=_powerErg/beamArea;
-        else if(_LEA_formulaSort[i]==2)
+        else if(_LEA_formulaSort[i]==static_cast<int>(ComputeLEA::FormulaKind::EXPOSURE_ENERGY))
             myPowerErgEq[i]=_powerErg*time/beamArea;
-        else if(_LEA_formulaSort[i]==3)
+        else if(_LEA_formulaSort[i]==static_cast<int>(ComputeLEA::FormulaKind::POWER))
             myPowerErgEq[i]=_powerErg;
-        else if(_LEA_formulaSort[i]==4)
+        else if(_LEA_formulaSort[i]==static_cast<int>(ComputeLEA::FormulaKind::PULSE_ENERGY))
             myPowerErgEq[i]=_powerErg*time;
         }
     }
@@ -156,13 +156,13 @@ array<double, ComputeLEA::N_LEA> LaserClassCW::leaPowerErgUnit(laserOperation my
     {
         for(size_t i=0; i<ComputeLEA::N_LEA; i++)
         {
-        if(_LEA_formulaSort[i]==1)
+        if(_LEA_formulaSort[i]==static_cast<int>(ComputeLEA::FormulaKind::IRRADIANCE))
             myPowerErgEq[i]=_powerErg/(time*beamArea);
-        else if(_LEA_formulaSort[i]==2)
+        else if(_LEA_formulaSort[i]==static_cast<int>(ComputeLEA::FormulaKind::EXPOSURE_ENERGY))
             myPowerErgEq[i]=_powerErg/beamArea;
-        else if(_LEA_formulaSort[i]==3)
+        else if(_LEA_formulaSort[i]==static_cast<int>(ComputeLEA::FormulaKind::POWER))
             myPowerErgEq[i]=_powerErg/time;
-        else if(_LEA_formulaSort[i]==4)
+        else if(_LEA_formulaSort[i]==static_cast<int>(ComputeLEA::FormulaKind::PULSE_ENERGY))
             myPowerErgEq[i]=_powerErg;
         }
     }
@@ -177,18 +177,18 @@ double LaserClassCW::valuateBeamDiameterAtStop(const double &condDistance,
 }
 
 double LaserClassCW::valuateCouplingFactor(const double &apertureDiameter,
-                                         const double &beamDiameterAtStop)
+                                         const double &beamDiameterAtStop, bool cond_1)
 {
     double couplingFactor;
     double diametersPower;
 
-    if((wavelength<4000)and(wavelength>302.5))
+    if(((wavelength<302.5)and(wavelength>=4000))&&(cond_1))
+        couplingFactor=nan("N.A.");
+    else
         {
-        diametersPower=pow(apertureDiameter/beamDiameterAtStop, 2);
+        diametersPower=std::pow(apertureDiameter/beamDiameterAtStop, 2);
         couplingFactor= 1-std::exp(-diametersPower);
         }
-    else
-        couplingFactor=1;
 
     return couplingFactor;
 }
@@ -205,9 +205,9 @@ array<bool, LaserClassCW::N_CLASS> LaserClassCW::valuateLEA_forClass(array<doubl
      ************/
 
     for(size_t i=0; i<LaserClassCW::N_CLASS; i++)
-    {myClassValutation[i]=false;}
+        myClassValutation[i]=false;
 
-    if((wavelength<302.5)and(wavelength>4000))
+    if((wavelength<302.5)||(wavelength>=4000))
        {
         if(myPowerErg_Cond_3[0]<=myLEA_Value[0])
             {
@@ -215,7 +215,7 @@ array<bool, LaserClassCW::N_CLASS> LaserClassCW::valuateLEA_forClass(array<doubl
             return myClassValutation;
             }
         }
-    else if((wavelength>=302.5)and(wavelength<=4000))
+    else if((wavelength>=302.5)&&(wavelength<4000))
        {
         if((myPowerErg_Cond_1[0]<=myLEA_Value[0])and(myPowerErg_Cond_3[0]<=myLEA_Value[0]))
             {
@@ -228,8 +228,8 @@ array<bool, LaserClassCW::N_CLASS> LaserClassCW::valuateLEA_forClass(array<doubl
      * Classe 1M *
      *************/
     if(!myClassValutation[0]){
-    if((wavelength>=302.5)and(wavelength<=4000)){
-        if((myPowerErg_Cond_1[0]>myLEA_Value[0])and(myPowerErg_Cond_1[0]<=myLEA_Value[0])and(myPowerErg_Cond_1[3]<myLEA_Value[3]))
+    if((wavelength>=302.5)and(wavelength<4000)){
+        if((myPowerErg_Cond_1[0]>myLEA_Value[0])and(myPowerErg_Cond_1[0]<myLEA_Value[3])and(myPowerErg_Cond_3[0]<myLEA_Value[0]))
            {
                 myClassValutation[1]=true;
                 return myClassValutation;
@@ -260,7 +260,7 @@ array<bool, LaserClassCW::N_CLASS> LaserClassCW::valuateLEA_forClass(array<doubl
     {
         if((wavelength>=400)and(wavelength<=700))
                 {
-                if((myPowerErg_Cond_1[1]<=myLEA_Value[1])and(myPowerErg_Cond_1[3]<myLEA_Value[3]))
+                if((myPowerErg_Cond_1[1]>myLEA_Value[1])and(myPowerErg_Cond_1[1]<myLEA_Value[3])and(myPowerErg_Cond_3[1]<myLEA_Value[1]))
                 {
                     myClassValutation[3]=true;
                     return myClassValutation;
@@ -274,13 +274,23 @@ array<bool, LaserClassCW::N_CLASS> LaserClassCW::valuateLEA_forClass(array<doubl
 
     if((!myClassValutation[0])and(!myClassValutation[1])and(!myClassValutation[2])and(!myClassValutation[3]))
     {
-                if((myPowerErg_Cond_1[2]<=myLEA_Value[2])and(myPowerErg_Cond_3[2]<=myLEA_Value[2]))
-                {
-                    myClassValutation[4]=true;
-                    return myClassValutation;
-                }
+        if((wavelength>=302.5)and(wavelength<4000))
+        {
+            if((myPowerErg_Cond_1[2]<=myLEA_Value[2])and(myPowerErg_Cond_3[2]<=myLEA_Value[2]))
+            {
+                myClassValutation[4]=true;
+                return myClassValutation;
+            }
+        }
+        else
+        {
+            if(myPowerErg_Cond_3[2]<=myLEA_Value[2])
+            {
+                myClassValutation[4]=true;
+                return myClassValutation;
+            }
+        }
     }
-
     /*************
      * Classe 3B *
      *************/
@@ -288,11 +298,20 @@ array<bool, LaserClassCW::N_CLASS> LaserClassCW::valuateLEA_forClass(array<doubl
     if((!myClassValutation[0])and(!myClassValutation[1])and(!myClassValutation[3])
             and(!myClassValutation[4]))
     {
+        if((wavelength>=302.5)and(wavelength<4000))
+        {
                 if((myPowerErg_Cond_1[3]<=myLEA_Value[3])and(myPowerErg_Cond_3[3]<=myLEA_Value[3]))
                 {
                     myClassValutation[5]=true;
                     return myClassValutation;
                 }
+        }
+        else
+            if(myPowerErg_Cond_3[3]<=myLEA_Value[3])
+            {
+                myClassValutation[5]=true;
+                return myClassValutation;
+            }
     }
     if((!myClassValutation[0])and(!myClassValutation[1])and(!myClassValutation[3])
             and(!myClassValutation[4])and(!myClassValutation[5]))
@@ -330,10 +349,12 @@ array<double, ComputeLEA::N_LEA> LaserClassCW::computePowerErgCond_1(array<doubl
     array<double, ComputeLEA::N_LEA>_myPowerErg;
     for(size_t i=0; i<ComputeLEA::N_LEA; i++)
     {
-            if((i==1)and((wavelength<400)or(wavelength>700)))
-                _myPowerErg[i]=std::nan("N.A.");
+        if((wavelength<302.5)or(wavelength>=4000))
+            _myPowerErg[i]=std::nan("N.A.");
+        else if((i==1)and((wavelength<400)or(wavelength>700)))
+            _myPowerErg[i]=std::nan("N.A.");
         else
-                _myPowerErg[i]=_couplingFactor_Cond_1*_powerErgEq_1[i];
+            _myPowerErg[i]=_couplingFactor_Cond_1*_powerErgEq_1[i];
     }
     return _myPowerErg;
 }

@@ -19,12 +19,12 @@ public:
 
     void undo() override;
     void redo() override;
-    Link* addLink();
+    ReflectorLink* addReflectorLink();
     Reflector* getReflector() const;
 
 private:
-    typedef QPair<LaserPoint *, Reflector *> NodePair;
-    NodePair selectedNodePair() const;
+    typedef QPair<LaserPoint *, Reflector *> ReflectorNodePair;
+    ReflectorNodePair selectedReflectorNodePair() const;
 
     double attenuatedDNRO;
     double attenuatedDNRC;
@@ -37,7 +37,7 @@ private:
     LaserPoint *laserpoint;
     QList <Reflector *>*myReflectors;
     QPointF initialPosition;
-    Link *link=nullptr;
+    ReflectorLink *reflectorlink=nullptr;
     Reflector *reflectorOnScene=nullptr;
 };
 

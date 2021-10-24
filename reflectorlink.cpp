@@ -1,16 +1,16 @@
 #include <QtGui>
 
-#include "link.h"
+#include "reflectorlink.h"
 #include "laserpoint.h"
 #include "reflector.h"
 #include <cmath>
 
-const double Link::degRad = 180/3.1415926535897932384626433832795;
+const double ReflectorLink::degRad = 180/3.1415926535897932384626433832795;
 
-Link::Link(LaserPoint *fromLaser, Reflector *toReflector): fromMyLaser(fromLaser), toMyReflector(toReflector)
+ReflectorLink::ReflectorLink(LaserPoint *fromLaser, Reflector *toReflector): fromMyLaser(fromLaser), toMyReflector(toReflector)
 {
-    fromMyLaser->addLink(this);
-    toMyReflector->addLink(this);
+    fromMyLaser->addReflectorLink(this);
+    toMyReflector->addReflectorLink(this);
 
     setFlags(QGraphicsItem::ItemIsSelectable);
     setZValue(-1);
@@ -28,45 +28,45 @@ Link::Link(LaserPoint *fromLaser, Reflector *toReflector): fromMyLaser(fromLaser
     //hide();
 }
 
-Link::~Link()
+ReflectorLink::~ReflectorLink()
 {
-    fromMyLaser->removeLink(this);
-    toMyReflector->removeLink();
+    fromMyLaser->removeReflectorLink(this);
+    toMyReflector->removeReflectorLink();
 }
 
-int Link::type() const
+int ReflectorLink::type() const
 {
     return Type;
 }
 
-LaserPoint *Link::fromLaser() const
+LaserPoint *ReflectorLink::fromLaser() const
 {
     return fromMyLaser;
 }
 
-void Link::setColor(const QColor &color)
+void ReflectorLink::setColor(const QColor &color)
 {
     setPen(QPen(color, 1.0));
 }
 
-QColor Link::color() const
+QColor ReflectorLink::color() const
 {
     return pen().color();
 }
 
-void Link::trackNodes()
+void ReflectorLink::trackNodes()
 {
     setLine(QLineF(fromMyLaser->pos(), toMyReflector->pos()));
 }
 
-double Link::linkLenght()
+double ReflectorLink::reflectorLinkLenght()
 {
     QLineF myLine=QLineF(fromMyLaser->pos(), toMyReflector->pos());
     lenght=myLine.length();
     return lenght;
 }
 
-double Link::LinkPhase()
+double ReflectorLink::reflectorLinkPhase()
 {
     QLineF myLine=QLineF(fromMyLaser->pos(), toMyReflector->pos());
 
@@ -78,7 +78,7 @@ double Link::LinkPhase()
     return phase;
 }
 
-QLineF Link::getTrack()
+QLineF ReflectorLink::getTrack()
 {
     QLineF myTrack=QLineF(fromMyLaser->pos(), toMyReflector->pos());
     return myTrack;

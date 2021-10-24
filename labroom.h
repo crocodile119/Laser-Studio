@@ -39,7 +39,9 @@ public:
                const QStyleOptionGraphicsItem *option, QWidget *widget)override;
 
     void setTextLabel();
+    void setRoomTextLabel();
     QString getTextLabel()const;
+    QString getRoomTextLabel()const;
 
     void setRoomRect(const QRectF& _labRect);
     QRectF getRoomRect() const;
@@ -65,6 +67,7 @@ private:
     QColor myBackgroundColor;
     QColor myOutlineColor;
     QString textLabel;
+    QString roomTextLabel;
     double scale; 
     QRectF myTextRect;
     QRectF labRect;

@@ -64,5 +64,7 @@
         <file>images/inspectorpix.png</file>
         <file>images/inspector.png</file>
         <file>images/prohibitedpix.png</file>
+        <file>images/thumbs.png</file>
+        <file>images/ok_circle.png</file>
     </qresource>
 </RCC>

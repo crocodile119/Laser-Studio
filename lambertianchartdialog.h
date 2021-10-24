@@ -4,7 +4,9 @@
 #include <QWidget>
 #include <QDialog>
 #include "lambertianchartview.h"
+#include "ui_lambertianchartdialog.h"
 #include "diffusionhazard.h"
+#include "exendedchartview.h"
 #include "reflector.h"
 
 
@@ -15,13 +17,14 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class LambertianChartDialog; }
 QT_END_NAMESPACE
 
-class LambertianChartDialog : public QDialog
+class LambertianChartDialog : public QDialog, private Ui::LambertianChartDialog
 {
     Q_OBJECT
 
 public:
-    LambertianChartDialog(Reflector *reflector, QWidget *parent = 0);
+    LambertianChartDialog(Reflector *reflector, bool thema, QWidget *parent = 0);
     ~LambertianChartDialog();
+    Ui::LambertianChartDialog *ui;
     LambertianChartView* getLambertianPointChart();
     QChartView* getLambertianExendedChart();
 
@@ -36,9 +39,11 @@ private slots:
     void setRefraction(const double);
     void setWidgetsVisible(bool);
 
+    void on_pushButton_clicked();
+
 private:
-    Ui::LambertianChartDialog *ui;
     LambertianChartView *polarChartView;
+    ExendedChartView *exendedChartView;
     double distance;
     double dnro;
     double refraction;
@@ -52,6 +57,7 @@ private:
     double laserPowerErg;
     QChartView *chartView;
     Reflector *reflector;
+    bool thema;
     std::vector<std::pair<double, double>> dataVector;
 };
 #endif // WETCHARTDIALOG_H

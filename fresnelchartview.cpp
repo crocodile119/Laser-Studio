@@ -38,8 +38,8 @@ const qreal FresnelChartView::radialMin = 0;
     setRadialAxis();
     setAngularAxis();
 
-    chart->setBackgroundBrush(QColor::fromRgb(240, 240, 240));
-    chart->setMinimumSize(640, 480);
+    chart->setBackgroundBrush(QColor::fromRgb(255, 255, 255));
+    chart->setMinimumSize(520, 390);
 
     scene()->addItem(chart);
 }
@@ -131,4 +131,9 @@ QtCharts::QLineSeries* FresnelChartView::buildPositioningSeries()
     positioningSeries->append(correctPositioning, radialMax);
     qDebug()<<"Posizionamento del riflettore corretto: "<<correctPositioning;
     return positioningSeries;
+}
+
+void FresnelChartView::setChartBackgroundBrush(QColor color)
+{
+    chart->setBackgroundBrush(color);
 }

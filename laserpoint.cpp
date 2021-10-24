@@ -14,8 +14,10 @@
 #include <cmath>
 
 #include "binocularlink.h"
-#include "link.h"
+#include "reflectorlink.h"
 #include "laserpoint.h"
+#include "objectlink.h"
+#include "inspectorlink.h"
 
 const double LaserPoint::radDeg = 3.1415926535897932384626433832795/180;
 
@@ -41,8 +43,17 @@ LaserPoint::LaserPoint():QGraphicsObject(), laserPix(":/images/laserpix.png"), p
 
 LaserPoint::~LaserPoint()
 {
-    foreach (Link *link, myLinks)
-        delete link;
+    foreach (ReflectorLink *reflectorlink, myReflectorLinks)
+        delete reflectorlink;
+
+    foreach (BinocularLink *binocularlink, myBinocularLinks)
+        delete binocularlink;
+
+    foreach (ObjectLink *objectlink, myObjectLinks)
+        delete objectlink;
+
+    foreach (InspectorLink *inspectorLink, myInspectorLinks)
+        delete inspectorLink;
 }
 
 int LaserPoint::type() const
@@ -88,9 +99,9 @@ QColor LaserPoint::backgroundColor() const
     return myBackgroundColor;
 }
 
-void LaserPoint::addLink(Link *link)
+void LaserPoint::addReflectorLink(ReflectorLink *reflectorlink)
 {
-    myLinks.insert(link);
+    myReflectorLinks.insert(reflectorlink);
 }
 
 void LaserPoint::addBinocularLink(BinocularLink *binocularlink)
@@ -108,9 +119,9 @@ void LaserPoint::addInspectorLink(InspectorLink *inspectorLink)
     myInspectorLinks.insert(inspectorLink);
 }
 
-void LaserPoint::removeLink(Link *link)
+void LaserPoint::removeReflectorLink(ReflectorLink *reflectorlink)
 {
-    myLinks.remove(link);
+    myReflectorLinks.remove(reflectorlink);
 }
 
 void LaserPoint::removeBinocularLink(BinocularLink *binocularlink)
@@ -261,8 +272,8 @@ QVariant LaserPoint::itemChange(GraphicsItemChange change,
 {
     if (change == ItemPositionHasChanged && scene())
     {
-        foreach (Link *link, myLinks)
-            link->trackNodes();
+        foreach (ReflectorLink *reflectorlink, myReflectorLinks)
+            reflectorlink->trackNodes();
 
         setStrings();
         return pos();

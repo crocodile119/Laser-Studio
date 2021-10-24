@@ -7,13 +7,16 @@
 #include <iostream>
 #include <string>
 #include <QAbstractItemModel>
+#include <QStandardItemModel>
 #include <QListView>
+#include "docklea.h"
 #include "mypolarchartview.h"
+#include "htmldelegate.h"
 #include <exception>
 
 const int DockControls::DOCKGOGGLEMINIMUN=405;
 const int DockControls::DOCKGOGGLEMAXIMUN=550;
-const double DockControls::MODELOCKED_LIMIT=pow(10,-9);
+const double DockControls::MODELOCKED_LIMIT=std::pow(10,-9);
 
 DockControls::DockControls(QWidget *parent, DockResults *_dockResults, DockEffects *_dockEffects,
                            DockSkin *_dockSkin, DockGoggle *_dockGoggle, DockLea* _dockLea)
@@ -28,6 +31,7 @@ DockControls::DockControls(QWidget *parent, DockResults *_dockResults, DockEffec
     n_laser=operation::CONTINUOS_WAVE;
 
     setUpGoggle();
+
     showControls(false);
     dockGoggle->setFixedWidth(DOCKGOGGLEMINIMUN);
     exposureTimeControl=10;
@@ -35,6 +39,7 @@ DockControls::DockControls(QWidget *parent, DockResults *_dockResults, DockEffec
     beamCorrection=1.0;
     lambertianMax=0.109557;
     internalWaist=false;
+    isThermalHazard=true;
 
     MyLaserCW_Pr=nullptr;
     MyLaserSP_Pr=nullptr;
@@ -53,6 +58,9 @@ DockControls::DockControls(QWidget *parent, DockResults *_dockResults, DockEffec
     MyLaserClassMP_Pr=nullptr;
     MyLaserClassCW_Pr=MyLaserClassMP;
 
+    setDataForCW_Operation();
+    setCW_SP_LEAModel();
+
     setDialControls();
 
     displayScaleNumber();
@@ -67,6 +75,7 @@ DockControls::DockControls(QWidget *parent, DockResults *_dockResults, DockEffec
     connect(this, SIGNAL(EMP_Changed()), this, SLOT(setEMP_Sort()));
     connect(this, SIGNAL(powerErgForEMPChanged()), this, SLOT(setPowerErgForEMP()));
     connect(dockGoggle->ui->showGoggleCharts, SIGNAL(toggled(bool)), this, SLOT(showGoggleCharts(bool)));
+    connect(ui->wavelengthScrollBar, SIGNAL(valueChanged(int)), this, SLOT(setLEAModelForWavelength()));
 }
 
 void DockControls::showGoggleCharts(bool checked)
@@ -342,16 +351,16 @@ void DockControls::on_wavelengthScrollBar_valueChanged(int value)
     *******************************************/
     setWidgets();
     set_LEA_Widgets();
+    kindOfHazardChanged();
     setLaserGoggleWidgets();
 
     /*******************************************************
     * Imposto altri valori necessarie per la parte grafica *
     ********************************************************/
 
-    setOpticalDistance();
     setLambertianMax();
-    setSkinDistances();
 
+    emit NOHD_Changed();
     emit EMP_Changed();//Cambia l'EMP
     emit wavelengthChanged();//la lunghezza d'onda è cambiata
     emit modified();//Per salvataggio file
@@ -389,7 +398,6 @@ void DockControls::on_teControl_valueChanged()
         MyLaserMP_Pr->setPulseWidth(pulseWidth);
         }
         setWidgets();
-        setOpticalDistance();
         setPowerErgForEMP();
         setLambertianMax();
         emit EMP_Changed();//Cambia l'EMP
@@ -411,7 +419,7 @@ void DockControls::on_T_SkinControl_valueChanged()
     * Memorizzo il valore impostato dal controllo nella variabile membro corrispondente *
     *************************************************************************************/
 
-    T_Skin=mantissa*powf(10, exponent);
+    T_Skin=mantissa*std::pow(10, exponent);
 
     /*****************
     * CONTINUOS WAVE *
@@ -460,8 +468,6 @@ void DockControls::on_T_SkinControl_valueChanged()
     * Imposto altri valori necessarie per la parte grafica *
     ********************************************************/
 
-    setSkinDistances();
-
     /******************
     * Emetto segnali *
     ******************/
@@ -483,7 +489,7 @@ void DockControls::on_powerErgControl_valueChanged()
     * Memorizzo il valore impostato dal controllo nella variabile membro corrispondente *
     *************************************************************************************/
 
-    powerErg=mantissa*powf(10, exponent);
+    powerErg=mantissa*std::pow(10, exponent);
 
     /*****************
     * CONTINUOS WAVE *
@@ -584,14 +590,13 @@ void DockControls::on_powerErgControl_valueChanged()
     /*******************************************************
     * Imposto altri valori necessarie per la parte grafica *
     ********************************************************/
-    setOpticalDistance();
-    setSkinDistances();
     setPowerErgForEMP();
     setLambertianMax();
 
     /******************
      * Emetto segnali *
      ******************/
+    emit NOHD_Changed();
     emit powerErgChanged();//Cambia la potenza/Energia impulso del laser
     emit EMP_Changed();//Cambia l'EMP
     emit modified();//Per salvataggio file
@@ -710,7 +715,7 @@ void DockControls::on_pulseControl_valueChanged()
     /*******************************************************************************+****
     * Memorizzo il valore impostato dal controllo nella variabile membro corrispondente *
     *************************************************************************************/
-    pulseWidth=mantissa*powf(10, exponent);
+    pulseWidth=mantissa*std::pow(10, exponent);
     if(pulseWidth>=30000)
     {
         pulseWidth=29999;
@@ -793,13 +798,12 @@ void DockControls::on_pulseControl_valueChanged()
 	/*******************************************************
     * Imposto altri valori necessarie per la parte grafica *
     ********************************************************/
-    setOpticalDistance();
-    setSkinDistances();
     setLambertianMax();
 
     /*****************
     * Emetto segnali *
     ******************/
+    emit NOHD_Changed();
     emit EMP_Changed();//Cambia l'EMP
     emit modified();//Per salvataggio file
 }
@@ -956,7 +960,7 @@ void DockControls::on_prfControl_valueChanged()
     * Memorizzo il valore impostato dal controllo nella variabile membro corrispondente *
     *************************************************************************************/
 
-    prf=mantissa*powf(10.0, exponent);
+    prf=mantissa*std::pow(10.0, exponent);
 
     if(n_laser==operation::MULTI_PULSE)
     {
@@ -1019,8 +1023,6 @@ void DockControls::on_prfControl_valueChanged()
         /*******************************************************
         * Imposto altri valori necessarie per la parte grafica *
         ********************************************************/
-        setOpticalDistance();
-        setSkinDistances();
         setLambertianMax();
 
         /******************
@@ -1044,7 +1046,7 @@ void DockControls::on_beamDiameterControl_valueChanged()
     /*******************************************************************************+****
     * Memorizzo il valore impostato dal controllo nella variabile membro corrispondente *
     *************************************************************************************/
-    beamDiameter=mantissa*powf(10, exponent);
+    beamDiameter=mantissa*std::pow(10, exponent);
 
     /*****************
     * CONTINUOS WAVE *
@@ -1120,13 +1122,12 @@ void DockControls::on_beamDiameterControl_valueChanged()
     /*******************************************************
     * Imposto altri valori necessarie per la parte grafica *
     ********************************************************/
-    setOpticalDistance();
-    setSkinDistances();
     setLambertianMax();
 
    /******************
     * Emetto segnali *
     ******************/
+    emit NOHD_Changed();
     emit beamDiameterChanged();//Cambia il diametro del fascio
     emit EMP_Changed();//Cambia l'EMP
     emit modified();//Per salvataggio file
@@ -1169,7 +1170,6 @@ void DockControls::showControls(bool _show)
     dockGoggle->ui->meanPowerLabel->setVisible(_show and details);
 
     dockGoggle->ui->tabWidget->setTabVisible(1, _show);
-    dockLea->ui->tabWidget->setTabVisible(1, _show);
     if(_show)
     {
         if(details)
@@ -1177,8 +1177,6 @@ void DockControls::showControls(bool _show)
 
         dockGoggle->ui->tabWidget->setTabText(0,"Criterio dell'impulso");
         dockGoggle->ui->tabWidget->setTabText(1,"Criterio della potenza media");
-        dockLea->ui->tabWidget->setTabText(0, "Criterio dell'impulso");
-        dockLea->ui->tabWidget->setTabText(1,"Criteri della potenza media e degli effetti termici");
     }
     else
     {
@@ -1186,15 +1184,9 @@ void DockControls::showControls(bool _show)
             dChartView->hide();
 
         if(n_laser==operation::CONTINUOS_WAVE)
-        {
             dockGoggle->ui->tabWidget->setTabText(0,"Criterio della potenza");
-            dockLea->ui->tabWidget->setTabText(0,"Criterio della potenza");
-        }
         else if(n_laser==operation::PULSE)
-        {
             dockGoggle->ui->tabWidget->setTabText(0,"Criterio dell'impulso");
-            dockLea->ui->tabWidget->setTabText(0,"Criterio dell'impulso");
-        }
     }
 }
 
@@ -1210,7 +1202,7 @@ void DockControls::on_divergenceControl_valueChanged()
     /********************************************************************************+****
     * Memorizzo il valore impostato dal controllo nella variabile membro corrispondente *
     *************************************************************************************/
-    divergence=mantissa*powf(10, exponent);
+    divergence=mantissa*std::pow(10, exponent);
 	
     /*****************
     * CONTINUOS WAVE *
@@ -1260,13 +1252,12 @@ void DockControls::on_divergenceControl_valueChanged()
     /*******************************************************
     * Imposto altri valori necessarie per la parte grafica *
     ********************************************************/	
-    setOpticalDistance();
-    setSkinDistances();
     setLambertianMax();
 	
     /*****************
     * Emetto segnali *
     ******************/
+    emit NOHD_Changed();
     emit EMP_Changed();//Cambia l'EMP
     emit divergenceChanged();//Cambia la divergenza
     emit modified();//Per salvataggio file
@@ -1283,23 +1274,23 @@ void DockControls::setWidgets()
     QString minEMP;
     QString empSkinUnitMP;
     QString minEMPSkin;  
-    QString skinPowerErgUnit="Energia [J]";
+    QString skinPowerErgUnit="Q [J]";
 
     if(n_laser==operation::CONTINUOS_WAVE)
     {
-        ui->powerErgControl->setTitle("Potenza [W]");
+        ui->powerErgControl->setTitle("P [W]");
         MyLaserCW_Pr->laserUpdate();
         MyLaserSkinSP_Pr->laserSkinUpdate();
         displayScaleNumber();
 
             if(MyLaserCW_Pr->getFormulaSort()=="E")
             {
-                powerErgUnit="Potenza [W]= ";
+                powerErgUnit="P [W]= ";
                 empUnit="[W/m<sup>2</sup>]";
             }
             else if(MyLaserCW_Pr->getFormulaSort()=="H")
             {
-                powerErgUnit="Energia [J]= ";
+                powerErgUnit="Q [J]= ";
                 empUnit="[J/m<sup>2</sup>]";
             }
         /********************************************************
@@ -1349,7 +1340,7 @@ void DockControls::setWidgets()
         dockResults->ui->tExposureTimeLabel->setText("T<sub>e</sub> [s]");
         dockResults->ui->ExposureTimeLabel->setText(QString::number(MyLaserCW_Pr->getExposureTime(),'e', 2));
 
-        dockResults->ui->tPowerErgLabel->setText("Potenza [W]");
+        dockResults->ui->tPowerErgLabel->setText("P [W]");
         dockResults->ui->PowerErgLabel->setText(QString::number(MyLaserCW_Pr->getPowerErg(),'e', 2));
 
         dockResults->ui->tFormulaLabel->setText((QString)"Formula");
@@ -1358,12 +1349,15 @@ void DockControls::setWidgets()
         dockResults->ui->tNOHDLabel->setText((QString)"DNRO [m]");
 
         bool DNRO_scientNot;
-        DNRO_scientNot=MyLaserCW_Pr->getNOHD()>1.0e+03;
+        NOHD=MyLaserCW_Pr->getNOHD();
+        emit NOHD_Changed();
+
+        DNRO_scientNot=NOHD>1.0e+03;
 
         if(DNRO_scientNot)
-            dockResults->ui->NOHDLabel->setText(QString::number(MyLaserCW_Pr->getNOHD(),'e', 2));
+            dockResults->ui->NOHDLabel->setText(QString::number(NOHD,'e', 2));
         else
-            dockResults->ui->NOHDLabel->setText(QString::number(MyLaserCW_Pr->getNOHD(),'f', 1));
+            dockResults->ui->NOHDLabel->setText(QString::number(NOHD,'f', 1));
 
         dockResults->ui->conditions_Label->setText("EMP \nper esposizioni\nda onda continua");
         dockResults->ui->tEMP_1st_Label->setVisible(false);
@@ -1446,19 +1440,19 @@ void DockControls::setWidgets()
     }
     else if(n_laser==operation::PULSE)
     {
-        ui->powerErgControl->setTitle("Energia [J]");
+        ui->powerErgControl->setTitle("Q [J]");
         MyLaserSP_Pr->laserUpdate();
         MyLaserSkinSP_Pr->laserSkinUpdate();
         displayScaleNumber();
 
         if(MyLaserSP_Pr->getFormulaSort()=="E")
         {
-            powerErgUnit="Potenza [W]= ";
+            powerErgUnit="P [W]= ";
             empUnit="[W/m<sup>2</sup>]";
         }
         else if(MyLaserSP_Pr->getFormulaSort()=="H")
         {
-            powerErgUnit="Energia [J]= ";
+            powerErgUnit="Q [J]= ";
             empUnit="[J/m<sup>2</sup>]";
         }
 
@@ -1509,7 +1503,7 @@ void DockControls::setWidgets()
         dockResults->ui->tExposureTimeLabel->setText("T<sub>e</sub> [s]");
         dockResults->ui->ExposureTimeLabel->setText(QString::number(MyLaserSP_Pr->getPulseWidth(),'e', 2));
 
-        dockResults->ui->tPowerErgLabel->setText("Energia [J]");
+        dockResults->ui->tPowerErgLabel->setText("Q [J]");
         dockResults->ui->PowerErgLabel->setText(QString::number(MyLaserSP_Pr->getPowerErg(),'e', 2));
 
         dockResults->ui->tFormulaLabel->setText((QString)"Formula");
@@ -1518,12 +1512,15 @@ void DockControls::setWidgets()
         dockResults->ui->tNOHDLabel->setText((QString)"DNRO [m]");
 
         bool DNRO_scientNot;
-        DNRO_scientNot=MyLaserSP_Pr->getNOHD()>1.0e+03;
+        NOHD=MyLaserSP_Pr->getNOHD();
+        emit NOHD_Changed();
+
+        DNRO_scientNot=NOHD>1.0e+03;
 
         if(DNRO_scientNot)
-            dockResults->ui->NOHDLabel->setText(QString::number(MyLaserSP_Pr->getNOHD(),'e', 2));
+            dockResults->ui->NOHDLabel->setText(QString::number(NOHD,'e', 2));
         else
-            dockResults->ui->NOHDLabel->setText(QString::number(MyLaserSP_Pr->getNOHD(),'f', 1));
+            dockResults->ui->NOHDLabel->setText(QString::number(NOHD,'f', 1));
 
         dockResults->ui->conditions_Label->setText("EMP \nper esposizioni\nda impulso singolo");
         dockResults->ui->tEMP_1st_Label->setVisible(false);
@@ -1589,7 +1586,7 @@ void DockControls::setWidgets()
     }
     else if(n_laser==operation::MULTI_PULSE)
     {
-        ui->powerErgControl->setTitle("Energia [J]");
+        ui->powerErgControl->setTitle("Q [J]");
         MyLaserMP_Pr->laserUpdate();
         MyLaserSkinMP_Pr->laserSkinUpdate();
         displayScaleNumber();
@@ -1597,7 +1594,7 @@ void DockControls::setWidgets()
 
             if(MyLaserMP_Pr->getFormulaSort()=="E")
             {
-                powerErgUnit="Potenza [W]= ";
+                powerErgUnit="P [W]= ";
                 empUnit="[W/m<sup>2</sup>]";
                 minEMP="E<sub>min</sub> [W/m<sup>2</sup>]";
                 thermalEMP="E<sub>th</sub> [W/m<sup>2</sup>]";
@@ -1605,7 +1602,7 @@ void DockControls::setWidgets()
             }
             else if(MyLaserMP_Pr->getFormulaSort()=="H")
             {
-                powerErgUnit="Energia [J]= ";
+                powerErgUnit="Q [J]= ";
                 empUnit="[J/m<sup>2</sup>]";
                 minEMP="H<sub>min</sub> [J/m<sup>2</sup>]";
                 thermalEMP="H<sub>th</sub> [J/m<sup>2</sup>]";
@@ -1680,7 +1677,7 @@ void DockControls::setWidgets()
         dockResults->ui->tEMP_mean_Label->setText(meanEMP);
         dockResults->ui->EMP_mean_Label->setText(QString::number(MyLaserMP_Pr->getMeanPower_EMP_Equate(),'e', 2));
 
-        dockResults->ui->tPowerErgLabel->setText("Energia [J]");
+        dockResults->ui->tPowerErgLabel->setText("Q [J]");
         dockResults->ui->PowerErgLabel->setText(QString::number(MyLaserMP_Pr->getPowerErg(),'e', 2));
 
         dockResults->ui->tFormulaLabel->setText("Formula");
@@ -1716,7 +1713,14 @@ void DockControls::setWidgets()
         dockResults->ui->PulseNumberThLabel->setText(QString::number(MyLaserMP_Pr->getPulseNumber()));
 
         dockResults->ui->tPulseNumberLabel->setText("N");
-        dockResults->ui->PulseNumberLabel->setText(QString::number(ceil(MyLaserMP_Pr->getPRF()*MyLaserMP_Pr->getExposureTime())));
+
+        double prf=round(MyLaserMP_Pr->getPRF());
+        double te=MyLaserMP_Pr->getExposureTime();
+        int pulseNumber=ceil(prf*te);
+        qDebug()<<"prf: "<<prf;
+        qDebug()<<"Tempo di esposizione: "<<te;
+        qDebug()<<"Numero di impulsi: "<<pulseNumber;
+        dockResults->ui->PulseNumberLabel->setText(QString::number(pulseNumber));
 
         dockResults->ui->tminEMP_Label->setText(minEMP);
         dockResults->ui->minEMP_Label->setText(QString::number(MyLaserMP_Pr->returnMultiPulse_EMP(),'e', 2));
@@ -1724,12 +1728,15 @@ void DockControls::setWidgets()
         dockResults->ui->tNOHDLabel->setText("DNRO [m]");
 
         bool DNRO_scientNot;
-        DNRO_scientNot=MyLaserMP_Pr->getNOHD()>1.0e+03;
+        NOHD=MyLaserMP_Pr->getNOHD();
+        emit NOHD_Changed();
+
+        DNRO_scientNot=NOHD>1.0e+03;
 
         if(DNRO_scientNot)
-            dockResults->ui->NOHDLabel->setText(QString::number(MyLaserMP_Pr->getNOHD(),'e', 2));
+            dockResults->ui->NOHDLabel->setText(QString::number(NOHD,'e', 2));
         else
-            dockResults->ui->NOHDLabel->setText(QString::number(MyLaserMP_Pr->getNOHD(),'f', 1));
+            dockResults->ui->NOHDLabel->setText(QString::number(NOHD,'f', 1));
 
         dockResults->ui->conditions_Label->setText("EMP \nper esposizioni\nripetute");
 
@@ -1952,9 +1959,11 @@ void DockControls::setWidgets()
         dockSkin->ui->EMP_1st_Label->setVisible(true);
         dockSkin->ui->EMP_2nd_Label->setVisible(true);
 
+        NSHD=MyLaserSkinMP_Pr->getNSHD();
+        emit NSHD_Changed();
 
-        DNRO_scientNot=MyLaserSkinMP_Pr->getNSHD()>1.0e+03;
-        if(DNRO_scientNot)
+        bool DNRC_scientNot=NSHD>1.0e+03;
+        if(DNRC_scientNot)
             dockSkin->ui->NSHDLabel->setText(QString::number(MyLaserSkinMP_Pr->getNSHD(),'e', 2));
         else
             dockSkin->ui->NSHDLabel->setText(QString::number(MyLaserSkinMP_Pr->getNSHD(),'f', 1));
@@ -2007,7 +2016,7 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     ************************************************************************************/
 
     ui->powerErgControl->setValue(powerErg);
-    ui->powerErgControl->setMinimumExponent(-1);
+    ui->powerErgControl->setMinimumExponent(-4);
     ui->powerErgControl->setMaximumExponent(6);
 
     on_powerErgControl_valueChanged();
@@ -2058,9 +2067,13 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     * myLaserGoggle                                                                           *
 	******************************************************************************************/
 
+    setDataForCW_Operation();
+    setCW_SP_LEAModel();
+
     modeLockedPeak();
     fetchDataVector();
     fetchLaserOutput();
+
 	//Nascondo i controlli riguardanti i protettori ottici non previsti
     showControls(false);
     }
@@ -2127,9 +2140,14 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
 	* Invoco le funzioni per il prelievo dei dati e il tracciamento dei grafici per l'oggetto *
 	* myLaserGoggle                                                                          *
 	******************************************************************************************/
+
+    setDataForSP_Operation();
+    setCW_SP_LEAModel();
+
     modeLockedPeak();
     fetchDataVector();
     fetchLaserOutput();
+
 	//Nascondo i controlli riguardanti i protettori ottici non previsti
     showControls(false);
     }
@@ -2246,6 +2264,10 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
 	* Invoco le funzioni per il prelievo dei dati e il tracciamento dei grafici per l'oggetto *
 	* myLaserGoggle                                                                          *
 	******************************************************************************************/
+    setDataForMP_Operation();
+    setMP_LEAModel();
+    selectMP_Thermal_Model();
+
     modeLockedPeak();
     fetchLaserOutput();
     fetchDataVector();
@@ -2264,17 +2286,16 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     set_LEA_Widgets();
     setLaserGoggleWidgets();
 
-   /*******************************************************
-    * Imposto altri valori necessari per la parte grafica *
-    *******************************************************/
+   /**************************************************************************
+    * Imposto altri valori necessari per la parte grafica, emissione segnali *
+    **************************************************************************/
     setPowerErgForEMP();
-    setOpticalDistance();
-    setSkinDistances();
     setLambertianMax();
 	
-   /******************
-    * Emetto segnali *
-    ******************/
+   /*****************************
+    * Emetto i segnali restanti *
+    *****************************/
+    emit NOHD_Changed();
     emit EMP_Changed();//Cambia il diametro del fascio
     emit operationChanged();//cambia la modalità di funzionamento
     emit modified();//Per salvataggio file
@@ -2298,10 +2319,10 @@ void DockControls::setSkinWidgetsSingle()
         }
 
     if(n_laser==operation::CONTINUOS_WAVE)
-                skinPowerErgUnit="Potenza [W]";
+                skinPowerErgUnit="P [W]";
     else
         if(n_laser==operation::PULSE)
-                skinPowerErgUnit="Energia [J]";
+                skinPowerErgUnit="Q [J]";
 
     dockSkin->ui->tFormulaSkinMP_Label->setVisible(false);
     dockSkin->ui->FormulaSkinMP_Label->setVisible(false);
@@ -2332,16 +2353,19 @@ void DockControls::setSkinWidgetsSingle()
 
     dockSkin->ui->tNSHDLabel->setText((QString)"DNRP [m]");
 
-    bool DNRO_scientNot;
+    bool DNRC_scientNot;
 
 
     if(n_laser==operation::CONTINUOS_WAVE)
     {
-        DNRO_scientNot=MyLaserSkinSP_Pr->getPowerNSHD()>1.0e+03;
-        if(DNRO_scientNot)
-            dockSkin->ui->NSHDLabel->setText(QString::number(MyLaserSkinSP_Pr->getPowerNSHD(),'e', 2));
+        NSHD=MyLaserSkinSP_Pr->getPowerNSHD();
+        emit NSHD_Changed();
+
+        DNRC_scientNot=NSHD>1.0e+03;
+        if(DNRC_scientNot)
+            dockSkin->ui->NSHDLabel->setText(QString::number(NSHD,'e', 2));
             else
-            dockSkin->ui->NSHDLabel->setText(QString::number(MyLaserSkinSP_Pr->getPowerNSHD(),'f', 1));
+            dockSkin->ui->NSHDLabel->setText(QString::number(NSHD,'f', 1));
 
          dockSkin->ui->conditions_Label->setText("EMP \nper esposizioni\nda onda continua");
 
@@ -2349,11 +2373,14 @@ void DockControls::setSkinWidgetsSingle()
         else
     if(n_laser==operation::PULSE)
     {
-        DNRO_scientNot=MyLaserSkinSP_Pr->getErgNSHD()>1.0e+03;
-        if(DNRO_scientNot)
-            dockSkin->ui->NSHDLabel->setText(QString::number(MyLaserSkinSP_Pr->getErgNSHD(),'e', 2));
+        NSHD=MyLaserSkinSP_Pr->getErgNSHD();
+        emit NSHD_Changed();
+
+        DNRC_scientNot=NSHD>1.0e+03;
+        if(DNRC_scientNot)
+            dockSkin->ui->NSHDLabel->setText(QString::number(NSHD,'e', 2));
             else
-            dockSkin->ui->NSHDLabel->setText(QString::number(MyLaserSkinSP_Pr->getErgNSHD(),'f', 1));
+            dockSkin->ui->NSHDLabel->setText(QString::number(NSHD,'f', 1));
 
          dockSkin->ui->conditions_Label->setText("EMP \nper esposizioni\nda impulso singolo");
     }
@@ -2475,29 +2502,6 @@ double DockControls::getPRF()const
  * Salvattagio degli argomenti delle slot dei controlli necessari                              *
  * *********************************************************************************************/
 
-void DockControls::setOpticalDistance()
-{
-    double _NOHD;
-
-    if(n_laser==operation::CONTINUOS_WAVE)
-    {
-        _NOHD=MyLaserCW_Pr->getNOHD();
-    }
-    else if(n_laser==operation::PULSE)
-    {
-        _NOHD=MyLaserSP_Pr->getNOHD();
-    }
-    else
-    {
-        _NOHD=MyLaserMP_Pr->getNOHD();
-    }
-
-    if(_NOHD==NOHD)
-        return;
-
-     NOHD=_NOHD;
-     emit NOHD_Changed();
-}
 
 void DockControls::setLambertianMax()
 {
@@ -2522,24 +2526,6 @@ void DockControls::setLambertianMax()
     lambertianMax=_lambertianMax;
     qDebug()<<"Massimo valore della riflessione su superficie lambertiana: "<<lambertianMax;
     emit lambertianMaxChanged();
-}
-
-void DockControls::setSkinDistances()
-{
-    double _NSHD;
-
-    if(n_laser==operation::CONTINUOS_WAVE)
-        _NSHD=MyLaserSkinSP_Pr->getPowerNSHD();
-    else if(n_laser==operation::PULSE)
-        _NSHD=MyLaserSkinSP_Pr->getErgNSHD();
-    else
-        _NSHD=MyLaserSkinMP_Pr->getNSHD();
-
-    if(_NSHD==NSHD)
-        return;
-
-     NSHD=_NSHD;
-     emit NSHD_Changed();
 }
 
 double DockControls::getOpticalDistance() const
@@ -2574,8 +2560,8 @@ MyChartView* DockControls::getdChartView()const
 
 void DockControls::setDialControls()
 {
-    ui->powerErgControl->setTitle(tr("potenza [W]"));
-    ui->powerErgControl->setMinimumExponent(-3);
+    ui->powerErgControl->setTitle(tr("P [W]"));
+    ui->powerErgControl->setMinimumExponent(-4);
     ui->powerErgControl->setMaximumExponent(6);
     ui->powerErgControl->setValue(1.00e+00);
 
@@ -2904,6 +2890,10 @@ void DockControls::modeLockedPeak()
         effectivePowerErg=powerErg;
 }
 
+QVector<QString> DockControls::getLEA_DataVector()const
+{
+    return LEA_Data;
+}
 
 void DockControls::on_checkGaussianBeam_clicked(bool checked)
 {
@@ -2921,83 +2911,56 @@ void DockControls::on_checkGaussianBeam_clicked(bool checked)
 
 void DockControls::set_LEA_Widgets()
 {
-    if(((wavelength<302.5)or(wavelength>4000)))
-    {
-        dockLea->ui->frame_cond1->setVisible(false);
-        dockLea->ui->frame_cond1_1->setVisible(false);
-        dockLea->ui->frame_cond1_2->setVisible(false);
-        dockLea->ui->tBeamAperture1_Label->setVisible(false);
-        dockLea->ui->beamAperture1_Label->setVisible(false);
-        dockLea->ui->tBeamAperture1_Label_2->setVisible(false);
-        dockLea->ui->beamAperture1_Label_2->setVisible(false);
-        dockLea->ui->tBeamAperture1_Label_3->setVisible(false);
-        dockLea->ui->beamAperture1_Label_3->setVisible(false);
-    }
-    else
-    {
-        dockLea->ui->frame_cond1->setVisible(true);
-        dockLea->ui->frame_cond1_1->setVisible(true);
-        dockLea->ui->frame_cond1_2->setVisible(true);
-        dockLea->ui->tBeamAperture1_Label->setVisible(true);
-        dockLea->ui->beamAperture1_Label->setVisible(true);
-        dockLea->ui->tBeamAperture1_Label_2->setVisible(true);
-        dockLea->ui->beamAperture1_Label_2->setVisible(true);
-        dockLea->ui->tBeamAperture1_Label_3->setVisible(true);
-        dockLea->ui->beamAperture1_Label_3->setVisible(true);
-    }
-
     if(n_laser==operation::CONTINUOS_WAVE)
     {
         MyLaserClassCW_Pr->updateAll();
-        setWidgetsForCW_Operation();
-        dockLea->ui->frame_base->setVisible(true);
-        dockLea->ui->frame_meanPower->setVisible(false);
-        dockLea->ui->frame_thermal->setVisible(false);
-        dockLea->ui->base_Label->setText("CW");
-        dockLea->ui->frame_pulses->setVisible(false);      
-        dockLea->ui->frame_baseTime->setVisible(true);
-        dockLea->ui->frame_thermalC5->setVisible(false);
+        setDataForCW_Operation();
+        updateCW_SP_LEA_data();
     }
     else if(n_laser==operation::PULSE)
     {
         MyLaserClassSP_Pr->updateAll();
-        setWidgetsForSinglePulse_Operation();
-        dockLea->ui->frame_base->setVisible(true);
-        dockLea->ui->frame_meanPower->setVisible(false);
-        dockLea->ui->frame_thermal->setVisible(false);
-        dockLea->ui->frame_pulses->setVisible(false);
-        dockLea->ui->frame_baseTime->setVisible(false);
-        dockLea->ui->base_Label->setText("SP");
-        dockLea->ui->frame_thermalC5->setVisible(false);
+        setDataForSP_Operation();
+        updateCW_SP_LEA_data();
     }
     else if(n_laser==operation::MULTI_PULSE)
     {
         MyLaserClassMP_Pr->updateAll();
-        setWidgetsForMultiPulse_Operation();
-        dockLea->ui->frame_base->setVisible(true);
-        dockLea->ui->frame_meanPower->setVisible(true);
-        dockLea->ui->frame_pulses->setVisible(true);    
-        dockLea->ui->frame_baseTime->setVisible(true);
-        dockLea->ui->base_Label->setText("MP \nimpulso \nsingolo");
-        dockLea->ui->meanPowerValuation_Label->setText("Effetti \nmedi");
-        dockLea->ui->frame_thermalC5->setVisible(true);
+        setDataForMP_Operation();
+        updateMP_LEA_data();
 
         if((wavelength>=400)and(wavelength<=1400))
         {
-        dockLea->ui->frame_thermal->setVisible(true);
+            QString header;
             if(prf<1/MyLaserClassMP_Pr->getTi())
             {
-                setWidgetsForThermal();
-                dockLea->ui->thermal_label->setText("Effetti \ntermici");
+                setDataForMP_ThermalOperation();
+                header="Criterio dell'impulso per effetti termici";
             }
             else
             {
-                setWidgetsForThermalTi();
-                dockLea->ui->thermal_label->setText("Effetti termici \nalta frequenza");
+                setDataForMP_ThermalTiOperation();
+                header="Criterio dell'impulso per effetti termici in alta frequenza";
             }
+            updateMP_Thermal_LEA_data(header);
+        }
+    }
+}
+
+void  DockControls::selectMP_Thermal_Model()
+{
+    if((wavelength>=400)and(wavelength<=1400))
+    {
+        if(prf<1/MyLaserClassMP_Pr->getTi())
+        {
+            setDataForMP_ThermalOperation();
+            setMP_Thermal_LEAModel();
         }
         else
-            dockLea->ui->frame_thermal->setVisible(false);
+        {
+            setDataForMP_ThermalTiOperation();
+            setMP_ThermalTi_LEAModel();
+        }
     }
 }
 
@@ -3024,18 +2987,44 @@ QString DockControls::getLaserClassString(const LaserClassCW::laserClass & myLas
     return laserClassString;
 }
 
-void DockControls::setWidgetsForCW_Operation()
+void DockControls::setDataForCW_Operation()
 {
-    ui->powerErgControl->setTitle("Potenza [W]");
-    dockLea->ui->couplingFactor1_Label->setText(QString::number(MyLaserClassCW_Pr->getCouplingFactor_Cond_1(), 'e', 2));
-    dockLea->ui->couplingFactor3_Label->setText(QString::number(MyLaserClassCW_Pr->getCouplingFactor_Cond_3(), 'e', 2));
-    dockLea->ui->apertureDiam1_Label->setText(QString::number(MyLaserClassCW_Pr->getApCond_1(), 'e', 2)+" mm");
-    dockLea->ui->apertureDiam3_Label->setText(QString::number(MyLaserClassCW_Pr->getApCond_3(), 'e', 2)+" mm");
-    dockLea->ui->apertureDist1_Label->setText(QString::number(MyLaserClassCW_Pr->getDistCond_1(), 'e', 2)+" mm");
-    dockLea->ui->apertureDist3_Label->setText(QString::number(MyLaserClassCW_Pr->getDistCond_3(), 'e', 2)+" mm");
-    dockLea->ui->beamAperture1_Label->setText(QString::number(MyLaserClassCW_Pr->getBeamAtStop_Cond_1(), 'e', 2)+" mm");
-    dockLea->ui->beamAperture3_Label->setText(QString::number(MyLaserClassCW_Pr->getBeamAtStop_Cond_3(), 'e', 2)+" mm");
+    LEA_Data.clear();
 
+    QString diameterCond1;
+    QString distanceCond1;
+    QString beamAtStopCond1;
+    QString couplingFactor1;
+
+    if(isnan(MyLaserClassCW_Pr->getCouplingFactor_Cond_1()))
+        couplingFactor1="N.A.";
+    else
+        couplingFactor1=QString::number(MyLaserClassCW_Pr->getCouplingFactor_Cond_1(), 'e', 2);
+
+    QString couplingFactor3=QString::number(MyLaserClassCW_Pr->getCouplingFactor_Cond_3(), 'e', 2);
+
+    if(isnan(MyLaserClassCW_Pr->getApCond_1()))
+        diameterCond1="N.A.";
+    else
+        diameterCond1=QString::number(MyLaserClassCW_Pr->getApCond_1(), 'e', 2)+" mm";
+
+    QString diameterCond3=QString::number(MyLaserClassCW_Pr->getApCond_3(), 'e', 2)+" mm";
+
+    if(isnan(MyLaserClassCW_Pr->getDistCond_1()))
+        distanceCond1="N.A.";
+    else
+        distanceCond1=QString::number(MyLaserClassCW_Pr->getDistCond_1(), 'e', 2)+" mm";
+
+    QString distanceCond3=QString::number(MyLaserClassCW_Pr->getDistCond_3(), 'e', 2)+" mm";
+
+    if(isnan(MyLaserClassCW_Pr->getBeamAtStop_Cond_1()))
+        beamAtStopCond1="N.A.";
+    else
+        beamAtStopCond1=QString::number(MyLaserClassCW_Pr->getBeamAtStop_Cond_1(), 'e', 2)+" mm";
+
+    QString beamAtStopCond3=QString::number(MyLaserClassCW_Pr->getBeamAtStop_Cond_3(), 'e', 2)+" mm";
+
+    ComputeLEA::ClassData myClassData;
 
     LaserClassCW::laserClass myLaserClass=MyLaserClassCW_Pr->getLaserClass();
     QString FormulaLEA;
@@ -3046,44 +3035,35 @@ void DockControls::setWidgetsForCW_Operation()
     QString PowerErgCond_3;
     QString FormulaLEA_Label;
     QString LEA_Value_Label;
-    QString tFormulaLEA_Label;
-    QString tLEA_Value_Label;
+    QString tLEA_Label;
     QString PowerErgCond_1_Label;
     QString PowerErgCond_3_Label;
-    ComputeLEA::ClassData myClassData;
 
     if ((myLaserClass==LaserClassCW::laserClass::CLASSE_1)or(myLaserClass==LaserClassCW::laserClass::CLASSE_1M))
     {
         myClassData=ComputeLEA::ClassData::CLASSE_1_1M;
-        tFormulaLEA_Label="Formula 1 - 1M";
-        tLEA_Value_Label="LEA 1 - 1M";
+        tLEA_Label="LEA 1 - 1M";
     }
     else if ((myLaserClass==LaserClassCW::laserClass::CLASSE_2)or(myLaserClass==LaserClassCW::laserClass::CLASSE_2M))
     {
         myClassData=ComputeLEA::ClassData::CLASSE_2_2M;
-        tFormulaLEA_Label="Formula 2 - 2M";
-        tLEA_Value_Label="LEA 2 - 2M";
+        tLEA_Label="LEA 2 - 2M";
     }
     else if (myLaserClass==LaserClassCW::laserClass::CLASSE_3R)
     {
         myClassData=ComputeLEA::ClassData::CLASSE_3R;
-        tFormulaLEA_Label="Formula 3R";
-        tLEA_Value_Label="LEA 3R";
+        tLEA_Label="LEA 3R";
     }
     else if ((myLaserClass==LaserClassCW::laserClass::CLASSE_3B)or(myLaserClass==LaserClassCW::laserClass::CLASSE_4))
     {
         myClassData=ComputeLEA::ClassData::CLASSE_3B;
-        tFormulaLEA_Label="Formula 3B";
-        tLEA_Value_Label="LEA 3B";
+        tLEA_Label="LEA 3B";
     }
     else
     {
         myClassData=ComputeLEA::ClassData::SENZA_CLASSIFICA;
-        tFormulaLEA_Label="NC";
-        tLEA_Value_Label="NC";
+        tLEA_Label="NC";
     }
-
-
     FormulaLEA_Tipo=QString::fromStdString(MyLaserClassCW_Pr->getLEA_FormulaTipo()[static_cast<int>(myClassData)]);
     FormulaLEA=QString::fromStdString(MyLaserClassCW_Pr->getLEA_Formula()[static_cast<int>(myClassData)]);
     FormulaLEA_Unit=QString::fromStdString(MyLaserClassCW_Pr->getLEA_FormulaUnit()[static_cast<int>(myClassData)]);
@@ -3093,64 +3073,97 @@ void DockControls::setWidgetsForCW_Operation()
                              .arg(FormulaLEA)
                              .arg(FormulaLEA_Unit);
 
-    LEA_Value_Label=QString("%1=%2 %3")
-                             .arg(FormulaLEA_Tipo)
+    LEA_Value_Label=QString("%1 %2")
                              .arg(LEA_Value)
                              .arg(FormulaLEA_Unit);
 
     PowerErgCond_1=QString::number(MyLaserClassCW_Pr->getPowerErg_Cond_1()[static_cast<int>(myClassData)], 'e', 2);
     PowerErgCond_3=QString::number(MyLaserClassCW_Pr->getPowerErg_Cond_3()[static_cast<int>(myClassData)], 'e', 2);
 
-    PowerErgCond_1_Label=QString("%1=%2 %3")
-                             .arg(FormulaLEA_Tipo)
-                             .arg(PowerErgCond_1)
-                             .arg(FormulaLEA_Unit);
+    QString tPowerErgCond_1_Label=QString("%1<sub>Acc 1</sub>").arg(FormulaLEA_Tipo);
+    QString tPowerErgCond_3_Label=QString("%1<sub>Acc 3</sub>").arg(FormulaLEA_Tipo);
 
-    PowerErgCond_3_Label=QString("%1=%2 %3")
-                             .arg(FormulaLEA_Tipo)
+
+    if(isnan(MyLaserClassCW_Pr->getPowerErg_Cond_1()[static_cast<int>(myClassData)]))
+        PowerErgCond_1_Label="N.A.";
+    else
+        PowerErgCond_1_Label=QString("%1 %2")
+                                .arg(PowerErgCond_1)
+                                .arg(FormulaLEA_Unit);
+
+    PowerErgCond_3_Label=QString("%1 %2")
                              .arg(PowerErgCond_3)
                              .arg(FormulaLEA_Unit);
-
-    dockLea->ui->formulaLEA_Label->setText(FormulaLEA_Label);
-    dockLea->ui->LEA_Label->setText(LEA_Value_Label);
-
-    dockLea->ui->tFormulaLEA_Label->setText(tFormulaLEA_Label);
-    dockLea->ui->tLEA_Label->setText(tLEA_Value_Label);
-
-    dockLea->ui->cond1LEA_Label->setText(PowerErgCond_1_Label);
-    dockLea->ui->cond3LEA_Label->setText(PowerErgCond_3_Label);
-
-    QString tPowerErgCond_1_Label=QString("%1<sub>Acc 1</sub>").arg(FormulaLEA_Tipo);
-    dockLea->ui->tCond1LEA_Label->setText(tPowerErgCond_1_Label);
-
-    QString tPowerErgCond_3_Label=QString("%1<sub>Acc 3</sub>").arg(FormulaLEA_Tipo);
-    dockLea->ui->tCond3LEA_Label->setText(tPowerErgCond_3_Label);
-
 
     QString TimeBase_Label=QString("%1 s")
                          .arg(QString::number(MyLaserClassCW_Pr->getTimeBase()));
 
-    dockLea->ui->timeBase_Label->setText(TimeBase_Label);
+    QString classLabel=getLaserClassString(myLaserClass);
 
-    dockLea->ui->class_Label->setText(getLaserClassString(myLaserClass));
+    if(myLaserClass==LaserClassCW::laserClass::CLASSE_1)
+         ui->warning_Label->setPixmap(QPixmap(":/images/ok_circle.png"));
+    else
+         ui->warning_Label->setPixmap(QPixmap(":/images/laser_warning.png"));
 
-    ui->warning_Label->setVisible(!(myLaserClass==LaserClassCW::laserClass::CLASSE_1));
     ui->class_Label->setText(getLaserClassString(myLaserClass));
+
+    LEA_Data.push_back(TimeBase_Label);         //0
+    LEA_Data.push_back(tLEA_Label);             //1
+    LEA_Data.push_back(FormulaLEA_Label);       //2
+    LEA_Data.push_back(LEA_Value_Label);        //3
+    LEA_Data.push_back(tPowerErgCond_1_Label);  //4
+    LEA_Data.push_back(PowerErgCond_1_Label);   //5
+    LEA_Data.push_back(tPowerErgCond_3_Label);  //6
+    LEA_Data.push_back(PowerErgCond_3_Label);   //7
+
+    LEA_Data.push_back(couplingFactor1);        //8
+    LEA_Data.push_back(couplingFactor3);        //9
+    LEA_Data.push_back(diameterCond1);          //10
+    LEA_Data.push_back(diameterCond3);          //11
+    LEA_Data.push_back(distanceCond1);          //12
+    LEA_Data.push_back(distanceCond3);          //13
+    LEA_Data.push_back(beamAtStopCond1);        //14
+    LEA_Data.push_back(beamAtStopCond3);        //15
+    LEA_Data.push_back(classLabel);             //16
 }
 
-void DockControls::setWidgetsForSinglePulse_Operation()
+void DockControls::setDataForSP_Operation()
 {
-    ui->powerErgControl->setTitle("Energia [J]");
-    dockLea->ui->couplingFactor1_Label->setText(QString::number(MyLaserClassSP_Pr->getCouplingFactor_Cond_1(), 'e', 2));
-    dockLea->ui->couplingFactor3_Label->setText(QString::number(MyLaserClassSP_Pr->getCouplingFactor_Cond_3(), 'e', 2));
-    dockLea->ui->apertureDiam1_Label->setText(QString::number(MyLaserClassSP_Pr->getApCond_1(), 'e', 2)+" mm");
-    dockLea->ui->apertureDiam3_Label->setText(QString::number(MyLaserClassSP_Pr->getApCond_3(), 'e', 2)+" mm");
-    dockLea->ui->apertureDist1_Label->setText(QString::number(MyLaserClassSP_Pr->getDistCond_1(), 'e', 2)+" mm");
-    dockLea->ui->apertureDist3_Label->setText(QString::number(MyLaserClassSP_Pr->getDistCond_3(), 'e', 2)+" mm");
-    dockLea->ui->beamAperture1_Label->setText(QString::number(MyLaserClassSP_Pr->getBeamAtStop_Cond_1(), 'e', 2)+" mm");
-    dockLea->ui->beamAperture3_Label->setText(QString::number(MyLaserClassSP_Pr->getBeamAtStop_Cond_3(), 'e', 2)+" mm");
+    LEA_Data.clear();
+    QString diameterCond1;
+    QString distanceCond1;
+    QString beamAtStopCond1;
+    QString couplingFactor1;
 
-    dockLea->ui->timeBase_Label->setText("N.A.");
+    if(isnan(MyLaserClassSP_Pr->getCouplingFactor_Cond_1()))
+        couplingFactor1="N.A.";
+    else
+        couplingFactor1=QString::number(MyLaserClassSP_Pr->getCouplingFactor_Cond_1(), 'e', 2);
+
+    QString couplingFactor3=QString::number(MyLaserClassSP_Pr->getCouplingFactor_Cond_3(), 'e', 2);
+
+    if(isnan(MyLaserClassSP_Pr->getApCond_1()))
+        diameterCond1="N.A.";
+    else
+        diameterCond1=QString::number(MyLaserClassSP_Pr->getApCond_1(), 'e', 2)+" mm";
+
+    QString diameterCond3=QString::number(MyLaserClassSP_Pr->getApCond_3(), 'e', 2)+" mm";
+
+    if(isnan(MyLaserClassSP_Pr->getDistCond_1()))
+        distanceCond1="N.A.";
+    else
+        distanceCond1=QString::number(MyLaserClassSP_Pr->getDistCond_1(), 'e', 2)+" mm";
+
+    QString distanceCond3=QString::number(MyLaserClassSP_Pr->getDistCond_3(), 'e', 2)+" mm";
+
+    if(isnan(MyLaserClassSP_Pr->getBeamAtStop_Cond_1()))
+        beamAtStopCond1="N.A.";
+    else
+        beamAtStopCond1=QString::number(MyLaserClassSP_Pr->getBeamAtStop_Cond_1(), 'e', 2)+" mm";
+
+    QString beamAtStopCond3=QString::number(MyLaserClassSP_Pr->getBeamAtStop_Cond_3(), 'e', 2)+" mm";
+
+    ComputeLEA::ClassData myClassData;
 
     LaserClassCW::laserClass myLaserClass=MyLaserClassSP_Pr->getLaserClass();
     QString FormulaLEA;
@@ -3161,43 +3174,35 @@ void DockControls::setWidgetsForSinglePulse_Operation()
     QString PowerErgCond_3;
     QString FormulaLEA_Label;
     QString LEA_Value_Label;
-    QString tFormulaLEA_Label;
-    QString tLEA_Value_Label;
+    QString tLEA_Label;
     QString PowerErgCond_1_Label;
     QString PowerErgCond_3_Label;
-    ComputeLEA::ClassData myClassData;
 
-    if ((myLaserClass==LaserClassCW::laserClass::CLASSE_1)or(myLaserClass==LaserClassCW::laserClass::CLASSE_1M))
+    if ((myLaserClass==LaserClassSP::laserClass::CLASSE_1)or(myLaserClass==LaserClassSP::laserClass::CLASSE_1M))
     {
         myClassData=ComputeLEA::ClassData::CLASSE_1_1M;
-        tFormulaLEA_Label="Formula 1 - 1M";
-        tLEA_Value_Label="LEA 1 - 1M";
+        tLEA_Label="LEA 1 - 1M";
     }
-    else if ((myLaserClass==LaserClassCW::laserClass::CLASSE_2)or(myLaserClass==LaserClassCW::laserClass::CLASSE_2M))
+    else if ((myLaserClass==LaserClassSP::laserClass::CLASSE_2)or(myLaserClass==LaserClassSP::laserClass::CLASSE_2M))
     {
         myClassData=ComputeLEA::ClassData::CLASSE_2_2M;
-        tFormulaLEA_Label="Formula 2 - 2M";
-        tLEA_Value_Label="LEA 2 - 2M";
+        tLEA_Label="LEA 2 - 2M";
     }
-    else if (myLaserClass==LaserClassCW::laserClass::CLASSE_3R)
+    else if (myLaserClass==LaserClassSP::laserClass::CLASSE_3R)
     {
         myClassData=ComputeLEA::ClassData::CLASSE_3R;
-        tFormulaLEA_Label="Formula 3R";
-        tLEA_Value_Label="LEA 3R";
+        tLEA_Label="LEA 3R";
     }
-    else if ((myLaserClass==LaserClassCW::laserClass::CLASSE_3B)or(myLaserClass==LaserClassCW::laserClass::CLASSE_4))
+    else if ((myLaserClass==LaserClassSP::laserClass::CLASSE_3B)or(myLaserClass==LaserClassSP::laserClass::CLASSE_4))
     {
         myClassData=ComputeLEA::ClassData::CLASSE_3B;
-        tFormulaLEA_Label="Formula 3B";
-        tLEA_Value_Label="LEA 3B";
+        tLEA_Label="LEA 3B";
     }
     else
     {
         myClassData=ComputeLEA::ClassData::SENZA_CLASSIFICA;
-        tFormulaLEA_Label="NC";
-        tLEA_Value_Label="NC";
+        tLEA_Label="NC";
     }
-
     FormulaLEA_Tipo=QString::fromStdString(MyLaserClassSP_Pr->getLEA_FormulaTipo()[static_cast<int>(myClassData)]);
     FormulaLEA=QString::fromStdString(MyLaserClassSP_Pr->getLEA_Formula()[static_cast<int>(myClassData)]);
     FormulaLEA_Unit=QString::fromStdString(MyLaserClassSP_Pr->getLEA_FormulaUnit()[static_cast<int>(myClassData)]);
@@ -3207,72 +3212,483 @@ void DockControls::setWidgetsForSinglePulse_Operation()
                              .arg(FormulaLEA)
                              .arg(FormulaLEA_Unit);
 
-    LEA_Value_Label=QString("%1=%2 %3")
-                             .arg(FormulaLEA_Tipo)
+    LEA_Value_Label=QString("%1 %2")
                              .arg(LEA_Value)
                              .arg(FormulaLEA_Unit);
 
     PowerErgCond_1=QString::number(MyLaserClassSP_Pr->getPowerErg_Cond_1()[static_cast<int>(myClassData)], 'e', 2);
     PowerErgCond_3=QString::number(MyLaserClassSP_Pr->getPowerErg_Cond_3()[static_cast<int>(myClassData)], 'e', 2);
 
-    PowerErgCond_1_Label=QString("%1=%2 %3")
-                             .arg(FormulaLEA_Tipo)
-                             .arg(PowerErgCond_1)
-                             .arg(FormulaLEA_Unit);
+    QString tPowerErgCond_1_Label=QString("%1<sub>Acc 1</sub>").arg(FormulaLEA_Tipo);
+    QString tPowerErgCond_3_Label=QString("%1<sub>Acc 3</sub>").arg(FormulaLEA_Tipo);
 
-    PowerErgCond_3_Label=QString("%1=%2 %3")
-                             .arg(FormulaLEA_Tipo)
+    if(isnan(MyLaserClassSP_Pr->getPowerErg_Cond_1()[static_cast<int>(myClassData)]))
+        PowerErgCond_1_Label="N.A.";
+    else
+        PowerErgCond_1_Label=QString("%1 %2")
+                                .arg(PowerErgCond_1)
+                                .arg(FormulaLEA_Unit);
+
+    PowerErgCond_3_Label=QString("%1 %2")
                              .arg(PowerErgCond_3)
                              .arg(FormulaLEA_Unit);
 
-    dockLea->ui->formulaLEA_Label->setText(FormulaLEA_Label);
-    dockLea->ui->LEA_Label->setText(LEA_Value_Label);
+    QString TimeBase_Label=QString("no time base");
 
-    dockLea->ui->tFormulaLEA_Label->setText(tFormulaLEA_Label);
-    dockLea->ui->tLEA_Label->setText(tLEA_Value_Label);
+    QString classLabel=getLaserClassString(myLaserClass);
 
-    dockLea->ui->cond1LEA_Label->setText(PowerErgCond_1_Label);
-    dockLea->ui->cond3LEA_Label->setText(PowerErgCond_3_Label);
+    if(myLaserClass==LaserClassCW::laserClass::CLASSE_1)
+         ui->warning_Label->setPixmap(QPixmap(":/images/ok_circle.png"));
+    else
+         ui->warning_Label->setPixmap(QPixmap(":/images/laser_warning.png"));
 
-    QString tPowerErgCond_1_Label=QString("%1<sub>Acc 1</sub>").arg(FormulaLEA_Tipo);
-    dockLea->ui->tCond1LEA_Label->setText(tPowerErgCond_1_Label);
-
-    QString tPowerErgCond_3_Label=QString("%1<sub>Acc 3</sub>").arg(FormulaLEA_Tipo);
-    dockLea->ui->tCond3LEA_Label->setText(tPowerErgCond_3_Label);
-
-
-    QString TimeBase_Label=QString("%1 s")
-                         .arg(QString::number(MyLaserClassSP_Pr->getTimeBase()));
-
-    dockLea->ui->timeBase_Label->setText(TimeBase_Label);
-
-    dockLea->ui->class_Label->setText(getLaserClassString(myLaserClass));
-
-    ui->warning_Label->setVisible(!(myLaserClass==LaserClassCW::laserClass::CLASSE_1));
     ui->class_Label->setText(getLaserClassString(myLaserClass));
+
+    LEA_Data.push_back(TimeBase_Label);         //0
+    LEA_Data.push_back(tLEA_Label);             //1
+    LEA_Data.push_back(FormulaLEA_Label);       //2
+    LEA_Data.push_back(LEA_Value_Label);        //3
+    LEA_Data.push_back(tPowerErgCond_1_Label);	//4
+    LEA_Data.push_back(PowerErgCond_1_Label);	//5
+    LEA_Data.push_back(tPowerErgCond_3_Label);	//6
+    LEA_Data.push_back(PowerErgCond_3_Label);	//7
+
+    LEA_Data.push_back(couplingFactor1);        //8
+    LEA_Data.push_back(couplingFactor3);        //9
+    LEA_Data.push_back(diameterCond1);          //10
+    LEA_Data.push_back(diameterCond3);          //11
+    LEA_Data.push_back(distanceCond1);          //12
+    LEA_Data.push_back(distanceCond3);          //13
+    LEA_Data.push_back(beamAtStopCond1);        //14
+    LEA_Data.push_back(beamAtStopCond3);        //15
+    LEA_Data.push_back(classLabel);             //16
 }
 
-void DockControls::setWidgetsForMultiPulse_Operation()
+void DockControls::setCW_SP_LEAModel()
 {
-    ui->powerErgControl->setTitle("Energia [J]");
-    dockLea->ui->Te_Label->setText(QString::number(MyLaserClassMP_Pr->getTe(), 'e', 2)+" s");
-    dockLea->ui->Ti_Label->setText(QString::number(MyLaserClassMP_Pr->getTi(), 'e', 2)+" s");
+    leaModel=new QStandardItemModel();    
 
-    dockLea->ui->couplingFactor1_Label->setText(QString::number(MyLaserClassMP_Pr->getCouplingFactor_Cond_1(), 'e', 2));
-    dockLea->ui->couplingFactor3_Label->setText(QString::number(MyLaserClassMP_Pr->getCouplingFactor_Cond_3(), 'e', 2));
-    dockLea->ui->apertureDiam1_Label->setText(QString::number(MyLaserClassMP_Pr->getApCond_1(), 'e', 2)+" mm");
-    dockLea->ui->apertureDiam3_Label->setText(QString::number(MyLaserClassMP_Pr->getApCond_3(), 'e', 2)+" mm");
-    dockLea->ui->apertureDist1_Label->setText(QString::number(MyLaserClassMP_Pr->getDistCond_1(), 'e', 2)+" mm");
-    dockLea->ui->apertureDist3_Label->setText(QString::number(MyLaserClassMP_Pr->getDistCond_3(), 'e', 2)+" mm");
-    dockLea->ui->beamAperture1_Label->setText(QString::number(MyLaserClassMP_Pr->getBeamAtStop_Cond_1(), 'e', 2)+" mm");
-    dockLea->ui->beamAperture3_Label->setText(QString::number(MyLaserClassMP_Pr->getBeamAtStop_Cond_3(), 'e', 2)+" mm");
-    dockLea->ui->Ti_prf_Label->setText(QString::number(MyLaserClassMP_Pr->getTi()*MyLaserMP_Pr->getPRF()));
+    QStandardItem* criteriumGroup;
+    QStandardItem* timeBaseChild;
+    QStandardItem* timeBaseValueChild;
+
+    if(n_laser==operation::CONTINUOS_WAVE)
+    {
+        criteriumGroup=new QStandardItem("Criterio della potenza");
+        timeBaseChild=new QStandardItem("Base dei tempi");
+        timeBaseValueChild=new QStandardItem(QString("T<sub>b</sub>=%1")
+                                        .arg(LEA_Data.at(static_cast<int>(DockLea::CW_SP_Data::TIMEBASE))));
+        timeBaseChild->appendRow(timeBaseValueChild);
+        criteriumGroup->appendRow(timeBaseChild);
+    }
+    else
+        criteriumGroup=new QStandardItem("Criterio dell'impulso");
+
+    QStandardItem* LEA_Child=new QStandardItem(QString("%1")
+                                        .arg(LEA_Data.at(static_cast<int>(DockLea::CW_SP_Data::TLEA))));
+    QStandardItem* LEA_formulaChild=new QStandardItem(QString("formula: %1")
+                                        .arg(LEA_Data.at(static_cast<int>(DockLea::CW_SP_Data::FORMULALEA))));
+    QStandardItem* LEA_valueChild=new QStandardItem(QString("valore: %1")
+                                        .arg(LEA_Data.at(static_cast<int>(DockLea::CW_SP_Data::LEA_VALUE))));
+
+    LEA_Child->appendRow(LEA_formulaChild);
+    LEA_Child->appendRow(LEA_valueChild);
+
+    criteriumGroup->appendRow(LEA_Child);
+
+    QStandardItem* powerErgCondChild=new QStandardItem("Livello accessibile");
+
+    QStandardItem* powerErgCondChild_1=new QStandardItem(QString("%1= %2")
+                                        .arg(LEA_Data.at(static_cast<int>(DockLea::CW_SP_Data::TPOWERERGCOND_1)))
+                                        .arg(LEA_Data.at(static_cast<int>(DockLea::CW_SP_Data::POWERERGCOND_1))));
+
+    QStandardItem* powerErgCondChild_3=new QStandardItem(QString("%1= %2")
+                                        .arg(LEA_Data.at(static_cast<int>(DockLea::CW_SP_Data::TPOWERERGCOND_3)))
+                                        .arg(LEA_Data.at(static_cast<int>(DockLea::CW_SP_Data::POWERERGCOND_3))));
+
+    powerErgCondChild->appendRow(powerErgCondChild_1);
+    powerErgCondChild->appendRow(powerErgCondChild_3);
+    criteriumGroup->appendRow(powerErgCondChild);
+
+    QStandardItem* couplingFactorsChild=new QStandardItem("Fattori di accoppiamento");
+
+    QStandardItem* couplingFactor1Child= new QStandardItem(QString("&eta;<sub>1</sub>=%1")
+                                        .arg(LEA_Data.at(static_cast<int>(DockLea::CW_SP_Data::COUPLINGFACTOR1))));
+    QStandardItem* couplingFactor3Child= new QStandardItem(QString("&eta;<sub>3</sub>=%1")
+                                        .arg(LEA_Data.at(static_cast<int>(DockLea::CW_SP_Data::COUPLINGFACTOR3))));
+    couplingFactorsChild->appendRow(couplingFactor1Child);
+    couplingFactorsChild->appendRow(couplingFactor3Child);
+    criteriumGroup->appendRow(couplingFactorsChild);
+
+    QStandardItem* diametersCondChild=new QStandardItem("Diametri dei diaframmi");
+
+    QStandardItem* diameterCond1Child= new QStandardItem(QString("a<sub>1</sub>=%1")
+                                        .arg(LEA_Data.at(static_cast<int>(DockLea::CW_SP_Data::DIAMETERCOND1))));
+    QStandardItem* diameterCond3Child= new QStandardItem(QString("a<sub>3</sub>=%1")
+                                        .arg(LEA_Data.at(static_cast<int>(DockLea::CW_SP_Data::DIAMETERCOND3))));
+    diametersCondChild->appendRow(diameterCond1Child);
+    diametersCondChild->appendRow(diameterCond3Child);
+
+    criteriumGroup->appendRow(diametersCondChild);
+
+    QStandardItem* distancesCondChild=new QStandardItem("Distanze dei diaframmi");
+
+    QStandardItem* distanceCond1Child= new QStandardItem(QString("d<sub>1</sub>=%1")
+                                        .arg(LEA_Data.at(static_cast<int>(DockLea::CW_SP_Data::DISTANCECOND1))));
+    QStandardItem* distanceCond3Child= new QStandardItem(QString("d<sub>3</sub>=%1")
+                                        .arg(LEA_Data.at(static_cast<int>(DockLea::CW_SP_Data::DISTANCECOND3))));
+    distancesCondChild->appendRow(distanceCond1Child);
+    distancesCondChild->appendRow(distanceCond3Child);
+
+    criteriumGroup->appendRow(distancesCondChild);
+
+    QStandardItem* beamsAtStopCondChild=new QStandardItem("Diametri dei fasci ai diaframmi");
+
+    QStandardItem* beamAtStopCond1Child= new QStandardItem(QString("a<sub>b1</sub>=%1")
+                                        .arg(LEA_Data.at(static_cast<int>(DockLea::CW_SP_Data::BEAMATSTOPCOND1))));
+    QStandardItem* beamAtStopCond3Child= new QStandardItem(QString("a<sub>b3</sub>=%1")
+                                        .arg(LEA_Data.at(static_cast<int>(DockLea::CW_SP_Data::BEAMATSTOPCOND3))));
+    beamsAtStopCondChild->appendRow(beamAtStopCond1Child);
+    beamsAtStopCondChild->appendRow(beamAtStopCond3Child);
+
+    criteriumGroup->appendRow(beamsAtStopCondChild);
+
+    QStandardItem* laserClassChild= new QStandardItem(QString(LEA_Data.at(static_cast<int>(DockLea::CW_SP_Data::CLASS))));
+    criteriumGroup->appendRow(laserClassChild);
+
+    leaModel->appendRow(criteriumGroup);
+
+    HtmlDelegate* treeHtmlDelegate = new HtmlDelegate();
+    dockLea->ui->treeView->setModel(leaModel);
+    dockLea->ui->treeView->setItemDelegate(treeHtmlDelegate);
+
+    QModelIndex modelIndex;
+    int rows=leaModel->rowCount();
+
+    for(int i=0; i<rows; i++)
+    {
+        modelIndex=leaModel->index(i,0);
+        dockLea->ui->treeView->setExpanded(modelIndex, true);
+    }
+}
+
+void DockControls::updateCW_SP_LEA_data()
+{
+    int index=0;
+    QModelIndex firstIndex=leaModel->index(0, 0);
+    QModelIndex secondIndex=leaModel->index(index, 0, firstIndex);
+    QModelIndex thirdIndex=leaModel->index(0, 0, secondIndex);
+
+    if(n_laser==operation::CONTINUOS_WAVE)
+    {
+        leaModel->setData(thirdIndex, QVariant(QString("T<sub>b</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::CW_SP_Data::TIMEBASE)))));
+        index++;
+        secondIndex=leaModel->index(index, 0, firstIndex);
+    }
+
+    leaModel->setData(secondIndex, QVariant(QString("%1").arg(LEA_Data.at(static_cast<int>(DockLea::CW_SP_Data::TLEA)))));
+
+    thirdIndex=leaModel->index(0, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("formula: %1").arg(LEA_Data.at(static_cast<int>(DockLea::CW_SP_Data::FORMULALEA)))));
+
+    thirdIndex=leaModel->index(1, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("valore: %1").arg(LEA_Data.at(static_cast<int>(DockLea::CW_SP_Data::LEA_VALUE)))));
+
+    index++;
+    secondIndex=leaModel->index(index, 0, firstIndex);
+    thirdIndex=leaModel->index(0, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("%1= %2").arg(LEA_Data.at(static_cast<int>(DockLea::CW_SP_Data::TPOWERERGCOND_1)))
+                                                    .arg(LEA_Data.at(static_cast<int>(DockLea::CW_SP_Data::POWERERGCOND_1)))));
+
+    thirdIndex=leaModel->index(1, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("%1= %2").arg(LEA_Data.at(static_cast<int>(DockLea::CW_SP_Data::TPOWERERGCOND_3)))
+                                                    .arg(LEA_Data.at(static_cast<int>(DockLea::CW_SP_Data::POWERERGCOND_3)))));
+
+    index++;
+    secondIndex=leaModel->index(index, 0, firstIndex);
+    thirdIndex=leaModel->index(0, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("&eta;<sub>1</sub>=%1")
+                                                    .arg(LEA_Data.at(static_cast<int>(DockLea::CW_SP_Data::COUPLINGFACTOR1)))));
+
+    thirdIndex=leaModel->index(1, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("&eta;<sub>3</sub>=%1")
+                                                    .arg(LEA_Data.at(static_cast<int>(DockLea::CW_SP_Data::COUPLINGFACTOR3)))));
+
+    index++;
+    secondIndex=leaModel->index(index, 0, firstIndex);
+    thirdIndex=leaModel->index(0, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("a<sub>1</sub>=%1")
+                                                    .arg(LEA_Data.at(static_cast<int>(DockLea::CW_SP_Data::DIAMETERCOND1)))));
+
+    thirdIndex=leaModel->index(1, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("a<sub>3</sub>=%1")
+                                                    .arg(LEA_Data.at(static_cast<int>(DockLea::CW_SP_Data::DIAMETERCOND3)))));
+
+    index++;
+    secondIndex=leaModel->index(index, 0, firstIndex);
+    thirdIndex=leaModel->index(0, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("d<sub>1</sub>=%1")
+                                                    .arg(LEA_Data.at(static_cast<int>(DockLea::CW_SP_Data::DISTANCECOND1)))));
+
+    thirdIndex=leaModel->index(1, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("d<sub>3</sub>=%1")
+                                                    .arg(LEA_Data.at(static_cast<int>(DockLea::CW_SP_Data::DISTANCECOND3)))));
+
+    index++;
+    secondIndex=leaModel->index(index, 0, firstIndex);
+    thirdIndex=leaModel->index(0, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("a<sub>b1</sub>=%1")
+                                                    .arg(LEA_Data.at(static_cast<int>(DockLea::CW_SP_Data::BEAMATSTOPCOND1)))));
+
+    thirdIndex=leaModel->index(1, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("a<sub>b3</sub>=%1")
+                                                    .arg(LEA_Data.at(static_cast<int>(DockLea::CW_SP_Data::BEAMATSTOPCOND3)))));
+
+    index++;
+    secondIndex=leaModel->index(index, 0, firstIndex);
+    leaModel->setData(secondIndex, QVariant(QString(LEA_Data.at(static_cast<int>(DockLea::CW_SP_Data::CLASS)))));
+}
+
+void DockControls::updateMP_LEA_data()
+{
+    QModelIndex firstIndex=leaModel->index(0, 0);
+    leaModel->setData(firstIndex, QVariant("Criterio dell'impulso"));
+    QModelIndex secondIndex=leaModel->index(0, 0, firstIndex);
+    QModelIndex thirdIndex=leaModel->index(0, 0, secondIndex);
+
+    leaModel->setData(thirdIndex, QVariant(QString("T<sub>b</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::TIMEBASE)))));
+
+    thirdIndex=leaModel->index(1, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("T<sub>e</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::TE)))));
+
+    thirdIndex=leaModel->index(2, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("T<sub>i</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::TI_PRF)))));
+
+    thirdIndex=leaModel->index(3, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("T<sub>i</sub> &times; PRF=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::MEANPOWER)))));
+
+    thirdIndex=leaModel->index(4, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("P<sub>m</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::MEANPOWER)))));
+
+    thirdIndex=leaModel->index(5, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("N=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::PULSENUMBER)))));
+
+    thirdIndex=leaModel->index(6, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("Conteggio=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::COUNTING)))));
+
+    thirdIndex=leaModel->index(7, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("C<sub>5</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::C5)))));
+
+    secondIndex=leaModel->index(1, 0, firstIndex);
+    leaModel->setData(secondIndex, QVariant(QString("%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::TLEA)))));
+
+    thirdIndex=leaModel->index(0, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("formula: %1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::FORMULALEA)))));
+
+    thirdIndex=leaModel->index(1, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("valore: %1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::LEA_VALUE)))));
+
+    secondIndex=leaModel->index(2, 0, firstIndex);
+    thirdIndex=leaModel->index(0, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("%1= %2")
+                                        .arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::TPOWERERGCOND_1)))
+                                        .arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::POWERERGCOND_1)))));
+
+    thirdIndex=leaModel->index(1, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("%1= %2")
+                                        .arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::TPOWERERGCOND_3)))
+                                        .arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::POWERERGCOND_3)))));
+
+    secondIndex=leaModel->index(3, 0, firstIndex);
+    thirdIndex=leaModel->index(0, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("&eta;<sub>1</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::COUPLINGFACTOR1)))));
+
+    thirdIndex=leaModel->index(1, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("&eta;<sub>3</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::COUPLINGFACTOR3)))));
+
+    secondIndex=leaModel->index(4, 0, firstIndex);
+    thirdIndex=leaModel->index(0, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("a<sub>1</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::DIAMETERCOND1)))));
+
+    thirdIndex=leaModel->index(1, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("a<sub>3</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::DIAMETERCOND3)))));
+
+    secondIndex=leaModel->index(5, 0, firstIndex);
+    thirdIndex=leaModel->index(0, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("d<sub>1</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::DISTANCECOND1)))));
+
+    thirdIndex=leaModel->index(1, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("d<sub>3</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::DISTANCECOND3)))));
+
+    secondIndex=leaModel->index(6, 0, firstIndex);
+    thirdIndex=leaModel->index(0, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("a<sub>b1</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::BEAMATSTOPCOND1)))));
+
+    thirdIndex=leaModel->index(1, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("a<sub>b3</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::BEAMATSTOPCOND3)))));
+
+    secondIndex=leaModel->index(7, 0, firstIndex);
+    leaModel->setData(secondIndex, QVariant(QString("Classificazione parziale: %1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::CLASS)))));
+
+    firstIndex=leaModel->index(1, 0);
+    leaModel->setData(firstIndex, QVariant("Criterio della potenza media"));
+
+    secondIndex=leaModel->index(0, 0, firstIndex);
+    leaModel->setData(secondIndex, QVariant(QString("%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::TMEANLEA)))));
+
+    thirdIndex=leaModel->index(0, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("formula: %1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::MEANFORMULALEA)))));
+
+    thirdIndex=leaModel->index(1, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("valore: %1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::MEANLEA_VALUE)))));
+
+    secondIndex=leaModel->index(1, 0, firstIndex);
+    thirdIndex=leaModel->index(0, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("%1= %2")
+                                        .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::TMEANPOWERERGCOND_1)))
+                                        .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::MEANPOWERERGCOND_1)))));
+
+    thirdIndex=leaModel->index(1, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("%1= %2")
+                                        .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::TMEANPOWERERGCOND_3)))
+                                        .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::MEANPOWERERGCOND_3)))));
+
+    secondIndex=leaModel->index(2, 0, firstIndex);
+    thirdIndex=leaModel->index(0, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("&eta;<sub>1</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::MEANCOUPLINGFACTOR1)))));
+
+    thirdIndex=leaModel->index(1, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("&eta;<sub>3</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::MEANCOUPLINGFACTOR3)))));
+
+    secondIndex=leaModel->index(3, 0, firstIndex);
+    thirdIndex=leaModel->index(0, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("a<sub>1</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::MEANDIAMETERCOND1)))));
+
+    thirdIndex=leaModel->index(1, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("a<sub>3</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::MEANDIAMETERCOND3)))));
+
+    secondIndex=leaModel->index(4, 0, firstIndex);
+    thirdIndex=leaModel->index(0, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("d<sub>1</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::MEANDISTANCECOND1)))));
+
+    thirdIndex=leaModel->index(1, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("d<sub>3</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::MEANDISTANCECOND3)))));
+
+    secondIndex=leaModel->index(5, 0, firstIndex);
+    thirdIndex=leaModel->index(0, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("a<sub>b1</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::MEANBEAMATSTOPCOND1)))));
+
+    thirdIndex=leaModel->index(1, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("a<sub>b3</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::MEANBEAMATSTOPCOND3)))));;
+
+    secondIndex=leaModel->index(6, 0, firstIndex);
+    leaModel->setData(secondIndex, QVariant(QString("Classificazione parziale: %1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::MEANCLASS)))));
+}
+
+void DockControls::updateMP_Thermal_LEA_data(const QString & header)
+{
+    QModelIndex firstIndex=leaModel->index(2, 0);
+    leaModel->setData(firstIndex, QVariant(header));
+    QModelIndex secondIndex=leaModel->index(0, 0, firstIndex);
+    QModelIndex thirdIndex=leaModel->index(0, 0, secondIndex);
+
+    secondIndex=leaModel->index(0, 0, firstIndex);
+    leaModel->setData(secondIndex, QVariant(QString("%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_Thermal_Data::TTHERMALLEA_VALUE)))));
+
+    thirdIndex=leaModel->index(0, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("formula: %1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_Thermal_Data::THERMALFORMULALEA)))));
+
+    thirdIndex=leaModel->index(1, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("valore: %1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_Thermal_Data::THERMALLEA_VALUE)))));
+
+    secondIndex=leaModel->index(1, 0, firstIndex);
+    thirdIndex=leaModel->index(0, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("%1= %2")
+                                        .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Thermal_Data::TTHERMALPOWERERGCOND_1)))
+                                        .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Thermal_Data::THERMALPOWERERGCOND_1)))));
+
+    thirdIndex=leaModel->index(1, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("%1= %2")
+                                        .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Thermal_Data::TTHERMALPOWERERGCOND_3)))
+                                        .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Thermal_Data::THERMALPOWERERGCOND_3)))));
+
+    secondIndex=leaModel->index(2, 0, firstIndex);
+    thirdIndex=leaModel->index(0, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("&eta;<sub>1</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_Thermal_Data::THERMALCOUPLINGFACTOR1)))));
+
+    thirdIndex=leaModel->index(1, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("&eta;<sub>3</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_Thermal_Data::THERMALCOUPLINGFACTOR3)))));
+
+    secondIndex=leaModel->index(3, 0, firstIndex);
+    thirdIndex=leaModel->index(0, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("a<sub>1</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_Thermal_Data::THERMALDIAMETERCOND1)))));
+
+    thirdIndex=leaModel->index(1, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("a<sub>3</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_Thermal_Data::THERMALDIAMETERCOND3)))));
+
+    secondIndex=leaModel->index(4, 0, firstIndex);
+    thirdIndex=leaModel->index(0, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("d<sub>1</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_Thermal_Data::THERMALDISTANCECOND1)))));
+
+    thirdIndex=leaModel->index(1, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("d<sub>3</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_Thermal_Data::THERMALDISTANCECOND3)))));
+
+    secondIndex=leaModel->index(5, 0, firstIndex);
+    thirdIndex=leaModel->index(0, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("a<sub>b1</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_Thermal_Data::THERMALBEAMATSTOPCOND1)))));
+
+    thirdIndex=leaModel->index(1, 0, secondIndex);
+    leaModel->setData(thirdIndex, QVariant(QString("a<sub>b3</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_Thermal_Data::THERMALBEAMATSTOPCOND3)))));
+
+    secondIndex=leaModel->index(6, 0, firstIndex);
+    leaModel->setData(secondIndex, QVariant(QString("Classificazione parziale: %1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_Thermal_Data::THERMALCLASS)))));
+}
+
+void DockControls::setDataForMP_Operation()
+{
+    LEA_Data.clear();
+    QString diameterCond1;
+    QString distanceCond1;
+    QString beamAtStopCond1;
+    QString couplingFactor1;
+
+    if(isnan(MyLaserClassMP_Pr->getCouplingFactor_Cond_1()))
+        couplingFactor1="N.A.";
+    else
+        couplingFactor1=QString::number(MyLaserClassMP_Pr->getCouplingFactor_Cond_1(), 'e', 2);
+
+    QString couplingFactor3=QString::number(MyLaserClassMP_Pr->getCouplingFactor_Cond_3(), 'e', 2);
+
+    if(isnan(MyLaserClassMP_Pr->getApCond_1()))
+        diameterCond1="N.A.";
+    else
+        diameterCond1=QString::number(MyLaserClassMP_Pr->getApCond_1(), 'e', 2)+" mm";
+
+    QString diameterCond3=QString::number(MyLaserClassMP_Pr->getApCond_3(), 'e', 2)+" mm";
+
+    if(isnan(MyLaserClassMP_Pr->getDistCond_1()))
+        distanceCond1="N.A.";
+    else
+        distanceCond1=QString::number(MyLaserClassMP_Pr->getDistCond_1(), 'e', 2)+" mm";
+
+    QString distanceCond3=QString::number(MyLaserClassMP_Pr->getDistCond_3(), 'e', 2)+" mm";
+
+    if(isnan(MyLaserClassMP_Pr->getBeamAtStop_Cond_1()))
+        beamAtStopCond1="N.A.";
+    else
+        beamAtStopCond1=QString::number(MyLaserClassMP_Pr->getBeamAtStop_Cond_1(), 'e', 2)+" mm";
+
+    QString beamAtStopCond3=QString::number(MyLaserClassMP_Pr->getBeamAtStop_Cond_3(), 'e', 2)+" mm";
+
+    QString Te_Label=QString::number(MyLaserClassMP_Pr->getTe(), 'e', 2)+" s";
+    QString Ti_Label=QString::number(MyLaserClassMP_Pr->getTi(), 'e', 2)+" s";
+    QString Ti_prf_Label=QString::number(MyLaserClassMP_Pr->getTi()*MyLaserMP_Pr->getPRF());
 
     QString TimeBase_Label=QString("%1 s")
                          .arg(QString::number(MyLaserClassMP_Pr->getTimeBase()));
 
 
-    LaserClassCW::laserClass myLaserClass=MyLaserClassMP_Pr->getSystemClassValutation();
+    LaserClassCW::laserClass myLaserClass=MyLaserClassMP_Pr-> getLaserClass();
     QString FormulaLEA;
     QString FormulaLEA_Tipo;
     QString FormulaLEA_Unit;
@@ -3282,7 +3698,7 @@ void DockControls::setWidgetsForMultiPulse_Operation()
     QString FormulaLEA_Label;
     QString LEA_Value_Label;
     QString tFormulaLEA_Label;
-    QString tLEA_Value_Label;
+    QString tLEA_Label;
     QString PowerErgCond_1_Label;
     QString PowerErgCond_3_Label;
     ComputeLEA::ClassData myClassData;
@@ -3291,33 +3707,32 @@ void DockControls::setWidgetsForMultiPulse_Operation()
     {
         myClassData=ComputeLEA::ClassData::CLASSE_1_1M;
         tFormulaLEA_Label="Formula 1 - 1M";
-        tLEA_Value_Label="LEA 1 - 1M";
+        tLEA_Label="LEA 1 - 1M";
     }
     else if ((myLaserClass==LaserClassCW::laserClass::CLASSE_2)or(myLaserClass==LaserClassCW::laserClass::CLASSE_2M))
     {
         myClassData=ComputeLEA::ClassData::CLASSE_2_2M;
         tFormulaLEA_Label="Formula 2 - 2M";
-        tLEA_Value_Label="LEA 2 - 2M";
+        tLEA_Label="LEA 2 - 2M";
     }
     else if (myLaserClass==LaserClassCW::laserClass::CLASSE_3R)
     {
         myClassData=ComputeLEA::ClassData::CLASSE_3R;
         tFormulaLEA_Label="Formula 3R";
-        tLEA_Value_Label="LEA 3R";
+        tLEA_Label="LEA 3R";
     }
     else if ((myLaserClass==LaserClassCW::laserClass::CLASSE_3B)or(myLaserClass==LaserClassCW::laserClass::CLASSE_4))
     {
         myClassData=ComputeLEA::ClassData::CLASSE_3B;
         tFormulaLEA_Label="Formula 3B";
-        tLEA_Value_Label="LEA 3B";
+        tLEA_Label="LEA 3B";
     }
     else
     {
         myClassData=ComputeLEA::ClassData::SENZA_CLASSIFICA;
         tFormulaLEA_Label="NC";
-        tLEA_Value_Label="NC";
+        tLEA_Label="NC";
     }
-
 
     FormulaLEA_Tipo=QString::fromStdString(MyLaserClassMP_Pr->getLEA_FormulaTipo()[static_cast<int>(myClassData)]);
     FormulaLEA=QString::fromStdString(MyLaserClassMP_Pr->getLEA_Formula()[static_cast<int>(myClassData)]);
@@ -3328,346 +3743,853 @@ void DockControls::setWidgetsForMultiPulse_Operation()
                              .arg(FormulaLEA)
                              .arg(FormulaLEA_Unit);
 
-    LEA_Value_Label=QString("%1=%2 %3")
-                             .arg(FormulaLEA_Tipo)
+    LEA_Value_Label=QString("%1 %2")
                              .arg(LEA_Value)
                              .arg(FormulaLEA_Unit);
+
 
     PowerErgCond_1=QString::number(MyLaserClassMP_Pr->getPowerErg_Cond_1()[static_cast<int>(myClassData)], 'e', 2);
     PowerErgCond_3=QString::number(MyLaserClassMP_Pr->getPowerErg_Cond_3()[static_cast<int>(myClassData)], 'e', 2);
 
-    PowerErgCond_1_Label=QString("%1=%2 %3")
-                             .arg(FormulaLEA_Tipo)
-                             .arg(PowerErgCond_1)
-                             .arg(FormulaLEA_Unit);
+    if(isnan(MyLaserClassMP_Pr->getPowerErg_Cond_1()[static_cast<int>(myClassData)]))
+        PowerErgCond_1_Label="N.A.";
+    else
+        PowerErgCond_1_Label=QString("%1 %2")
+                                .arg(PowerErgCond_1)
+                                .arg(FormulaLEA_Unit);
 
-    PowerErgCond_3_Label=QString("%1=%2 %3")
-                             .arg(FormulaLEA_Tipo)
+    PowerErgCond_3_Label=QString("%1 %2")
                              .arg(PowerErgCond_3)
                              .arg(FormulaLEA_Unit);
 
-    dockLea->ui->formulaLEA_Label->setText(FormulaLEA_Label);
-    dockLea->ui->LEA_Label->setText(LEA_Value_Label);
-
-    dockLea->ui->tFormulaLEA_Label->setText(tFormulaLEA_Label);
-    dockLea->ui->tLEA_Label->setText(tLEA_Value_Label);
-
-    dockLea->ui->cond1LEA_Label->setText(PowerErgCond_1_Label);
-    dockLea->ui->cond3LEA_Label->setText(PowerErgCond_3_Label);
-
     QString tPowerErgCond_1_Label=QString("%1<sub>Acc 1</sub>").arg(FormulaLEA_Tipo);
-    dockLea->ui->tCond1LEA_Label->setText(tPowerErgCond_1_Label);
-
     QString tPowerErgCond_3_Label=QString("%1<sub>Acc 3</sub>").arg(FormulaLEA_Tipo);
-    dockLea->ui->tCond3LEA_Label->setText(tPowerErgCond_3_Label);
 
-    dockLea->ui->timeBase_Label->setText(TimeBase_Label);
-
-    dockLea->ui->class_Label->setText(getLaserClassString(myLaserClass));
-
-    ui->warning_Label->setVisible(!(myLaserClass==LaserClassCW::laserClass::CLASSE_1));
-    ui->class_Label->setText(getLaserClassString(myLaserClass));
-//    dockLea->ui->class_Label->setText(QString::fromStdString(MyLaserClassMP_Pr->getLaserClass()));
-
+    QString classLabel=getLaserClassString(myLaserClass);
 
      /*****************************************************
       * valutazione relativa l'emissione media del laser  *
       * ***************************************************/
 
-    dockLea->ui->couplingFactor1_Label_2->setText(QString::number(MyLaserClassMP_Pr->getMeanCouplingFactor_Cond_1(), 'e', 2));
-    dockLea->ui->couplingFactor3_Label_2->setText(QString::number(MyLaserClassMP_Pr->getMeanCouplingFactor_Cond_3(), 'e', 2));
-    dockLea->ui->apertureDiam1_Label_2->setText(QString::number(MyLaserClassMP_Pr->getMeanApCond_1(), 'e', 2)+" mm");
-    dockLea->ui->apertureDiam3_Label_2->setText(QString::number(MyLaserClassMP_Pr->getMeanApCond_3(), 'e', 2)+" mm");
-    dockLea->ui->apertureDist1_Label_2->setText(QString::number(MyLaserClassMP_Pr->getMeanDistCond_1(), 'e', 2)+" mm");
-    dockLea->ui->apertureDist3_Label_2->setText(QString::number(MyLaserClassMP_Pr->getMeanDistCond_3(), 'e', 2)+" mm");
-    dockLea->ui->beamAperture1_Label_2->setText(QString::number(MyLaserClassMP_Pr->getMeanBeamAtStop_Cond_1(), 'e', 2)+" mm");
-    dockLea->ui->beamAperture3_Label_2->setText(QString::number(MyLaserClassMP_Pr->getMeanBeamAtStop_Cond_3(), 'e', 2)+" mm");
+    QString meanCouplingFactor1=QString::number(MyLaserClassMP_Pr->getMeanCouplingFactor_Cond_1(), 'e', 2);
+    QString meanCouplingFactor3=QString::number(MyLaserClassMP_Pr->getMeanCouplingFactor_Cond_3(), 'e', 2);
+    QString meanDiameterCond1=QString::number(MyLaserClassMP_Pr->getMeanApCond_1(), 'e', 2)+" mm";
+    QString meanDiameterCond3=QString::number(MyLaserClassMP_Pr->getMeanApCond_3(), 'e', 2)+" mm";
+    QString meanDistanceCond1=QString::number(MyLaserClassMP_Pr->getMeanDistCond_1(), 'e', 2)+" mm";
+    QString meanDistanceCond3=QString::number(MyLaserClassMP_Pr->getMeanDistCond_3(), 'e', 2)+" mm";
+    QString meanBeamAtStopCond1=QString::number(MyLaserClassMP_Pr->getMeanBeamAtStop_Cond_1(), 'e', 2)+" mm";
+    QString meanBeamAtStopCond3=QString::number(MyLaserClassMP_Pr->getMeanBeamAtStop_Cond_3(), 'e', 2)+" mm";
 
+    LaserClassCW::laserClass myMeanLaserClass=MyLaserClassMP_Pr->getMeanLaserClassAssigned();
+    LaserClassCW::laserClass mySystemLaserClass=MyLaserClassMP_Pr->getSystemClassValutation();
+    QString meanFormulaLEA;
+    QString meanFormulaLEA_Tipo;
+    QString meanFormulaLEA_Unit;
+    QString meanLEA_Value;
+    QString meanPowerErgCond_1;
+    QString meanPowerErgCond_3;
+    QString meanFormulaLEA_Label;
+    QString meanLEA_Value_Label;
+    QString tMeanFormulaLEA_Label;
+    QString tMeanLEA_Label;
+    QString meanPowerErgCond_1_Label;
+    QString meanPowerErgCond_3_Label;
+    ComputeLEA::ClassData myMeanClassData;
 
-    FormulaLEA_Tipo=QString::fromStdString(MyLaserClassMP_Pr->getMeanLEA_FormulaTipo()[static_cast<int>(myClassData)]);
-    FormulaLEA=QString::fromStdString(MyLaserClassMP_Pr->getMeanLEA_Formula()[static_cast<int>(myClassData)]);
-    FormulaLEA_Unit=QString::fromStdString(MyLaserClassMP_Pr->getMeanLEA_FormulaUnit()[static_cast<int>(myClassData)]);
-    LEA_Value=QString::number(MyLaserClassMP_Pr->getMeanLEA()[static_cast<int>(myClassData)], 'e', 2);
-    FormulaLEA_Label=QString("%1=%2 %3")
-                             .arg(FormulaLEA_Tipo)
-                             .arg(FormulaLEA)
-                             .arg(FormulaLEA_Unit);
-
-    LEA_Value_Label=QString("%1=%2 %3")
-                             .arg(FormulaLEA_Tipo)
-                             .arg(LEA_Value)
-                             .arg(FormulaLEA_Unit);
-
-    PowerErgCond_1=QString::number(MyLaserClassMP_Pr->getMeanPowerErg_Cond_1()[static_cast<int>(myClassData)], 'e', 2);
-    PowerErgCond_3=QString::number(MyLaserClassMP_Pr->getMeanPowerErg_Cond_3()[static_cast<int>(myClassData)], 'e', 2);
-
-    PowerErgCond_1_Label=QString("%1=%2 %3")
-                             .arg(FormulaLEA_Tipo)
-                             .arg(PowerErgCond_1)
-                             .arg(FormulaLEA_Unit);
-
-    PowerErgCond_3_Label=QString("%1=%2 %3")
-                             .arg(FormulaLEA_Tipo)
-                             .arg(PowerErgCond_3)
-                             .arg(FormulaLEA_Unit);
-
-    dockLea->ui->FormulaLEA_Label_2->setText(FormulaLEA_Label);
-    dockLea->ui->LEA_Label_2->setText(LEA_Value_Label);
-
-    dockLea->ui->tFormulaLEA_Label_2->setText(tFormulaLEA_Label);
-    dockLea->ui->tLEA_Label_2->setText(tLEA_Value_Label);
-
-    dockLea->ui->cond1LEA_Label_2->setText(PowerErgCond_1_Label);
-    dockLea->ui->cond3LEA_Label_2->setText(PowerErgCond_3_Label);
-
-    QString tPowerErgCond_1_Label_2=QString("%1<sub>Acc 1</sub>").arg(FormulaLEA_Tipo);
-    dockLea->ui->tCond1LEA_Label_2->setText(tPowerErgCond_1_Label_2);
-
-    QString tPowerErgCond_3_Label_2=QString("%1<sub>Acc 3</sub>").arg(FormulaLEA_Tipo);
-    dockLea->ui->tCond3LEA_Label_2->setText(tPowerErgCond_3_Label_2);
-
-    dockLea->ui->class_Label->setText(getLaserClassString(myLaserClass));
-
-    ui->warning_Label->setVisible(!(myLaserClass==LaserClassCW::laserClass::CLASSE_1));
-    ui->class_Label->setText(getLaserClassString(myLaserClass));
-
-    dockLea->ui->MeanPowerLabel->setText(QString::number(MyLaserClassMP_Pr->getMeanPower(),'e', 2)+" W");
-    dockLea->ui->CountingLabel->setText(QString::fromStdString(MyLaserClassMP_Pr->valutateCounting()));
-
-    if((wavelength>=400)and(wavelength<=1400)){
-        dockLea->ui->C5_Label->setText(QString::number(MyLaserClassMP_Pr->getC5Coefficient(),'e', 2));}
+    if ((myMeanLaserClass==LaserClassCW::laserClass::CLASSE_1)or(myMeanLaserClass==LaserClassCW::laserClass::CLASSE_1M))
+    {
+        myMeanClassData=ComputeLEA::ClassData::CLASSE_1_1M;
+        tMeanFormulaLEA_Label="Formula 1 - 1M";
+        tMeanLEA_Label="LEA 1 - 1M";
+    }
+    else if ((myMeanLaserClass==LaserClassCW::laserClass::CLASSE_2)or(myMeanLaserClass==LaserClassCW::laserClass::CLASSE_2M))
+    {
+        myMeanClassData=ComputeLEA::ClassData::CLASSE_2_2M;
+        tMeanFormulaLEA_Label="Formula 2 - 2M";
+        tMeanLEA_Label="LEA 2 - 2M";
+    }
+    else if (myMeanLaserClass==LaserClassCW::laserClass::CLASSE_3R)
+    {
+        myMeanClassData=ComputeLEA::ClassData::CLASSE_3R;
+        tMeanFormulaLEA_Label="Formula 3R";
+        tMeanLEA_Label="LEA 3R";
+    }
+    else if ((myMeanLaserClass==LaserClassCW::laserClass::CLASSE_3B)or(myMeanLaserClass==LaserClassCW::laserClass::CLASSE_4))
+    {
+        myMeanClassData=ComputeLEA::ClassData::CLASSE_3B;
+        tMeanFormulaLEA_Label="Formula 3B";
+        tMeanLEA_Label="LEA 3B";
+    }
     else
-        dockLea->ui->C5_Label->setText("Non applicabile");
+    {
+        myMeanClassData=ComputeLEA::ClassData::SENZA_CLASSIFICA;
+        tMeanFormulaLEA_Label="NC";
+        tMeanLEA_Label="NC";
+    }
 
-    dockLea->ui->PulseNumberLabel->setText(QString::number(MyLaserClassMP_Pr->getPulseNumber()));
+    meanFormulaLEA_Tipo=QString::fromStdString(MyLaserClassMP_Pr->getMeanLEA_FormulaTipo()[static_cast<int>(myMeanClassData)]);
+    meanFormulaLEA=QString::fromStdString(MyLaserClassMP_Pr->getMeanLEA_Formula()[static_cast<int>(myMeanClassData)]);
+    meanFormulaLEA_Unit=QString::fromStdString(MyLaserClassMP_Pr->getMeanLEA_FormulaUnit()[static_cast<int>(myMeanClassData)]);
+    meanLEA_Value=QString::number(MyLaserClassMP_Pr->getMeanLEA()[static_cast<int>(myMeanClassData)], 'e', 2);
+    meanFormulaLEA_Label=QString("%1=%2 %3")
+                             .arg(meanFormulaLEA_Tipo)
+                             .arg(meanFormulaLEA)
+                             .arg(meanFormulaLEA_Unit);
+
+    meanLEA_Value_Label=QString("%1 %2")
+                             .arg(meanLEA_Value)
+                             .arg(meanFormulaLEA_Unit);
+
+    meanPowerErgCond_1=QString::number(MyLaserClassMP_Pr->getMeanPowerErg_Cond_1()[static_cast<int>(myMeanClassData)], 'e', 2);
+    meanPowerErgCond_3=QString::number(MyLaserClassMP_Pr->getMeanPowerErg_Cond_3()[static_cast<int>(myMeanClassData)], 'e', 2);
+
+    if(isnan(MyLaserClassMP_Pr->getMeanPowerErg_Cond_1()[static_cast<int>(myMeanClassData)]))
+        meanPowerErgCond_1_Label="N.A.";
+    else
+        meanPowerErgCond_1_Label=QString("%1 %2")
+                                .arg(meanPowerErgCond_1)
+                                .arg(meanFormulaLEA_Unit);
+
+    meanPowerErgCond_3_Label=QString("%1 %2")
+                             .arg(meanPowerErgCond_3)
+                             .arg(meanFormulaLEA_Unit);
+
+
+    QString tMeanPowerErgCond_1_Label=QString("%1<sub>Acc 1</sub>").arg(meanFormulaLEA_Tipo);
+    QString tMeanPowerErgCond_3_Label=QString("%1<sub>Acc 3</sub>").arg(meanFormulaLEA_Tipo);
+    QString C5_Label;
+
+    if((wavelength>=400)and(wavelength<=1400))
+        C5_Label=QString::number(MyLaserClassMP_Pr->getC5Coefficient(),'e', 2);
+    else
+        C5_Label="Non applicabile";
+
+    QString MeanPowerLabel=QString::number(MyLaserClassMP_Pr->getMeanPower(),'e', 2)+" W";
+    QString PulseNumberLabel=QString::number(MyLaserClassMP_Pr->getPulseNumber());
+    QString CountingLabel=QString::fromStdString(MyLaserClassMP_Pr->valutateCounting());
+
+   QString meanClassLabel=getLaserClassString(myMeanLaserClass);
+   QString systemClassString=getLaserClassString(mySystemLaserClass);
+
+   if(mySystemLaserClass==LaserClassCW::laserClass::CLASSE_1)
+        ui->warning_Label->setPixmap(QPixmap(":/images/ok_circle.png"));
+   else
+        ui->warning_Label->setPixmap(QPixmap(":/images/laser_warning.png"));
+
+   ui->class_Label->setText(systemClassString);
+
+    LEA_Data.push_back(TimeBase_Label);                //0
+    LEA_Data.push_back(Te_Label);                      //1
+    LEA_Data.push_back(Ti_Label);                      //2
+    LEA_Data.push_back(Ti_prf_Label);                  //3
+    LEA_Data.push_back(MeanPowerLabel);                //4
+    LEA_Data.push_back(PulseNumberLabel);              //5
+    LEA_Data.push_back(CountingLabel);                 //6
+    LEA_Data.push_back(C5_Label);                      //7
+    LEA_Data.push_back(tLEA_Label);                    //8
+    LEA_Data.push_back(FormulaLEA_Label);              //9
+    LEA_Data.push_back(LEA_Value_Label);               //10
+    LEA_Data.push_back(tPowerErgCond_1_Label);         //11
+    LEA_Data.push_back(PowerErgCond_1_Label);          //12
+    LEA_Data.push_back(tPowerErgCond_3_Label);         //13
+    LEA_Data.push_back(PowerErgCond_3_Label);          //14
+    LEA_Data.push_back(couplingFactor1);               //15
+    LEA_Data.push_back(couplingFactor3);               //16
+    LEA_Data.push_back(diameterCond1);                 //17
+    LEA_Data.push_back(diameterCond3);                 //18
+    LEA_Data.push_back(distanceCond1);                 //19
+    LEA_Data.push_back(distanceCond3);                 //20
+    LEA_Data.push_back(beamAtStopCond1);               //21
+    LEA_Data.push_back(beamAtStopCond3);               //22
+    LEA_Data.push_back(classLabel);                    //23
+    LEA_Data.push_back(tMeanLEA_Label);                //24
+    LEA_Data.push_back(meanFormulaLEA_Label);          //25
+    LEA_Data.push_back(meanLEA_Value_Label);           //26
+    LEA_Data.push_back(tMeanPowerErgCond_1_Label);     //27
+    LEA_Data.push_back(meanPowerErgCond_1_Label);      //28
+    LEA_Data.push_back(tMeanPowerErgCond_3_Label);     //29
+    LEA_Data.push_back(meanPowerErgCond_3_Label);      //30
+    LEA_Data.push_back(meanCouplingFactor1);           //31
+    LEA_Data.push_back(meanCouplingFactor3);           //32
+    LEA_Data.push_back(meanDiameterCond1);             //33
+    LEA_Data.push_back(meanDiameterCond3);             //34
+    LEA_Data.push_back(meanDistanceCond1);             //35
+    LEA_Data.push_back(meanDistanceCond3);             //36
+    LEA_Data.push_back(meanBeamAtStopCond1);           //37
+    LEA_Data.push_back(meanBeamAtStopCond3);           //38
+    LEA_Data.push_back(meanClassLabel);                //39
+    LEA_Data.push_back(systemClassString);             //40
 }
 
-void DockControls::setWidgetsForThermal()
+void DockControls::setMP_LEAModel()
+{
+    leaModel=new QStandardItemModel();
+
+    QStandardItem* criteriumGroup;
+    QStandardItem* timeChild;
+    QStandardItem* timeBaseValueChild;
+    QStandardItem* TeValueChild;
+    QStandardItem* TiValueChild;
+    QStandardItem* Ti_prfValueChild;
+    QStandardItem* MeanPowerChild;
+    QStandardItem* PulseNumberChild;
+    QStandardItem* CountingChild;
+    QStandardItem* C5ValueChild;
+
+    criteriumGroup=new QStandardItem("Criterio dell'impulso");
+    timeChild=new QStandardItem("Paramentri");
+    timeBaseValueChild=new QStandardItem(QString("T<sub>b</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::TIMEBASE))));
+    TeValueChild=new QStandardItem(QString("T<sub>e</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::TE))));
+    TiValueChild=new QStandardItem(QString("T<sub>i</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::TI))));
+    Ti_prfValueChild=new QStandardItem(QString("T<sub>i</sub>/PRF=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::TI_PRF))));
+
+    MeanPowerChild=new QStandardItem(QString("P<sub>m</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::MEANPOWER))));
+    PulseNumberChild=new QStandardItem(QString("N=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::PULSENUMBER))));
+    CountingChild=new QStandardItem(QString("Conteggio=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::COUNTING))));
+    C5ValueChild=new QStandardItem(QString("C<sub>5</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::C5))));
+
+    timeChild->appendRow(timeBaseValueChild);
+    timeChild->appendRow(TeValueChild);
+    timeChild->appendRow(TiValueChild);
+    timeChild->appendRow(Ti_prfValueChild);
+    timeChild->appendRow(MeanPowerChild);
+    timeChild->appendRow(PulseNumberChild);
+    timeChild->appendRow(CountingChild);
+    timeChild->appendRow(C5ValueChild);
+    criteriumGroup->appendRow(timeChild);
+
+    QStandardItem* LEA_Child=new QStandardItem(QString("%1")
+                                          .arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::TLEA))));
+    QStandardItem* LEA_formulaChild=new QStandardItem(QString("formula: %1")
+                                           .arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::FORMULALEA))));
+    QStandardItem* LEA_valueChild=new QStandardItem(QString("valore: %1")
+                                           .arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::LEA_VALUE))));
+
+    LEA_Child->appendRow(LEA_formulaChild);
+    LEA_Child->appendRow(LEA_valueChild);
+
+    criteriumGroup->appendRow(LEA_Child);
+
+    QStandardItem* powerErgCondChild=new QStandardItem("Livello accessibile");
+
+    QStandardItem* powerErgCondChild_1=new QStandardItem(QString("%1= %2")
+                                             .arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::TPOWERERGCOND_1)))
+                                             .arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::POWERERGCOND_1))));
+
+    QStandardItem* powerErgCondChild_3=new QStandardItem(QString("%1= %2")
+                                             .arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::TPOWERERGCOND_3)))
+                                             .arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::POWERERGCOND_3))));
+
+    powerErgCondChild->appendRow(powerErgCondChild_1);
+    powerErgCondChild->appendRow(powerErgCondChild_3);
+    criteriumGroup->appendRow(powerErgCondChild);
+
+    QStandardItem* couplingFactorsChild=new QStandardItem("Fattori di accoppiamento");
+
+    QStandardItem* couplingFactor1Child= new QStandardItem(QString("&eta;<sub>1</sub>=%1")
+                                              .arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::COUPLINGFACTOR1))));
+    QStandardItem* couplingFactor3Child= new QStandardItem(QString("&eta;<sub>3</sub>=%1")                                                       
+                                              .arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::COUPLINGFACTOR3))));
+    couplingFactorsChild->appendRow(couplingFactor1Child);
+    couplingFactorsChild->appendRow(couplingFactor3Child);
+    criteriumGroup->appendRow(couplingFactorsChild);
+
+    QStandardItem* diametersCondChild=new QStandardItem("Diametri dei diaframmi");
+
+    QStandardItem* diameterCond1Child= new QStandardItem(QString("a<sub>1</sub>=%1")
+                                               .arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::DIAMETERCOND1))));
+    QStandardItem* diameterCond3Child= new QStandardItem(QString("a<sub>3</sub>=%1")
+                                               .arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::DIAMETERCOND3))));
+    diametersCondChild->appendRow(diameterCond1Child);
+    diametersCondChild->appendRow(diameterCond3Child);
+
+    criteriumGroup->appendRow(diametersCondChild);
+
+    QStandardItem* distancesCondChild=new QStandardItem("Distanze dei diaframmi");
+
+    QStandardItem* distanceCond1Child= new QStandardItem(QString("d<sub>1</sub>=%1")
+                                                 .arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::DISTANCECOND1))));
+    QStandardItem* distanceCond3Child= new QStandardItem(QString("d<sub>3</sub>=%1")
+                                                 .arg(LEA_Data.at((static_cast<int>(DockLea::MP_SP_Data::DISTANCECOND3)))));
+    distancesCondChild->appendRow(distanceCond1Child);
+    distancesCondChild->appendRow(distanceCond3Child);
+
+    criteriumGroup->appendRow(distancesCondChild);
+
+    QStandardItem* beamsAtStopCondChild=new QStandardItem("Diametri dei fasci ai diaframmi");
+
+    QStandardItem* beamAtStopCond1Child= new QStandardItem(QString("a<sub>b1</sub>=%1")
+                                            .arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::BEAMATSTOPCOND1))));
+    QStandardItem* beamAtStopCond3Child= new QStandardItem(QString("a<sub>b3</sub>=%1")
+                                           .arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::BEAMATSTOPCOND3))));
+    beamsAtStopCondChild->appendRow(beamAtStopCond1Child);
+    beamsAtStopCondChild->appendRow(beamAtStopCond3Child);
+
+    criteriumGroup->appendRow(beamsAtStopCondChild);
+
+    QStandardItem* laserClassChild= new QStandardItem(QString("Classificazione parziale: %1")
+                                           .arg(LEA_Data.at(static_cast<int>(DockLea::MP_SP_Data::CLASS))));
+    criteriumGroup->appendRow(laserClassChild);
+
+    leaModel->appendRow(criteriumGroup);
+
+    QStandardItem* meanCriteriumGroup=new QStandardItem(QString("Criterio della potenza media"));
+    QStandardItem* meanLEA_Child=new QStandardItem(QString("%1")
+                                           .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::TMEANLEA))));
+    QStandardItem* meanLEA_formulaChild=new QStandardItem(QString("formula: %1")                                                         
+                                           .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::MEANFORMULALEA))));
+    QStandardItem* meanLEA_valueChild=new QStandardItem(QString("valore: %1")
+                                           .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::MEANLEA_VALUE))));
+
+    meanLEA_Child->appendRow(meanLEA_formulaChild);
+    meanLEA_Child->appendRow(meanLEA_valueChild);
+
+    meanCriteriumGroup->appendRow(meanLEA_Child);
+
+    QStandardItem* meanPowerErgCondChild=new QStandardItem("Livello medio accessibile");
+
+    QStandardItem* meanPowerErgCondChild_1=new QStandardItem(QString("%1= %2")
+                                           .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::TMEANPOWERERGCOND_1)))
+                                           .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::MEANPOWERERGCOND_1))));
+
+    QStandardItem* meanPowerErgCondChild_3=new QStandardItem(QString("%1= %2")
+                                           .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::TMEANPOWERERGCOND_3)))
+                                           .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::MEANPOWERERGCOND_3))));
+
+    meanPowerErgCondChild->appendRow(meanPowerErgCondChild_1);
+    meanPowerErgCondChild->appendRow(meanPowerErgCondChild_3);
+    meanCriteriumGroup->appendRow(meanPowerErgCondChild);
+
+    QStandardItem* meanCouplingFactorsChild=new QStandardItem("Fattori di accoppiamento");
+
+    QStandardItem* meanCouplingFactor1Child= new QStandardItem(QString("&eta;<sub>1</sub>=%1")
+                                           .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::MEANCOUPLINGFACTOR1))));
+    QStandardItem* meanCouplingFactor3Child= new QStandardItem(QString("&eta;<sub>3</sub>=%1")
+                                           .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::MEANCOUPLINGFACTOR3))));
+    meanCouplingFactorsChild->appendRow(meanCouplingFactor1Child);
+    meanCouplingFactorsChild->appendRow(meanCouplingFactor3Child);
+    meanCriteriumGroup->appendRow(meanCouplingFactorsChild);
+
+    QStandardItem* meanDiametersCondChild=new QStandardItem("Diametri dei diaframmi");
+
+    QStandardItem* meanDiameterCond1Child= new QStandardItem(QString("a<sub>1</sub>=%1")
+                                           .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::MEANDIAMETERCOND1))));
+    QStandardItem* meanDiameterCond3Child= new QStandardItem(QString("a<sub>3</sub>=%1")
+                                           .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::MEANDIAMETERCOND3))));
+    meanDiametersCondChild->appendRow(meanDiameterCond1Child);
+    meanDiametersCondChild->appendRow(meanDiameterCond3Child);
+
+    meanCriteriumGroup->appendRow(meanDiametersCondChild);
+
+    QStandardItem* meanDistancesCondChild=new QStandardItem("Distanze dei diaframmi");
+
+    QStandardItem* meanDistanceCond1Child= new QStandardItem(QString("d<sub>1</sub>=%1")
+                                           .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::MEANDISTANCECOND1))));
+    QStandardItem* meanDistanceCond3Child= new QStandardItem(QString("d<sub>3</sub>=%1")                                             
+                                           .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::MEANDISTANCECOND3))));
+    meanDistancesCondChild->appendRow(meanDistanceCond1Child);
+    meanDistancesCondChild->appendRow(meanDistanceCond3Child);
+
+    meanCriteriumGroup->appendRow(meanDistancesCondChild);
+
+    QStandardItem* meanBeamsAtStopCondChild=new QStandardItem("Diametri dei fasci ai diaframmi");
+
+    QStandardItem* meanBeamAtStopCond1Child= new QStandardItem(QString("a<sub>b1</sub>=%1")                                                             
+                                           .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::MEANBEAMATSTOPCOND1))));
+    QStandardItem* meanBeamAtStopCond3Child= new QStandardItem(QString("a<sub>b3</sub>=%1")
+                                           .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::MEANBEAMATSTOPCOND3))));
+    meanBeamsAtStopCondChild->appendRow(meanBeamAtStopCond1Child);
+    meanBeamsAtStopCondChild->appendRow(meanBeamAtStopCond3Child);
+
+    meanCriteriumGroup->appendRow(meanBeamsAtStopCondChild);
+
+    QStandardItem* meanLaserClassChild= new QStandardItem(QString("Classificazione parziale: %1")
+                                            .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::MEANCLASS))));
+    meanCriteriumGroup->appendRow(meanLaserClassChild);
+
+    leaModel->appendRow(meanCriteriumGroup);
+
+    HtmlDelegate* treeHtmlDelegate = new HtmlDelegate();
+    dockLea->ui->treeView->setModel(leaModel);
+    dockLea->ui->treeView->setItemDelegate(treeHtmlDelegate);
+
+    QModelIndex modelIndex;
+    int rows=leaModel->rowCount();
+
+    for(int i=0; i<rows; i++)
+    {
+        modelIndex=leaModel->index(i,0);
+        dockLea->ui->treeView->setExpanded(modelIndex, true);
+    }
+}
+
+void DockControls::setMP_Thermal_LEAModel()
+{
+    QStandardItem* thermalCriteriumGroup=new QStandardItem(QString("Criterio dell'impulso per effetti termici"));
+    QStandardItem* thermalLEA_Child=new QStandardItem(QString("%1")
+                                            .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Thermal_Data::TTHERMALLEA_VALUE))));
+    QStandardItem* thermalLEA_formulaChild=new QStandardItem(QString("formula: %1")
+                                            .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Thermal_Data::THERMALFORMULALEA))));
+    QStandardItem* thermalLEA_valueChild=new QStandardItem(QString("valore: %1")
+                                            .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Thermal_Data::THERMALLEA_VALUE))));
+
+    thermalLEA_Child->appendRow(thermalLEA_formulaChild);
+    thermalLEA_Child->appendRow(thermalLEA_valueChild);
+
+    thermalCriteriumGroup->appendRow(thermalLEA_Child);
+
+    QStandardItem* thermalPowerErgCondChild=new QStandardItem("Livello termico accessibile");
+
+    QStandardItem* thermalPowerErgCondChild_1=new QStandardItem(QString("%1= %2")
+                                            .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Thermal_Data::TTHERMALPOWERERGCOND_1)))
+                                            .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Thermal_Data::THERMALPOWERERGCOND_1))));
+
+    QStandardItem* thermalPowerErgCondChild_3=new QStandardItem(QString("%1= %2")
+                                            .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Thermal_Data::TTHERMALPOWERERGCOND_3)))
+                                            .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Thermal_Data::THERMALPOWERERGCOND_3))));
+
+    thermalPowerErgCondChild->appendRow(thermalPowerErgCondChild_1);
+    thermalPowerErgCondChild->appendRow(thermalPowerErgCondChild_3);
+    thermalCriteriumGroup->appendRow(thermalPowerErgCondChild);
+
+    QStandardItem* thermalCouplingFactorsChild=new QStandardItem("Fattori di accoppiamento");
+
+    QStandardItem* thermalCouplingFactor1Child= new QStandardItem(QString("&eta;<sub>1</sub>=%1")
+                                            .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Thermal_Data::THERMALCOUPLINGFACTOR1))));
+    QStandardItem* thermalCouplingFactor3Child= new QStandardItem(QString("&eta;<sub>3</sub>=%1")
+                                            .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Thermal_Data::THERMALCOUPLINGFACTOR3))));
+    thermalCouplingFactorsChild->appendRow(thermalCouplingFactor1Child);
+    thermalCouplingFactorsChild->appendRow(thermalCouplingFactor3Child);
+    thermalCriteriumGroup->appendRow(thermalCouplingFactorsChild);
+
+    QStandardItem* thermalDiametersCondChild=new QStandardItem("Diametri dei diaframmi");
+
+    QStandardItem* thermalDiameterCond1Child= new QStandardItem(QString("a<sub>1</sub>=%1")
+                                            .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Thermal_Data::THERMALDIAMETERCOND1))));
+    QStandardItem* thermalDiameterCond3Child= new QStandardItem(QString("a<sub>3</sub>=%1")
+                                            .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Thermal_Data::THERMALDIAMETERCOND3))));
+    thermalDiametersCondChild->appendRow(thermalDiameterCond1Child);
+    thermalDiametersCondChild->appendRow(thermalDiameterCond3Child);
+
+    thermalCriteriumGroup->appendRow(thermalDiametersCondChild);
+
+    QStandardItem* thermalDistancesCondChild=new QStandardItem("Distanze dei diaframmi");
+
+    QStandardItem* thermalDistanceCond1Child= new QStandardItem(QString("d<sub>1</sub>=%1")
+                                            .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Thermal_Data::THERMALDISTANCECOND1))));
+    QStandardItem* thermalDistanceCond3Child= new QStandardItem(QString("d<sub>3</sub>=%1")
+                                            .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Thermal_Data::THERMALDISTANCECOND3))));
+    thermalDistancesCondChild->appendRow(thermalDistanceCond1Child);
+    thermalDistancesCondChild->appendRow(thermalDistanceCond3Child);
+
+    thermalCriteriumGroup->appendRow(thermalDistancesCondChild);
+
+    QStandardItem* thermalBeamsAtStopCondChild=new QStandardItem("Diametri dei fasci ai diaframmi");
+
+    QStandardItem* thermalBeamAtStopCond1Child= new QStandardItem(QString("a<sub>b1</sub>=%1")
+                                            .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Thermal_Data::THERMALBEAMATSTOPCOND1))));
+    QStandardItem* thermalBeamAtStopCond3Child= new QStandardItem(QString("a<sub>b3</sub>=%1")
+                                            .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Thermal_Data::THERMALBEAMATSTOPCOND3))));
+    thermalBeamsAtStopCondChild->appendRow(thermalBeamAtStopCond1Child);
+    thermalBeamsAtStopCondChild->appendRow(thermalBeamAtStopCond3Child);
+
+    thermalCriteriumGroup->appendRow(thermalBeamsAtStopCondChild);
+
+    QStandardItem* thermalLaserClassChild= new QStandardItem(QString("Classificazione parziale: %1")
+                                            .arg(LEA_Data.at(static_cast<int>(DockLea::MP_Thermal_Data::THERMALCLASS))));
+    thermalCriteriumGroup->appendRow(thermalLaserClassChild);
+
+    leaModel->appendRow(thermalCriteriumGroup);
+
+    HtmlDelegate* treeHtmlDelegate = new HtmlDelegate();
+    dockLea->ui->treeView->setModel(leaModel);
+    dockLea->ui->treeView->setItemDelegate(treeHtmlDelegate);
+
+    QModelIndex modelIndex;
+    int rows=leaModel->rowCount();
+
+    for(int i=0; i<rows; i++)
+    {
+        modelIndex=leaModel->index(i,0);
+        dockLea->ui->treeView->setExpanded(modelIndex, true);
+    }
+}
+
+
+void DockControls::setMP_ThermalTi_LEAModel()
+{
+    QStandardItem* tiCriteriumGroup=new QStandardItem(QString("Criterio dell'impulso per effetti termici"));
+    QStandardItem* tiLEA_Child=new QStandardItem(QString("%1")
+                                            .arg(static_cast<int>(DockLea::MP_Thermal_Data::TTHERMALLEA_VALUE)));
+    QStandardItem* tiLEA_formulaChild=new QStandardItem(QString("formula: %1")
+                                            .arg(static_cast<int>(DockLea::MP_Thermal_Data::THERMALFORMULALEA)));
+    QStandardItem* tiLEA_valueChild=new QStandardItem(QString("valore: %1")
+                                            .arg(static_cast<int>(DockLea::MP_Thermal_Data::THERMALLEA_VALUE)));
+
+    tiLEA_Child->appendRow(tiLEA_formulaChild);
+    tiLEA_Child->appendRow(tiLEA_valueChild);
+
+    tiCriteriumGroup->appendRow(tiLEA_Child);
+
+    QStandardItem* tiPowerErgCondChild=new QStandardItem("Livello termico accessibile");
+
+    QStandardItem* tiPowerErgCondChild_1=new QStandardItem(QString("%1= %2")
+                                            .arg(static_cast<int>(DockLea::MP_Thermal_Data::TTHERMALPOWERERGCOND_1))
+                                            .arg(static_cast<int>(DockLea::MP_Thermal_Data::THERMALPOWERERGCOND_1)));
+
+    QStandardItem* tiPowerErgCondChild_3=new QStandardItem(QString("%1= %2")
+                                            .arg(static_cast<int>(DockLea::MP_Thermal_Data::TTHERMALPOWERERGCOND_3))
+                                            .arg(static_cast<int>(DockLea::MP_Thermal_Data::THERMALPOWERERGCOND_3)));
+
+    tiPowerErgCondChild->appendRow(tiPowerErgCondChild_1);
+    tiPowerErgCondChild->appendRow(tiPowerErgCondChild_3);
+    tiCriteriumGroup->appendRow(tiPowerErgCondChild);
+
+    QStandardItem* tiCouplingFactorsChild=new QStandardItem("Fattori di accoppiamento");
+
+    QStandardItem* tiCouplingFactor1Child= new QStandardItem(QString("&eta;<sub>1</sub>=%1")
+                                            .arg(static_cast<int>(DockLea::MP_Thermal_Data::THERMALCOUPLINGFACTOR1)));
+    QStandardItem* tiCouplingFactor3Child= new QStandardItem(QString("&eta;<sub>3</sub>=%1")
+                                            .arg(static_cast<int>(DockLea::MP_Thermal_Data::THERMALCOUPLINGFACTOR3)));
+    tiCouplingFactorsChild->appendRow(tiCouplingFactor1Child);
+    tiCouplingFactorsChild->appendRow(tiCouplingFactor3Child);
+    tiCriteriumGroup->appendRow(tiCouplingFactorsChild);
+
+    QStandardItem* tiDiametersCondChild=new QStandardItem("Diametri dei diaframmi");
+
+    QStandardItem* tiDiameterCond1Child= new QStandardItem(QString("a<sub>1</sub>=%1")
+                                            .arg(static_cast<int>(DockLea::MP_Thermal_Data::THERMALDIAMETERCOND1)));
+    QStandardItem* tiDiameterCond3Child= new QStandardItem(QString("a<sub>3</sub>=%1")
+                                            .arg(static_cast<int>(DockLea::MP_Thermal_Data::THERMALDIAMETERCOND3)));
+    tiDiametersCondChild->appendRow(tiDiameterCond1Child);
+    tiDiametersCondChild->appendRow(tiDiameterCond3Child);
+
+    tiCriteriumGroup->appendRow(tiDiametersCondChild);
+
+    QStandardItem* tiDistancesCondChild=new QStandardItem("Distanze dei diaframmi");
+
+    QStandardItem* tiDistanceCond1Child= new QStandardItem(QString("d<sub>1</sub>=%1")
+                                            .arg(static_cast<int>(DockLea::MP_Thermal_Data::THERMALDISTANCECOND1)));
+    QStandardItem* tiDistanceCond3Child= new QStandardItem(QString("d<sub>3</sub>=%1")
+                                            .arg(static_cast<int>(DockLea::MP_Thermal_Data::THERMALDISTANCECOND3)));
+    tiDistancesCondChild->appendRow(tiDistanceCond1Child);
+    tiDistancesCondChild->appendRow(tiDistanceCond3Child);
+
+    tiCriteriumGroup->appendRow(tiDistancesCondChild);
+
+    QStandardItem* tiBeamsAtStopCondChild=new QStandardItem("Diametri dei fasci ai diaframmi");
+
+    QStandardItem* tiBeamAtStopCond1Child= new QStandardItem(QString("a<sub>b1</sub>=%1")
+                                            .arg(static_cast<int>(DockLea::MP_Thermal_Data::THERMALBEAMATSTOPCOND1)));
+    QStandardItem* tiBeamAtStopCond3Child= new QStandardItem(QString("a<sub>b3</sub>=%1")
+                                            .arg(static_cast<int>(DockLea::MP_Thermal_Data::THERMALBEAMATSTOPCOND3)));
+    tiBeamsAtStopCondChild->appendRow(tiBeamAtStopCond1Child);
+    tiBeamsAtStopCondChild->appendRow(tiBeamAtStopCond3Child);
+
+    tiCriteriumGroup->appendRow(tiBeamsAtStopCondChild);
+
+    QStandardItem* tiLaserClassChild= new QStandardItem(QString("Classificazione parziale: %1")
+                                            .arg(static_cast<int>(DockLea::MP_Thermal_Data::THERMALCLASS)));
+    tiCriteriumGroup->appendRow(tiLaserClassChild);
+
+    leaModel->appendRow(tiCriteriumGroup);
+
+    HtmlDelegate* treeHtmlDelegate = new HtmlDelegate();
+    dockLea->ui->treeView->setModel(leaModel);
+    dockLea->ui->treeView->setItemDelegate(treeHtmlDelegate);
+
+    QModelIndex modelIndex;
+    int rows=leaModel->rowCount();
+
+    for(int i=0; i<rows; i++)
+    {
+        modelIndex=leaModel->index(i,0);
+        dockLea->ui->treeView->setExpanded(modelIndex, true);
+    }
+}
+
+void DockControls::setDataForMP_ThermalOperation()
 {
 
     /********************************************************************
      * valutazione relativa agli effetti termici del laser per prf<1/Ti *
      * ******************************************************************/
 
-    QString FormulaLEA;
-    QString FormulaLEA_Tipo;
-    QString FormulaLEA_Unit;
-    QString LEA_Value;
-    QString PowerErgCond_1;
-    QString PowerErgCond_3;
-    QString FormulaLEA_Label;
-    QString LEA_Value_Label;
-    QString tFormulaLEA_Label;
-    QString tLEA_Value_Label;
-    QString PowerErgCond_1_Label;
-    QString PowerErgCond_3_Label;
-    ComputeLEA::ClassData myClassData;
-	
-    dockLea->ui->couplingFactor1_Label_3->setText(QString::number(MyLaserClassMP_Pr->getCouplingFactor_Cond_1(), 'e', 2));
-    dockLea->ui->couplingFactor3_Label_3->setText(QString::number(MyLaserClassMP_Pr->getCouplingFactor_Cond_3(), 'e', 2));
-    dockLea->ui->apertureDiam1_Label_3->setText(QString::number(MyLaserClassMP_Pr->getApCond_1(), 'e', 2)+" mm");
-    dockLea->ui->apertureDiam3_Label_3->setText(QString::number(MyLaserClassMP_Pr->getApCond_3(), 'e', 2)+" mm");
-    dockLea->ui->apertureDist1_Label_3->setText(QString::number(MyLaserClassMP_Pr->getDistCond_1(), 'e', 2)+" mm");
-    dockLea->ui->apertureDist3_Label_3->setText(QString::number(MyLaserClassMP_Pr->getDistCond_3(), 'e', 2)+" mm");
-    dockLea->ui->beamAperture1_Label_3->setText(QString::number(MyLaserClassMP_Pr->getBeamAtStop_Cond_1(), 'e', 2)+" mm");
-    dockLea->ui->beamAperture3_Label_3->setText(QString::number(MyLaserClassMP_Pr->getBeamAtStop_Cond_3(), 'e', 2)+" mm");
+    QString thermalFormulaLEA;
+    QString thermalFormulaLEA_Tipo;
+    QString thermalFormulaLEA_Unit;
+    QString thermalLEA_Value;
+    QString thermalPowerErgCond_1;
+    QString thermalPowerErgCond_3;
+    QString thermalFormulaLEA_Label;
+    QString thermalLEA_Value_Label;
+    QString tThermalFormulaLEA_Label;
+    QString tThermalLEA_Value_Label;
+    QString thermalPowerErgCond_1_Label;
+    QString thermalPowerErgCond_3_Label;
+    ComputeLEA::ClassData myThermalClassData;
 
-    QString TimeBase_Label=QString("%1 s")
+    QString thermalCouplingFactor1;
+    QString thermalDiameterCond1;
+    QString thermalDistanceCond1;
+    QString thermalBeamAtStopCond1;
+
+    if(isnan(MyLaserClassMP_Pr->getCouplingFactor_Cond_1()))
+        thermalCouplingFactor1="N.A.";
+    else
+        thermalCouplingFactor1=QString::number(MyLaserClassMP_Pr->getCouplingFactor_Cond_1(), 'e', 2);
+
+    QString thermalCouplingFactor3=QString::number(MyLaserClassMP_Pr->getCouplingFactor_Cond_3(), 'e', 2);
+
+    if(isnan(MyLaserClassMP_Pr->getApCond_1()))
+        thermalDiameterCond1="N.A.";
+    else
+        thermalDiameterCond1=QString::number(MyLaserClassMP_Pr->getApCond_1(), 'e', 2)+" mm";
+
+    QString thermalDiameterCond3=QString::number(MyLaserClassMP_Pr->getApCond_3(), 'e', 2)+" mm";
+
+    if(isnan(MyLaserClassMP_Pr->getDistCond_1()))
+        thermalDistanceCond1="N.A.";
+    else
+        thermalDistanceCond1=QString::number(MyLaserClassMP_Pr->getDistCond_1(), 'e', 2)+" mm";
+
+    QString thermalDistanceCond3=QString::number(MyLaserClassMP_Pr->getDistCond_3(), 'e', 2)+" mm";
+
+    if(isnan(MyLaserClassMP_Pr->getBeamAtStop_Cond_1()))
+        thermalBeamAtStopCond1="N.A.";
+    else
+        thermalBeamAtStopCond1=QString::number(MyLaserClassMP_Pr->getBeamAtStop_Cond_1(), 'e', 2)+" mm";
+
+    QString thermalBeamAtStopCond3=QString::number(MyLaserClassMP_Pr->getBeamAtStop_Cond_3(), 'e', 2)+" mm";
+
+    QString thermalTimeBase_Label=QString("%1 s")
                          .arg(QString::number(MyLaserClassMP_Pr->getTimeBase()));
 
 
-    LaserClassCW::laserClass myLaserClass=MyLaserClassMP_Pr->getSystemClassValutation();
+    LaserClassCW::laserClass myThermalLaserClass=MyLaserClassMP_Pr->getC5LaserClassAssigned();
 
-    if ((myLaserClass==LaserClassCW::laserClass::CLASSE_1)or(myLaserClass==LaserClassCW::laserClass::CLASSE_1M))
+    if ((myThermalLaserClass==LaserClassCW::laserClass::CLASSE_1)or(myThermalLaserClass==LaserClassCW::laserClass::CLASSE_1M))
     {
-        myClassData=ComputeLEA::ClassData::CLASSE_1_1M;
-        tFormulaLEA_Label="Formula 1 - 1M";
-        tLEA_Value_Label="LEA 1 - 1M";
+        myThermalClassData=ComputeLEA::ClassData::CLASSE_1_1M;
+        tThermalFormulaLEA_Label="Formula 1 - 1M";
+        tThermalLEA_Value_Label="LEA 1 - 1M";
     }
-    else if ((myLaserClass==LaserClassCW::laserClass::CLASSE_2)or(myLaserClass==LaserClassCW::laserClass::CLASSE_2M))
+    else if ((myThermalLaserClass==LaserClassCW::laserClass::CLASSE_2)or(myThermalLaserClass==LaserClassCW::laserClass::CLASSE_2M))
     {
-        myClassData=ComputeLEA::ClassData::CLASSE_2_2M;
-        tFormulaLEA_Label="Formula 2 - 2M";
-        tLEA_Value_Label="LEA 2 - 2M";
+        myThermalClassData=ComputeLEA::ClassData::CLASSE_2_2M;
+        tThermalFormulaLEA_Label="Formula 2 - 2M";
+        tThermalLEA_Value_Label="LEA 2 - 2M";
     }
-    else if (myLaserClass==LaserClassCW::laserClass::CLASSE_3R)
+    else if (myThermalLaserClass==LaserClassCW::laserClass::CLASSE_3R)
     {
-        myClassData=ComputeLEA::ClassData::CLASSE_3R;
-        tFormulaLEA_Label="Formula 3R";
-        tLEA_Value_Label="LEA 3R";
+        myThermalClassData=ComputeLEA::ClassData::CLASSE_3R;
+        tThermalFormulaLEA_Label="Formula 3R";
+        tThermalLEA_Value_Label="LEA 3R";
     }
-    else if ((myLaserClass==LaserClassCW::laserClass::CLASSE_3B)or(myLaserClass==LaserClassCW::laserClass::CLASSE_4))
+    else if ((myThermalLaserClass==LaserClassCW::laserClass::CLASSE_3B)or(myThermalLaserClass==LaserClassCW::laserClass::CLASSE_4))
     {
-        myClassData=ComputeLEA::ClassData::CLASSE_3B;
-        tFormulaLEA_Label="Formula 3B";
-        tLEA_Value_Label="LEA 3B";
+        myThermalClassData=ComputeLEA::ClassData::CLASSE_3B;
+        tThermalFormulaLEA_Label="Formula 3B";
+        tThermalLEA_Value_Label="LEA 3B";
     }
     else
     {
-        myClassData=ComputeLEA::ClassData::SENZA_CLASSIFICA;
-        tFormulaLEA_Label="NC";
-        tLEA_Value_Label="NC";
+        myThermalClassData=ComputeLEA::ClassData::SENZA_CLASSIFICA;
+        tThermalFormulaLEA_Label="NC";
+        tThermalLEA_Value_Label="NC";
     }
 
-    FormulaLEA_Tipo=QString::fromStdString(MyLaserClassMP_Pr->getLEA_FormulaTipo()[static_cast<int>(myClassData)]);
-    FormulaLEA=QString::fromStdString(MyLaserClassMP_Pr->getLEA_Formula()[static_cast<int>(myClassData)]);
-    FormulaLEA_Unit=QString::fromStdString(MyLaserClassMP_Pr->getLEA_FormulaUnit()[static_cast<int>(myClassData)]);
-    LEA_Value=QString::number(MyLaserClassMP_Pr->getLEA_Corrected()[static_cast<int>(myClassData)], 'e', 2);
-    FormulaLEA_Label=QString("%1=%2 %3")
-                             .arg(FormulaLEA_Tipo)
-                             .arg(FormulaLEA)
-                             .arg(FormulaLEA_Unit);
+    thermalFormulaLEA_Tipo=QString::fromStdString(MyLaserClassMP_Pr->getLEA_FormulaTipo()[static_cast<int>(myThermalClassData)]);
+    thermalFormulaLEA=QString::fromStdString(MyLaserClassMP_Pr->getLEA_Formula()[static_cast<int>(myThermalClassData)]);
+    thermalFormulaLEA_Unit=QString::fromStdString(MyLaserClassMP_Pr->getLEA_FormulaUnit()[static_cast<int>(myThermalClassData)]);
+    thermalLEA_Value=QString::number(MyLaserClassMP_Pr->getLEA_Corrected()[static_cast<int>(myThermalClassData)], 'e', 2);
+    thermalFormulaLEA_Label=QString("%1=%2 %3")
+                             .arg(thermalFormulaLEA_Tipo)
+                             .arg(thermalFormulaLEA)
+                             .arg(thermalFormulaLEA_Unit);
 
-    LEA_Value_Label=QString("%1=%2 %3")
-                             .arg(FormulaLEA_Tipo)
-                             .arg(LEA_Value)
-                             .arg(FormulaLEA_Unit);
+    thermalLEA_Value_Label=QString("%1 %2")
+                             .arg(thermalLEA_Value)
+                             .arg(thermalFormulaLEA_Unit);
 
-    PowerErgCond_1=QString::number(MyLaserClassMP_Pr->getPowerErg_Cond_1()[static_cast<int>(myClassData)], 'e', 2);
-    PowerErgCond_3=QString::number(MyLaserClassMP_Pr->getPowerErg_Cond_3()[static_cast<int>(myClassData)], 'e', 2);
+    QString tThermalPowerErgCond_1_Label=QString("%1<sub>Acc 1</sub>").arg(thermalFormulaLEA_Tipo);
+    QString tThermalPowerErgCond_3_Label=QString("%1<sub>Acc 3</sub>").arg(thermalFormulaLEA_Tipo);
 
-    PowerErgCond_1_Label=QString("%1=%2 %3")
-                             .arg(FormulaLEA_Tipo)
-                             .arg(PowerErgCond_1)
-                             .arg(FormulaLEA_Unit);
+    thermalPowerErgCond_1=QString::number(MyLaserClassMP_Pr->getPowerErg_Cond_1()[static_cast<int>(myThermalClassData)], 'e', 2);
+    thermalPowerErgCond_3=QString::number(MyLaserClassMP_Pr->getPowerErg_Cond_3()[static_cast<int>(myThermalClassData)], 'e', 2);
 
-    PowerErgCond_3_Label=QString("%1=%2 %3")
-                             .arg(FormulaLEA_Tipo)
-                             .arg(PowerErgCond_3)
-                             .arg(FormulaLEA_Unit);
+    if(isnan(MyLaserClassMP_Pr->getPowerErg_Cond_1()[static_cast<int>(myThermalClassData)]))
+        thermalPowerErgCond_1_Label="N.A.";
+    else
+        thermalPowerErgCond_1_Label=QString("%1 %2")
+                                .arg(thermalPowerErgCond_1)
+                                .arg(thermalFormulaLEA_Unit);
 
-    dockLea->ui->FormulaLEA_Label_3->setText(FormulaLEA_Label);
-    dockLea->ui->LEA_Label_3->setText(LEA_Value_Label);
+    thermalPowerErgCond_1_Label=QString("%1 %2")
+                             .arg(thermalPowerErgCond_1)
+                             .arg(thermalFormulaLEA_Unit);
 
-    dockLea->ui->tFormulaLEA_Label_3->setText(tFormulaLEA_Label);
-    dockLea->ui->tLEA_Label_3->setText(tLEA_Value_Label);
+    thermalPowerErgCond_3_Label=QString("%1 %2")
+                             .arg(thermalPowerErgCond_3)
+                             .arg(thermalFormulaLEA_Unit);
 
-    dockLea->ui->cond1LEA_Label_3->setText(PowerErgCond_1_Label);
-    dockLea->ui->cond3LEA_Label_3->setText(PowerErgCond_3_Label);
+   QString thermalClassLabel=getLaserClassString(myThermalLaserClass);
 
-    QString tPowerErgCond_1_Label=QString("%1<sub>Acc 1</sub>").arg(FormulaLEA_Tipo);
-    dockLea->ui->tCond1LEA_Label_3->setText(tPowerErgCond_1_Label);
-
-    QString tPowerErgCond_3_Label=QString("%1<sub>Acc 3</sub>").arg(FormulaLEA_Tipo);
-    dockLea->ui->tCond3LEA_Label_3->setText(tPowerErgCond_3_Label);
-
-    dockLea->ui->class_Label->setText(getLaserClassString(myLaserClass));
-
-    ui->warning_Label->setVisible(!(myLaserClass==LaserClassCW::laserClass::CLASSE_1));
-    ui->class_Label->setText(getLaserClassString(myLaserClass));
+    LEA_Data.push_back(tThermalLEA_Value_Label);       //41
+    LEA_Data.push_back(thermalFormulaLEA_Label);       //42
+    LEA_Data.push_back(thermalLEA_Value_Label);        //43
+    LEA_Data.push_back(tThermalPowerErgCond_1_Label);  //44
+    LEA_Data.push_back(thermalPowerErgCond_1_Label);   //45
+    LEA_Data.push_back(tThermalPowerErgCond_3_Label);  //46
+    LEA_Data.push_back(thermalPowerErgCond_3_Label);   //47
+    LEA_Data.push_back(thermalCouplingFactor1);        //48
+    LEA_Data.push_back(thermalCouplingFactor3);        //49
+    LEA_Data.push_back(thermalDiameterCond1);          //50
+    LEA_Data.push_back(thermalDiameterCond3);          //51
+    LEA_Data.push_back(thermalDistanceCond1);          //52
+    LEA_Data.push_back(thermalDistanceCond3);          //53
+    LEA_Data.push_back(thermalBeamAtStopCond1);          //54
+    LEA_Data.push_back(thermalBeamAtStopCond3);          //55
+    LEA_Data.push_back(thermalClassLabel);             //56
 }
 
 
-
-void DockControls::setWidgetsForThermalTi()
+void DockControls::setDataForMP_ThermalTiOperation()
 {
         /********************************************************************
          * valutazione relativa agli effetti termici del laser per prf>1/Ti *
          * ******************************************************************/
-    LaserClassCW::laserClass myLaserClass=MyLaserClassMP_Pr->getSystemClassValutation();
-    QString FormulaLEA;
-    QString FormulaLEA_Tipo;
-    QString FormulaLEA_Unit;
-    QString LEA_Value;
-    QString PowerErgCond_1;
-    QString PowerErgCond_3;
-    QString FormulaLEA_Label;
-    QString LEA_Value_Label;
-    QString tFormulaLEA_Label;
-    QString tLEA_Value_Label;
-    QString PowerErgCond_1_Label;
-    QString PowerErgCond_3_Label;
-    ComputeLEA::ClassData myClassData;
-	
-    dockLea->ui->couplingFactor1_Label_3->setText(QString::number(MyLaserClassMP_Pr->getTiCouplingFactor_Cond_1(), 'e', 2));
-    dockLea->ui->couplingFactor3_Label_3->setText(QString::number(MyLaserClassMP_Pr->getTiCouplingFactor_Cond_3(), 'e', 2));
-    dockLea->ui->apertureDiam1_Label_3->setText(QString::number(MyLaserClassMP_Pr->getTiApCond_1(), 'e', 2)+" mm");
-    dockLea->ui->apertureDiam3_Label_3->setText(QString::number(MyLaserClassMP_Pr->getTiApCond_3(), 'e', 2)+" mm");
-    dockLea->ui->apertureDist1_Label_3->setText(QString::number(MyLaserClassMP_Pr->getTiDistCond_1(), 'e', 2)+" mm");
-    dockLea->ui->apertureDist3_Label_3->setText(QString::number(MyLaserClassMP_Pr->getTiDistCond_3(), 'e', 2)+" mm");
-    dockLea->ui->beamAperture1_Label_3->setText(QString::number(MyLaserClassMP_Pr->getTiBeamAtStop_Cond_1(), 'e', 2)+" mm");
-    dockLea->ui->beamAperture3_Label_3->setText(QString::number(MyLaserClassMP_Pr->getTiBeamAtStop_Cond_3(), 'e', 2)+" mm");
+    LaserClassCW::laserClass myTiLaserClass=MyLaserClassMP_Pr->getTiLaserClassAssigned();
 
-	QString TimeBase_Label=QString("%1 s")
+    QString tiFormulaLEA;
+    QString tiFormulaLEA_Tipo;
+    QString tiFormulaLEA_Unit;
+    QString tiLEA_Value;
+    QString tiPowerErgCond_1;
+    QString tiPowerErgCond_3;
+    QString tiFormulaLEA_Label;
+    QString tiLEA_Value_Label;
+    QString tTiFormulaLEA_Label;
+    QString tTiLEA_Value_Label;
+    QString tiPowerErgCond_1_Label;
+    QString tiPowerErgCond_3_Label;
+    ComputeLEA::ClassData myTiClassData;
+
+    QString tiDiameterCond1;
+    QString tiDistanceCond1;
+    QString tiBeamAtStopCond1;
+    QString tiCouplingFactor1;
+
+    if(MyLaserClassMP_Pr->getTiCouplingFactor_Cond_1())
+        tiCouplingFactor1="N.A.";
+    else
+        tiCouplingFactor1=QString::number(MyLaserClassMP_Pr->getTiCouplingFactor_Cond_1(), 'e', 2);
+
+    QString tiCouplingFactor3=QString::number(MyLaserClassMP_Pr->getTiCouplingFactor_Cond_3(), 'e', 2);
+
+    if(isnan(MyLaserClassMP_Pr->getTiApCond_1()))
+        tiDiameterCond1="N.A.";
+    else
+        tiDiameterCond1=QString::number(MyLaserClassMP_Pr->getTiApCond_1(), 'e', 2)+" mm";
+
+    QString tiDiameterCond3=QString::number(MyLaserClassMP_Pr->getTiApCond_3(), 'e', 2)+" mm";
+
+    if(isnan(MyLaserClassMP_Pr->getTiDistCond_1()))
+        tiDistanceCond1="N.A.";
+    else
+        tiDistanceCond1=QString::number(MyLaserClassMP_Pr->getTiDistCond_1(), 'e', 2)+" mm";
+
+    QString tiDistanceCond3=QString::number(MyLaserClassMP_Pr->getTiDistCond_3(), 'e', 2)+" mm";
+
+    if(isnan(MyLaserClassMP_Pr->getTiBeamAtStop_Cond_1()))
+        tiBeamAtStopCond1="N.A.";
+    else
+        tiBeamAtStopCond1=QString::number(MyLaserClassMP_Pr->getTiBeamAtStop_Cond_1(), 'e', 2)+" mm";
+
+    QString tiBeamAtStopCond3=QString::number(MyLaserClassMP_Pr->getTiBeamAtStop_Cond_3(), 'e', 2)+" mm";
+
+    QString tiTimeBase_Label=QString("%1 s")
                     .arg(QString::number(MyLaserClassMP_Pr->getTimeBase()));
 
-    if ((myLaserClass==LaserClassCW::laserClass::CLASSE_1)or(myLaserClass==LaserClassCW::laserClass::CLASSE_1M))
+    if ((myTiLaserClass==LaserClassCW::laserClass::CLASSE_1)or(myTiLaserClass==LaserClassCW::laserClass::CLASSE_1M))
     {
-        myClassData=ComputeLEA::ClassData::CLASSE_1_1M;
-        tFormulaLEA_Label="Formula 1 - 1M";
-        tLEA_Value_Label="LEA 1 - 1M";
+        myTiClassData=ComputeLEA::ClassData::CLASSE_1_1M;
+        tTiFormulaLEA_Label="Formula 1 - 1M";
+        tTiLEA_Value_Label="LEA 1 - 1M";
     }
-    else if ((myLaserClass==LaserClassCW::laserClass::CLASSE_2)or(myLaserClass==LaserClassCW::laserClass::CLASSE_2M))
+    else if ((myTiLaserClass==LaserClassCW::laserClass::CLASSE_2)or(myTiLaserClass==LaserClassCW::laserClass::CLASSE_2M))
     {
-        myClassData=ComputeLEA::ClassData::CLASSE_2_2M;
-        tFormulaLEA_Label="Formula 2 - 2M";
-        tLEA_Value_Label="LEA 2 - 2M";
+        myTiClassData=ComputeLEA::ClassData::CLASSE_2_2M;
+        tTiFormulaLEA_Label="Formula 2 - 2M";
+        tTiLEA_Value_Label="LEA 2 - 2M";
     }
-    else if (myLaserClass==LaserClassCW::laserClass::CLASSE_3R)
+    else if (myTiLaserClass==LaserClassCW::laserClass::CLASSE_3R)
     {
-        myClassData=ComputeLEA::ClassData::CLASSE_3R;
-        tFormulaLEA_Label="Formula 3R";
-        tLEA_Value_Label="LEA 3R";
+        myTiClassData=ComputeLEA::ClassData::CLASSE_3R;
+        tTiFormulaLEA_Label="Formula 3R";
+        tTiLEA_Value_Label="LEA 3R";
     }
-    else if ((myLaserClass==LaserClassCW::laserClass::CLASSE_3B)or(myLaserClass==LaserClassCW::laserClass::CLASSE_4))
+    else if ((myTiLaserClass==LaserClassCW::laserClass::CLASSE_3B)or(myTiLaserClass==LaserClassCW::laserClass::CLASSE_4))
     {
-        myClassData=ComputeLEA::ClassData::CLASSE_3B;
-        tFormulaLEA_Label="Formula 3B";
-        tLEA_Value_Label="LEA 3B";
+        myTiClassData=ComputeLEA::ClassData::CLASSE_3B;
+        tTiFormulaLEA_Label="Formula 3B";
+        tTiLEA_Value_Label="LEA 3B";
     }
     else
     {
-        myClassData=ComputeLEA::ClassData::SENZA_CLASSIFICA;
-        tFormulaLEA_Label="NC";
-        tLEA_Value_Label="NC";
+        myTiClassData=ComputeLEA::ClassData::SENZA_CLASSIFICA;
+        tTiFormulaLEA_Label="NC";
+        tTiLEA_Value_Label="NC";
     }
 
-    FormulaLEA_Tipo=QString::fromStdString(MyLaserClassMP_Pr->getTiLEA_FormulaTipo()[static_cast<int>(myClassData)]);
-    FormulaLEA=QString::fromStdString(MyLaserClassMP_Pr->getTiLEA_Formula()[static_cast<int>(myClassData)]);
-    FormulaLEA_Unit=QString::fromStdString(MyLaserClassMP_Pr->getTiLEA_FormulaUnit()[static_cast<int>(myClassData)]);
-    LEA_Value=QString::number(MyLaserClassMP_Pr->getTiLEA_Corrected()[static_cast<int>(myClassData)], 'e', 2);
-    FormulaLEA_Label=QString("%1=%2 %3")
-                             .arg(FormulaLEA_Tipo)
-                             .arg(FormulaLEA)
-                             .arg(FormulaLEA_Unit);
+    tiFormulaLEA_Tipo=QString::fromStdString(MyLaserClassMP_Pr->getTiLEA_FormulaTipo()[static_cast<int>(myTiClassData)]);
+    tiFormulaLEA=QString::fromStdString(MyLaserClassMP_Pr->getTiLEA_Formula()[static_cast<int>(myTiClassData)]);
+    tiFormulaLEA_Unit=QString::fromStdString(MyLaserClassMP_Pr->getTiLEA_FormulaUnit()[static_cast<int>(myTiClassData)]);
+    tiLEA_Value=QString::number(MyLaserClassMP_Pr->getTiLEA_Corrected()[static_cast<int>(myTiClassData)], 'e', 2);
+    tiFormulaLEA_Label=QString("%1=%2 %3")
+                             .arg(tiFormulaLEA_Tipo)
+                             .arg(tiFormulaLEA)
+                             .arg(tiFormulaLEA_Unit);
 
-    LEA_Value_Label=QString("%1=%2 %3")
-                             .arg(FormulaLEA_Tipo)
-                             .arg(LEA_Value)
-                             .arg(FormulaLEA_Unit);
+    tiLEA_Value_Label=QString("%1 %2")
+                             .arg(tiLEA_Value)
+                             .arg(tiFormulaLEA_Unit);
 
-    PowerErgCond_1=QString::number(MyLaserClassMP_Pr->getTiPowerErg_Cond_1()[static_cast<int>(myClassData)], 'e', 2);
-    PowerErgCond_3=QString::number(MyLaserClassMP_Pr->getTiPowerErg_Cond_3()[static_cast<int>(myClassData)], 'e', 2);
+    tiPowerErgCond_1=QString::number(MyLaserClassMP_Pr->getTiPowerErg_Cond_1()[static_cast<int>(myTiClassData)], 'e', 2);
+    tiPowerErgCond_3=QString::number(MyLaserClassMP_Pr->getTiPowerErg_Cond_3()[static_cast<int>(myTiClassData)], 'e', 2);
 
-    PowerErgCond_1_Label=QString("%1=%2 %3")
-                             .arg(FormulaLEA_Tipo)
-                             .arg(PowerErgCond_1)
-                             .arg(FormulaLEA_Unit);
+    QString tTiPowerErgCond_1_Label=QString("%1<sub>Acc 1</sub>").arg(tiFormulaLEA_Tipo);
+    QString tTiPowerErgCond_3_Label=QString("%1<sub>Acc 3</sub>").arg(tiFormulaLEA_Tipo);
 
-    PowerErgCond_3_Label=QString("%1=%2 %3")
-                             .arg(FormulaLEA_Tipo)
-                             .arg(PowerErgCond_3)
-                             .arg(FormulaLEA_Unit);
+    if(isnan(MyLaserClassMP_Pr->getTiPowerErg_Cond_1()[static_cast<int>(myTiClassData)]))
+        tiPowerErgCond_1_Label="N.A.";
+    else
+        tiPowerErgCond_1_Label=QString("%1 %2")
+                                .arg(tiPowerErgCond_1)
+                                .arg(tiFormulaLEA_Unit);
 
-    dockLea->ui->FormulaLEA_Label_3->setText(FormulaLEA_Label);
-    dockLea->ui->LEA_Label_3->setText(LEA_Value_Label);
+    tiPowerErgCond_3_Label=QString("%1 %2")
+                             .arg(tiPowerErgCond_3)
+                             .arg(tiFormulaLEA_Unit);
 
-    dockLea->ui->tFormulaLEA_Label_3->setText(tFormulaLEA_Label);
-    dockLea->ui->tLEA_Label_3->setText(tLEA_Value_Label);
+    QString thermalTiClassLabel=getLaserClassString(myTiLaserClass);
 
-    dockLea->ui->cond1LEA_Label_3->setText(PowerErgCond_1_Label);
-    dockLea->ui->cond3LEA_Label_3->setText(PowerErgCond_3_Label);
-
-    QString tPowerErgCond_1_Label_3=QString("%1<sub>Acc 1</sub>").arg(FormulaLEA_Tipo);
-    dockLea->ui->tCond1LEA_Label_3->setText(tPowerErgCond_1_Label_3);
-
-    QString tPowerErgCond_3_Label_3=QString("%1<sub>Acc 3</sub>").arg(FormulaLEA_Tipo);
-    dockLea->ui->tCond3LEA_Label_3->setText(tPowerErgCond_3_Label_3);
-
-    dockLea->ui->class_Label->setText(getLaserClassString(myLaserClass));
-
-    ui->warning_Label->setVisible(!(myLaserClass==LaserClassCW::laserClass::CLASSE_1));
-    ui->class_Label->setText(getLaserClassString(myLaserClass));
+    LEA_Data.push_back(tTiLEA_Value_Label);       //40
+    LEA_Data.push_back(tiFormulaLEA_Label);       //41
+    LEA_Data.push_back(tiLEA_Value_Label);        //42
+    LEA_Data.push_back(tTiPowerErgCond_1_Label);  //43
+    LEA_Data.push_back(tiPowerErgCond_1_Label);   //44
+    LEA_Data.push_back(tTiPowerErgCond_3_Label);  //45
+    LEA_Data.push_back(tiPowerErgCond_3_Label);   //46
+    LEA_Data.push_back(tiCouplingFactor1);        //47
+    LEA_Data.push_back(tiCouplingFactor3);        //48
+    LEA_Data.push_back(tiDiameterCond1);          //49
+    LEA_Data.push_back(tiDiameterCond3);          //50
+    LEA_Data.push_back(tiDistanceCond1);          //51
+    LEA_Data.push_back(tiDistanceCond3);          //52
+    LEA_Data.push_back(tiBeamAtStopCond1);        //53
+    LEA_Data.push_back(tiBeamAtStopCond3);        //54
+    LEA_Data.push_back(thermalTiClassLabel);      //55
 }
 
 void DockControls::on_internalWaist_checkBox_toggled(bool checked)
@@ -3971,4 +4893,35 @@ double DockControls::ordinaryExposureTime(const double &wavelength)
         ordinaryExposureTime=10;
 
  return ordinaryExposureTime;
+}
+
+void DockControls::kindOfHazardChanged()
+{
+    if(n_laser==operation::MULTI_PULSE)
+    {
+    bool thermalHazard=(wavelength>=400)&&(wavelength<=1400);
+    if(thermalHazard==isThermalHazard)
+        return;
+
+    isThermalHazard=thermalHazard;
+    emit hazardChanged();
+    }
+}
+
+void DockControls::setLEAModelForWavelength()
+{
+    if(n_laser==operation::MULTI_PULSE)
+    {
+        if(!isThermalHazard)
+        {
+            setDataForMP_Operation();
+            setMP_LEAModel();
+        }
+        else
+        {
+            setDataForMP_Operation();
+            setMP_LEAModel();
+            selectMP_Thermal_Model();
+        }
+    }
 }

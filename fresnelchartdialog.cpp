@@ -1,9 +1,10 @@
 #include "fresnelchartdialog.h"
 #include "ui_fresnelchartdialog.h"
 #include "fresnelchartview.h"
+#include <cmath>
 #include <QDebug>
 
-FresnelChartDialog::FresnelChartDialog(Reflector *reflector, QWidget *parent)
+FresnelChartDialog::FresnelChartDialog(Reflector *reflector, bool _thema, QWidget *parent)
     : QDialog(parent)
       , ui(new Ui::FresnelChartDialog)
 {
@@ -11,6 +12,7 @@ FresnelChartDialog::FresnelChartDialog(Reflector *reflector, QWidget *parent)
 
     this->reflector=reflector;
 
+    thema=_thema;
     distance=reflector->getReflectorDistance();
     dnro=reflector->getOpticalDiameter();
     divergence=reflector->getDivergence();
@@ -22,20 +24,38 @@ FresnelChartDialog::FresnelChartDialog(Reflector *reflector, QWidget *parent)
     positioning=reflector->getPositioning();
     positioningElement=reflector->getPositioningElement();
 
-    polarChartView = new FresnelChartView(0, dataVector, maxElement, correctPositioning);
-    polarChartView->setRenderHint(QPainter::Antialiasing);
-    polarChartView->setDistance(distance);
-    ui->gridLayout->addWidget(polarChartView, 1, 0, Qt::AlignCenter);
+    if(maxElement>0)
+    {
+        polarChartView = new FresnelChartView(0, dataVector, maxElement, correctPositioning);
+        polarChartView->setRenderHint(QPainter::Antialiasing);
 
-    polarChartView->setRenderHint(QPainter::Antialiasing);
+        if(thema)
+        {
+            polarChartView->setStyleSheet("QGraphicsView{background-color:#fafafa;}");
+            polarChartView->setChartBackgroundBrush(QColor::fromRgb(250, 250, 250));
+        }
+        else
+        {
+            polarChartView->setStyleSheet("QGraphicsView{background-color:#ffffff;}");
+            polarChartView->setChartBackgroundBrush(QColor::fromRgb(255, 255, 255));
+        }
 
-    ui->gridLayout->addWidget(polarChartView, 1, 0, Qt::AlignCenter);
+        polarChartView->setDistance(distance);
+        ui->gridLayout->addWidget(polarChartView, 1, 0, Qt::AlignCenter);
 
+        polarChartView->setRenderHint(QPainter::Antialiasing);
+        ui->gridLayout->addWidget(polarChartView, 1, 0, Qt::AlignCenter);
+    }
+    else
+    {
+        ui->chartWidget->setVisible(false);
+        resize(400,200);
+    }
     setLabelDistance();
     setLabelDNRO();
     setLabelRefraction();
     setLabelHazard();
-    setLabelPositioning();
+    setLabelCorrectPositioning();
 
     qDebug() << "Divergenza: " << divergence;
     qDebug() << "Distanza: " << distance;
@@ -69,7 +89,7 @@ void FresnelChartDialog::setRefraction(const double _refraction)
 
 void FresnelChartDialog::setLabelDistance()
 {
-    ui->distanceLabel->setText(QString::number(distance));
+    ui->distanceLabel->setText(QString::number(distance, 'e', 2));
 }
 
 void FresnelChartDialog::setLabelDNRO()
@@ -92,7 +112,18 @@ void FresnelChartDialog::setLabelHazard()
     ui->hazardLabel->setText(QString::number(positioningElement, 'e', 2));
 }
 
-void FresnelChartDialog::setLabelPositioning()
+void FresnelChartDialog::setLabelCorrectPositioning()
 {
-    ui->positioningLabel->setText(QString::number(positioning));
+    double positiveCorrectPositioning;
+    if(correctPositioning<0)
+        positiveCorrectPositioning=correctPositioning+360.0;
+    else
+        positiveCorrectPositioning=correctPositioning;
+
+    ui->correctPositioningLabel->setText(QString::number(positiveCorrectPositioning, 'f', 1));
+}
+
+void FresnelChartDialog::on_pushButton_clicked()
+{
+    close();
 }

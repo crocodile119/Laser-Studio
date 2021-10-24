@@ -31,7 +31,7 @@ void LaserSafetyCW::computeNOHD()
     double underroot;
 		
     underroot=(4*getPowerErgForEMP())/(PI*EMP_Result);
-    NOHD=(sqrt(underroot)-(beamDiameter/1000))/(divergence/1000);
+    NOHD=(std::sqrt(underroot)-(beamDiameter/1000))/(divergence/1000);
     if (NOHD<0)
         NOHD=0;
 }
@@ -71,7 +71,7 @@ void LaserSafetyCW::computeLambertianMax()
     double underroot;
 
     underroot=(ForLambertianMax)/(PI*EMP_Result);
-    lambertianMax=(sqrt(underroot));
+    lambertianMax=(std::sqrt(underroot));
 }
 
 void LaserSafetyCW::laserUpdate()

@@ -217,7 +217,7 @@ QLabel {padding: 3px}
 QLabel {margin-right: 10px}</string>
         </property>
         <property name="text">
-         <string>M</string>
+         <string>Mx</string>
         </property>
        </widget>
       </item>
@@ -239,7 +239,7 @@ QLabel {padding: 3px}
 QLabel {margin-right: 10px}</string>
         </property>
         <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;D&lt;span style=&quot; vertical-align:sub;&quot;&gt;0&lt;/span&gt; [mm]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>d&lt;sub&gt;b&lt;/sub&gt; [mm]</string>
         </property>
        </widget>
       </item>

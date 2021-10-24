@@ -20,8 +20,8 @@ void WetReflector::computeTrigonometricReflection()
         myAngle=90.0/(180.0)*i;
         myReflectionAngle=asin(1/n*sin(myAngle*radDeg));
 
-        double myNumerator=pow(sin(myAngle*radDeg-myReflectionAngle),2);
-        double myDenominator=pow(sin(myAngle*radDeg+myReflectionAngle),2);
+        double myNumerator=std::pow(sin(myAngle*radDeg-myReflectionAngle),2);
+        double myDenominator=std::pow(sin(myAngle*radDeg+myReflectionAngle),2);
 
         if(myDenominator==0)
             rho_s=0;
@@ -51,7 +51,7 @@ void WetReflector::computeZs(vector< pair <double,double> > myVector, double _dn
     {
         myRho_s=iterator->second;
         myRho_s*=reflectionCoeff;
-        sqrt_myRho_s=sqrt(myRho_s);
+        sqrt_myRho_s=std::sqrt(myRho_s);
         double divergenceCorrection;
         divergenceCorrection=_divergence/(_divergence+phi_const);
         myZsVector_second=(sqrt_myRho_s*_dnro*divergenceCorrection)-(_objectDistance*divergenceCorrection);
@@ -64,11 +64,11 @@ void WetReflector::computeZs(vector< pair <double,double> > myVector, double _dn
 
         i++;
     }
-    for (reverse_iterator = myVector.rbegin()+1; reverse_iterator != myVector.rend(); ++reverse_iterator )
+    for (reverse_iterator = myVector.rbegin()+1; reverse_iterator != myVector.rend()-1; ++reverse_iterator )
     {
         myRho_s=reverse_iterator->second;
         myRho_s*=reflectionCoeff;
-        sqrt_myRho_s=sqrt(myRho_s);
+        sqrt_myRho_s=std::sqrt(myRho_s);
         double divergenceCorrection;
         divergenceCorrection=_divergence/(_divergence+phi_const);
         myZsVector_second=(sqrt_myRho_s*_dnro*divergenceCorrection)-(_objectDistance*divergenceCorrection);

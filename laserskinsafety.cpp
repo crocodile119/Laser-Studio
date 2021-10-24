@@ -131,7 +131,7 @@ double LaserSkinSafety::getPowerNSHD() const
 
 void LaserSkinSafety::computeBeamArea()
 {
-    beamArea=PI*pow(beamDiameter,2)/4;
+    beamArea=PI*std::pow(beamDiameter,2)/4;
 }
 
 double LaserSkinSafety::getBeamArea() const
@@ -151,7 +151,7 @@ double LaserSkinSafety::computePowerNSHD()
     double underroot;
 
     underroot=(4*ForNSHD)/(PI*EMP_Result);
-    powerNSHD=(sqrt(underroot)-(beamDiameter/1000))/(divergence/1000);
+    powerNSHD=(std::sqrt(underroot)-(beamDiameter/1000))/(divergence/1000);
     if(powerNSHD<0)
         powerNSHD=0;
 
@@ -171,7 +171,7 @@ double LaserSkinSafety::computeErgNSHD()
     double underroot;
 		
     underroot=(4*ForNSHD)/(PI*EMP_Result);
-    ergNSHD=(sqrt(underroot)-(beamDiameter/1000))/(divergence/1000);
+    ergNSHD=(std::sqrt(underroot)-(beamDiameter/1000))/(divergence/1000);
     if (ergNSHD<0)
         ergNSHD=0;
 

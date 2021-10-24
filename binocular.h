@@ -88,6 +88,7 @@ public:
     void setInZone(bool _inZone);
     void computeSpotDiameter();
     void computeExendedOpticalDiameter();
+    void setBinocularObjectName(const QPointF& position);
 
 protected:
     QVariant itemChange(GraphicsItemChange change,

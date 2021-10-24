@@ -104,6 +104,7 @@ QTextDocument* LaserReport::buildReportDocument()
     myCursor.insertHtml(htmlFootprints());
     myCursor.insertHtml(htmlBinoculars());
 
+    myCursor.insertHtml(htmlSymbols());
     return textDocument;
 }
 
@@ -170,7 +171,7 @@ void LaserReport::laserAssessmentResults()
 
         goggle.append(laserWindow->myDockGoggle->ui->kindOfLaserLabel->text()+": ");
         goggle.append(laserWindow->myDockGoggle->ui->tLaserOutputLabel->text()+":"+laserWindow->myDockGoggle->ui->laserOutputLabel->text());
-        goggle.append("Numero di scala: " + laserWindow->myDockGoggle->ui->scaleNumberLabel->text());
+        goggle.append("LB: " + laserWindow->myDockGoggle->ui->scaleNumberLabel->text());
 
         input.append(teSkin);
     }
@@ -203,7 +204,7 @@ void LaserReport::laserAssessmentResults()
 
         goggle.append(laserWindow->myDockGoggle->ui->kindOfLaserLabel->text()+": ");
         goggle.append("Output: "+laserWindow->myDockGoggle->ui->laserOutputLabel->text());
-        goggle.append("Numero di scala: " + laserWindow->myDockGoggle->ui->scaleNumberLabel->text());
+        goggle.append("LB: " + laserWindow->myDockGoggle->ui->scaleNumberLabel->text());
     }
     else if(laserWindow->myDockControls->laserOperation()==DockControls::operation::MULTI_PULSE)
     {
@@ -284,10 +285,10 @@ void LaserReport::laserAssessmentResults()
 
         goggle.append(laserWindow->myDockGoggle->ui->kindOfLaserLabel->text()+": ");
         goggle.append(laserWindow->myDockGoggle->ui->tLaserOutputLabel->text()+":"+laserWindow->myDockGoggle->ui->laserOutputLabel->text());
-        goggle.append("Numero di scala:" + laserWindow->myDockGoggle->ui->scaleNumberLabel->text());
+        goggle.append("LB:" + laserWindow->myDockGoggle->ui->scaleNumberLabel->text());
         goggle.append(laserWindow->myDockGoggle->ui->tn_maxLabel->text()+":"+laserWindow->myDockGoggle->ui->n_maxLabel->text());
         goggle.append(laserWindow->myDockGoggle->ui->tMeanPowerLabel->text()+":"+laserWindow->myDockGoggle->ui->meanPowerLabel->text());
-        goggle.append("Numero di scala componente continua: " + laserWindow->myDockGoggle->ui->scaleNumberDLabel->text());
+        goggle.append("LB effetti medi: " + laserWindow->myDockGoggle->ui->scaleNumberDLabel->text());
         goggle.append(laserWindow->myDockGoggle->ui->tCoefficient_kLabel->text()+":"+laserWindow->myDockGoggle->ui->coefficient_kLabel->text());
         goggle.append(laserWindow->myDockGoggle->ui->tCoefficient_kiLabel->text()+":"+laserWindow->myDockGoggle->ui->coefficient_kiLabel->text());
         goggle.append(laserWindow->myDockGoggle->ui->tNumberOfPulseLabel->text()+":"+laserWindow->myDockGoggle->ui->numberOfPulseLabel->text());
@@ -390,61 +391,94 @@ void LaserReport::classifierResults()
 {
     classifierResultsOutput.clear();
 
-    QString couplingFactor1str= "Fattore di accoppiamento 1<sup>a</sup> condizione :" +  laserWindow->myDockLea->ui->couplingFactor1_Label->text();
-    QString couplingFactor3str= "Fattore di accoppiamento 3<sup>a</sup> condizione :" +  laserWindow->myDockLea->ui->couplingFactor3_Label->text();
-    QString apertureDiam1str= "Diametro diaframma 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDiam1_Label->text();
-    QString apertureDiam3str=  "Diametro diaframma 3<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDiam3_Label->text();
-    QString apertureDist1str=  "Distanza apertura 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDist1_Label->text();
-    QString apertureDist3str=  "Diametro apertura 3<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDist3_Label->text();
-    QString beamAperture1str=  "Dimensione del fascio all'apertura 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->beamAperture1_Label->text();
-    QString beamAperture3str= "Dimensione del fascio all'apertura 3<sup>a</sup> condizione :"+ laserWindow->myDockLea->ui->beamAperture3_Label->text();
-    QString formulaLEAstr= laserWindow->myDockLea->ui->tFormulaLEA_Label->text() + " :" + laserWindow->myDockLea->ui->formulaLEA_Label->text();
-    QString LEAstr= laserWindow->myDockLea->ui->tLEA_Label->text() + " :" + laserWindow->myDockLea->ui->LEA_Label->text();
-    QString powerErgCond1LEAstr= laserWindow->myDockLea->ui->tCond1LEA_Label->text() + " :" + laserWindow->myDockLea->ui->cond1LEA_Label->text();
-    QString powerErgCond3LEAstr= laserWindow->myDockLea->ui->tCond3LEA_Label->text() + " :" + laserWindow->myDockLea->ui->cond3LEA_Label->text();
-    QString classStr= "Classe sistema :" + laserWindow->myDockLea->ui->class_Label->text();
 
-    classifierResultsOutput.append(couplingFactor1str);
-    classifierResultsOutput.append(couplingFactor3str);
-    classifierResultsOutput.append(apertureDiam1str);
-    classifierResultsOutput.append(apertureDiam3str);
-    classifierResultsOutput.append(apertureDist1str);
-    classifierResultsOutput.append(apertureDist3str);
-
-    classifierResultsOutput.append(beamAperture1str);
-    classifierResultsOutput.append(beamAperture3str);
-    classifierResultsOutput.append(formulaLEAstr);
-    classifierResultsOutput.append(LEAstr);
-    classifierResultsOutput.append(powerErgCond1LEAstr);
-    classifierResultsOutput.append(powerErgCond3LEAstr);
-
-    classifierResultsOutput.append(classStr);
-
-    if(laserWindow->myDockControls->laserOperation()==DockControls::operation::PULSE)
+    if(laserWindow->myDockControls->laserOperation()==DockControls::operation::CONTINUOS_WAVE)
     {
-        QString timeBaseStr ="Base dei tempi :" + laserWindow->myDockLea->ui->timeBase_Label->text();
+        QString timeBaseStr ="Base dei tempi :" + laserWindow->myDockControls->getLEA_DataVector().at(0);
         classifierResultsOutput.append(timeBaseStr);
     }
 
+    if((laserWindow->myDockControls->laserOperation()==DockControls::operation::CONTINUOS_WAVE)||(laserWindow->myDockControls->laserOperation()==DockControls::operation::PULSE))
+    {
+        QString couplingFactor1str= "&eta;<sub>1</sub> :" + laserWindow->myDockControls->getLEA_DataVector().at(8);
+        QString couplingFactor3str= "&eta;<sub>3</sub> :" + laserWindow->myDockControls->getLEA_DataVector().at(9);
+        QString apertureDiam1str= "a<sub>1</sub> :" + laserWindow->myDockControls->getLEA_DataVector().at(10);
+        QString apertureDiam3str= "a<sub>3</sub> :" + laserWindow->myDockControls->getLEA_DataVector().at(11);
+        QString apertureDist1str= "d<sub>1</sub> :" + laserWindow->myDockControls->getLEA_DataVector().at(12);
+        QString apertureDist3str= "d<sub>3</sub> :" + laserWindow->myDockControls->getLEA_DataVector().at(13);
+        QString beamAperture1str= "a<sub>b1</sub> :"  + laserWindow->myDockControls->getLEA_DataVector().at(14);
+        QString beamAperture3str= "a<sub>b3</sub> :" + laserWindow->myDockControls->getLEA_DataVector().at(15);
+        QString formulaLEAstr= "Formula LEA :" + laserWindow->myDockControls->getLEA_DataVector().at(2);
+        QString LEAstr= laserWindow->myDockControls->getLEA_DataVector().at(1) + " :" + laserWindow->myDockControls->getLEA_DataVector().at(3);
+        QString powerErgCond1LEAstr= laserWindow->myDockControls->getLEA_DataVector().at(4) + " :" + laserWindow->myDockControls->getLEA_DataVector().at(5);
+        QString powerErgCond3LEAstr= laserWindow->myDockControls->getLEA_DataVector().at(6) + " :" + laserWindow->myDockControls->getLEA_DataVector().at(7);
+        QString classStr= "Classe sistema :" + laserWindow->myDockControls->getLEA_DataVector().at(16);
+
+        classifierResultsOutput.append(couplingFactor1str);
+        classifierResultsOutput.append(couplingFactor3str);
+        classifierResultsOutput.append(apertureDiam1str);
+        classifierResultsOutput.append(apertureDiam3str);
+        classifierResultsOutput.append(apertureDist1str);
+        classifierResultsOutput.append(apertureDist3str);
+
+        classifierResultsOutput.append(beamAperture1str);
+        classifierResultsOutput.append(beamAperture3str);
+        classifierResultsOutput.append(formulaLEAstr);
+        classifierResultsOutput.append(LEAstr);
+        classifierResultsOutput.append(powerErgCond1LEAstr);
+        classifierResultsOutput.append(powerErgCond3LEAstr);
+        classifierResultsOutput.append(classStr);
+    }
     else if(laserWindow->myDockControls->laserOperation()==DockControls::operation::MULTI_PULSE)
     {
-        QString meanPowerEffects="Criterio della potenza media : ";
-        QString meanPowerLabelStr= laserWindow->myDockLea->ui->tCond3LEA_Label->text() + " :" + laserWindow->myDockLea->ui->MeanPowerLabel->text();
-        QString Te_Str= laserWindow->myDockLea->ui->tTe_Label->text() + " :" + laserWindow->myDockLea->ui->Te_Label->text();
+        QString pulseEffects="Criterio dell'impulso : ";
+        QString couplingFactor1str= "&eta;<sub>1</sub> :" +  laserWindow->myDockControls->getLEA_DataVector().at(15);
+        QString couplingFactor3str= "&eta;<sub>3</sub> :" +  laserWindow->myDockControls->getLEA_DataVector().at(16);
+        QString apertureDiam1str= "a<sub>1</sub> :" +  laserWindow->myDockControls->getLEA_DataVector().at(17);
+        QString apertureDiam3str= "a<sub>3</sub> :" +  laserWindow->myDockControls->getLEA_DataVector().at(18);
+        QString apertureDist1str= "d<sub>1</sub> :" +  laserWindow->myDockControls->getLEA_DataVector().at(19);
+        QString apertureDist3str= "d<sub>3</sub> :" +  laserWindow->myDockControls->getLEA_DataVector().at(20);
+        QString beamAperture1str= "a<sub>b1</sub> :" +  laserWindow->myDockControls->getLEA_DataVector().at(21);
+        QString beamAperture3str= "a<sub>b3</sub> :" +  laserWindow->myDockControls->getLEA_DataVector().at(22);
+        QString formulaLEAstr= "Formula LEA :" + laserWindow->myDockControls->getLEA_DataVector().at(9);
+        QString LEAstr= laserWindow->myDockControls->getLEA_DataVector().at(8) + " :" + laserWindow->myDockControls->getLEA_DataVector().at(10);
+        QString powerErgCond1LEAstr=laserWindow->myDockControls->getLEA_DataVector().at(11) + " :" + laserWindow->myDockControls->getLEA_DataVector().at(12);
+        QString powerErgCond3LEAstr=laserWindow->myDockControls->getLEA_DataVector().at(13) + " :" + laserWindow->myDockControls->getLEA_DataVector().at(14);
+        QString classStr= "Classe parziale :" + laserWindow->myDockControls->getLEA_DataVector().at(23);
 
-        QString couplingFactor1str_2= "Fattore di accoppiamento 1<sup>a</sup> condizione :" +  laserWindow->myDockLea->ui->couplingFactor1_Label_2->text();
-        QString couplingFactor3str_2= "Fattore di accoppiamento 3<sup>a</sup> condizione :" +  laserWindow->myDockLea->ui->couplingFactor3_Label_2->text();
-        QString apertureDiam1str_2= "Diametro diaframma 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDiam1_Label_2->text();
-        QString apertureDiam3str_2=  "Diametro diaframma 3<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDiam3_Label_2->text();
-        QString apertureDist1str_2=  "Distanza apertura 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDist1_Label_2->text();
-        QString apertureDist3str_2=  "Diametro apertura 3<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDist3_Label_2->text();
-        QString beamAperture1str_2=  "Dimensione del fascio all'apertura 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->beamAperture1_Label_2->text();
-        QString beamAperture3str_2= "Dimensione del fascio all'apertura 3<sup>a</sup> condizione :"+ laserWindow->myDockLea->ui->beamAperture3_Label_2->text();
-        QString formulaLEAstr_2= laserWindow->myDockLea->ui->tFormulaLEA_Label->text() + " :" + laserWindow->myDockLea->ui->FormulaLEA_Label_2->text();
-        QString LEAstr_2= laserWindow->myDockLea->ui->tLEA_Label->text() + " :" + laserWindow->myDockLea->ui->LEA_Label_2->text();
-        QString powerErgCond1LEAstr_2= laserWindow->myDockLea->ui->tCond1LEA_Label->text() + " :" + laserWindow->myDockLea->ui->cond1LEA_Label_2->text();
-        QString powerErgCond3LEAstr_2= laserWindow->myDockLea->ui->tCond3LEA_Label->text() + " :" + laserWindow->myDockLea->ui->cond3LEA_Label_2->text();
-        QString classStr_2= "Classe sistema :" + laserWindow->myDockLea->ui->class_Label->text();
+        QString meanPowerEffects="Criterio della potenza media : ";
+        QString meanPowerLabelStr= "P<sub>m</sub> :" + laserWindow->myDockControls->getLEA_DataVector().at(4);
+        QString Te_Str=  "T<sub>e</sub> :"+ laserWindow->myDockControls->getLEA_DataVector().at(1);
+
+        QString couplingFactor1str_2= "&eta;<sub>1</sub> :" +  laserWindow->myDockControls->getLEA_DataVector().at(31);
+        QString couplingFactor3str_2= "&eta;<sub>3</sub> :" +  laserWindow->myDockControls->getLEA_DataVector().at(32);
+        QString apertureDiam1str_2= "a<sub>1</sub> :" +  laserWindow->myDockControls->getLEA_DataVector().at(33);
+        QString apertureDiam3str_2= "a<sub>3</sub> :" +  laserWindow->myDockControls->getLEA_DataVector().at(34);
+        QString apertureDist1str_2= "d<sub>1</sub> :" +  laserWindow->myDockControls->getLEA_DataVector().at(35);
+        QString apertureDist3str_2= "d<sub>3</sub> :" +  laserWindow->myDockControls->getLEA_DataVector().at(36);
+        QString beamAperture1str_2= "a<sub>b1</sub> :" +  laserWindow->myDockControls->getLEA_DataVector().at(37);
+        QString beamAperture3str_2= "a<sub>b3</sub> :" +  laserWindow->myDockControls->getLEA_DataVector().at(38);
+        QString formulaLEAstr_2= "Formula LEA :" + laserWindow->myDockControls->getLEA_DataVector().at(25);
+
+        QString LEAstr_2= laserWindow->myDockControls->getLEA_DataVector().at(24) + " :" + laserWindow->myDockControls->getLEA_DataVector().at(26);
+        QString powerErgCond1LEAstr_2=laserWindow->myDockControls->getLEA_DataVector().at(27) + " :" + laserWindow->myDockControls->getLEA_DataVector().at(28);
+        QString powerErgCond3LEAstr_2=laserWindow->myDockControls->getLEA_DataVector().at(29) + " :" + laserWindow->myDockControls->getLEA_DataVector().at(30);
+        QString classStr_2= "Classe parziale :" + laserWindow->myDockControls->getLEA_DataVector().at(39);
+
+        classifierResultsOutput.append(pulseEffects);
+        classifierResultsOutput.append(couplingFactor1str);
+        classifierResultsOutput.append(couplingFactor3str);
+        classifierResultsOutput.append(apertureDiam1str);
+        classifierResultsOutput.append(apertureDiam3str);
+        classifierResultsOutput.append(apertureDist1str);
+        classifierResultsOutput.append(apertureDist3str);
+
+        classifierResultsOutput.append(beamAperture1str);
+        classifierResultsOutput.append(beamAperture3str);
+        classifierResultsOutput.append(formulaLEAstr);
+        classifierResultsOutput.append(LEAstr);
+        classifierResultsOutput.append(powerErgCond1LEAstr);
+        classifierResultsOutput.append(powerErgCond3LEAstr);
 
         classifierResultsOutput.append(meanPowerEffects);
         classifierResultsOutput.append(meanPowerLabelStr);
@@ -465,25 +499,25 @@ void LaserReport::classifierResults()
 
         if(laserWindow->myDockControls->isThermal_LaserCLass())
         {
-            QString thermalEffects="Criterio dell'impulso effetti termici : ";
-            QString couplingFactor1str_3= "Fattore di accoppiamento 1<sup>a</sup> condizione :" +  laserWindow->myDockLea->ui->couplingFactor1_Label_3->text();
-            QString couplingFactor3str_3= "Fattore di accoppiamento 3<sup>a</sup> condizione :" +  laserWindow->myDockLea->ui->couplingFactor3_Label_3->text();
-            QString apertureDiam1str_3= "Diametro diaframma 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDiam1_Label_3->text();
-            QString apertureDiam3str_3=  "Diametro diaframma 3<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDiam3_Label_3->text();
-            QString apertureDist1str_3=  "Distanza apertura 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDist1_Label_3->text();
-            QString apertureDist3str_3=  "Diametro apertura 3<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->apertureDist3_Label_3->text();
-            QString beamAperture1str_3=  "Dimensione del fascio all'apertura 1<sup>a</sup> condizione :" + laserWindow->myDockLea->ui->beamAperture1_Label_3->text();
-            QString beamAperture3str_3= "Dimensione del fascio all'apertura 3<sup>a</sup> condizione :"+ laserWindow->myDockLea->ui->beamAperture3_Label_3->text();
-            QString formulaLEAstr_3= laserWindow->myDockLea->ui->tFormulaLEA_Label->text() + " :" + laserWindow->myDockLea->ui->FormulaLEA_Label_3->text();
-            QString LEAstr_3= laserWindow->myDockLea->ui->tLEA_Label->text() + " :" + laserWindow->myDockLea->ui->LEA_Label_3->text();
-            QString powerErgCond1LEAstr_3= laserWindow->myDockLea->ui->tCond1LEA_Label->text() + " :" + laserWindow->myDockLea->ui->cond1LEA_Label_3->text();
-            QString powerErgCond3LEAstr_3= laserWindow->myDockLea->ui->tCond3LEA_Label->text() + " :" + laserWindow->myDockLea->ui->cond3LEA_Label_3->text();
+            QString thermalEffects="Criterio dell'impulso per gli effetti termici : ";
+            QString couplingFactor1str_3= "&eta;<sub>1</sub> :" +  laserWindow->myDockControls->getLEA_DataVector().at(47);
+            QString couplingFactor3str_3= "&eta;<sub>3</sub> :" +  laserWindow->myDockControls->getLEA_DataVector().at(48);
+            QString apertureDiam1str_3= "a<sub>1</sub> :" +  laserWindow->myDockControls->getLEA_DataVector().at(49);
+            QString apertureDiam3str_3= "a<sub>3</sub> :" +  laserWindow->myDockControls->getLEA_DataVector().at(50);
+            QString apertureDist1str_3= "d<sub>1</sub> :" +  laserWindow->myDockControls->getLEA_DataVector().at(51);
+            QString apertureDist3str_3= "d<sub>3</sub> :" +  laserWindow->myDockControls->getLEA_DataVector().at(52);
+            QString beamAperture1str_3= "a<sub>b1</sub> :" +  laserWindow->myDockControls->getLEA_DataVector().at(53);
+            QString beamAperture3str_3= "a<sub>b3</sub> :" +  laserWindow->myDockControls->getLEA_DataVector().at(54);
+            QString formulaLEAstr_3= "Formula LEA :" + laserWindow->myDockControls->getLEA_DataVector().at(41);
+            QString LEAstr_3= laserWindow->myDockControls->getLEA_DataVector().at(40) + " :" + laserWindow->myDockControls->getLEA_DataVector().at(42);
+            QString powerErgCond1LEAstr_3=laserWindow->myDockControls->getLEA_DataVector().at(43) + " :" + laserWindow->myDockControls->getLEA_DataVector().at(44);
+            QString powerErgCond3LEAstr_3=laserWindow->myDockControls->getLEA_DataVector().at(45) + " :" + laserWindow->myDockControls->getLEA_DataVector().at(46);
 
-            QString Ti_Str= laserWindow->myDockLea->ui->tTi_Label->text() + " :" + laserWindow->myDockLea->ui->Ti_Label->text();
-            QString Ti_prf_Str= laserWindow->myDockLea->ui->tTi_prf_Label->text() + " :" + laserWindow->myDockLea->ui->Ti_prf_Label->text();
-            QString C5_Str= laserWindow->myDockLea->ui->tC5_Label->text() + " :" + laserWindow->myDockLea->ui->C5_Label->text();
-            QString pulseNumberLabel_Str= laserWindow->myDockLea->ui->tPulseNumberLabel->text() + " :" + laserWindow->myDockLea->ui->PulseNumberLabel->text();
-            QString countingLabel_Str= laserWindow->myDockLea->ui->tCountingLabel->text() + " :" + laserWindow->myDockLea->ui->CountingLabel->text();
+            QString Ti_Str= "T<sub>i</sub> :" +  laserWindow->myDockControls->getLEA_DataVector().at(2);
+            QString Ti_prf_Str= "T<sub>i</sub> &times; PRF :" + laserWindow->myDockControls->getLEA_DataVector().at(3);
+            QString C5_Str=  "C<sub>5</sub> :" + laserWindow->myDockControls->getLEA_DataVector().at(7);
+            QString pulseNumberLabel_Str= "N :" +  laserWindow->myDockControls->getLEA_DataVector().at(5);
+            QString countingLabel_Str= "Conteggio :" + laserWindow->myDockControls->getLEA_DataVector().at(6);
 
             classifierResultsOutput.append(thermalEffects);
             classifierResultsOutput.append(Ti_Str);
@@ -521,7 +555,7 @@ void LaserReport::firstPageReport()
 
     //leggo i valori riguradanti laserpoint
 
-    QString laserPositionStr= QString("Posizione [m,m] : (%1,%2)")
+    QString laserPositionStr= QString("Posizione [x,y] : (%1,%2)")
                                       .arg(laserpoint->pos().x())
                                       .arg(laserpoint->pos().y());
 
@@ -639,11 +673,11 @@ void LaserReport::reflectorsValuation()
                           .arg(reflector->pos().y()));
     reflectors.append("Nell'area di rischio: "+ inHazardArea);
     reflectors.append("Tipo di riflettore: " + reflector->getReflectorKindString());
-    reflectors.append("Divergenza laser [mrad]: " + QString::number(reflector->getDivergence()));
-    reflectors.append("Distanza del riflettore [m]: " + QString::number(reflector->getReflectorDistance(),'f',1));
-    reflectors.append("Coefficiente di riflessione: " + QString::number(reflector->getMaterialCoeff()));
-    reflectors.append("Posizionamento [gradi]: " + QString::number(reflector->getPositioning()));
-    reflectors.append("Distanza di sicurezza ottica dal riflettore [m]: "+ QString::number(reflector->getPositioningElement(),'f',1));
+    reflectors.append("&phi; [mrad]: " + QString::number(reflector->getDivergence()));
+    reflectors.append("L [m]: " + QString::number(reflector->getReflectorDistance(),'f',1));
+    reflectors.append("&rho;: " + QString::number(reflector->getMaterialCoeff()));
+    reflectors.append("P [gradi]: " + QString::number(reflector->getPositioning()));
+    reflectors.append("DRO<sub>r</sub> [m]: "+ QString::number(reflector->getPositioningElement(),'f',1));
 
     if(reflector->getReflectorKind()!=MIRROR_TARGET)
         reflectors.append("Distanza di sicurezza ottica massima dal riflettore [m]: "+ QString::number(reflector->getMaxElement(),'f',1));
@@ -658,13 +692,13 @@ void LaserReport::binocularsValuation()
                           .arg(binocular->pos().x())
                           .arg(binocular->pos().y()));
         binoculars.append("Descrizione: " + binocular->getDescription());
-        binoculars.append("Distanza di Rischio Ottico Estesa [m]: " + QString::number(binocular->getExendedOpticalDiameter()));
-        binoculars.append("Distanza dal punto laser [m]: " + QString::number(binocular->getBinocularDistance()));
-        binoculars.append("Amplificazione ottica M: " + QString::number(binocular->getMagnification()));
-        binoculars.append("Coefficiente di trasmissione ottica τ: " + QString::number(binocular->getTransmissionCoeff(),'f',1));
-        binoculars.append("Diametro della lente D<sub>0</sub> [mm]: " + QString::number(binocular->get_D0()));
-        binoculars.append("Diametro dello spot sulla lente D<sub>b</sub> [mm]: " + QString::number(binocular->get_Db()));
-        binoculars.append("Guadagno ottico K: " + QString::number(binocular->getOpticalGain()));
+        binoculars.append("DNROE [m]: " + QString::number(binocular->getExendedOpticalDiameter()));
+        binoculars.append("L [m]: " + QString::number(binocular->getBinocularDistance()));
+        binoculars.append("M<sub>x</sub>: " + QString::number(binocular->getMagnification()));
+        binoculars.append("τ: " + QString::number(binocular->getTransmissionCoeff(),'f',1));
+        binoculars.append("d<sub>0</sub> [mm]: " + QString::number(binocular->get_D0()));
+        binoculars.append("d<sub>b</sub> [mm]: " + QString::number(binocular->get_Db()));
+        binoculars.append("K: " + QString::number(binocular->getOpticalGain()));
         binoculars.append("Effetti nel'impiego: "+ binocular->getBinocularEffects());
      }
     else if(((wavelength>=320)&&(wavelength<400))||((wavelength>1400)&&(wavelength<=4500)))
@@ -673,20 +707,19 @@ void LaserReport::binocularsValuation()
                           .arg(binocular->pos().x())
                           .arg(binocular->pos().y()));
         binoculars.append("Descrizione: " + binocular->getDescription());
-        binoculars.append("Amplificazione ottica M: " + QString::number(binocular->getMagnification()));
-        binoculars.append("Distanza di Rischio Ottico Estesa [m]: " + QString::number(binocular->getExendedOpticalDiameter()));
-        binoculars.append("Distanza dal punto laser [m]: " + QString::number(binocular->getBinocularDistance()));
-        binoculars.append("Amplificazione ottica M: " + QString::number(binocular->getMagnification()));
-        binoculars.append("Coefficiente di trasmissione ottica τ: " + QString::number(binocular->getTransmissionCoeff(),'f',1));
-        binoculars.append("Diametro dello spot sulla lente D<sub>b</sub> [mm]: " + QString::number(binocular->get_Db()));
-        binoculars.append("Guadagno ottico K: " + QString::number(binocular->getOpticalGain()));
+        binoculars.append("M<sub>x</sub>: " + QString::number(binocular->getMagnification()));
+        binoculars.append("DNROE[m]: " + QString::number(binocular->getExendedOpticalDiameter()));
+        binoculars.append("L [m]: " + QString::number(binocular->getBinocularDistance()));
+        binoculars.append("τ: " + QString::number(binocular->getTransmissionCoeff(),'f',1));
+        binoculars.append("d<sub>b</sub> [mm]: " + QString::number(binocular->get_Db()));
+        binoculars.append("K<sub>o</sub>: " + QString::number(binocular->getOpticalGain()));
         binoculars.append("Effetti nel'impiego: "+ binocular->getBinocularEffects());
     }
     else
     {
         binoculars.append("Descrizione: " + binocular->getDescription());
-        binoculars.append("Distanza di Rischio Ottico Estesa [m]: " + QString::number(binocular->getExendedOpticalDiameter()));
-        binoculars.append("Distanza dal punto laser [m]: " + QString::number(binocular->getBinocularDistance()));
+        binoculars.append("DRNOE [m]: " + QString::number(binocular->getExendedOpticalDiameter()));
+        binoculars.append("L [m]: " + QString::number(binocular->getBinocularDistance()));
     }
 }
 
@@ -797,6 +830,8 @@ QString LaserReport::htmlInstallationDescription()
                    "<td>"+laserWindow->getLaserDescription()+"</td></tr>\n"
                    "<tr><td bgcolor=\"#fbfbfb\"><b>Descrizione dei luoghi</b></td>\n"
                    "<td>"+laserWindow->getPlaceDescription()+"</td></tr>\n"
+                   "<tr><td bgcolor=\"#fbfbfb\"><b>Data valutazione</b></td>\n"
+                   "<td>"+laserWindow->getCompilingDate().toString(QString("dd.MM.yyyy"))+"</td></tr>\n"
             "</table><br>\n";
 
     return html;
@@ -1280,7 +1315,6 @@ void LaserReport::buidInspectorsDocumentPart()
 QString LaserReport::htmlInspectors(const int & number)
 {
     QString html;
-    QString htmlImage;
 
     inspectorsValuation();
 
@@ -1356,7 +1390,7 @@ QString LaserReport::htmlClassifier()
     textDocument->addResource(QTextDocument::ImageResource,
         Uri, QVariant(myLaserWarning));
 
-    QString classStr=laserWindow->myDockLea->ui->class_Label->text();
+    QString classStr=laserWindow->myDockControls->ui->class_Label->text();
 
     html +="<table width="+correction+">\n"
            "<tr><th colspan=\"2\">Livelli di Emissione Accessibili valutati</th>\n";
@@ -1476,4 +1510,355 @@ void LaserReport::setIndoor(bool _indoor)
 bool LaserReport::isIndoor()
 {
     return indoor;
+}
+
+QString LaserReport::htmlSymbols()
+{
+    QString html;
+
+    html +=
+"   <br><h2>Significato dei simboli impiegati</h2>"
+"   <table width="+correction+">\n"
+"    <tbody>"
+"    <tr>"
+"   <th style=\"width: 20%;\">Simbolo</th><th>Significato</th>"
+"    </tr>"
+"    <tr>"
+"    <td  style=\"text-align: left;\" colspan=\"2\" rowspan=\"1\"><i><br>Dispositivo laser</i></td>"
+"    </tr>"
+"    <tr>"
+"   <td><b>P</b> [W]</td><td  style=\"text-align: left;\">Potenza ottica emessa dal dispositivo</td>"
+"    </tr>"
+"    <tr>"
+"   <td><b>Q</b> [J]</td><td  style=\"text-align: left;\">Energia di un impulso</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>t</b> [s]</td><td  style=\"text-align: left;\">Durata di un impulso</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>&phi;</b> [mrad]</td><td  style=\"text-align: left;\">Divergenza del fascio laser</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>a</b> [mm]</td><td  style=\"text-align: left;\">Diametro del fascio laser corrispondente al 63% della potenza ottica</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>&alpha;</b> [mrad]</td><td  style=\"text-align: left;\">Angolo sotteso dalla pi&ugrave; piccola superficie apparente</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>PRF</b> [Hz]</td><td  style=\"text-align: left;\">Frequenza di ripetizione degli impulsi</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>&lambda;</b> [nm]</td><td  style=\"text-align: left;\">Lunghezza d'onda</td>"
+"    </tr>"
+"    <tr>"
+"    <td  style=\"text-align: left;\" colspan=\"2\" rowspan=\"1\"><i><br>Parametri per il calcolo dell'esposizione massima permessa (rif. D.Lgs 81/2008).</i></td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>C<sub>A</sub></b></td><td  style=\"text-align: left;\">Coefficiente di correzione spettrale per assorbimento retinico</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>C<sub>B</sub></b></td><td  style=\"text-align: left;\">Coefficiente correzione spettrale per danno fotochimico</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>C<sub>C</sub></b></td><td  style=\"text-align: left;\">Coefficiente di correzione spettrale per assorbimento pre-retinico</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>C<sub>E</sub></b></td><td  style=\"text-align: left;\">Coefficiente di correzione per superficie estese</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>T<sub>1</sub></b> [s]</td><td  style=\"text-align: left;\">Tempo limite per esposizioni termiche</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>T<sub>2</sub></b> [s]</td><td  style=\"text-align: left;\">Tempo di break-point di visione del fascio</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>&gamma;</b> [mrad]</td><td  style=\"text-align: left;\">Campo di vista di misurazione</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>T<sub>min</sub></b> [s]</td><td  style=\"text-align: left;\">Durata al di sotto della quale i gruppi di impulsi vengono sommati tra loro</td>"
+"    </tr>"
+"    <tr>"
+"    <td  style=\"text-align: left;\" colspan=\"2\" rowspan=\"1\"><i><br>Esposizione massima permessa nel funzionamento ad onda continua e ad impulso (rif. D.Lgs 81/2008).</i></td>"
+"    <tr>"
+"    <td><b>E</b> [W/m<sup>2</sup>]<br><b>H</b> [J/m<sup>2</sup>]</td><td  style=\"text-align: left;\">Esposizione massima permessa </td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>T<sub>e</sub></b> [s]</td><td  style=\"text-align: left;\">Durata di esposizione dell'occhio nel funzionamento ad onda continua</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>OD Filtro</b></td><td  style=\"text-align: left;\">Minimo valore della densit&agrave; ottica necessario per ottenere in uscita emissioni non pericolose</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>DNRO</b> [m]</td><td  style=\"text-align: left;\">Distanza Nominale di Rischio Ottico (rif. CEI EN 60825-1 2017).</td>"
+"    </tr>"
+"    <tr>"
+"   <td><b>t<sub>cute</sub></b> [s]</td><td  style=\"text-align: left;\">Durata di esposizione della pelle nel funzionamento ad onda continua</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>DNRP</b> [m]</td><td  style=\"text-align: left;\">Distanza Nominale di Rischio per la pelle (rif. CEI EN 60825-1 2017).</td>"
+"    </tr>"
+"    <tr>"
+"    <td  style=\"text-align: left;\" colspan=\"2\" rowspan=\"1\"><i><br>Esposizione massima permessa per l'occhio nel funzionamento ad impulsi multipli (rif. D.Lgs 81/2008).</i></td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>P<sub>m</sub></b> [W/m<sup>2</sup>]</td><td  style=\"text-align: left;\">Potenza media emessa da un dispositivo laser nel caso di emissione multipla di impulsi</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>E<sub>m</sub></b> [W/m<sup>2</sup>]</td><td  style=\"text-align: left;\">Irradianza media emessa da un dispositivo laser nel caso di emissione multipla di impulsi</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>N<sub>th</sub></b></td><td  style=\"text-align: left;\">Numero di impulsi impiegato per il calcolo degli effetti cumulativi termici</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>C<sub>p</sub></b></td><td  style=\"text-align: left;\">Fattore di correzione termica cumulativo</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>E<sub>Te</sub></b> [W/m<sup>2</sup>]<br><b>H<sub>Te</sub></b> [J/m<sup>2</sup>]</td><td  style=\"text-align: left;\">Esposizione massima permessa corrispondente al tempo di esposizione T<sub>e</sub></td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>N</b></td><td  style=\"text-align: left;\">Numero di impulsi impiegato per il calcolo degli effetti medi</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>E<sub>mean</sub></b> [W/m<sup>2</sup>]<br><b>H<sub>mean</sub></b> [J/m<sup>2</sup>]</td><td  style=\"text-align: left;\">Esposizione massima permessa media del singolo impulso riferita al tempo di esposizione T<sub>e</sub></td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>OD Filtro</b></td><td  style=\"text-align: left;\">Minimo valore della densit&agrave; ottica per gli effetti cumulativi termici"
+"         necessario per ottenere in uscita emissioni non pericolose</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>OD Filtro Medio</b></td><td  style=\"text-align: left;\">Minimo valore della densit&agrave; ottica per la compontente media della radiazione per laser ad impulsi multipli"
+"     necessario per ottenere in uscita emissioni non pericolose</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>E<sub>th</sub></b> [W/m<sup>2</sup>]<br><b>H<sub>th</sub></b> [J/m<sup>2</sup>]</td><td  style=\"text-align: left;\">Esposizione massima permessa media corrispondente al tempo di esposizione T<sub>e</sub> per gli effetti cumulativi termici</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>E<sub>min</sub></b> [W/m<sup>2</sup>]<br><b>H<sub>min</sub></b> [J/m<sup>2</sup>]</td><td  style=\"text-align: left;\">Valore minimo dell'esposizione massima permessa</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>DNRO</b> [m]</td><td  style=\"text-align: left;\">Distanza Nominale di Rischio Ottico (rif. CEI EN 60825-1 2017).</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>t<sub>cute</sub></b> [s]</td><td  style=\"text-align: left;\">Durata di esposizione della pelle nel funzionamento ad onda continua</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>DNRP</b> [m]</td><td  style=\"text-align: left;\">Distanza Nominale di Rischio per la pelle (rif. CEI EN 60825-1 2017).</td>"
+"    </tr>"
+"    <tr>"
+"    <td  style=\"text-align: left;\" colspan=\"2\" rowspan=\"1\"><i><br>Parametri per il calcolo della marcatura dei protettori ottici (rif. UNI EN 207).</i></td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>LB</b></td><td  style=\"text-align: left;\">Marcatura</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>T<sub>b</sub></b> [s]</td><td  style=\"text-align: left;\">Base dei tempi</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>E</b> [W/m<sup>2</sup>]<br><b>H</b> [J/m<sup>2</sup>]</td><td style=\"text-align: left;\">Irradianza/Esposizione radiante emessa dal dispositivo laser in corrispondenza dell'apertura</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>E<sub>c</sub></b> [W/m<sup>2</sup>]<br><b>H<sub>c</sub></b> [J/m<sup>2</sup>]</td><td style=\"text-align: left;\">Irradianza/Esposizione radiante emessa dal dispositivo laser in corrispondenza dell'apertura relativo agli effetti cumulativi</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>k</b><td  style=\"text-align: left;\">Fattore di correzione termica cumulativo</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>k<sub>Ti</sub><td  style=\"text-align: left;\">Fattore di correzione termica cumulativo per effetti in alta frequenza</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>&nu;<sub>max</sub></sub><td style=\"text-align: left;\">Frequenza limite di ripetizione degli impulsi</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>P<sub>m</sub></b> [W/m<sup>2</sup>]</td><td style=\"text-align: left;\">Potenza media emessa da un dispositivo laser con emissione multipla di impulsi</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>E<sub>m</sub></b> [W/m<sup>2</sup>]</td><td style=\"text-align: left;\">Irradianza media emessa da un dispositivo laser con emissione multipla di impulsi</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>N</b></td><td  style=\"text-align: left;\">Numero di impulsi impiegato per il calcolo degli effetti cumulativi termici</td>"
+"    </tr>";
+    if(!myReflectors.empty())
+    {
+        html+=
+"    <tr>"
+"    <td  style=\"text-align: left;\" colspan=\"2\" rowspan=\"1\"><i><br>Riflettori (riff. JSP 390 2015; CEI EN 60825-4 2007).</i></td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>d<sub>laser</sub></b> [m]</td><td style=\"text-align: left;\">Distanza dal dispositivo laser</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>DRO<sub>r</sub></b> [m]</td><td style=\"text-align: left;\">Distanza di rischio ottico del riflettore</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>n</sub></b></td><td style=\"text-align: left;\">indice di rifrazione</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>&psi;</b> [gradi]</td><td style=\"text-align: left;\">Angolo di riflessione</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>&psi;<sub>R</sub></b> [gradi]</td><td style=\"text-align: left;\">Angolo di osservazione del riflettore</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>&tau;</sub></b></td><td style=\"text-align: left;\">Coefficiente di trasmissione</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>&rho;</sub></b></td><td style=\"text-align: left;\">Coefficiente di assorbimento</td>"
+"    </tr>"
+"    <tr>"
+"    <td  style=\"text-align: left;\" colspan=\"2\" rowspan=\"1\"><i><br>Riflettore diffondente (riff. JSP 390 2015; CEI EN 60825-4 2007).</i></td>"
+"    <tr>"
+"    <td><b>&theta;<sub>L</sub></b> [rad]</td><td style=\"text-align: left;\">Angolo rispetto al dispositivo laser, positivo se orario</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>d<sub>b</sub></b> [mm]</td><td style=\"text-align: left;\">Diametro del fascio al riflettore</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>K</b></td><td style=\"text-align: left;\">Termine constante indipendente da &alpha;<sub>i</sub></td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>x<sub>0</sub></b></td><td style=\"text-align: left;\">Valore iniziale impiegato per la risoluzione dell'equazione trascendente per il calcolo di &alpha;<sub>i</sub></td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>&alpha;<sub>i</sub></b> [mrad]</td><td style=\"text-align: left;\">Indicatore definito come il rapporto tra gli angoli &alpha; ed &alpha;<sub>min</sub> (nel caso di superficie estesa media risulta pari a C<sub>E</sub>)</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>&alpha;<sub>d</sub></b> [mrad]</td><td style=\"text-align: left;\">Angolo sotteso dall'immagine della riflessione alla distanza di rischio</td>"
+"    </tr>";
+    }
+    if(!myBeamInspectors.empty())
+    {
+        html+=
+"    <tr>"
+"    <td  style=\"text-align: left;\" colspan=\"2\" rowspan=\"1\"><i><br>Segnaposto di ispezione (riff. CEI EN 60825-1 2017;  Galbiati - Evaluation of the apparent source in laser safety - Journal of Laser Applications, Vol. 13, No 4, August 2001).</i></td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>L</b> [m]</td><td style=\"text-align: left;\">Distanza dal dispositivo laser</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>z<sub>R</sub></b> [m]</td><td style=\"text-align: left;\">Distanza di Rayleigh</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>M<sup>2</sup></b></td><td style=\"text-align: left;\">Parametro di qualit&agrave; del fascio</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>&phi;<sub>inspector</sub></b> [gradi]</td><td style=\"text-align: left;\">Angolo rispetto al dispositivo, positivo laser se orario</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>z<sub>R</sub>/L</b> [m]</td><td style=\"text-align: left;\">Distanza di Rayleigh relativa</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>f<sub>m</sub></b> [m]</td><td style=\"text-align: left;\">Minimo valore della distanza focale del cristallino</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>d<sub>r</sub></b> [&mu;m]</td><td style=\"text-align: left;\">Diametro dell'immagine retinica</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>d<sub>ff</sub></b> [&mu;m]</td><td style=\"text-align: left;\">Diametro dell'immagine retinica in ipotesi di campo lontano</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>&epsilon;</b></td><td style=\"text-align: left;\">Errore percentuale che si commette nel valutare il diametro dell'immagine retinica assumendo valida l'ipotesi di campo lontano</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>r<sub>s</sub></b> [mm]</td><td  style=\"text-align: left;\">Distanza della minima sorgente apparente dalla superficie corneale</td>"
+"    </tr>";
+    }
+    if(!myBinoculars.empty())
+    {
+        html+=
+"    <tr>"
+"    <td  style=\"text-align: left;\" colspan=\"2\" rowspan=\"1\"><i><br>Dispositivi ottici (rif. CEI EN 60825-1 2017).</i></td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>DNROE</b> [m]</td><td style=\"text-align: left;\">Distanza Nominale di Rischio Ottico Esteso</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>&tau;</b></td><td style=\"text-align: left;\">Coefficiente di trasmissione</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>d<sub>b</sub></b> [mm]</td><td style=\"text-align: left;\">Diametro del fascio sull'ottica</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>L</b> [m]</td><td style=\"text-align: left;\">Distanza dal punto laser</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>d<sub>0</sub></b> [mm]</td><td style=\"text-align: left;\">Diametro della lente</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>K</sub></b></td><td style=\"text-align: left;\">Guadagno ottico</td>"
+"    </tr>";
+}
+    html+=
+"    <tr>"
+"    <td  style=\"text-align: left;\" colspan=\"2\" rowspan=\"1\"><i><br>Classificazione semplificata (rif. CEI EN 60825-1 2017).</i></td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>T<sub>b</sub></b> [s]</td><td style=\"text-align: left;\">Base dei tempi</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>T<sub>e</sub></b> [s]</td><td style=\"text-align: left;\">Durata del treno per gli effetti cumulativi</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>T<sub>i</sub></b> [s]</td><td style=\"text-align: left;\">Durata al di sotto della quale i gruppi di impulsi vengono sommati tra loro</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>T<sub>i</sub> &times; PRF</b></td><td style=\"text-align: left;\">Termine compensativo dell'energia dell'impulso nel caso di funzionamento in alta frequenza</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>P<sub>m</sub></b> [W]</td><td style=\"text-align: left;\">Potenza media emessa da un dispositivo laser nel caso di emissione multipla di impulsi</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>P<sub>Acc 1</sub></b> [W]</td><td style=\"text-align: left;\">Potenza accessibile relativa alla 1<sup>a</sup> condizione di misura</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>P<sub>Acc 3</sub></b> [W]</td><td style=\"text-align: left;\">Potenza accessibile relativa alla 3<sup>a</sup> condizione di misura</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>Q<sub>Acc 1</sub></b> [J]</td><td style=\"text-align: left;\">Energia dell'impulso accessibile relativa alla 1<sup>a</sup> condizione di misura</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>Q<sub>Acc 1</sub></b> [J]</td><td style=\"text-align: left;\">Energia dell'impulso accessibile relativa alla 3<sup>a</sup> condizione di misura</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>C<sub>5</sub></b></td><td style=\"text-align: left;\">Fattore di correzione termica cumulativo</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>&eta;<sub>1</sub></b></td><td style=\"text-align: left;\">Parametro di accoppiamento relativo alla 1<sup>a</sup> condizione</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>&eta;<sub>3</sub></b></td><td style=\"text-align: left;\">Parametro di accoppiamento relativo alla 3<sup>a</sup> condizione</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>a<sub>1</sub></b> [mm]</td><td style=\"text-align: left;\">Diametro del diaframma relativo alla 1<sup>a</sup> condizione di misura</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>a<sub>3</sub></b> [mm]</td><td style=\"text-align: left;\">Diametro del diaframma relativo alla 3<sup>a</sup> condizione di misura</td>"
+"    </tr>"
+"    <tr>"
+"   <td><b>d<sub>1</sub></b> [mm]</td><td style=\"text-align: left;\">Distanza dal diaframma relativa alla 1<sup>a</sup> condizione di misura</td>"
+"    </tr>"
+"    <tr>"
+"   <td><b>d<sub>3</sub></b> [mm]</td><td style=\"text-align: left;\">Distanza dal diaframma relativa alla 3<sup>a</sup> condizione di misura</td>"
+"    </tr>"
+"    <tr>"
+"   <td><b>a<sub>b1</sub></b> [mm]</td><td style=\"text-align: left;\">Diametro del fascio al diaframma nella 1<sup>a</sup> condizione di misura</td>"
+"    </tr>"
+"    <tr>"
+"   <td><b>a<sub>b3</sub></b> [mm]</td><td style=\"text-align: left;\">Diametro del fascio al diaframma nella 3<sup>a</sup> condizione di misura</td>"
+"    </tr>"
+"    <tr>"
+"    <td  style=\"text-align: left;\" colspan=\"2\" rowspan=\"1\"><i><br>Condizioni meteo (riff. CEI EN 60825-1 1998; SMD-W-001 2017).</i></td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>&mu;</b></td><td style=\"text-align: left;\">Coefficiente di attenuazione atmosferica ad una data lunghezza d'onda &lambda;</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>V</b>[km]</td><td style=\"text-align: left;\">Distanza di visibilit&agrave;</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>A</b></td><td style=\"text-align: left;\">Coefficiente di valore pari a 0,585 V<sup>0,33</sup>"
+"    </tr>"
+"    </tbody>"
+"    </table>";
+
+    return html;
 }

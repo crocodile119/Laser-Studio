@@ -24,7 +24,7 @@ AddReflectorCommand::AddReflectorCommand(double _attenuatedDNRO, double _attenua
 
     reflector->setPixmap();
     reflector->setPixScale(scale);
-
+    reflector->setPos(initialPosition);
     reflector->setSkinDistance(attenuatedDNRC);
     reflector->setReflectorColor();
     reflector->setBackgroundColor(QColor(247, 247, 247, 170));
@@ -32,7 +32,7 @@ AddReflectorCommand::AddReflectorCommand(double _attenuatedDNRO, double _attenua
     reflector->setTextLabel();
     reflector->setStringDetails();
     reflector->setSeqNumber(seqNumber);
-    link=addLink();
+    reflectorlink=addReflectorLink();
 
     setText(QObject::tr("Aggiungo %1")
         .arg(createAddRefletorCommandString(reflector, initialPosition)));
@@ -41,7 +41,7 @@ AddReflectorCommand::AddReflectorCommand(double _attenuatedDNRO, double _attenua
 void AddReflectorCommand::undo()
 {
     laserWindow->graphicsView->scene->removeItem(reflector);
-    laserWindow->graphicsView->scene->removeItem(link);
+    laserWindow->graphicsView->scene->removeItem(reflectorlink);
     laserWindow->graphicsView->scene->update();
 
     myReflectors->clear();
@@ -64,11 +64,29 @@ void AddReflectorCommand::redo()
     laserWindow->graphicsView->scene->addItem(reflector);
     laserWindow->graphicsView->scene->clearSelection();
 
-    laserWindow->graphicsView->scene->addItem(link);
+    laserWindow->graphicsView->scene->addItem(reflectorlink);
 
     QGraphicsItem *item =laserWindow->graphicsView->scene->itemAt(initialPosition, QTransform());
     reflectorOnScene= qgraphicsitem_cast<Reflector*>(item);
-;
+
+    QString reflectorName=reflector->objectName();
+
+    if(reflectorOnScene==nullptr)
+    {
+        QList<QGraphicsItem*>items=laserWindow->graphicsView->scene->collidingItems(item);
+
+        QMutableListIterator<QGraphicsItem *> k(items);
+        while (k.hasNext())
+        {
+            reflectorOnScene = dynamic_cast<Reflector *>(k.next());
+            if(reflectorOnScene!=nullptr)
+            {
+                if(reflectorOnScene->objectName()==reflectorName)
+                break;
+            }
+        }
+    }
+
     myReflectors->append(reflectorOnScene);
 
 
@@ -88,15 +106,15 @@ AddReflectorCommand::~AddReflectorCommand()
         delete reflector;
 }
 
-Link* AddReflectorCommand::addLink()
+ReflectorLink* AddReflectorCommand::addReflectorLink()
 {
-    NodePair nodes = selectedNodePair();
-    if (nodes == NodePair())
+    ReflectorNodePair reflectorNodes = selectedReflectorNodePair();
+    if (reflectorNodes == ReflectorNodePair())
         return nullptr;;
 
-    Link *link = new Link(nodes.first, nodes.second);
+    ReflectorLink *reflectorlink = new ReflectorLink(reflectorNodes.first, reflectorNodes.second);
 
-    return link;
+    return reflectorlink;
 }
 
 Reflector* AddReflectorCommand::getReflector()const
@@ -104,9 +122,9 @@ Reflector* AddReflectorCommand::getReflector()const
     return reflector;
 }
 
-AddReflectorCommand::NodePair AddReflectorCommand::selectedNodePair() const
+AddReflectorCommand::ReflectorNodePair AddReflectorCommand::selectedReflectorNodePair() const
 {
-    return NodePair(laserpoint, reflector);
+    return ReflectorNodePair(laserpoint, reflector);
 }
 
 QString createAddRefletorCommandString(Reflector *item, const QPointF &pos)

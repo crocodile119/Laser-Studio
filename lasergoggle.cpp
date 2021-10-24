@@ -5,6 +5,7 @@
 #include <string>
 #include <utility>
 #include <algorithm>
+#include "floatcomparison.h"
 
 const int LaserGoggle::TIMEBASE = 5;
 const int LaserGoggle::TIMEBASE_LOW_WAVELENGTH =30000;
@@ -64,7 +65,7 @@ LaserGoggle::LaserGoggle(int _wavelength, double _pulseWidth, double _powerErg, 
 {
     buildScaleNumbers();
 
-    if(_pulseWidth==CONTINUOS_OPERATION)
+    if(static_cast<int>(_pulseWidth)==CONTINUOS_OPERATION)//
     {
         if((wavelength>=180)&&(wavelength<=315))
             pulseWidth = TIMEBASE_LOW_WAVELENGTH;
@@ -119,7 +120,7 @@ array<double, LaserGoggle::TABLEROWS> LaserGoggle::selectData(const double &wave
 {
     if((wavelength>=180.0) && (wavelength<315.0))
         {
-        if(applicableTime>=3.0e+04)
+        if((applicableTime>3.0e+04)||(almostEqualUlps(applicableTime, 3.0e+04)))
         {
             array<double, LaserGoggle::TABLEROWS> D180_315_Values = {0.01, 0.1, 1.0, 10.0, 1.0e+02, 1.0e+03, 1.0e+04, 1.0e+05, 1.0e+06, 1.0e+07};
 
@@ -128,14 +129,14 @@ array<double, LaserGoggle::TABLEROWS> LaserGoggle::selectData(const double &wave
 
             pulseCode=CONTINUOS_EMISSION;
         }
-        if((applicableTime>=1.0e-09)&&(applicableTime<3.0e+04))
+        if(((applicableTime>=1.0e-09)||(almostEqualUlps(applicableTime, 3.0e+04)))&&(applicableTime<3.0e+04))
         {
             array<double, LaserGoggle::TABLEROWS> IR180_315_Values = {3.0e+02, 3.0e+03, 3.0e+04, 3.0e+05,  3.0e+06, 3.0e+07, 3.0e+08, 3.0e+09, 3.0e+10,3.0e+11};
 
             for (size_t i=0; i<TABLEROWS; i++)
                 expositionData[i]=IR180_315_Values[i];
 
-            if (applicableTime<1.0e-06)
+            if ((applicableTime<1.0e-06)||(almostEqualUlps(applicableTime, 1.0e-06)))
                 pulseCode=Q_SWITCHED;
             else
                 pulseCode=SIMPLE_PULSED;
@@ -153,7 +154,7 @@ array<double, LaserGoggle::TABLEROWS> LaserGoggle::selectData(const double &wave
 
     if((wavelength>=315.0) && (wavelength<1400.0))
         {
-        if(applicableTime>=5.0e-04)
+        if((applicableTime>5.0e-04)||(almostEqualUlps(applicableTime, 5.0e-04)))
         {
             array<double, LaserGoggle::TABLEROWS> D315_1400_Values = { 1.0e+02, 1.0e+03, 1.0e+04, 1.0e+05, 1.0e+06, 1.0e+07, 1.0e+08, 1.0e+09, 1.0e+10, 1.0e+11};
 
@@ -162,14 +163,14 @@ array<double, LaserGoggle::TABLEROWS> LaserGoggle::selectData(const double &wave
 
             pulseCode=CONTINUOS_EMISSION;
         }
-        if((applicableTime>=1.0e-09)&&(applicableTime<5.0e-04))
+        if(((applicableTime>1.0e-09)||(almostEqualUlps(applicableTime, 1.0e-09)))&&(applicableTime<5.0e-04))
         {
             array<double, LaserGoggle::TABLEROWS> IR315_1400_Values = {0.05, 0.5 , 5, 50, 5.0e+02, 5.0e+03, 5.0e+04, 5.0e+05, 5.0e+06, 5.0e+07};
 
             for (size_t i=0; i<TABLEROWS; i++)
                 expositionData[i]=IR315_1400_Values[i];
 
-            if (applicableTime<1.0e-06)
+            if ((applicableTime<=1.0e-06)||(almostEqualUlps(applicableTime, 1.0e-06)))
                 pulseCode=Q_SWITCHED;
             else
                 pulseCode=SIMPLE_PULSED;
@@ -188,7 +189,7 @@ array<double, LaserGoggle::TABLEROWS> LaserGoggle::selectData(const double &wave
 
     if((wavelength>=1400.0) && (wavelength<1.0e+06))
         {
-        if(applicableTime>=1.0e-01)
+        if((applicableTime>1.0e-01)||(almostEqualUlps(applicableTime, 1.0e-01)))
         {
             array<double, LaserGoggle::TABLEROWS> D1400_1mm_Values = {1.0e+04, 1.0e+05, 1.0e+06, 1.0e+07, 1.0e+08, 1.0e+09, 1.0e+10, 1.0e+11, 1.0e+12, 1.0e+13};
 
@@ -197,19 +198,19 @@ array<double, LaserGoggle::TABLEROWS> LaserGoggle::selectData(const double &wave
 
             pulseCode=CONTINUOS_EMISSION;
         }
-        if((applicableTime>=1.0e-09)&&(applicableTime<1.0e-01))
+        if(((applicableTime>1.0e-09)||(almostEqualUlps(applicableTime, 1.0e-09)))&&(applicableTime<1.0e-01))
         {
             array<double, LaserGoggle::TABLEROWS> IR1400_1mm_Values = { 1.0e+03, 1.0e+04, 1.0e+05, 1.0e+06, 1.0e+07, 1.0e+08, 1.0e+09, 1.0e+10, 1.0e+11, 1.0e+12};
 
             for (size_t i=0; i<TABLEROWS; i++)
                 expositionData[i]=IR1400_1mm_Values[i];
 
-            if (applicableTime<1.0e-06)
+            if ((applicableTime<1.0e-06)||(almostEqualUlps(applicableTime, 1.0e-06)))
                 pulseCode=Q_SWITCHED;
             else
                 pulseCode=SIMPLE_PULSED;
         }
-        if(applicableTime<1.0e-09)
+        if(applicableTime<=1.0e-09)
         {
             array<double, LaserGoggle::TABLEROWS> M1400_1mm_Values = {1.0e+12,  1.0e+13, 1.0e+14, 1.0e+15, 1.0e+16, 1.0e+17, 1.0e+18, 1.0e+19, 1.0e+20, 1.0e+21};
 
@@ -300,7 +301,7 @@ double LaserGoggle::pulseTrainCorrectionK()
     else
     {
         if((wavelength>=400)and(wavelength<=1.0e+06))
-            k= pow(myNymberOfPulse, 0.25);
+            k= std::pow(myNymberOfPulse, 0.25);
         else
             k=1;
     }
@@ -483,11 +484,11 @@ void LaserGoggle::setMaterial(material typeOfMaterial)
     switch (typeOfMaterial)
     {
         case GLASS:
-        materialCorrection=pow(myBeam, GLASS_EXPONENT);
+        materialCorrection=std::pow(myBeam, GLASS_EXPONENT);
         break;
 
         case PLASTIC:
-        materialCorrection=pow(myBeam, PLASTIC_EXPONENT);
+        materialCorrection=std::pow(myBeam, PLASTIC_EXPONENT);
         break;
 
         case ONLY_REFLECTOR:
@@ -532,7 +533,7 @@ double LaserGoggle::meanPower()
 
 double LaserGoggle::laserIrrRad(double powerErg)
 {
-    double beamArea= PI*pow(beamDiameter,2)/(4*1.0e+06);
+    double beamArea= PI*std::pow(beamDiameter,2)/(4*1.0e+06);
     irrRad=materialCorrection*powerErg/beamArea;
     return irrRad;
 }

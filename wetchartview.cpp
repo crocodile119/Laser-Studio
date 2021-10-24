@@ -1,4 +1,5 @@
 #include "wetchartview.h"
+#include <cmath>
 
 const qreal WetChartView::angularMin = 0;
 const qreal WetChartView::angularMax = 360;
@@ -39,8 +40,8 @@ WetChartView::WetChartView(QWidget *parent, std::vector<std::pair<double, double
 
     setRadialAxis();
     setAngularAxis();
-    chart->setBackgroundBrush(QColor::fromRgb(240, 240, 240));
-    chart->setMinimumSize(640, 480);
+    chart->setBackgroundBrush(QColor::fromRgb(255, 255, 255));
+    chart->setMinimumSize(520, 390);
 
     scene()->addItem(chart);
 }
@@ -126,8 +127,13 @@ QtCharts::QLineSeries* WetChartView::buildPositioningSeries()
     positioningSeries->append(0.0, 0.0);
 
     if(correctPositioning<=0)
-        correctPositioning=correctPositioning+360;
+        correctPositioning=round(correctPositioning+360);
 
     positioningSeries->append(correctPositioning, radialMax);
     return positioningSeries;
+}
+
+void WetChartView::setChartBackgroundBrush(QColor color)
+{
+    chart->setBackgroundBrush(color);
 }

@@ -25,7 +25,7 @@ Binocular::Binocular(double DNRO, double _binocularDistance, double _wavelength,
      magnification(5), transmissionCoeff(0.90), binocularPix(":/images/binocularpix.png")
 {
     computeOpticalGain();
-    exendedOpticalDiameter=2*DNRO*sqrtf(opticalGain);
+    exendedOpticalDiameter=2*DNRO*std::sqrt(opticalGain);
 
     if(exendedOpticalDiameter>binocularDistance)
         dangerous=true;
@@ -301,7 +301,7 @@ void Binocular::setStringPosition()
 
     if((wavelength>=400)&&(wavelength<=1400))
     {
-    position ="Dispositivo ottico" + QString(" (%1,%2) <br>dist[m]: %3, DNROE[m]: %4 <br>τ= %5, D<sub>b</sub>[mm]=%6, D<sub>0</sub>[mm]=%7, <br>M= %8, K=%9 <br>%10")
+    position ="Dispositivo ottico" + QString(" (%1,%2) <br>dist[m]: %3, DNROE[m]: %4 <br>τ= %5, d<sub>b</sub>[mm]=%6, d<sub>0</sub>[mm]=%7, <br>Mx= %8, K<sub>o</sub>=%9 <br>%10")
                                     .arg(xString)
                                     .arg(yString)           
                                     .arg(binocularDistanceString)
@@ -412,7 +412,7 @@ double Binocular::setAtmoshericEffectsCoefficient() const
 
 void Binocular::computeExendedOpticalDiameter()
 {
-    exendedOpticalDiameter=opticalDiameter*sqrtf(opticalGain);
+    exendedOpticalDiameter=opticalDiameter*std::sqrt(opticalGain);
 }
 
 double Binocular::getExendedOpticalDiameter()
@@ -503,18 +503,18 @@ void Binocular::computeOpticalGain()
         double k_evaluation_2;
         double k_evaluation_3;
 
-        k_evaluation_1=transmissionCoeff*pow(magnification, 2.0);
+        k_evaluation_1=transmissionCoeff*std::pow(magnification, 2.0);
 
         if(k_evaluation_1<1)
         k_evaluation_1=1.0;
 
-        k_evaluation_2=transmissionCoeff*pow(D0,2.0)/pow(g,2.0);
+        k_evaluation_2=transmissionCoeff*std::pow(D0,2.0)/std::pow(g,2.0);
         if(k_evaluation_2<1)
         k_evaluation_2=1.0;
 
         computeSpotDiameter();
 
-        k_evaluation_3=transmissionCoeff*pow(Db,2.0)/pow(g,2.0);
+        k_evaluation_3=transmissionCoeff*std::pow(Db,2.0)/std::pow(g,2.0);
         if(k_evaluation_3<1)
         k_evaluation_3=1.0;
 
@@ -573,6 +573,13 @@ if(isDangerous())
             effectsString= "/";
 
 return effectsString;
+}
+
+
+void Binocular::setBinocularObjectName(const QPointF& position)
+{
+    QString binocularName=QString("Binocular (%1,%2)").arg(position.x()).arg(position.y());
+    setObjectName(binocularName);
 }
 
 void Binocular::setInZone(bool _inZone)

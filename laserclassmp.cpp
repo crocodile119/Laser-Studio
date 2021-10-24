@@ -36,10 +36,12 @@ void LaserClassMP::meanClassUpdate(const double& _timeBase, const double& _meanP
     /*******************************************************************************
      * Per il calcolo del diametro del diametro del fascio e del fattore di        *
      * accoppiamento per la condizione 1 è necessario verificare quand'è che       *
-     * risulta applicabile (lunghezza d'onda >=302.5 e <=4000).                    *                                      *
+     * risulta applicabile (lunghezza d'onda >=302.5 e <4000).                    *                                      *
      * *****************************************************************************/
 
-    if((wavelength>=302.5)and(wavelength<=4000))
+     meanCouplingFactor_Cond_1=valuateCouplingFactor(meanApCond_1, meanBeamAtStop_Cond_1, true);
+
+     if((wavelength>=302.5)and(wavelength<4000))
     {
     /**************************************************************************
      * Calcolo il diametro del fascio alla stessa distanza della condizione 1 *                                                *
@@ -49,12 +51,9 @@ void LaserClassMP::meanClassUpdate(const double& _timeBase, const double& _meanP
      * prelevo l'apertura calcolata per la condizione 1 e calcolo il fattore di *
      * accoppiamento corrispondente                                             *
      ****************************************************************************/
-
-        meanCouplingFactor_Cond_1=valuateCouplingFactor(meanApCond_1, meanBeamAtStop_Cond_1);
     }
     else
     {
-        meanCouplingFactor_Cond_1=1.0;
         meanBeamAtStop_Cond_1=std::nan("N.A.");
     }
 
@@ -71,7 +70,7 @@ void LaserClassMP::meanClassUpdate(const double& _timeBase, const double& _meanP
     meanBeamAtStop_Cond_3=valuateBeamDiameterAtStop(meanDistCond_3, divergence);
 
     meanApCond_3=myMeanLaserClass.getApertureStopCond_3();
-    meanCouplingFactor_Cond_3=valuateCouplingFactor(meanApCond_3, meanBeamAtStop_Cond_3);
+    meanCouplingFactor_Cond_3=valuateCouplingFactor(meanApCond_3, meanBeamAtStop_Cond_3, true);
 
     /****************************************************************************************************************
      * Correggo in calori di LEA per ottenerne quelli medi.                                                         *
@@ -135,10 +134,12 @@ void LaserClassMP::tiClassUpdate(const double& _Tmin, const double& _powerErg)
     /*******************************************************************************
      * Per il calcolo del diametro del diametro del fascio e del fattore di        *
      * accoppiamento per la condizione 1 è necessario verificare quand'è che       *
-     * risulta applicabile (lunghezza d'onda >=302.5 e <=4000).                    *                                      *
+     * risulta applicabile (lunghezza d'onda >=302.5 e <4000).                    *                                      *
      * *****************************************************************************/
 
-    if((wavelength>=302.5)and(wavelength<=4000))
+     tiCouplingFactor_Cond_1=valuateCouplingFactor(tiApCond_1, tiBeamAtStop_Cond_1, false);
+
+    if((wavelength>=302.5)and(wavelength<4000))
     {
         /**************************************************************************
          * Calcolo il diametro del fascio alla stessa distanza della condizione 1 *                                                *
@@ -148,12 +149,9 @@ void LaserClassMP::tiClassUpdate(const double& _Tmin, const double& _powerErg)
          * prelevo l'apertura calcolata per la condizione 1 e calcolo il fattore di *
          * accoppiamento corrispondente                                             *
          ****************************************************************************/
-
-        tiCouplingFactor_Cond_1=valuateCouplingFactor(tiApCond_1, tiBeamAtStop_Cond_1);
     }
     else
     {
-        tiCouplingFactor_Cond_1=1.0;
         tiBeamAtStop_Cond_1=std::nan("N.A.");
     }
 
@@ -170,7 +168,7 @@ void LaserClassMP::tiClassUpdate(const double& _Tmin, const double& _powerErg)
     tiBeamAtStop_Cond_3=valuateBeamDiameterAtStop(tiDistCond_3, divergence);
 
     tiApCond_3=myTiLaserClass.getApertureStopCond_3();
-    tiCouplingFactor_Cond_3=valuateCouplingFactor(tiApCond_3, tiBeamAtStop_Cond_3);
+    tiCouplingFactor_Cond_3=valuateCouplingFactor(tiApCond_3, tiBeamAtStop_Cond_3, false);
 
     /******************************************************************
      * correggo i valori relativi all'uscita del laser per il fattore *
@@ -361,13 +359,13 @@ array<double, ComputeLEA::N_LEA> LaserClassMP::meanPowerUnit(array<int, ComputeL
     array<double, ComputeLEA::N_LEA> myPowerErgEq;
     for(size_t i=0; i<ComputeLEA::N_LEA; i++)
     {
-    if(_meanLEA_formulaSort[i]==1)
+    if(_meanLEA_formulaSort[i]==static_cast<int>(ComputeLEA::FormulaKind::IRRADIANCE))
         myPowerErgEq[i]=_powerErg/beamArea;
-    else if(_meanLEA_formulaSort[i]==2)
+    else if(_meanLEA_formulaSort[i]==static_cast<int>(ComputeLEA::FormulaKind::EXPOSURE_ENERGY))
         myPowerErgEq[i]=_powerErg*time/beamArea;
-    else if(_meanLEA_formulaSort[i]==3)
+    else if(_meanLEA_formulaSort[i]==static_cast<int>(ComputeLEA::FormulaKind::POWER))
         myPowerErgEq[i]=_powerErg;
-    else if(_meanLEA_formulaSort[i]==4)
+    else if(_meanLEA_formulaSort[i]==static_cast<int>(ComputeLEA::FormulaKind::PULSE_ENERGY))
         myPowerErgEq[i]=_powerErg*time;
     }
     return myPowerErgEq;
@@ -379,13 +377,13 @@ array<double, ComputeLEA::N_LEA> LaserClassMP::computeMeanLEA_Corrected(array<in
     array<double, ComputeLEA::N_LEA>myMeanLEA=getMeanLEA();
     for(size_t i=0; i<ComputeLEA::N_LEA; i++)
     {
-    if(_meanLEA_formulaSort[i]==1)
+    if(_meanLEA_formulaSort[i]==static_cast<int>(ComputeLEA::FormulaKind::IRRADIANCE))
         meanLEACorrected[i]=myMeanLEA[i];
-    else if(_meanLEA_formulaSort[i]==2)
+    else if(_meanLEA_formulaSort[i]==static_cast<int>(ComputeLEA::FormulaKind::EXPOSURE_ENERGY))
         meanLEACorrected[i]=myMeanLEA[i]/ceil(prf*timeBase);
-    else if(_meanLEA_formulaSort[i]==3)
+    else if(_meanLEA_formulaSort[i]==static_cast<int>(ComputeLEA::FormulaKind::POWER))
         meanLEACorrected[i]=myMeanLEA[i];
-    else if(_meanLEA_formulaSort[i]==4)
+    else if(_meanLEA_formulaSort[i]==static_cast<int>(ComputeLEA::FormulaKind::PULSE_ENERGY))
         meanLEACorrected[i]=myMeanLEA[i]/ceil(prf*timeBase);
     }
 
@@ -497,7 +495,7 @@ void LaserClassMP::setAlpha_max(const double &pulse)
     if(pulse<6.25e-004)
         alpha_max=5;
     else if((pulse>=6.25e-004)and(pulse<0.25))
-        alpha_max=200*pow(pulse, 0.5);
+        alpha_max=200*std::pow(pulse, 0.5);
     else if(pulse>0.25)
         alpha_max=100;
 }

@@ -24,14 +24,14 @@
 #include "dockskin.h"
 #include "dockgoggle.h"
 #include "docklea.h"
-#include "reflectorsqlist.h"
+#include "graphicsitemtree.h"
 #include "ui_dockeffects.h"
 #include "ui_dockresults.h"
 #include "ui_dockskin.h"
 #include "ui_dockgoggle.h"
 #include "ui_docklea.h"
 #include "ui_dockcontrols.h"
-#include "ui_reflectorsqlist.h"
+#include "ui_graphicsitemtree.h"
 #include "undo_commands/addscrollbarvaluecommand.h"
 
 namespace Ui {
@@ -76,9 +76,7 @@ public:
     void displayDTimeBase();
     void showControls(bool);
     void setWidgets();
-    void setSkinWidgetsSingle();
-    void setOpticalDistance();
-    void setSkinDistances();   
+    void setSkinWidgetsSingle();  
     void setLambertianMax();
     //void setBeamDiameterDial(const int);
     //void setPowerErgDial(const int);
@@ -128,13 +126,22 @@ public:
 	
 	//funzioni membro lea
     void set_LEA_Widgets();
-    void setWidgetsForOperation(LaserClassMP *);
-    void setWidgetsForCW_Operation();
-    void setWidgetsForSinglePulse_Operation();
-    void setWidgetsForMultiPulse_Operation();
-    void setWidgetsForThermal();
-    void setWidgetsForThermalTi();    
+    void setDataForCW_Operation();
+    void setDataForSP_Operation();
+    void setDataForMP_Operation();
+    void setDataForMP_ThermalOperation();
+    void setDataForMP_ThermalTiOperation();
+    void setCW_SP_LEAModel();
+    void setMP_LEAModel();
+    void setMP_Thermal_LEAModel();
+    void setMP_ThermalTi_LEAModel();
+    void updateCW_SP_LEA_data();
+    void updateMP_LEA_data();
+    void updateMP_Thermal_LEA_data(const QString & header);
+    void selectMP_Thermal_Model();
     QString getLaserClassString(const LaserClassCW::laserClass &);
+    void kindOfHazardChanged();
+    QVector<QString> getLEA_DataVector()const;
 
     vector<pair<int, double>> getGoggleDataVect()const;
     vector<pair<int, double>> getDGoggleDataVect()const;
@@ -175,6 +182,7 @@ private slots:
     void on_checkGaussianBeam_clicked(bool checked);
     void on_internalWaist_checkBox_toggled(bool checked);
     void on_comboBoxBands_currentIndexChanged(int index);
+    void setLEAModelForWavelength();
 
 signals:
     void modified();
@@ -189,6 +197,7 @@ signals:
     void EMP_Changed();
     void noFeasibleInput();
     void operationChanged();
+    void hazardChanged();
 
 private:
     //Variabili membro riguardanti i controlli
@@ -223,7 +232,7 @@ private:
     DockSkin *dockSkin;
     DockGoggle *dockGoggle;
     DockLea *dockLea;
-    ReflectorsQList *dockReflectorsList;
+    GraphicsItemTree *dockReflectorsList;
     QUndoStack* undoStack;
 
     operation n_laser;
@@ -268,6 +277,11 @@ private:
     int scrollBarOldValue;
     int scrollBarPressedValue;
     QUndoCommand *scrollBarCommandPressed;
+
+    QStandardItemModel *leaModel;
+    QVector<QString>LEA_Data;
+
+    bool isThermalHazard;
 };
 
 #endif // DOCKCONTROLS_H

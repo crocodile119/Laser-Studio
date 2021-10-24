@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QDialog>
+#include "ui_fresnelchartdialog.h"
 #include "fresnelchartview.h"
 
 #include "reflector.h"
@@ -12,13 +13,14 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class FresnelChartDialog; }
 QT_END_NAMESPACE
 
-class FresnelChartDialog : public QDialog
+class FresnelChartDialog : public QDialog, private Ui::FresnelChartDialog
 {
     Q_OBJECT
 
 public:
-    FresnelChartDialog(Reflector *reflector, QWidget *parent = nullptr);
+    FresnelChartDialog(Reflector *reflector, bool _thema, QWidget *parent = nullptr);
     ~FresnelChartDialog();
+    Ui::FresnelChartDialog *ui;
 
 private slots:
 
@@ -30,11 +32,12 @@ private slots:
     void setLabelDNRO();
     void setLabelRefraction();
     void setLabelHazard();
-    void setLabelPositioning();
+    void setLabelCorrectPositioning();
     void setRefraction(const double);
 
+    void on_pushButton_clicked();
+
 private:
-    Ui::FresnelChartDialog *ui;
     FresnelChartView *polarChartView;    
     double distance;
     double dnro;
@@ -42,9 +45,10 @@ private:
     double divergence;
     double maxElement;
     int positioning;
-    int correctPositioning;
+    double correctPositioning;
     double positioningElement;
     Reflector *reflector;
+    bool thema;
     std::vector<std::pair<double, double>> dataVector;
 
 };

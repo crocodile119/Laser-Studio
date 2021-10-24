@@ -6,14 +6,9 @@ const double DiffusionHazard::ALPHA_MIN= 1.5;
 const double DiffusionHazard::ALPHA_MAX= 100.0;
 const double DiffusionHazard::PI_GRECO = 3.141592653589793;
 
-DiffusionHazard::DiffusionHazard(double _beamDiameter, double _divergence, double _laserDistance, double _EMP, double _powerErg):
-beamDiameter(_beamDiameter), divergence(_divergence), laserDistance(_laserDistance), EMP(_EMP), powerErg(_powerErg)
+DiffusionHazard::DiffusionHazard(double _spotDiameter, double _EMP, double _powerErg):
+spotDiameter(_spotDiameter),  EMP(_EMP), powerErg(_powerErg)
 {
-}
-
-void DiffusionHazard::computeSpotDiameter()
-{
-    spotDiameter=beamDiameter+1.0e-03*divergence*laserDistance;
 }
 
 void DiffusionHazard::computeAlpha()
@@ -107,7 +102,7 @@ double DiffusionHazard::distanceFunction(double testValue)
             function=1/(1-cos(testValue/2))-constant;
             break;
         case(kindOfSurface::POINT):
-            function=testValue/(1-cos(testValue/2))-constant;
+            function=1/(1-cos(testValue/2))-constant;
             break;
     }
     return function;
@@ -138,26 +133,6 @@ double DiffusionHazard::getReflectorDistance()const
     return reflectorDistance;
 }
 
-double DiffusionHazard::getDivergence()const
-{
-    return divergence;
-}
-
-void DiffusionHazard::setDivergence(const double& _divergence)
-{
-    divergence=_divergence;
-}
-
-double DiffusionHazard::getBeamDiameter()const
-{
-    return beamDiameter;
-}
-
-void DiffusionHazard::setBeamDiameter(const double& _beamDiameter)
-{
-    beamDiameter=_beamDiameter;
-}
-
 double DiffusionHazard::getEMP()const
 {
     return EMP;
@@ -178,16 +153,6 @@ void DiffusionHazard::setEps(const double& _eps)
     eps=_eps;
 }
 
-double DiffusionHazard::getLaserDistance()const
-{
-    return laserDistance;
-}
-
-void DiffusionHazard::setLaserDistance(const double& _laserDistance)
-{
-    laserDistance=_laserDistance;
-}
-
 double DiffusionHazard::getConstant()const
 {
     return constant;
@@ -195,24 +160,25 @@ double DiffusionHazard::getConstant()const
 
 void DiffusionHazard::computeConstant()
 {
-    double divergenceInRad;
-    double beamDiameterInMeter;
+    double spotDiameterInMeter;
+    spotDiameterInMeter=spotDiameter*1.0e-03;
 
-    divergenceInRad=divergence*1.0e-03;
-    beamDiameterInMeter=beamDiameter*1.0e-03;
+    double mediumConstant= 8/PI_GRECO*powerErg/EMP*ALPHA_MIN*1.0e-03/(std::pow(spotDiameterInMeter,2));
+    double largeConstant=8/PI_GRECO*powerErg/EMP*ALPHA_MIN/ALPHA_MAX/(std::pow(spotDiameterInMeter,2));
+    double pointConstant= 8/PI_GRECO*powerErg/EMP*1.0e-03/(std::pow(spotDiameterInMeter,2));
 
     switch(surface)
     {
         case(kindOfSurface::MEDIUM):
-            constant= 8/PI_GRECO*powerErg/EMP*ALPHA_MIN*1.0e-03/(powf(laserDistance*divergenceInRad+beamDiameterInMeter,2));
+            constant=mediumConstant;
             qDebug()<<"Constante superficie media: "<< constant;
             break;
         case(kindOfSurface::LARGE):
-            constant= 8/PI_GRECO*powerErg/EMP*ALPHA_MIN/ALPHA_MAX/(powf(laserDistance*divergenceInRad+beamDiameterInMeter,2));
+            constant= largeConstant;
             qDebug()<<"Constante superficie grande: "<< constant;
             break;
         case(kindOfSurface::POINT):
-            constant= 8/PI_GRECO*powerErg/EMP*ALPHA_MIN*1.0e-03/(powf(laserDistance*divergenceInRad+beamDiameterInMeter,2));
+            constant=pointConstant;
             qDebug()<<"Constante superficie puntiforme: "<< constant;
             break;
     }
@@ -238,8 +204,9 @@ double DiffusionHazard::getAlphaIndicator()const
     return alphaIndicator;
 }
 
-void DiffusionHazard::computeExendedReflection(double _eps)
+bool DiffusionHazard::computeExendedReflection(double _eps)
 {
+    bool computed=false;
     alphaIndicator=0;
     setKindOfSurface(kindOfSurface::MEDIUM);
     computeConstant();
@@ -263,49 +230,67 @@ void DiffusionHazard::computeExendedReflection(double _eps)
      *                                                                                                                 *
      *******************************************************************************************************************/
 
+    double myConst=getConstant();
+
+    /**************************************************************************************************************************
+    * Nell'ipotesi di reflessioni diffuse da superficie non puntiforme l'angolo alpha non può essere maggiore di PI_GRECO     *
+    * (corrispondente a metà angolo solido), quindi l'argomento del coseno è al più pari a PI_GRECO/2.                        *
+    * Ciò significa che:                                                                                                      *
+    *   - quando l'angolo alpha è uguale a PI_GRECO, la funzione x/(1-cos(x/2)) assume valore PI_GRECO;                       *
+    *   - la funzione ha un asintoto verticale in 0 per + infinito;                                                           *
+    *   - la funzione è inoltre strettamente decrescente.                                                                     *
+    * Ne consegue che affinchè possa essere applicata l'equazione per il calcolo della diffusione da superficie estesa è      *
+    * necessario che la costante ricavata sia maggiore di PI_GRECO in caso contrario l'algoritmo per il calcolo della         *
+    * soluzione certamente non converge, qualunque sia il valore del valore di prova.                                                                                      *
+    ***************************************************************************************************************************/
+
+    if(myConst<DiffusionHazard::PI_GRECO)
+        return computed;
+
+
     testValue=8/getConstant();
     qDebug()<<"Valore di prova: " << testValue;
 
     newRapSolution=newtonRapsonReflectorDistance(_eps, testValue);
-    computeSpotDiameter();
     computeAlpha();
     computeAlphaIndicator();
     computeReflectorHazardDistance();
     computeCE();
 
-    if(alphaIndicator<1)
-    {
-        setKindOfSurface(kindOfSurface::POINT);
-        reflectorHazardDistance=sqrtf(powerErg/(PI_GRECO*EMP));
-        computeAlpha();
-        computeAlphaIndicator();
-        computeCE();
-    }
-
-    if(alphaIndicator>ALPHA_MAX/ALPHA_MIN)
+   if((alphaIndicator>ALPHA_MAX/ALPHA_MIN)||(alphaIndicator<1))
     {
         setKindOfSurface(kindOfSurface::LARGE);
         computeConstant();
-        testValue=sqrtf(8/getConstant());
+        testValue=std::sqrt(8/getConstant());
 
         newRapSolution=newtonRapsonReflectorDistance(_eps, testValue);
-        computeSpotDiameter();
         computeAlpha();
         computeAlphaIndicator();
         computeReflectorHazardDistance();
         computeCE();
+
+        if(alphaIndicator<=ALPHA_MAX/ALPHA_MIN)
+        {
+            setKindOfSurface(kindOfSurface::POINT);
+            reflectorHazardDistance=std::sqrt(powerErg/(PI_GRECO*EMP));
+            computed=false;
+        }
+        else
+            computed=true;
     }
+    else
+        computed=true;
+
+   return computed;
 }
 
 void DiffusionHazard::computeReflectorHazardDistance()
 {
-    double divergenceInRad;
-    double beamDiameterInMeter;
+    double spotDiameterInMeter;
 
-    divergenceInRad=divergence*1.0e-03;
-    beamDiameterInMeter=beamDiameter*1.0e-03;
+    spotDiameterInMeter=spotDiameter*1.0e-03;
 
-    reflectorHazardDistance=(laserDistance*divergenceInRad+beamDiameterInMeter)/newRapSolution;
+    reflectorHazardDistance=(spotDiameterInMeter)/newRapSolution;
 }
 
 double DiffusionHazard::getNewRapSolution()

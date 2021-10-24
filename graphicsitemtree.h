@@ -1,22 +1,22 @@
-#ifndef REFLECTORSQLIST_H
-#define REFLECTORSQLIST_H
+#ifndef GRAPHICSITEMTREE_H
+#define GRAPHICSITEMTREE_H
 
 #include <QDockWidget>
 #include <QModelIndex>
 
 namespace Ui {
-class ReflectorsQList;
+class GraphicsItemTree;
 }
 
-class ReflectorsQList : public QDockWidget
+class GraphicsItemTree : public QDockWidget
 {
     Q_OBJECT
 
 public:
-    explicit ReflectorsQList(QWidget *parent = nullptr);
-    ~ReflectorsQList();
+    explicit GraphicsItemTree(QWidget *parent = nullptr);
+    ~GraphicsItemTree();
     QModelIndex getTreeViewIndex();
-    Ui::ReflectorsQList *ui;
+    Ui::GraphicsItemTree *ui;
 
 private slots:
     void on_treeView_clicked(const QModelIndex &index);
@@ -26,4 +26,4 @@ private:
     QModelIndex treeViewIndex;
 };
 
-#endif // REFLECTORSQLIST_H
+#endif // GRAPHICSITEMTREE_H

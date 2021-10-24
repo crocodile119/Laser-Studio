@@ -13,12 +13,14 @@
 #include "dockgoggle.h"
 #include "dockcontrols.h"
 #include "docklea.h"
+#include "graphicsitemtree.h"
 #include "ui_dockeffects.h"
 #include "ui_dockresults.h"
 #include "ui_dockskin.h"
 #include "ui_dockgoggle.h"
 #include "ui_dockcontrols.h"
 #include "ui_docklea.h"
+#include "ui_graphicsitemtree.h"
 #include "laserpoint.h"
 #include "binocular.h"
 #include "footprintobject.h"
@@ -30,7 +32,7 @@
 CentralWidget::CentralWidget(QWidget *parent) :
     QWidget(parent), myDockResults(new DockResults(this)), myDockEffects(new DockEffects(this)),
     myDockSkin(new DockSkin(this)), myDockLea(new DockLea(this)), myDockGoggle(new DockGoggle(this)),
-    myDockReflectorsList(new ReflectorsQList(this))
+    myGraphicsItemTree(new GraphicsItemTree(this))
 {
     clearInstallationDesription();
     scale=1;
@@ -59,9 +61,10 @@ CentralWidget::CentralWidget(QWidget *parent) :
     scintillationBool=false;
     atmEffectsBool=false;
     meteoRange=CentralWidget::STANDARD_VISIBILITY_DISTANCE;
-    a_coefficient=0.06*powf(meteoRange, 0.33);
+    a_coefficient=0.06*std::pow(meteoRange, 0.33);
 
-    atmoshericEffectsCoefficient=3.91/(meteoRange)*powf(550.0/(632.0), a_coefficient);
+    atmoshericEffectsCoefficient=3.91/(meteoRange)*std::pow(550.0/(632.0), a_coefficient);
+    compilingDate=QDate::currentDate();
 }
 
 void CentralWidget::setNewScene()
@@ -649,6 +652,16 @@ QVector <QString> CentralWidget::getFootprintDescriptionVect()
 void CentralWidget::setUndoStack(QUndoStack* _undoStack)
 {
     myDockControls->setUndoStack(_undoStack);
+}
+
+QDate CentralWidget::getCompilingDate()const
+{
+    return compilingDate;
+}
+
+void CentralWidget::setCompilingDate(const QDate& _compilingDate)
+{
+    compilingDate=_compilingDate;
 }
 
 CentralWidget::~CentralWidget()

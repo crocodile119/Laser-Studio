@@ -35,7 +35,7 @@ QRectF Rectangle::resizeHandle() const
     return myRect.translated(resizeHandleWidth/2, resizeHandleWidth/2);
 }
 
-FootprintObject::FootprintObject(double _scale)
+FootprintObject::FootprintObject(double _scale, QGraphicsObject *parent):QGraphicsObject(parent)
 {
     scale=_scale;
     Rectangle myRect(0.0, 0.0, 20.0/scale, 20.0/scale);

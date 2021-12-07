@@ -1,6 +1,6 @@
 #include "deletereflectorcommand.h"
 
-DeleteReflectorCommand::DeleteReflectorCommand(Reflector *_reflectorOnScene, ReflectorLink *_reflectorlink, double _scale, CentralWidget *_laserWindow, LaserPoint *_laserpoint,
+DeleteReflectorCommand::DeleteReflectorCommand(Reflector *_reflectorOnScene, ReflectorLink *_reflectorlink, double *_scale, CentralWidget *_laserWindow, LaserPoint *_laserpoint,
                              QList<Reflector *> *_myReflectors, QPointF _deletePosition, QUndoCommand *parent)
           : QUndoCommand(parent), reflectorOnScene(_reflectorOnScene), reflectorlink(_reflectorlink), scale(_scale), laserWindow(_laserWindow), laserpoint(_laserpoint),
             myReflectors(_myReflectors), deletePosition(_deletePosition)
@@ -17,6 +17,7 @@ DeleteReflectorCommand::~DeleteReflectorCommand()
 
 void DeleteReflectorCommand::undo()
 {
+    reflectorOnScene->setPixScale(*scale);
     laserWindow->graphicsView->scene->addItem(reflectorlink);
     laserWindow->graphicsView->scene->addItem(reflectorOnScene);
     reflectorOnScene->setPos(deletePosition);

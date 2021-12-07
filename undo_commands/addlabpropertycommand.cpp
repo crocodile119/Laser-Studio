@@ -23,6 +23,7 @@ void AddLabPropertyCommand::undo()
 
     myLabRoom->setRoomRect(labRect);
     myLabRoom->setPos(labRectPos);
+    myLabRoom->setTextLabel();
     setText(undoLabPropertyString(x, y, rectWidth, rectHeight,
                                   old_x, old_y,old_rectWidth, old_rectHeight));
 }
@@ -37,6 +38,7 @@ void AddLabPropertyCommand::redo()
 
     myLabRoom->setRoomRect(labRect);
     myLabRoom->setPos(labRectPos);
+    myLabRoom->setTextLabel();
     setText(redoLabPropertyString(myLabRoom, old_x, old_y,
                                   old_rectWidth, old_rectHeight));
 }

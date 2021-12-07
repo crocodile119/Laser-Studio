@@ -10,7 +10,7 @@
 class DeleteFootprintCommand : public QUndoCommand
 {
 public:
-    DeleteFootprintCommand(FootprintObject *_footprint, ObjectLink* _objectLink, double _scale, CentralWidget *_laserWindow, LaserPoint *_laserpoint,
+    DeleteFootprintCommand(FootprintObject *_footprint, ObjectLink* _objectLink, double *_scale, CentralWidget *_laserWindow, LaserPoint *_laserpoint,
                   QList <FootprintObject *>*_myFootprints, QPointF _deletePosition, QUndoCommand *parent = nullptr);
     ~DeleteFootprintCommand();
 
@@ -21,7 +21,7 @@ private:
 
     FootprintObject *footprintOnScene=nullptr;
     ObjectLink *objectLink=nullptr;
-    double scale;
+    double *scale;
     CentralWidget *laserWindow;
     LaserPoint *laserpoint;
     QList <FootprintObject *>*myFootprints;

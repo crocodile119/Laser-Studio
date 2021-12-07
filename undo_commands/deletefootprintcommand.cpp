@@ -1,6 +1,6 @@
 #include "deletefootprintcommand.h"
 
-DeleteFootprintCommand::DeleteFootprintCommand(FootprintObject *_footprintOnScene, ObjectLink *_objectLink, double _scale, CentralWidget *_laserWindow, LaserPoint *_laserpoint,
+DeleteFootprintCommand::DeleteFootprintCommand(FootprintObject *_footprintOnScene, ObjectLink *_objectLink, double *_scale, CentralWidget *_laserWindow, LaserPoint *_laserpoint,
                         QList <FootprintObject *>*_myFootprints, QPointF _deletePosition, QUndoCommand *parent)
           : QUndoCommand(parent), footprintOnScene(_footprintOnScene), objectLink(_objectLink), scale(_scale), laserWindow(_laserWindow), laserpoint(_laserpoint),
             myFootprints(_myFootprints), deletePosition(_deletePosition)
@@ -17,6 +17,7 @@ DeleteFootprintCommand::~DeleteFootprintCommand()
 
 void DeleteFootprintCommand::undo()
 {
+    footprintOnScene->setScale(*scale);
     laserWindow->graphicsView->scene->addItem(objectLink);
     laserWindow->graphicsView->scene->addItem(footprintOnScene);
 

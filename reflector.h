@@ -23,7 +23,8 @@ class Reflector : public QGraphicsObject
 Q_DECLARE_TR_FUNCTIONS(Reflector)
 
 public:
-    Reflector(double, double, double, double, double, double, double, target);
+    Reflector(double, double, double, double, double, double, double, target,
+              QGraphicsObject *parent = nullptr);
     ~Reflector();
 
     enum { Type = UserType + 2 };

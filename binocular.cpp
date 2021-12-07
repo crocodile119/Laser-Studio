@@ -19,10 +19,10 @@
 const double Binocular::radDeg = 3.1415926535897932384626433832795/180;
 const double Binocular::g= 7.0;
 
-Binocular::Binocular(double DNRO, double _binocularDistance, double _wavelength, double _divergence, double _beamDiameter): QGraphicsObject(),
-     opticalDiameter(2*DNRO), myTextColor(Qt::black), myBackgroundColor(Qt::white), myOutlineColor(Qt::transparent), myBeamColor(Qt::darkGray),
-     scale(1.0), binocularDistance(_binocularDistance), wavelength(_wavelength), divergence(_divergence), beamDiameter(_beamDiameter), D0(50),
-     magnification(5), transmissionCoeff(0.90), binocularPix(":/images/binocularpix.png")
+Binocular::Binocular(double DNRO, double _binocularDistance, double _wavelength, double _divergence, double _beamDiameter, QGraphicsObject *parent):
+    QGraphicsObject(parent), opticalDiameter(2*DNRO), myTextColor(Qt::black), myBackgroundColor(Qt::white), myOutlineColor(Qt::transparent),
+    myBeamColor(Qt::darkGray), scale(1.0), binocularDistance(_binocularDistance), wavelength(_wavelength), divergence(_divergence),
+    beamDiameter(_beamDiameter), D0(50), magnification(5), transmissionCoeff(0.90), binocularPix(":/images/binocularpix.png")
 {
     computeOpticalGain();
     exendedOpticalDiameter=2*DNRO*std::sqrt(opticalGain);
@@ -296,8 +296,8 @@ void Binocular::setStringPosition()
     qDebug()<<"isDangerous():"<< isDangerous();
     if(isDangerous())
         effectsString="PERICOLOSO";
-                else
-                effectsString.clear();
+    else
+        effectsString.clear();
 
     if((wavelength>=400)&&(wavelength<=1400))
     {
@@ -316,7 +316,7 @@ void Binocular::setStringPosition()
 
     else if(((wavelength>=320)&&(wavelength<400))||((wavelength>1400)&&(wavelength<=4500)))
     {
-        position ="Dispositivo ottico" + QString(" (%1,%2) \ndist[m]: %3, DNROE[m]: %4 \nτ= %5, M= %6, K=%7 \n%8")
+        position ="Dispositivo ottico" + QString(" (%1,%2) <br>dist[m]: %3, DNROE[m]: %4 <br>τ= %5, M= %6, K=%7 <br>%8")
                                         .arg(xString)
                                         .arg(yString)
                                         .arg(binocularDistanceString)
@@ -328,11 +328,12 @@ void Binocular::setStringPosition()
     }
     else
     {
-    position ="Dispositivo ottico" + QString(" (%1,%2) \ndist[m]: %3, DNROE[m]: %4")
+    position ="Dispositivo ottico" + QString(" (%1,%2) <br>dist[m]: %3, DNROE[m]: %4 <br>%5<br>")
                                     .arg(xString)
                                     .arg(yString)
                                     .arg(binocularDistanceString)
-                                    .arg(exendedOpticalDiameterString);
+                                    .arg(exendedOpticalDiameterString)
+                                    .arg(effectsString);
     }
 }
 

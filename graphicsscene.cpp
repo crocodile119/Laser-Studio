@@ -17,76 +17,80 @@ void GraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
     const QList<QGraphicsItem*>itemList=items(mousePos);
     movingItem=itemList.isEmpty() ? nullptr : itemList.first();
 
-    if(movingItem != nullptr && mouseEvent->button() == Qt::LeftButton)
+    if(mouseEvent->button() == Qt::LeftButton)
     {
-        Reflector *reflector= qgraphicsitem_cast<Reflector*>(movingItem);
-        LaserPoint *laserpoint= qgraphicsitem_cast<LaserPoint*>(movingItem);
-        Binocular *binocular= qgraphicsitem_cast<Binocular*>(movingItem);
-        BeamInspector* beamInspector= qgraphicsitem_cast<BeamInspector*>(movingItem);
-        FootprintObject *footprint= qgraphicsitem_cast<FootprintObject*>(movingItem);
-        LabRoom *myLabRoom= qgraphicsitem_cast<LabRoom*>(movingItem);
-
-        if(laserpoint)
+        if(movingItem != nullptr)
         {
-            qDebug()<<"Ho selezionato il punto laser: ";
-            clearSelection();
-            laserpoint->setSelected(true);
-            oldPos=laserpoint->pos();
-            emit laserSelected();
-        }
+            Reflector *reflector= qgraphicsitem_cast<Reflector*>(movingItem);
+            LaserPoint *laserpoint= qgraphicsitem_cast<LaserPoint*>(movingItem);
+            Binocular *binocular= qgraphicsitem_cast<Binocular*>(movingItem);
+            BeamInspector* beamInspector= qgraphicsitem_cast<BeamInspector*>(movingItem);
+            FootprintObject *footprint= qgraphicsitem_cast<FootprintObject*>(movingItem);
+            LabRoom *myLabRoom= qgraphicsitem_cast<LabRoom*>(movingItem);
 
-        else if(reflector)
-        {
-            qDebug()<<"Ho selezionato un riflettore: ";
-            clearSelection();
-            reflector->setSelected(true);
-            oldPos=reflector->pos();
-            emit reflectorSelected();
-        }
+            if(laserpoint)
+            {
+                qDebug()<<"Ho selezionato il punto laser: ";
+                clearSelection();
+                laserpoint->setSelected(true);
+                oldPos=laserpoint->pos();              
+                emit graphicItemSelected(movingItem);
+            }
 
-        else if(binocular)
-        {
-            qDebug()<<"Ho selezionato un dispositivo ottico: ";
-            clearSelection();
-            binocular->setSelected(true);
-            oldPos=binocular->pos();
-            emit binocularSelected();
-        }
+            else if(reflector)
+            {
+                qDebug()<<"Ho selezionato un riflettore: ";
+                clearSelection();
+                reflector->setSelected(true);
+                oldPos=reflector->pos();
+                emit graphicItemSelected(movingItem);
+            }
 
-        else if(beamInspector)
-        {
-            qDebug()<<"Ho selezionato un segnaposto di ispezione: ";
-            clearSelection();
-            beamInspector->setSelected(true);
-            oldPos=beamInspector->pos();
-            emit inspectorSelected();
-        }
+            else if(binocular)
+            {
+                qDebug()<<"Ho selezionato un dispositivo ottico: ";
+                clearSelection();
+                binocular->setSelected(true);
+                oldPos=binocular->pos();
+                emit graphicItemSelected(movingItem);
+            }
 
-        else if(footprint)
-        {
-            qDebug()<<"Ho selezionato un ingombro: ";
-            clearSelection();
-            oldPos=footprint->pos();
+            else if(beamInspector)
+            {
+                qDebug()<<"Ho selezionato un segnaposto di ispezione: ";
+                clearSelection();
+                beamInspector->setSelected(true);
+                oldPos=beamInspector->pos();              
+                emit graphicItemSelected(movingItem);
+            }
 
-            myGraphicRect=footprint->getRectangle();
-            oldRectangle=myGraphicRect.rect();
-            footprint->setSelected(true);
-        }
+            else if(footprint)
+            {
+                qDebug()<<"Ho selezionato un ingombro: ";
+                clearSelection();
+                oldPos=footprint->pos();
+                myGraphicRect=footprint->getRectangle();
+                oldRectangle=myGraphicRect.rect();
+                footprint->setSelected(true);
+                emit graphicItemSelected(movingItem);
+            }
 
-        else if(myLabRoom)
-        {
-            qDebug()<<"Ho selezionato il laboratorio: ";
-            clearSelection();
-            myLabRoom->setSelected(true);
-            oldPos=myLabRoom->pos();
-            emit labroomSelected();
+            else if(myLabRoom)
+            {
+                qDebug()<<"Ho selezionato il laboratorio: ";
+                clearSelection();
+                myLabRoom->setSelected(true);
+                emit labroomSelected();
+            }
         }
         else
             emit deselected();
-
-        emit graphicItemSelected(movingItem);
     }
-
+    else
+    {
+        mouseEvent->accept();
+        return;
+    }
     QGraphicsScene::mousePressEvent(mouseEvent);
 }
 
@@ -99,7 +103,7 @@ void GraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
         Binocular *binocular= qgraphicsitem_cast<Binocular*>(movingItem);
         BeamInspector *beamInspector= qgraphicsitem_cast<BeamInspector*>(movingItem);
         FootprintObject *footprint= qgraphicsitem_cast<FootprintObject*>(movingItem);
-        LabRoom *myLabRoom= qgraphicsitem_cast<LabRoom*>(movingItem);
+
         if(footprint)
         {
             if(oldPos!= movingItem->pos())
@@ -142,15 +146,7 @@ void GraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
                 qDebug()<<"Segnaposto di ispezione spostato: ";
             }
         }
-        else if(myLabRoom)
-        {
-            if(oldPos!= movingItem->pos())
-            {
-                emit graphicItemMoved(movingItem, oldPos);
-                qDebug()<<"Laboratorio spostato: ";
-            }
-        }
-
-        QGraphicsScene::mouseReleaseEvent(mouseEvent);
+        movingItem=nullptr;
     }
+    QGraphicsScene::mouseReleaseEvent(mouseEvent);
 }

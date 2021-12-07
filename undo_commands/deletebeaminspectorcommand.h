@@ -10,7 +10,7 @@
 class DeleteBeamInspectorCommand : public QUndoCommand
 {
 public:
-    DeleteBeamInspectorCommand(BeamInspector *_beamInspector, InspectorLink *_inspectorLink, double _scale,
+    DeleteBeamInspectorCommand(BeamInspector *_beamInspector, InspectorLink *_inspectorLink, double *_scale,
                   CentralWidget *_laserWindow, LaserPoint *_laserpoint,
                   QList<BeamInspector *> *_myBeamInspector,
                   QPointF _deletePosition, QUndoCommand *parent = nullptr);
@@ -25,7 +25,7 @@ private:
 
     BeamInspector *beamInspectorOnScene=nullptr;
     InspectorLink *inspectorLink=nullptr;
-    double scale;
+    double* scale;
     CentralWidget *laserWindow;
     LaserPoint *laserpoint;
     QList <BeamInspector *>*myBeamInspectors;

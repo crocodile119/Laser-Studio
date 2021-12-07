@@ -555,7 +555,7 @@ void LaserReport::firstPageReport()
 
     //leggo i valori riguradanti laserpoint
 
-    QString laserPositionStr= QString("Posizione [x,y] : (%1,%2)")
+    QString laserPositionStr= QString("Posizione [x, y] : (%1,%2)")
                                       .arg(laserpoint->pos().x())
                                       .arg(laserpoint->pos().y());
 
@@ -668,7 +668,7 @@ void LaserReport::reflectorsValuation()
     else
        inHazardArea="Si";
 
-    reflectors.append("Posizione [m, m]: " + QString("(%1,%2)")
+    reflectors.append("Posizione [x, y]: " + QString("(%1,%2)")
                           .arg(reflector->pos().x())
                           .arg(reflector->pos().y()));
     reflectors.append("Nell'area di rischio: "+ inHazardArea);
@@ -680,7 +680,7 @@ void LaserReport::reflectorsValuation()
     reflectors.append("DRO<sub>r</sub> [m]: "+ QString::number(reflector->getPositioningElement(),'f',1));
 
     if(reflector->getReflectorKind()!=MIRROR_TARGET)
-        reflectors.append("Distanza di sicurezza ottica massima dal riflettore [m]: "+ QString::number(reflector->getMaxElement(),'f',1));
+        reflectors.append("DRO<sub>r max</sub> [m]: "+ QString::number(reflector->getMaxElement(),'f',1));
 }
 
 void LaserReport::binocularsValuation()
@@ -688,7 +688,7 @@ void LaserReport::binocularsValuation()
     double wavelength=laserWindow->myDockControls->getWavelength();
     if((wavelength>=400)&&(wavelength<=1400))
     {
-        binoculars.append("Posizione [m, m]: " + QString("(%1,%2)")
+        binoculars.append("Posizione [x, y]: " + QString("(%1,%2)")
                           .arg(binocular->pos().x())
                           .arg(binocular->pos().y()));
         binoculars.append("Descrizione: " + binocular->getDescription());
@@ -703,7 +703,7 @@ void LaserReport::binocularsValuation()
      }
     else if(((wavelength>=320)&&(wavelength<400))||((wavelength>1400)&&(wavelength<=4500)))
     {
-        binoculars.append("Posizione [m, m]: " + QString("(%1,%2)")
+        binoculars.append("Posizione [x, y]: " + QString("(%1,%2)")
                           .arg(binocular->pos().x())
                           .arg(binocular->pos().y()));
         binoculars.append("Descrizione: " + binocular->getDescription());
@@ -725,7 +725,7 @@ void LaserReport::binocularsValuation()
 
 void LaserReport::inspectorsValuation()
 {
-    inspectors.append("Posizione [m, m]: " + QString("(%1,%2)")
+    inspectors.append("Posizione [x, y]: " + QString("(%1,%2)")
                      .arg(beamInspector->pos().x())
                      .arg(beamInspector->pos().y()));
     inspectors.append("Descrizione: " + beamInspector->getDescription());
@@ -768,7 +768,7 @@ void LaserReport::inspectorsValuation()
                     inspectors.append("Formula EMP per esposizioni lunghe: "+QString::fromStdString(beamInspector->getFormula()));
                     inspectors.append("T<sub>1</sub>: "+QString::number(beamInspector->getT1()));
                     inspectors.append("T<sub>2</sub>: "+QString::number(beamInspector->getT2()));
-                    inspectors.append("Notes: "+QString::fromStdString(beamInspector->getNotes()));
+                    inspectors.append("Note: "+QString::fromStdString(beamInspector->getNotes()));
 
                     if(beamInspector->getLaserOperation()==DockControls::operation::MULTI_PULSE)
                         inspectors.append("Effetto prevalente: "+QString::fromStdString(beamInspector->getMainEffect()));
@@ -778,9 +778,9 @@ void LaserReport::inspectorsValuation()
                 inspectors.append(QString::fromStdString(beamInspector->getEMP_Sort())+
                                   QString::fromStdString(beamInspector->getEMP_Unit())+ ": "
                                 + QString::number(beamInspector->getAugmentedEMP(),'e', 2));
+                }
                 if(beamInspector->isSafePosition())
                     safePosition="Effetti: L'EMP è aumentato dal fattore C<sub>E</sub> ad un valore tollerabile, possibile posizione sicura";
-                }
             }
         }
         inspectors.append(safePosition);
@@ -802,7 +802,7 @@ void LaserReport::inspectorsValuation()
 
 void LaserReport::footprintsValuation()
 {
-    footprints.append("Posizione [m, m]: " + QString("(%1,%2)")
+    footprints.append("Posizione [x, y]: " + QString("(%1,%2)")
                           .arg(footprint->pos().x())
                           .arg(footprint->pos().y()));
     footprints.append("Dimensioni [m X m]: "+ QString::number(footprint->getRectangle().rect().width()) + " X "
@@ -958,8 +958,8 @@ QString LaserReport::htmlEffects()
     foreach (QString entry, effects)
     {
         QStringList fields = entry.split(":");
-        QString title = fields[0].toHtmlEscaped();
-        QString body = fields[1].toHtmlEscaped();
+        QString title = fields[0];
+        QString body = fields[1];
 
         html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b>\n</td>\n"
                "<td>" + body + "</td>\n</tr>\n";
@@ -1138,8 +1138,8 @@ QString LaserReport::htmlReflectors(const int & number)
     foreach (QString entry, reflectors)
     {
         QStringList fields = entry.split(": ");
-        QString title = fields[0].toHtmlEscaped();
-        QString body = fields[1].toHtmlEscaped();
+        QString title = fields[0];
+        QString body = fields[1];
 
         html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b></td>\n"
                    "<td>" + body + "</td>\n</tr>\n";

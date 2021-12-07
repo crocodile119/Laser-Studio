@@ -21,7 +21,6 @@ LabRoom::LabRoom(QRectF _labRect):QGraphicsObject()
     labRect=_labRect;
     setTextLabel();
     setRoomTextLabel();
-    setFlag(QGraphicsItem::ItemIsMovable, true);
     setFlag(QGraphicsItem::ItemIsSelectable, true);
     setFlag(QGraphicsItem::ItemSendsGeometryChanges, false);
 }

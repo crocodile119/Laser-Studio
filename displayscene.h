@@ -41,11 +41,11 @@ void mouseRelease();
 void viewportChanged();
 
 protected:
-bool eventFilter(QObject *watched, QEvent *event);
-void mousePressEvent(QMouseEvent *event);
-void mouseMoveEvent(QMouseEvent *event);
-void mouseReleaseEvent(QMouseEvent *event);
-void resizeEvent(QResizeEvent *event);
+bool eventFilter(QObject *watched, QEvent *event)override;
+void mousePressEvent(QMouseEvent *event)override;
+void mouseMoveEvent(QMouseEvent *event)override;
+void mouseReleaseEvent(QMouseEvent *event)override;
+void resizeEvent(QResizeEvent *event)override;
 };
 
 #endif // DISPLAYSCENE_H

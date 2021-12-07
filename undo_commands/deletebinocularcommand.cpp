@@ -1,6 +1,6 @@
 #include "deletebinocularcommand.h"
 
-DeleteBinocularCommand::DeleteBinocularCommand(Binocular *_binocularOnScene, BinocularLink *_binocularLink, double _scale, CentralWidget *_laserWindow, LaserPoint *_laserpoint,
+DeleteBinocularCommand::DeleteBinocularCommand(Binocular *_binocularOnScene, BinocularLink *_binocularLink, double *_scale, CentralWidget *_laserWindow, LaserPoint *_laserpoint,
                              QList <Binocular *>*_myBinoculars, QPointF _deletePosition, QUndoCommand *parent)
           : QUndoCommand(parent), binocularOnScene(_binocularOnScene), binocularLink(_binocularLink), scale(_scale), laserWindow(_laserWindow), laserpoint(_laserpoint),
             myBinoculars(_myBinoculars), deletePosition(_deletePosition)
@@ -17,6 +17,7 @@ DeleteBinocularCommand::~DeleteBinocularCommand()
 
 void DeleteBinocularCommand::undo()
 {
+    binocularOnScene->setPixScale(*scale);
     laserWindow->graphicsView->scene->addItem(binocularLink);
     laserWindow->graphicsView->scene->addItem(binocularOnScene);
     binocularOnScene->setPos(deletePosition);

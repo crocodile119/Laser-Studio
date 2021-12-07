@@ -23,11 +23,11 @@ const double Reflector::radDeg = 3.1415926535897932384626433832795/180;
 const double Reflector::phi_const = 2.5;
 
 Reflector::Reflector(double _opticalDiameter, double _divergence, double _reflectorDistance, double _laserBeamDiameter,
-                     double _laserEMP, double _laserPowerErg, double _lambertianMax, target _myTarget):QGraphicsObject(),
-                     reflectorDistance(_reflectorDistance), myTextColor(Qt::darkGreen), myBackgroundColor(Qt::white),
-                     myOutlineColor(Qt::transparent), myBeamColor(Qt::darkBlue), opticalDiameter(_opticalDiameter),
-                     divergence(_divergence), laserEMP(_laserEMP), laserBeamDiameter(_laserBeamDiameter),
-                     laserPowerErg(_laserPowerErg), lambertianMax(_lambertianMax), myTarget(_myTarget)
+                     double _laserEMP, double _laserPowerErg, double _lambertianMax, target _myTarget, QGraphicsObject *parent):
+                     QGraphicsObject(parent), reflectorDistance(_reflectorDistance), myTextColor(Qt::darkGreen),
+                     myBackgroundColor(Qt::white), myOutlineColor(Qt::transparent), myBeamColor(Qt::darkBlue),
+                     opticalDiameter(_opticalDiameter), divergence(_divergence), laserEMP(_laserEMP),
+                     laserBeamDiameter(_laserBeamDiameter), laserPowerErg(_laserPowerErg), lambertianMax(_lambertianMax), myTarget(_myTarget)
 {
     laserPhase=0.0;
     positioning=0;

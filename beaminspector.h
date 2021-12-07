@@ -19,7 +19,8 @@ class BeamInspector : public QGraphicsObject
     Q_DECLARE_TR_FUNCTIONS(BeamInspector)
 
 public:
-    BeamInspector(double _inspectorDistance, double _wavelength, double _divergence, double _beamDiameter, double _attenuatedDNRO);
+    BeamInspector(double _inspectorDistance, double _wavelength, double _divergence, double _beamDiameter,
+                  double _attenuatedDNRO, QGraphicsObject *parent = nullptr);
     ~BeamInspector();
 
     enum { Type = UserType + 9 };

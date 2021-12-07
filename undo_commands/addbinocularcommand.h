@@ -10,7 +10,7 @@
 class AddBinocularCommand : public QUndoCommand
 {
 public:
-    AddBinocularCommand(double _attenuatedDNRO, double _binocularDistance, double _scale,
+    AddBinocularCommand(double _attenuatedDNRO, double _binocularDistance, double *_scale,
                int _binSeqNumber, CentralWidget *_laserWindow, LaserPoint *_laserpoint,
                QList<Binocular *> *_myBinoculars, QPointF _initialPosition,
                QUndoCommand *parent = nullptr);
@@ -29,7 +29,7 @@ private:
     double attenuatedDNRO;
     double attenuatedDNRC;
     double binocularDistance;
-    double scale;
+    double* scale;
     int binSeqNumber;
     Binocular *binocular=nullptr;
     CentralWidget *laserWindow;

@@ -179,6 +179,7 @@ private slots:
     void setReflectorPowerErgForDiffusion();
     void setReflectorBeamDiameterForDiffusion();
     void treeSelectionFromGraphics(QGraphicsItem *item);
+    void treeSelectionFromLab();
     void listDeselectionFromGraphics();
 
     void setGoggleMaterial(LaserGoggle::material);
@@ -223,7 +224,8 @@ private:
     void clearScene();
     void setZValue(int z);
     Reflector *selectedReflector() const;
-    LaserPoint *selectedLaserPoint() const;   
+    LaserPoint *selectedLaserPoint() const;
+    LabRoom *selectedLabRoom() const;
     Binocular *selectedBinocular() const;
     ReflectorLink *selectedLink() const;
     LabRoom *selectedLab() const;

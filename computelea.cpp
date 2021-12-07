@@ -710,11 +710,11 @@ array <int, ComputeLEA::N_LEA> ComputeLEA::getLEA_FormulaSort() const
 void ComputeLEA::computePhotoGamma()
 {
     if (((wavelength>=400) and (wavelength<=600)) and ((pulseWidth>10) and (pulseWidth<100)))
-		photoGamma =11;
+        photoGamma =11.0;
     else if (((wavelength>=400) and (wavelength<=600)) and (((pulseWidth>100)or(almostEqualUlps(pulseWidth, 100))) and (pulseWidth<10000)))
         photoGamma =11*std::pow(pulseWidth,0.5);
     else if (((wavelength>=400) and (wavelength<=600)) and (((pulseWidth>10000)or(almostEqualUlps(pulseWidth, 10000))) and (pulseWidth<=30000)))
-		photoGamma =110;
+        photoGamma =110.0;
 	else
 		photoGamma=std::nan("N.A.");
 }
@@ -907,7 +907,7 @@ void ComputeLEA::valuateCondition_1()
 {
 if((wavelength>=302.5)and(wavelength<400))
     {
-		apertureStopCond_1=7;
+        apertureStopCond_1=7;
 		distanceCond_1=2000;
     }
     else if((wavelength>=400)and(wavelength<1400))
@@ -917,7 +917,7 @@ if((wavelength>=302.5)and(wavelength<400))
 	}
 	else if((wavelength>=1400)and(wavelength<4000))
 	{
-		apertureStopCond_1=7*apertureThirdCondition;
+        apertureStopCond_1=7.0*apertureThirdCondition;
 		distanceCond_1=2000;
     }
     else
@@ -966,7 +966,7 @@ void ComputeLEA::valuateApertureCondition_3()
     if((pulseWidth<0.35)or(almostEqualUlps(pulseWidth, 0.35)))
 		apertureThirdCondition=1;
 	else if((pulseWidth>0.35)and(pulseWidth<10))
-        apertureThirdCondition=std::pow(pulseWidth, 3/8);
+        apertureThirdCondition=std::pow(pulseWidth, 3.0/8.0);
 	else
 		apertureThirdCondition=3.5;
 }

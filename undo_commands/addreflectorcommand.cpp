@@ -1,6 +1,6 @@
 #include "addreflectorcommand.h"
 
-AddReflectorCommand::AddReflectorCommand(double _attenuatedDNRO, double _attenuatedDNRC, double _reflectorDistance, double _scale,
+AddReflectorCommand::AddReflectorCommand(double _attenuatedDNRO, double _attenuatedDNRC, double _reflectorDistance, double *_scale,
                                          int _seqNumber, target _myTarget, CentralWidget *_laserWindow, LaserPoint *_laserpoint,
                                          QList<Reflector *> *_myReflectors, QPointF _initialPosition, QUndoCommand *parent)
                       : QUndoCommand(parent), attenuatedDNRO(_attenuatedDNRO), attenuatedDNRC(_attenuatedDNRC), reflectorDistance(_reflectorDistance),
@@ -23,7 +23,6 @@ AddReflectorCommand::AddReflectorCommand(double _attenuatedDNRO, double _attenua
                               myTarget);
 
     reflector->setPixmap();
-    reflector->setPixScale(scale);
     reflector->setPos(initialPosition);
     reflector->setSkinDistance(attenuatedDNRC);
     reflector->setReflectorColor();
@@ -61,6 +60,7 @@ void AddReflectorCommand::undo()
 
 void AddReflectorCommand::redo()
 {
+    reflector->setPixScale(*scale);
     laserWindow->graphicsView->scene->addItem(reflector);
     laserWindow->graphicsView->scene->clearSelection();
 

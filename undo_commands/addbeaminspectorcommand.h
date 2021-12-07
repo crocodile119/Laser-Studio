@@ -10,7 +10,7 @@
 class AddBeamInspectorCommand : public QUndoCommand
 {
 public:
-    AddBeamInspectorCommand(double _inspectorDistance, double _scale,
+    AddBeamInspectorCommand(double _inspectorDistance, double *_scale,
                int _inspectorSeqNumber, CentralWidget *_laserWindow, LaserPoint *_laserpoint,
                QList<BeamInspector *> *_myBeamInspectors, QPointF _initialPosition,
                double _attenuatedDNRO, QUndoCommand *parent = nullptr);
@@ -27,7 +27,7 @@ private:
     InspectorNodePair selectedInspectorNodePair() const;
 
     double inspectorDistance;
-    double scale;
+    double* scale;
     int inspectorSeqNumber;
     BeamInspector *beamInspector=nullptr;
     CentralWidget *laserWindow;

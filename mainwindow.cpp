@@ -142,6 +142,7 @@ MainWindow::MainWindow()
     connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(updateActions()));
     connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(laserModified()));
     connect(laserWindow->graphicsView->scene, &GraphicsScene::graphicItemSelected, this, &MainWindow::treeSelectionFromGraphics);
+    connect(laserWindow->graphicsView->scene, &GraphicsScene::labroomSelected, this, &MainWindow::treeSelectionFromLab);
     connect(laserWindow->graphicsView->scene, SIGNAL(deselected()), this, SLOT(listDeselectionFromGraphics()));
     connect(laserWindow->graphicsView->scene, SIGNAL(footprintRelease()), this, SLOT(shadowZoneForLaser()));
     connect(laserWindow->graphicsView->scene, &GraphicsScene::graphicItemMoved, this, &MainWindow::graphicItemMoveToStack);
@@ -632,6 +633,7 @@ void MainWindow::atmosphericEffects()
     }
     setShadowZone();
     setWindowModified(true);
+    updateEnvironmentItem();
 }
 
 void MainWindow::scintillation()
@@ -654,6 +656,7 @@ void MainWindow::scintillation()
     }
     setShadowZone();
     setWindowModified(true);
+    updateEnvironmentItem();
 }
 
 void MainWindow::properties()
@@ -758,6 +761,8 @@ void MainWindow::properties()
             QUndoCommand * addLabPropertyCommand=new AddLabPropertyCommand(myLabRoom,
                         lab_x, lab_y, rectWidth, rectHeight);
             undoStack->push(addLabPropertyCommand);
+
+            updateEnvironmentItem();
         }
 
     }
@@ -2344,13 +2349,6 @@ void MainWindow::dragMode()
     laserpoint->setFlag(QGraphicsItem::ItemIsSelectable, false);
     laserpoint->setFlag(QGraphicsItem::ItemSendsGeometryChanges, false);
 
-    if(myLabRoom!=0)
-    {
-        myLabRoom->setFlag(QGraphicsItem::ItemIsMovable, false);
-        myLabRoom->setFlag(QGraphicsItem::ItemIsSelectable, false);
-        myLabRoom->setFlag(QGraphicsItem::ItemSendsGeometryChanges, false);
-    }
-
     addWetReflectorAction->setEnabled(false);
     addGlassReflectorAction->setEnabled(false);
     addMirrorReflectorAction->setEnabled(false);
@@ -2394,9 +2392,6 @@ void MainWindow::selectionMode()
         dragModeState=false;
         laserWindow->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
         laserpoint->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
-
-        if(myLabRoom!=0)
-           myLabRoom->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
 
         addWetReflectorAction->setEnabled(true);
         addGlassReflectorAction->setEnabled(true);
@@ -2477,6 +2472,15 @@ LaserPoint *MainWindow::selectedLaserPoint() const
         return 0;
 }
 
+LabRoom *MainWindow::selectedLabRoom() const
+{
+    QList<QGraphicsItem *> items = laserWindow->graphicsView->scene->selectedItems();
+    if (items.count() == 1)
+        return dynamic_cast<LabRoom *>(items.first());
+    else
+        return 0;
+}
+
 BeamInspector *MainWindow::selectedBeamInspector() const
 {
     QList<QGraphicsItem *> items = laserWindow->graphicsView->scene->selectedItems();
@@ -2538,7 +2542,7 @@ void MainWindow::addBinocular()
     double attenuatedDNRO= attenuatedDistance(laserWindow->myDockControls->getOpticalDistance());
 
 
-    addBinocularCommand = new AddBinocularCommand(attenuatedDNRO, binocularDistance, scale,
+    addBinocularCommand = new AddBinocularCommand(attenuatedDNRO, binocularDistance, &scale,
                                                             binSeqNumber, laserWindow, laserpoint,
                                                             &myBinoculars, binocularPos);
 
@@ -2610,7 +2614,7 @@ void MainWindow::addBeamInspector()
     double inspectorDistance=std::sqrt(std::pow((inspectorPosX-laserPosX), 2)+std::pow((inspectorPosY-laserPosY), 2));
     double attenuatedDNRO=attenuatedDistance(laserWindow->myDockControls->getOpticalDistance());
 
-    addBeamInspectorCommand = new AddBeamInspectorCommand(inspectorDistance, scale, inspectorSeqNumber, laserWindow,
+    addBeamInspectorCommand = new AddBeamInspectorCommand(inspectorDistance, &scale, inspectorSeqNumber, laserWindow,
                                    laserpoint, &myBeamInspectors, inspectorPos, attenuatedDNRO);
 
     undoStack->push(addBeamInspectorCommand);
@@ -2670,7 +2674,7 @@ void MainWindow::addReflector(const target &target)
     double attenuatedDNRO= attenuatedDistance(laserWindow->myDockControls->getOpticalDistance());
     double attenuatedDNRC= attenuatedDistance(laserWindow->myDockControls->getSkinDistances());
 
-    addReflectorCommand = new AddReflectorCommand(attenuatedDNRO, attenuatedDNRC, reflectorDistance, scale,
+    addReflectorCommand = new AddReflectorCommand(attenuatedDNRO, attenuatedDNRC, reflectorDistance, &scale,
                                                             seqNumber, target, laserWindow, laserpoint,
                                                             &myReflectors, QPointF(reflectorPosX, reflectorPosY));
     undoStack->push(addReflectorCommand);
@@ -2756,7 +2760,7 @@ void MainWindow::del()
     {
         QPointF deleletePosition=reflector->pos();
         ReflectorLink *reflectorlink=reflector->getReflectorLink();
-        deleteReflectorCommand = new DeleteReflectorCommand(reflector, reflectorlink, scale, laserWindow,
+        deleteReflectorCommand = new DeleteReflectorCommand(reflector, reflectorlink, &scale, laserWindow,
             laserpoint, &myReflectors, deleletePosition);
 
         undoStack->push(deleteReflectorCommand);
@@ -2768,7 +2772,7 @@ void MainWindow::del()
     {
         QPointF deleletePosition=binocular->pos();
         BinocularLink *binocularLink=binocular->getBinocularLink();
-        deleteBinocularCommand = new DeleteBinocularCommand(binocular, binocularLink, scale, laserWindow,
+        deleteBinocularCommand = new DeleteBinocularCommand(binocular, binocularLink, &scale, laserWindow,
             laserpoint, &myBinoculars, deleletePosition);
 
     undoStack->push(deleteBinocularCommand);
@@ -2781,7 +2785,7 @@ void MainWindow::del()
    {
        QPointF deleletePosition=beamInspector->pos();
        InspectorLink *inspectorLink=beamInspector->getBeamInspectorLink();
-       deleteBeamInspectorCommand = new DeleteBeamInspectorCommand(beamInspector, inspectorLink, scale, laserWindow,
+       deleteBeamInspectorCommand = new DeleteBeamInspectorCommand(beamInspector, inspectorLink, &scale, laserWindow,
            laserpoint, &myBeamInspectors, deleletePosition);
 
    undoStack->push(deleteBeamInspectorCommand);
@@ -2793,7 +2797,7 @@ void MainWindow::del()
    {
        QPointF deleletePosition=footprint->pos();
        ObjectLink *objectLink=footprint->getObjectLink();
-       deleteFootprintCommand = new DeleteFootprintCommand(footprint, objectLink, scale, laserWindow,
+       deleteFootprintCommand = new DeleteFootprintCommand(footprint, objectLink, &scale, laserWindow,
            laserpoint, &myFootprints, deleletePosition);
        footprintsCount--;
 
@@ -2911,11 +2915,12 @@ void MainWindow::lambertianTarget()
 void MainWindow::updateActions()
 {
     bool hasSelection = !laserWindow->graphicsView->scene->selectedItems().isEmpty();
-    bool isReflector = (selectedReflector() != 0);
+    bool isReflector = (selectedReflector() != nullptr);
     bool reflectorInHazardArea;
-    bool isLaserPont = (selectedLaserPoint() != 0);
+    bool isLaserPoint = (selectedLaserPoint() != nullptr);
+    bool isLabRoom = (selectedLabRoom() != nullptr);
 
-    deleteAction->setEnabled(hasSelection && !isLaserPont);
+    deleteAction->setEnabled(hasSelection && (!isLaserPoint && (!isLabRoom)));
     bringToFrontAction->setEnabled(hasSelection);
     sendToBackAction->setEnabled(hasSelection);
 
@@ -3187,6 +3192,15 @@ void MainWindow::setDNRO_ForBinocular()
         //opticalDistance è la NOHD che viene moltiplicata per 2 da setDNRO_Diameter
         binocular->setDNRO_Diameter(attenuatedDNRO);
         setMaxEhnacedOpticalDiameter();
+        binocular->laserParametersChanged();
+        double exendedOpticalDiameter=binocular->getExendedOpticalDiameter();
+
+        if(laserpoint->shapeEnhacedPathContainsPoint(laserpoint->mapFromScene(binocular->pos()), exendedOpticalDiameter))
+            binocular->setInZone(true);
+        else
+            binocular->setInZone(false);
+
+
         binocular->laserParametersChanged();
 
         ++myIterator;
@@ -3967,6 +3981,7 @@ void MainWindow::makeSceneOfSavedItems()
         myLabRoom->setPos(labRoomPos);
         myLabRoom->setPixScale(scale);
         laserWindow->graphicsView->scene->addItem(myLabRoom);
+        myLabRoom->setTextLabel();
         labroomList.append(myLabRoom);
 
         environmentState=true;
@@ -4037,6 +4052,8 @@ void MainWindow::enableControlsAndItems(bool enabled)
         binocular->setEnabled(enabled);
         ++myBinocularIterator;
     }
+    if(myLabRoom!=nullptr)
+        myLabRoom->setFlag(QGraphicsItem::ItemIsSelectable, enabled);
 }
 
 void MainWindow::goToPoint()
@@ -4068,6 +4085,18 @@ void MainWindow::meteoWidgets(bool meteoEnabled, bool isAtmEffects, bool isScint
 void MainWindow::goToGraphicsItem(QModelIndex index)
 {
     QModelIndex parentIndex=laserWindow->myGraphicsItemTree->ui->treeView->model()->parent(index);
+    if(parentIndex.row()==0)
+    {
+        if(myLabRoom!=nullptr)
+        {
+            laserWindow->graphicsView->scene->clearSelection();
+            laserWindow->graphicsView->centerOn(myLabRoom->pos());
+            laserpoint->setSelected(true);
+        }
+    }
+    else
+        laserWindow->graphicsView->centerOn(laserpoint->pos());
+
     if(parentIndex.row()==1)
     {
         laserWindow->graphicsView->centerOn(laserpoint->pos());
@@ -4180,6 +4209,14 @@ void MainWindow::treeSelectionFromGraphics(QGraphicsItem *item)
     treeSelectionModel->setCurrentIndex(selectedIndex, QItemSelectionModel::ClearAndSelect);
 }
 
+void MainWindow::treeSelectionFromLab()
+{
+    QAbstractItemModel *model=laserWindow->myGraphicsItemTree->ui->treeView->model();
+    QModelIndex parentIndex=model->index(0, 0);
+    selectedIndex=treeModel->index(0, 0, parentIndex);
+    treeSelectionModel->setCurrentIndex(selectedIndex, QItemSelectionModel::ClearAndSelect);
+}
+
 QPainterPath MainWindow::laserpointShapePath()
 {
     QPainterPath laserShape;
@@ -4267,17 +4304,7 @@ void MainWindow::addRoom()
     laserWindow->graphicsView->scene->addItem(myLabRoom);
     labroomList.append(myLabRoom);
     myLabRoom->setPos(laserpoint->pos().x(), laserpoint->pos().y());
-
-    if(dragModeState)
-    {
-        myLabRoom->setFlag(QGraphicsItem::ItemIsMovable, false);
-        myLabRoom->setFlag(QGraphicsItem::ItemIsSelectable, false);
-        myLabRoom->setFlag(QGraphicsItem::ItemSendsGeometryChanges, false);
-    }
-    else
-    {
-        myLabRoom->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
-    }
+    myLabRoom->setTextLabel();
 
     bool meteoWidgetsON=false;
     meteoWidgets(meteoWidgetsON, meteoWidgetsON, meteoWidgetsON);
@@ -4348,7 +4375,7 @@ void MainWindow::addFootprint()
 
     double attenuatedDNRO= attenuatedDistance(laserWindow->myDockControls->getOpticalDistance());
 
-    addFootprintCommand = new AddFootprintCommand(attenuatedDNRO, scale, laserWindow,
+    addFootprintCommand = new AddFootprintCommand(attenuatedDNRO, &scale, laserWindow,
                         laserpoint, &myFootprints, footprintPos);
 
     undoStack->push(addFootprintCommand);
@@ -4557,6 +4584,7 @@ void MainWindow::setGoggleMaterial(LaserGoggle::material myMaterial)
 {
     laserWindow->myDockControls->setGoggleMaterial(myMaterial);
     setWindowModified(true);
+    updateEnvironmentItem();
 }
 
 void MainWindow::changeGuiTheme()
@@ -4731,6 +4759,7 @@ void MainWindow::undo()
     if((!addFootprintCmd)&&(!deleteFootprintCmd))
         setShadowZone();
 
+    updateEnvironmentItem();
     updateGraphicsItemList();
     if(laserWindow->graphicsView->scene->selectedItems().count()!=0)
     {
@@ -4851,6 +4880,7 @@ void MainWindow::redo()
     if((!addFootprintCmd)&&(!deleteFootprintCmd))
         setShadowZone();
 
+    updateEnvironmentItem();
     updateGraphicsItemList();
     if(laserWindow->graphicsView->scene->selectedItems().count()!=0)
     {
@@ -4885,36 +4915,7 @@ void MainWindow::graphicItemMoveToStack(QGraphicsItem *movingItem, const QPointF
 
 MainWindow::~MainWindow()
 {
-    if(!myFootprints.isEmpty())
-    {
-        QList<FootprintObject*>::iterator myIterator; // iterator
-        myIterator = myFootprints.begin();
-        while (myIterator != myFootprints.end())
-        {
-            footprint=*myIterator;
-            delete footprint;
-        }
-    }
-    if(!myReflectors.isEmpty())
-    {
-        QList<Reflector*>::iterator myIterator; // iterator
-        myIterator = myReflectors.begin();
-        while (myIterator != myReflectors.end())
-        {
-            reflector=*myIterator;
-            delete reflector;
-        }
-    }
-    if(!myBinoculars.isEmpty())
-    {
-        QList<Binocular*>::iterator myIterator; // iterator
-        myIterator = myBinoculars.begin();
-        while (myIterator != myBinoculars.end())
-        {
-            binocular=*myIterator;
-            delete binocular;
-        }
-    }
+
 }
 
 void MainWindow::updateForBeamInspection()
@@ -4924,6 +4925,7 @@ void MainWindow::updateForBeamInspection()
                                            laserWindow->myDockControls->getDivergence());
     laserpoint->setRayleighDistance(BeamInspector::getRayleighDistance());
     laserpoint->setQualityFactor(BeamInspector::getQualityFactor());
+    laserpoint->setStringPosition();
 
     QList<BeamInspector*>::iterator myIterator; // iterator
     myIterator = myBeamInspectors.begin();
@@ -4939,7 +4941,6 @@ void MainWindow::updateForBeamInspection()
 
         ++myIterator;
     }
-
     updateGraphicsItem(TreeModel::GraphicsItem::BEAM_INSPECTOR);
     updateGraphicsItem(TreeModel::GraphicsItem::LASERPOINT);
 }
@@ -4981,15 +4982,41 @@ bool MainWindow::insertGraphicsItem(TreeModel::GraphicsItem graphicsItem)
         {
             QModelIndex environmentIndex=treeModel->index(0, TreeModel::COLUMNS-1, environmentHeaderIndex);
 
-            QString meteoVisibilityStr=QString::number(laserWindow->getMeteoRange());
+            QString meteoVisibilityStr=QString::number(laserWindow->getMeteoRange()/1000);
             QString environmentDescriptor;
+            QString scintillationString;
+            QString meteoString;
+            QString protector="";
+
+            if(onlyReflectorGoggleAction->isChecked())
+                protector="riflettori semplici";
+            else if(glassGoggleAction->isChecked())
+                protector="vetro";
+            else if(plasticGoggleAction->isCheckable())
+                protector="plastica";
+
+            if(addScintillationAct->isChecked())
+                scintillationString="&#9989;";
+            else
+                scintillationString="&#10060;";
+
+            if(addAtmosphericEffectsAct->isChecked())
+                meteoString="&#9989;";
+            else
+                meteoString="&#10060;";
 
             if(environmentState)
-                environmentDescriptor=labroomList.at(0)->getTextLabel();
+                environmentDescriptor=QString("%1Protettori ottici: %2")
+                        .arg(myLabRoom->getTextLabel())
+                        .arg(protector);
             else
             {
-                environmentDescriptor=QString("Poligono di tiro militare. <br>Visibilità meteorologica: %1 km<br>")
-                    .arg(meteoVisibilityStr);
+                environmentDescriptor=QString("Poligono di tiro militare. <br>Visibilità meteorologica %1 km: %2<br>"
+                                               "Scintillazione: %3 <br>Protettori ottici: %4")
+                        .arg(meteoVisibilityStr)
+                        .arg(meteoString)
+                        .arg(scintillationString)
+                        .arg(protector);
             }
 
             QList<QVariant> inputList={QVariant(environmentDescriptor), QVariant(static_cast<int>(graphicsItem)),
@@ -5109,19 +5136,46 @@ bool MainWindow::updateGraphicsItem(TreeModel::GraphicsItem graphicsItem)
 
             environmentIndex=treeModel->index(0, TreeModel::COLUMNS-1, environmentHeaderIndex);
 
-            QString meteoVisibilityStr=QString::number(laserWindow->getMeteoRange());
+            QString meteoVisibilityStr=QString::number(laserWindow->getMeteoRange()/1000);
             QString environmentDescriptor;
+            QString scintillationString;
+            QString meteoString;
+            QString protector="";
+
+            if(onlyReflectorGoggleAction->isChecked())
+                protector="riflettori semplici";
+            else if(glassGoggleAction->isChecked())
+                protector="vetro";
+            else if(plasticGoggleAction->isChecked())
+                protector="plastica";
+
+            if(addScintillationAct->isChecked())
+                scintillationString="&#9989;";
+            else
+                scintillationString="&#10060;";
+
+            if(addAtmosphericEffectsAct->isChecked())
+                meteoString="&#9989;";
+            else
+                meteoString="&#10060;";
 
             if(environmentState)
             {
-                environmentDescriptor=myLabRoom->getTextLabel();
+                environmentDescriptor=QString("%1Protettori ottici: %2")
+                        .arg(myLabRoom->getTextLabel())
+                        .arg(protector);
                 inputList={QVariant(environmentDescriptor), QVariant(static_cast<int>(graphicsItem)),
                                    QVariant(static_cast<int>(TreeModel::ReflectorKind::LAB))};
             }
             else
             {
-                environmentDescriptor=QString("Poligono di tiro militare. <br>Visibilità meteorologica: %1 km<br>")
-                        .arg(meteoVisibilityStr);
+                environmentDescriptor=QString("Poligono di tiro militare. <br>Visibilità meteorologica %1 km: %2<br>"
+                                               "Scintillazione: %3 <br>Protettori ottici: %4")
+                        .arg(meteoVisibilityStr)
+                        .arg(meteoString)
+                        .arg(scintillationString)
+                        .arg(protector);
+
                 inputList={QVariant(environmentDescriptor), QVariant(static_cast<int>(graphicsItem)),
                                        QVariant(static_cast<int>(TreeModel::ReflectorKind::INDENT))};
             }
@@ -5362,19 +5416,46 @@ void MainWindow::updateEnvironmentItem()
 
     environmentIndex=treeModel->index(0, TreeModel::COLUMNS-1, environmentHeaderIndex);
 
-    QString meteoVisibilityStr=QString::number(laserWindow->getMeteoRange());
+    QString meteoVisibilityStr=QString::number(laserWindow->getMeteoRange()/1000);
     QString environmentDescriptor;
+    QString scintillationString;
+    QString meteoString;
+    QString protector="";
+
+    if(onlyReflectorGoggleAction->isChecked())
+        protector="riflettori semplici";
+    else if(glassGoggleAction->isChecked())
+        protector="vetro";
+    else if(plasticGoggleAction->isChecked())
+        protector="plastica";
+
+    if(addScintillationAct->isChecked())
+        scintillationString="&#9989;";
+    else
+        scintillationString="&#10060;";
+
+    if(addAtmosphericEffectsAct->isChecked())
+        meteoString="&#9989;";
+    else
+        meteoString="&#10060;";
 
     if(environmentState)
     {
-        environmentDescriptor=myLabRoom->getTextLabel();
+        environmentDescriptor=QString("%1Protettori ottici: %2")
+                .arg(myLabRoom->getTextLabel())
+                .arg(protector);
         inputList={QVariant(environmentDescriptor), QVariant(static_cast<int>(TreeModel::GraphicsItem::ENVIRONMENT)),
                 QVariant(static_cast<int>(TreeModel::ReflectorKind::LAB))};
     }
     else
     {
-        environmentDescriptor=QString("Poligono di tiro militare. <br>Visibilità meteorologica: %1 km<br>")
-                .arg(meteoVisibilityStr);
+        environmentDescriptor=QString("Poligono di tiro militare. <br>Visibilità meteorologica %1 km: %2<br>"
+                                       "Scintillazione: %3 <br>Protettori ottici: %4")
+                .arg(meteoVisibilityStr)
+                .arg(meteoString)
+                .arg(scintillationString)
+                .arg(protector);
+
         inputList={QVariant(environmentDescriptor), QVariant(static_cast<int>(TreeModel::GraphicsItem::ENVIRONMENT)),
                 QVariant(static_cast<int>(TreeModel::ReflectorKind::INDENT))};
     }

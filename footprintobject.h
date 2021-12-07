@@ -35,7 +35,7 @@ class FootprintObject : public QGraphicsObject
         Q_DECLARE_TR_FUNCTIONS(FootprintObject)
 public:
     enum { Type = UserType + 5 };
-    FootprintObject(double _scale);
+    FootprintObject(double _scale, QGraphicsObject *parent=nullptr);
     ~FootprintObject();
 
     static void setResizeHandle(double newScale);

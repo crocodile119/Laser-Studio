@@ -11,7 +11,7 @@
 class AddReflectorCommand : public QUndoCommand
 {
 public:
-    AddReflectorCommand(double _attenuatedDNRO, double _attenuatedDNRC, double _reflectorDistance, double _scale,
+    AddReflectorCommand(double _attenuatedDNRO, double _attenuatedDNRC, double _reflectorDistance, double *scale,
                int _seqNumber, target _myTarget, CentralWidget *_laserWindow, LaserPoint *_laserpoint,
                QList<Reflector *> *_myReflecotrs, QPointF _initialPosition, QUndoCommand *parent = nullptr);
 
@@ -29,7 +29,7 @@ private:
     double attenuatedDNRO;
     double attenuatedDNRC;
     double reflectorDistance;
-    double scale;
+    double *scale;
     int seqNumber;
     target myTarget;
     Reflector *reflector=nullptr;

@@ -10,7 +10,7 @@
 class DeleteBinocularCommand : public QUndoCommand
 {
 public:
-    DeleteBinocularCommand(Binocular *_binocular, BinocularLink *_binocularLink, double _scale,
+    DeleteBinocularCommand(Binocular *_binocular, BinocularLink *_binocularLink, double *_scale,
                   CentralWidget *_laserWindow, LaserPoint *_laserpoint,
                   QList<Binocular *> *_myBinocular, QPointF _deletePosition, QUndoCommand *parent = nullptr);
     ~DeleteBinocularCommand();
@@ -24,7 +24,7 @@ private:
 
     Binocular *binocularOnScene=nullptr;
     BinocularLink *binocularLink=nullptr;
-    double scale;
+    double* scale;
     CentralWidget *laserWindow;
     LaserPoint *laserpoint;
     QList <Binocular *>*myBinoculars;

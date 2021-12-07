@@ -1,6 +1,6 @@
 #include "addbeaminspectorcommand.h"
 
-AddBeamInspectorCommand::AddBeamInspectorCommand(double _inspectorDistance, double _scale, int _inspectorSeqNumber,
+AddBeamInspectorCommand::AddBeamInspectorCommand(double _inspectorDistance, double *_scale, int _inspectorSeqNumber,
                                          CentralWidget *_laserWindow, LaserPoint *_laserpoint, QList<BeamInspector *> *_myBeamInspectors,
                                          QPointF _initialPosition, double _attenuatedDNRO, QUndoCommand *parent)
                                          : QUndoCommand(parent), inspectorDistance(_inspectorDistance), scale(_scale), inspectorSeqNumber(_inspectorSeqNumber),
@@ -13,7 +13,6 @@ AddBeamInspectorCommand::AddBeamInspectorCommand(double _inspectorDistance, doub
 
     beamInspector = new BeamInspector(_inspectorDistance, _wavelength, _divergence, _beamDiameter, _attenuatedDNRO);
 
-    beamInspector->setPixScale(scale);
     beamInspector->setPos(initialPosition);
     beamInspector->setBeamInspectorObjectName(initialPosition);
 
@@ -46,6 +45,7 @@ void AddBeamInspectorCommand::undo()
 
 void AddBeamInspectorCommand::redo()
 {
+    beamInspector->setPixScale(*scale);
     laserWindow->graphicsView->scene->addItem(beamInspector);
     laserWindow->graphicsView->scene->clearSelection();
 
@@ -53,7 +53,7 @@ void AddBeamInspectorCommand::redo()
 
     beamInspector->setStringPosition();
     beamInspector->setInspectorSeqNumber(inspectorSeqNumber);
-    QPointF shiftPosition =initialPosition-BeamInspector::positionShift(scale);
+    QPointF shiftPosition =initialPosition-BeamInspector::positionShift(*scale);
     QGraphicsItem *item =laserWindow->graphicsView->scene->itemAt(shiftPosition, QTransform());
     beamInspectorOnScene= qgraphicsitem_cast<BeamInspector*>(item);
 

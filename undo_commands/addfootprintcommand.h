@@ -10,7 +10,7 @@
 class AddFootprintCommand : public QUndoCommand
 {
 public:
-    AddFootprintCommand(double _attenuatedDNRO, double _scale, CentralWidget *_laserWindow,
+    AddFootprintCommand(double _attenuatedDNRO, double *_scale, CentralWidget *_laserWindow,
                         LaserPoint *_laserpoint, QList<FootprintObject *> *_myFootprint,
                         QPointF _initialPosition, QUndoCommand *parent = nullptr);
 
@@ -28,7 +28,7 @@ private:
     double attenuatedDNRO;
     double attenuatedDNRC;
     double reflectorDistance;
-    double scale;
+    double *scale;
     FootprintObject *footprint=nullptr;
     CentralWidget *laserWindow;
     LaserPoint *laserpoint;

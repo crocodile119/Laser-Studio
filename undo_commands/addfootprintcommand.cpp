@@ -1,13 +1,13 @@
 #include "addfootprintcommand.h"
 
-AddFootprintCommand::AddFootprintCommand(double _attenuatedDNRO, double _scale, CentralWidget *_laserWindow,
+AddFootprintCommand::AddFootprintCommand(double _attenuatedDNRO, double *_scale, CentralWidget *_laserWindow,
                     LaserPoint *_laserpoint, QList<FootprintObject *> *_myFootprints, QPointF _initialPosition,
                     QUndoCommand *parent)
                     : QUndoCommand(parent), attenuatedDNRO(_attenuatedDNRO), scale(_scale),
                       laserWindow(_laserWindow), laserpoint(_laserpoint), myFootprints(_myFootprints),
                       initialPosition(_initialPosition)
 {
-    footprint= new FootprintObject(scale);
+    footprint= new FootprintObject(*scale);
 
     footprint->setPos(initialPosition);
     footprint->setFootprintObjectName(initialPosition);
@@ -15,8 +15,6 @@ AddFootprintCommand::AddFootprintCommand(double _attenuatedDNRO, double _scale, 
 
     footprint->setDNRO_Diameter(attenuatedDNRO);
     footprint->setLaserBeamPath(laserpoint->mapToItem(footprint, laserpoint->shapePath()));
-
-    footprint->setItemScale(scale);
 
     objectLink =addObjectLink();
 
@@ -29,7 +27,6 @@ AddFootprintCommand::AddFootprintCommand(double _attenuatedDNRO, double _scale, 
 
 void AddFootprintCommand::undo()
 {
-    footprint->paintFootprint(false);
     laserWindow->graphicsView->scene->removeItem(footprint);
     laserWindow->graphicsView->scene->removeItem(objectLink);
     laserWindow->graphicsView->scene->clearSelection();
@@ -50,6 +47,7 @@ void AddFootprintCommand::undo()
 
 void AddFootprintCommand::redo()
 {
+    footprint->setItemScale(*scale);
     laserWindow->graphicsView->scene->addItem(footprint);
     footprint->paintFootprint(true);
     laserWindow->graphicsView->scene->clearSelection();

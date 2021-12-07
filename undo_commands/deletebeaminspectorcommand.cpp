@@ -1,6 +1,6 @@
 #include "deletebeaminspectorcommand.h"
 
-DeleteBeamInspectorCommand::DeleteBeamInspectorCommand(BeamInspector *_beamInspector, InspectorLink *_inspectorLink, double _scale,
+DeleteBeamInspectorCommand::DeleteBeamInspectorCommand(BeamInspector *_beamInspector, InspectorLink *_inspectorLink, double *_scale,
                   CentralWidget *_laserWindow, LaserPoint *_laserpoint,
                   QList<BeamInspector *> *_myBeamInspectors, QPointF _deletePosition, QUndoCommand *parent)
           : QUndoCommand(parent), beamInspectorOnScene(_beamInspector), inspectorLink(_inspectorLink), scale(_scale), laserWindow(_laserWindow), laserpoint(_laserpoint),
@@ -18,6 +18,7 @@ DeleteBeamInspectorCommand::~DeleteBeamInspectorCommand()
 
 void DeleteBeamInspectorCommand::undo()
 {
+    beamInspectorOnScene->setPixScale(*scale);
     laserWindow->graphicsView->scene->addItem(inspectorLink);
     laserWindow->graphicsView->scene->addItem(beamInspectorOnScene);
     beamInspectorOnScene->setPos(deletePosition);

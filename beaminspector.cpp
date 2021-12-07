@@ -26,7 +26,8 @@ double BeamInspector::TEM00_RayleighDistance;
 double BeamInspector::qualityFactor;
 double BeamInspector::pixHeight=20;
 
-BeamInspector::BeamInspector(double _inspectorDistance, double _wavelength, double _divergence, double _beamDiameter, double _attenuatedDNRO): QGraphicsObject(),
+BeamInspector::BeamInspector(double _inspectorDistance, double _wavelength, double _divergence, double _beamDiameter,
+                             double _attenuatedDNRO, QGraphicsObject *parent): QGraphicsObject(parent),
      myTextColor(Qt::black), myBackgroundColor(Qt::white), myOutlineColor(Qt::transparent), myBeamColor(Qt::darkGray),
      scale(1.0), inspectorDistance(_inspectorDistance), wavelength(_wavelength), divergence(_divergence), beamDiameter(_beamDiameter),
      attenuatedDNRO(_attenuatedDNRO), inspectorPix(":/images/inspectorpix.png")

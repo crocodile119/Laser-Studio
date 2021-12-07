@@ -17,7 +17,7 @@ class Binocular : public QGraphicsObject
     Q_DECLARE_TR_FUNCTIONS(Binocular)
 
 public:
-    Binocular(double, double, double, double, double);
+    Binocular(double, double, double, double, double, QGraphicsObject *parent = nullptr);
     ~Binocular();
 
     enum { Type = UserType + 4 };

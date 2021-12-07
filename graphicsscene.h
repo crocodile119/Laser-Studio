@@ -29,10 +29,6 @@ private:
     class Rectangle myGraphicRect;
 
 signals:
-    void reflectorSelected();
-    void laserSelected();
-    void binocularSelected();
-    void inspectorSelected();
     void labroomSelected();
     void deselected();
     void footprintRelease();  

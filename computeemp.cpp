@@ -153,9 +153,16 @@ void ComputeEMP::valutateFormula()
       tabt=" t<sup>0.25</sup>";
   else
      tabt="";
- 
- // Double to string conversion, the C++03 way:
-	ostringstream sstream;
+/*
+ *  Non si usa la funziona di libreria standard C++11 std::to_string()
+ *  ma la onversione di un double in una stringa, con il metodo offerto dallo
+ *  standard C++03.
+ *  In questo modo la precisione risulta quella del double senza l'aggiunta di
+ *  inutili 0.
+ *  E' possibile eventualmente impostare la precisione con setprecision.
+ */
+
+    ostringstream sstream;
     sstream << myEmpData.formula;
     coeffValue = sstream.str();
 

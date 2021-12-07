@@ -1,6 +1,6 @@
 #include "addbinocularcommand.h"
 
-AddBinocularCommand::AddBinocularCommand(double _attenuatedDNRO, double _binocularDistance, double _scale,
+AddBinocularCommand::AddBinocularCommand(double _attenuatedDNRO, double _binocularDistance, double *_scale,
                                          int _binSeqNumber, CentralWidget *_laserWindow, LaserPoint *_laserpoint,
                                          QList<Binocular *> *_myBinoculars, QPointF _initialPosition,
                                          QUndoCommand *parent):QUndoCommand(parent), attenuatedDNRO(_attenuatedDNRO),
@@ -17,7 +17,6 @@ AddBinocularCommand::AddBinocularCommand(double _attenuatedDNRO, double _binocul
                               divergence,
                               laserWindow->myDockControls->getBeamDiameter());
 
-    binocular->setPixScale(scale);
     binocular->setPos(initialPosition);  
     binocular->setBinocularObjectName(initialPosition);
     binocularLink=addBinocularLink();
@@ -52,6 +51,7 @@ void AddBinocularCommand::undo()
 
 void AddBinocularCommand::redo()
 {
+    binocular->setPixScale(*scale);
     laserWindow->graphicsView->scene->addItem(binocular);
     laserWindow->graphicsView->scene->clearSelection();
 

@@ -1,6 +1,7 @@
 #include <cmath>
 #include <string>
 #include "laserclasscw.h"
+#include "floatcomparison.h"
 
 const double LaserClassCW::PI{3.141592653589793};
 const double LaserClassCW::PUPIL_DIAMETER{7.0};
@@ -41,8 +42,6 @@ void LaserClassCW::classUpdate(laserOperation myLaserOperation, const double & t
      * risulta applicabile (lunghezza d'onda >=302.5 e <4000).                    *                                      *
      * *****************************************************************************/   
 
-     couplingFactor_Cond_1=valuateCouplingFactor(apCond_1, beamAtStop_Cond_1, true);
-
      if((wavelength>=302.5)and(wavelength<4000))
     {
     /**************************************************************************
@@ -58,6 +57,8 @@ void LaserClassCW::classUpdate(laserOperation myLaserOperation, const double & t
     {
         beamAtStop_Cond_1=std::nan("N.A.");
     }
+
+     couplingFactor_Cond_1=valuateCouplingFactor(apCond_1, beamAtStop_Cond_1, true);
 
     /****************************************************************************
      * prelevo l'apertura calcolata per la condizione 1 e calcolo il fattore di *
@@ -209,7 +210,7 @@ array<bool, LaserClassCW::N_CLASS> LaserClassCW::valuateLEA_forClass(array<doubl
 
     if((wavelength<302.5)||(wavelength>=4000))
        {
-        if(myPowerErg_Cond_3[0]<=myLEA_Value[0])
+        if((myPowerErg_Cond_3[0]<myLEA_Value[0])or almostEqualUlps(myPowerErg_Cond_3[0],myLEA_Value[0]))
             {
             myClassValutation[0]=true;
             return myClassValutation;
@@ -217,7 +218,8 @@ array<bool, LaserClassCW::N_CLASS> LaserClassCW::valuateLEA_forClass(array<doubl
         }
     else if((wavelength>=302.5)&&(wavelength<4000))
        {
-        if((myPowerErg_Cond_1[0]<=myLEA_Value[0])and(myPowerErg_Cond_3[0]<=myLEA_Value[0]))
+        if(((myPowerErg_Cond_1[0]<myLEA_Value[0])or almostEqualUlps(myPowerErg_Cond_1[0],myLEA_Value[0]))
+                and((myPowerErg_Cond_3[0]<myLEA_Value[0]) or almostEqualUlps(myPowerErg_Cond_3[0],myLEA_Value[0])))
             {
             myClassValutation[0]=true;
             return myClassValutation;
@@ -245,7 +247,8 @@ array<bool, LaserClassCW::N_CLASS> LaserClassCW::valuateLEA_forClass(array<doubl
     {
     if((wavelength>=400)and(wavelength<=700))
         {
-            if((myPowerErg_Cond_1[1]<=myLEA_Value[1])and(myPowerErg_Cond_3[1]<=myLEA_Value[1]))
+            if(((myPowerErg_Cond_1[1]<myLEA_Value[1])or almostEqualUlps(myPowerErg_Cond_1[1],myLEA_Value[1]))
+                    and((myPowerErg_Cond_3[1]<myLEA_Value[1])or almostEqualUlps(myPowerErg_Cond_3[1],myLEA_Value[1])))
             {
                 myClassValutation[2]=true;
                 return myClassValutation;
@@ -276,7 +279,8 @@ array<bool, LaserClassCW::N_CLASS> LaserClassCW::valuateLEA_forClass(array<doubl
     {
         if((wavelength>=302.5)and(wavelength<4000))
         {
-            if((myPowerErg_Cond_1[2]<=myLEA_Value[2])and(myPowerErg_Cond_3[2]<=myLEA_Value[2]))
+            if(((myPowerErg_Cond_1[2]<myLEA_Value[2])or almostEqualUlps(myPowerErg_Cond_1[2],myLEA_Value[2]))
+                    and((myPowerErg_Cond_3[2]<myLEA_Value[2])or almostEqualUlps(myPowerErg_Cond_3[2],myLEA_Value[2])))
             {
                 myClassValutation[4]=true;
                 return myClassValutation;
@@ -284,7 +288,7 @@ array<bool, LaserClassCW::N_CLASS> LaserClassCW::valuateLEA_forClass(array<doubl
         }
         else
         {
-            if(myPowerErg_Cond_3[2]<=myLEA_Value[2])
+            if((myPowerErg_Cond_3[2]<myLEA_Value[2])or almostEqualUlps(myPowerErg_Cond_3[2],myLEA_Value[2]))
             {
                 myClassValutation[4]=true;
                 return myClassValutation;
@@ -300,14 +304,15 @@ array<bool, LaserClassCW::N_CLASS> LaserClassCW::valuateLEA_forClass(array<doubl
     {
         if((wavelength>=302.5)and(wavelength<4000))
         {
-                if((myPowerErg_Cond_1[3]<=myLEA_Value[3])and(myPowerErg_Cond_3[3]<=myLEA_Value[3]))
+                if(((myPowerErg_Cond_1[3]<myLEA_Value[3])or almostEqualUlps(myPowerErg_Cond_1[3],myLEA_Value[3]))
+                        and((myPowerErg_Cond_3[3]<myLEA_Value[3])or almostEqualUlps(myPowerErg_Cond_3[3],myLEA_Value[3])))
                 {
                     myClassValutation[5]=true;
                     return myClassValutation;
                 }
         }
         else
-            if(myPowerErg_Cond_3[3]<=myLEA_Value[3])
+            if((myPowerErg_Cond_3[3]<myLEA_Value[3])or almostEqualUlps(myPowerErg_Cond_3[3],myLEA_Value[3]))
             {
                 myClassValutation[5]=true;
                 return myClassValutation;

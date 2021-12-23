@@ -35,6 +35,7 @@ LaserPoint::LaserPoint():QGraphicsObject(), laserPix(":/images/laserpix.png"), p
     transmittance=1.0;
     scale=1.0;
     filterOn=false;
+    feasibleDutyCycle=true;
     setStringPosition();
     setTextLabel();
     setToolTip(position);
@@ -232,7 +233,7 @@ void LaserPoint::paint(QPainter *painter,
 
     QRectF source(0.0, 0.0, laserPix.width(), laserPix.height());
 
-    if(qualityFactor>=1)
+    if(qualityFactor>=1 && feasibleDutyCycle)
         painter->drawPixmap(pixRect, laserPix, source);
     else
         painter->drawPixmap(pixRect, prohibitedPix, source);
@@ -520,6 +521,10 @@ QString LaserPoint::getInstallationforIndex(const int &installationIndex)
     return installationIndexString;
 }
 
+void LaserPoint::setDutyCycleCheck(bool _feasibleDutyCycle)
+{
+    feasibleDutyCycle=_feasibleDutyCycle;
+}
 
 QPainterPath LaserPoint::shapePath()
 {

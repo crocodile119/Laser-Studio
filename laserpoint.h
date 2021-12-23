@@ -76,6 +76,7 @@ public:
     QString getStringPosition()const;
     QString getLaserInstallation();
     static QString getInstallationforIndex(const int&);
+    void setDutyCycleCheck(bool _feasibleDutyCycle);
     void setTextLabel();
     void setStrings();   
     void setShadowZone(const QPainterPath&);
@@ -121,6 +122,7 @@ private:
     double aperture;
     double pillow;
     double scale; 
+    bool feasibleDutyCycle;
 
     QStringList stringList;
     QPixmap laserPix;

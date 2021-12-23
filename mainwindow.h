@@ -107,7 +107,7 @@ private slots:
     void addRoom();
     void createRoom();
     void selectionMode();
-    void noFeasibleInputFunction();
+    void statusBarSignalFunction(const QString &);
     double attenuatedDistance(const double&);
     void setDNRO_ForLaserpoint();
     void setDNRC_ForLaserpoint();
@@ -194,6 +194,7 @@ private slots:
     void meteoWidgets(bool, bool, bool);
     void graphicItemMoveToStack(QGraphicsItem *movingItem, const QPointF& oldPosition);
     void updateForBeamInspection();
+    void setFeasibleDutyCicle();
     //scene
 
     void addBeamInspectorLink();

@@ -245,6 +245,7 @@ void LaserReport::laserAssessmentResults()
         output.append(laserWindow->myDockResults->ui->tThermalEMP_Label->text()+"$"+laserWindow->myDockResults->ui->ThermalEMP_Label->text());
         output.append(laserWindow->myDockResults->ui->tEMP_mean_Label->text()+"$"+laserWindow->myDockResults->ui->tEMP_mean_Label->text());
         output.append(laserWindow->myDockEffects->ui->tTminLabel->text()+"$"+laserWindow->myDockEffects->ui->TminLabel->text());
+        output.append(laserWindow->myDockEffects->ui->tDeltaLabel->text()+"$"+laserWindow->myDockEffects->ui->deltaLabel->text());
 
         output.append(laserWindow->myDockResults->ui->tCP_Label->text()+"$"+laserWindow->myDockResults->ui->CP_Label->text());
         output.append(laserWindow->myDockResults->ui->tPulseNumberLabel->text()+"$"+laserWindow->myDockResults->ui->PulseNumberLabel->text());
@@ -562,6 +563,13 @@ void LaserReport::firstPageReport()
     double qualityFactor=BeamInspector::getQualityFactor();
     QString qualityFactorString="M<sup>2</sup>: " +QString::number(qualityFactor);
 
+    bool noFeasible;
+    DockControls::operation laserOperation=laserWindow->myDockControls->laserOperation();
+    if(laserOperation==DockControls::operation::MULTI_PULSE)
+        noFeasible=(laserWindow->myDockControls->getPRF()*laserWindow->myDockControls->getPulseWidth()>=1);
+    else
+        noFeasible=false;
+
     double rayleighDistance=BeamInspector::getRayleighDistance();
     QString rayleighDistanceString="z<sub>R</sub>: " +QString::number(rayleighDistance, 'e', 2);
 
@@ -634,7 +642,7 @@ void LaserReport::firstPageReport()
     else
     filterStr="Filtro montato su ottica: assente";
 
-    if(qualityFactor<1)
+    if(qualityFactor<1 || noFeasible)
     {
         QString noPhysicalString="Fascio fisicamente non realizzabile :dr";
         laser.append(noPhysicalString);
@@ -1576,6 +1584,9 @@ QString LaserReport::htmlSymbols()
 "    </tr>"
 "    <tr>"
 "    <td><b>T<sub>min</sub></b> [s]</td><td  style=\"text-align: left;\">Durata al di sotto della quale i gruppi di impulsi vengono sommati tra loro</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>δ</b></td><td  style=\"text-align: left;\">Duty Cycle</td>"
 "    </tr>"
 "    <tr>"
 "    <td  style=\"text-align: left;\" colspan=\"2\" rowspan=\"1\"><i><br>Esposizione massima permessa nel funzionamento ad onda continua e ad impulso (rif. D.Lgs 81/2008).</i></td>"

@@ -31,7 +31,7 @@ public:
     void setMantissa(const double);
     void setEnabled(bool _enabled);
     void setBackgroundColor(QString);
-    void setStatusTipHelp(QString);
+    void setStatusTipHelp(const QString &);
     void setUndoStack(QUndoStack*);
     void setPhysicalDimension();
     void setDialInitialValue();

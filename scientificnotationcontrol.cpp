@@ -227,7 +227,7 @@ void ScientificNotationControl::setBackgroundColor(QString htmlColor)
                 "QScrollBar {background-color:"+ htmlColor +";\n}");
 }
 
-void ScientificNotationControl::setStatusTipHelp(QString whatThis)
+void ScientificNotationControl::setStatusTipHelp(const QString & whatThis)
 {
     setStatusTip(whatThis);
 }

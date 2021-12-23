@@ -6,6 +6,7 @@ DockEffects::DockEffects(QWidget *parent) :
     ui(new Ui::DockEffects)
 {
     ui->setupUi(this);
+    ui->tDeltaLabel->setText("δ");
 }
 
 DockEffects::~DockEffects()

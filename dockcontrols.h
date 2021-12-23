@@ -96,6 +96,7 @@ public:
 
     double getEMP()const;
     double getBeamDiameter()const;
+    double getPulseWidth()const;
     double getPRF()const;
     double getPowerErg()const;
 
@@ -142,6 +143,8 @@ public:
     QString getLaserClassString(const LaserClassCW::laserClass &);
     void kindOfHazardChanged();
     QVector<QString> getLEA_DataVector()const;
+    void verifyFeasibleRayleigh();
+    void verifyFeasibleDutyCycle();
 
     vector<pair<int, double>> getGoggleDataVect()const;
     vector<pair<int, double>> getDGoggleDataVect()const;
@@ -195,7 +198,8 @@ signals:
     void powerErgChanged();
     void powerErgForEMPChanged();
     void EMP_Changed();
-    void noFeasibleInput();
+    void statusBarSignal(const QString& whatThis);
+    void noFeasibleDutyCycle();
     void operationChanged();
     void hazardChanged();
 

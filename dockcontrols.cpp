@@ -13,6 +13,7 @@
 #include "mypolarchartview.h"
 #include "htmldelegate.h"
 #include <exception>
+#include "beaminspector.h"
 
 const int DockControls::DOCKGOGGLEMINIMUN=405;
 const int DockControls::DOCKGOGGLEMAXIMUN=550;
@@ -1276,6 +1277,8 @@ void DockControls::setWidgets()
     QString minEMPSkin;  
     QString skinPowerErgUnit="Q [J]";
 
+    verifyFeasibleRayleigh();
+
     if(n_laser==operation::CONTINUOS_WAVE)
     {
         ui->powerErgControl->setTitle("P [W]");
@@ -1298,6 +1301,9 @@ void DockControls::setWidgets()
          ********************************************************/
 
         //Label non visibili
+        dockEffects->ui->deltaLabel->setVisible(false);
+        dockEffects->ui->tDeltaLabel->setVisible(false);
+
         dockResults->ui->tEMP_MP_Label->setVisible(false);
         dockResults->ui->EMP_MP_Label->setVisible(false);
 
@@ -1461,6 +1467,9 @@ void DockControls::setWidgets()
         ********************************************************/
 
         //Label non visibili
+        dockEffects->ui->deltaLabel->setVisible(false);
+        dockEffects->ui->tDeltaLabel->setVisible(false);
+
         dockResults->ui->tFormulaMP_Label->setVisible(false);
         dockResults->ui->FormulaMP_Label->setVisible(false);
 
@@ -1624,6 +1633,9 @@ void DockControls::setWidgets()
         ********************************************************/
 
         //Label non visibili
+        dockEffects->ui->deltaLabel->setVisible(true);
+        dockEffects->ui->tDeltaLabel->setVisible(true);
+
         dockResults->ui->tEMP_MP_Label->setVisible(true);
         dockResults->ui->EMP_MP_Label->setVisible(true);
 
@@ -1661,6 +1673,16 @@ void DockControls::setWidgets()
         dockResults->ui->minEMP_Label->setVisible(true);
 
         dockResults->ui->conditionsFrame->setVisible(true);
+
+        double deltaPercent=pulseWidth*prf*100;
+        QString deltaString;
+
+        if(deltaPercent>1)
+            deltaString=QString::number(deltaPercent, 'f', 2);
+        else
+            deltaString=QString::number(deltaPercent, 'e', 2);
+
+        dockEffects->ui->deltaLabel->setText(QString("%1%").arg(deltaString));
 
         dockSkin->ui->tPowerErgSkinLabel->setText(skinPowerErgUnit);
         dockSkin->ui->powerErgSkinLabel->setText(QString::number(MyLaserSkinMP_Pr->getPowerErg(),'e', 2));
@@ -1837,34 +1859,7 @@ void DockControls::setWidgets()
 
         dockEffects->ui->NoteLabel->setText(QString::fromStdString(MyLaserMP_Pr->getPhotochemicalNote_MP()));
 
-
-        /********************************************************************************************
-         * Anomalia nell'input dei parametri di ingresso.                                           *
-         * Quando il prodotto della durata dell'impulso per la frequenza dell'impulso è maggiore    *
-         * o uguale di 1 l'ingresso non è fisicamente realizzabile                                  *
-         ********************************************************************************************/
-
-        bool noFeasible=(prf*pulseWidth>=1);
-
-        if(noFeasible)
-        {
-            ui->prfControl->setBackgroundColor("#8844ff");
-            ui->pulseControl->setBackgroundColor("#8844ff");
-
-            ui->prfControl->setStatusTipHelp("Hai inserito un ingresso "
-                                            " non fisicamente realizzabile");
-            ui->pulseControl->setStatusTipHelp("Hai inserito un ingresso "
-                                            " non fisicamente realizzabile");
-            emit noFeasibleInput();
-        }
-        else
-        {
-            ui->prfControl->setBackgroundColor("");
-            ui->pulseControl->setBackgroundColor("");
-            ui->prfControl->setStatusTipHelp("");
-            ui->pulseControl->setStatusTipHelp("");
-        }
-
+        verifyFeasibleDutyCycle();
         /********************************************************
         * Widget pelle                                          *
         *********************************************************/
@@ -1983,6 +1978,7 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
 	* L'indice scelto della casella combinata *
 	*******************************************/
     n_laser=static_cast<operation>(index);
+    QString whatThis;
 
    /******************
     * CONTINUOS WAVE *
@@ -2076,6 +2072,7 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
 
 	//Nascondo i controlli riguardanti i protettori ottici non previsti
     showControls(false);
+    whatThis="Continuos Wave";
     }
     else
     if (n_laser==operation::PULSE)
@@ -2150,6 +2147,7 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
 
 	//Nascondo i controlli riguardanti i protettori ottici non previsti
     showControls(false);
+    whatThis="Impulsato";
     }
     else
    /********************
@@ -2277,6 +2275,7 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
 
     //Mostro i tutti controlli riguardanti i protettori
     showControls(true);
+    whatThis="Impulsi multipli";
     }
 
    /*******************************************
@@ -2299,6 +2298,7 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     emit EMP_Changed();//Cambia il diametro del fascio
     emit operationChanged();//cambia la modalità di funzionamento
     emit modified();//Per salvataggio file
+    emit statusBarSignal(whatThis);
 }
 
 void DockControls::setSkinWidgetsSingle()
@@ -2493,6 +2493,11 @@ double DockControls::getBeamDiameter()const
     return beamDiameter;
 }
 
+double DockControls::getPulseWidth()const
+{
+    return pulseWidth;
+}
+
 double DockControls::getPRF()const
 {
     return prf;
@@ -2658,6 +2663,7 @@ void DockControls::setIRC_FIR()
 
 void DockControls::on_enableTeCheckBox_toggled(bool checked)
 {
+    QString whatThis;
     undoStack->clear();
     resetHistory();
 
@@ -2665,13 +2671,16 @@ void DockControls::on_enableTeCheckBox_toggled(bool checked)
     ui->teControl->setEnabled(checked);
 
     if(checked)
+    {
         on_teControl_valueChanged();
+        whatThis="Regolazione tempo esposizione oculare attivata";
+    }
     else
     {
         /*****************
         * CONTINUOS WAVE *
         ******************/
-
+        whatThis="Esposizione oculare al tempo base";
         if(n_laser==operation::CONTINUOS_WAVE)
         {
             /********************************************************
@@ -2700,7 +2709,7 @@ void DockControls::on_enableTeCheckBox_toggled(bool checked)
     setWidgets();
     emit EMP_Changed();//Cambia l'EMP
     emit modified();//Per salvataggio file
-
+    emit statusBarSignal(whatThis);
 }
 
 bool DockControls::isTeEdtitingEnabled()
@@ -2897,16 +2906,24 @@ QVector<QString> DockControls::getLEA_DataVector()const
 
 void DockControls::on_checkGaussianBeam_clicked(bool checked)
 {
+    QString whatThis;
     undoStack->clear();
     resetHistory();
 
     gaussianBeam=checked;
     if(checked)
+    {
         beamCorrection=1.0;
+        whatThis="Fascio gaussiano";
+    }
     else
+    {
         beamCorrection=2.5;
+        whatThis="Fascio non gaussiano";
+    }
 
     on_powerErgControl_valueChanged();
+    emit statusBarSignal(whatThis);
 }
 
 void DockControls::set_LEA_Widgets()
@@ -4594,6 +4611,7 @@ void DockControls::setDataForMP_ThermalTiOperation()
 
 void DockControls::on_internalWaist_checkBox_toggled(bool checked)
 {
+    QString whatThis;
     undoStack->clear();
     resetHistory();
 
@@ -4606,7 +4624,13 @@ void DockControls::on_internalWaist_checkBox_toggled(bool checked)
 
     internalWaist=checked;
 
+    if(checked)
+        whatThis="Waist interno non accessibile";
+    else
+        whatThis="Waist accessibile";
+
     set_LEA_Widgets();
+    emit statusBarSignal(whatThis);
 }
 
 void DockControls::setGoggleMaterial(LaserGoggle::material myMaterial)
@@ -4815,29 +4839,52 @@ DockControls::~DockControls()
 
 void DockControls::on_comboBoxBands_currentIndexChanged(int index)
 {
+    QString whatThis;
     if(index==0)
+    {
         setUV();
+        whatThis="Banda ultravioletta";
+    }
     else
     if(index==1)
+    {
         setVIS();
+        whatThis="Banda visibile";
+    }
     else
     if(index==2)
-       setIRA_NIR();
+    {
+        setIRA_NIR();
+        whatThis="Banda del vicino infrarosso";
+    }
     else
     if(index==3)
+    {
        setIRB_SWIR();
+        whatThis="Banda infrarossa ad onde corte";
+    }
     else
     if(index==4)
+    {
        setIRC_MWIR();
+        whatThis="Banda infrarossa ad onde medie";
+    }
     else
     if(index==5)
+    {
        setIRC_LWIR();
+       whatThis="Banda infrarossa ad onde lunghe";
+    }
     else
     if(index==6)
+    {
        setIRC_FIR();
+       whatThis="Banda lontano infrarosso";
+    }
 
     setWidgets();
-        emit modified();
+    emit modified();
+    emit statusBarSignal(whatThis);
 }
 
 void DockControls::setUndoStack(QUndoStack* _undoStack)
@@ -4924,4 +4971,63 @@ void DockControls::setLEAModelForWavelength()
             selectMP_Thermal_Model();
         }
     }
+}
+
+void DockControls::verifyFeasibleRayleigh()
+{
+    BeamInspector::computeRayleighDistance(wavelength,
+                                           beamDiameter,
+                                           divergence);
+    double qualityFactor=BeamInspector::getQualityFactor();
+    bool noFeasibleRayleigh=(qualityFactor<1);
+    QString whatThis;
+
+    if(noFeasibleRayleigh)
+    {
+        whatThis="Hai inserito un ingresso non fisicamente realizzabile";
+        ui->divergenceControl->setBackgroundColor("#8844ff");
+        ui->beamDiameterControl->setBackgroundColor("#8844ff");
+    }
+    else
+    {
+        whatThis.clear();
+        ui->divergenceControl->setBackgroundColor("");
+        ui->beamDiameterControl->setBackgroundColor("");
+    }
+
+    ui->divergenceControl->setStatusTipHelp(whatThis);
+    ui->beamDiameterControl->setStatusTipHelp(whatThis);
+
+    emit statusBarSignal(whatThis);
+}
+
+void DockControls::verifyFeasibleDutyCycle()
+{
+    /********************************************************************************************
+     * Anomalia nell'input dei parametri di ingresso.                                           *
+     * Quando il prodotto della durata dell'impulso per la frequenza dell'impulso è maggiore    *
+     * o uguale di 1 l'ingresso non è fisicamente realizzabile                                  *
+     ********************************************************************************************/
+
+    bool noFeasible=(prf*pulseWidth>=1);
+    QString whatThis;
+
+    if(noFeasible)
+    {
+        whatThis="Hai inserito un ingresso non fisicamente realizzabile";
+        ui->prfControl->setBackgroundColor("#8844ff");
+        ui->pulseControl->setBackgroundColor("#8844ff");
+    }
+    else
+    {
+        whatThis.clear();
+        ui->prfControl->setBackgroundColor("");
+        ui->pulseControl->setBackgroundColor("");
+    }
+
+    ui->prfControl->setStatusTipHelp(whatThis);
+    ui->pulseControl->setStatusTipHelp(whatThis);
+
+    emit noFeasibleDutyCycle();
+    emit statusBarSignal(whatThis);
 }

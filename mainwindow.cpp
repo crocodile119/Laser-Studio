@@ -134,8 +134,9 @@ MainWindow::MainWindow()
     connect(laserWindow->myDockControls, SIGNAL(powerErgChanged()), this, SLOT(setReflectorPowerErgForDiffusion()));
     connect(laserWindow->myDockControls, SIGNAL(EMP_Changed()), this, SLOT(setReflectorEMP_ForDiffusion()));
     connect(laserWindow->myDockControls, SIGNAL(wavelengthChanged()), this, SLOT(setWavelengthForBinocular()));
-    connect(laserWindow->myDockControls, SIGNAL(noFeasibleInput()), this, SLOT(noFeasibleInputFunction()));
-    connect(laserWindow->myDockControls, SIGNAL(operationChanged()), this, SLOT(deletedViewCenter()));
+    connect(laserWindow->myDockControls, SIGNAL(statusBarSignal(const QString &)), this, SLOT(statusBarSignalFunction(const QString &)));
+    connect(laserWindow->myDockControls, SIGNAL(operationChanged()), this, SLOT(deletedViewCenter())); 
+    connect(laserWindow->myDockControls, SIGNAL(noFeasibleDutyCycle()), this, SLOT(setFeasibleDutyCicle()));
     connect(laserWindow->myGraphicsItemTree->ui->treeView, SIGNAL(clicked(QModelIndex)), this, SLOT(goToGraphicsItem(QModelIndex)));
     connect(laserWindow->myGraphicsItemTree->ui->treeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(selectItemFromTree(QModelIndex)));
 
@@ -209,6 +210,7 @@ void MainWindow::setLaserPoint()
 
     laserpoint->setRayleighDistance(BeamInspector::getRayleighDistance());
     laserpoint->setQualityFactor(BeamInspector::getQualityFactor());
+    setFeasibleDutyCicle();
 
     laserpoint->setStringPosition();
 
@@ -1724,7 +1726,7 @@ bool MainWindow::loadFile(const QString &fileName)
     }
 
     setCurrentFile(fileName);
-    statusBar()->showMessage(tr("File loaded"), 2000);
+    statusBar()->showMessage(tr("File caricato"), 2000);
     return true;
 }
 
@@ -3089,9 +3091,9 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
     return false;
 }
 
-void MainWindow::noFeasibleInputFunction()
+void MainWindow::statusBarSignalFunction(const QString & whatThis)
 {
-    statusBar()->showMessage(tr("Ingresso non fisicamente realizzabile"), 2000);
+    statusBar()->showMessage(whatThis, 2000);
 }
 
 double MainWindow::attenuatedDistance(const double & _distance)
@@ -4916,6 +4918,23 @@ void MainWindow::graphicItemMoveToStack(QGraphicsItem *movingItem, const QPointF
 MainWindow::~MainWindow()
 {
 
+}
+
+void MainWindow::setFeasibleDutyCicle()
+{
+    double prf;
+    double pulseWidth;
+    bool feasibleDutyCycle;
+    DockControls::operation laserOperation=laserWindow->myDockControls->laserOperation();
+    if(laserOperation==DockControls::operation::MULTI_PULSE)
+    {
+        prf=laserWindow->myDockControls->getPRF();
+        pulseWidth=laserWindow->myDockControls->getPulseWidth();
+        feasibleDutyCycle=prf*pulseWidth<1;
+        laserpoint->setDutyCycleCheck(feasibleDutyCycle);
+    }
+    else
+        laserpoint->setDutyCycleCheck(true);
 }
 
 void MainWindow::updateForBeamInspection()

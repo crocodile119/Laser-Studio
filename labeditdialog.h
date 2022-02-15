@@ -14,15 +14,17 @@ class LabEditDialog : public QDialog, private Ui::LabEditDialog
     Q_OBJECT
 
 public:
-    LabEditDialog(LabRoom *,QWidget *parent = 0);
+    LabEditDialog(LabRoom *,bool _dark, QWidget *parent = 0);
     ~LabEditDialog();
     Ui::LabEditDialog *ui;
+    void setStyleSheet();
 
 private slots:
 
 private:
 
     LabRoom *myLabRoom;
+    bool dark;
 
 };
 

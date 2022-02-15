@@ -12,11 +12,13 @@ class Description : public QDialog
     Q_OBJECT
 
 public:
-    explicit Description(QWidget *parent = nullptr);
+    explicit Description( bool _dark, QWidget *parent = nullptr);
     ~Description();
     Ui::Description *ui;
+    void setStyleSheet();
 
 private:
+    bool dark;
 
 };
 

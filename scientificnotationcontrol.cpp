@@ -227,6 +227,28 @@ void ScientificNotationControl::setBackgroundColor(QString htmlColor)
                 "QScrollBar {background-color:"+ htmlColor +";\n}");
 }
 
+void ScientificNotationControl::setDarkColor(bool dark)
+{
+    if(dark)
+    {
+        titleLabel->setStyleSheet(tr("QLabel {background-color: #b5922d;"
+            "color: #fafafa;"
+            "border: 0px solid grey;"
+            "border-radius: 8px;"
+            "padding: 3px;"
+            "margin-right: 10px;}"));
+    }
+    else
+    {
+        titleLabel->setStyleSheet(tr("QLabel {background-color: #00c800;"
+            "color: #fafafa;"
+            "border: 0px solid grey;"
+            "border-radius: 8px;"
+            "padding: 3px;"
+            "margin-right: 10px;}"));
+    }
+}
+
 void ScientificNotationControl::setStatusTipHelp(const QString & whatThis)
 {
     setStatusTip(whatThis);

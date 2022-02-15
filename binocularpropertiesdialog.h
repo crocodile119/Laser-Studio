@@ -13,8 +13,9 @@ class BinocularPropertiesDialog : public QDialog, private Ui::BinocularPropertie
     Q_OBJECT
 
 public:
-    BinocularPropertiesDialog(Binocular *binocular, double, QWidget *parent = 0);
+    BinocularPropertiesDialog(Binocular *binocular, double, bool _dark, QWidget *parent = 0);
     Ui::BinocularPropertiesDialog *ui;
+    void setStyleSheet();
 private slots:
 
 
@@ -23,6 +24,7 @@ private:
     double wavelength;
     bool thermicWavelength;
     bool ampOpticWavelength;
+    bool dark;
 };
 
 #endif

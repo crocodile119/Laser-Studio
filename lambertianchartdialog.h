@@ -27,6 +27,7 @@ public:
     Ui::LambertianChartDialog *ui;
     LambertianChartView* getLambertianPointChart();
     QChartView* getLambertianExendedChart();
+    void setStyleSheet();
 
 private slots:
     double getDistance() const;

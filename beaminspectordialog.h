@@ -23,7 +23,7 @@ class BeamInspectorDialog : public QDialog
     Q_OBJECT
 
 public:
-    BeamInspectorDialog(BeamInspector *_beamInspector, QWidget *parent = 0);
+    BeamInspectorDialog(BeamInspector *_beamInspector, bool _dark, QWidget *parent = 0);
     ~BeamInspectorDialog();
     void setUpBeamInspector();
     void setUpChart();
@@ -44,6 +44,7 @@ private:
     BeamInspector *beamInspector;
     std::vector<std::pair<double, double>> beamVector;
     std::vector<std::pair<double, double>> retinalVector;
+    bool dark;
 
 	//widgets
     QWidget *beamInspectorDialog;

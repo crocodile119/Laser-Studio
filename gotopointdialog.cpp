@@ -4,11 +4,12 @@
 #include "gotopointdialog.h"
 #include "ui_gotopointdialog.h"
 
-GoToPointDialog::GoToPointDialog(QWidget *parent, QPointF position)
-    : QDialog(parent), center(position)
+GoToPointDialog::GoToPointDialog(QWidget *parent, QPointF position, bool _dark)
+    : QDialog(parent), center(position), dark(_dark)
 {
     setupUi(this);
 
+    setStyleSheet();
     xPosition=center.x();
     yPosition=center.y();
 
@@ -40,4 +41,38 @@ void GoToPointDialog::on_ySpinBox_valueChanged(int arg1)
 void GoToPointDialog::on_buttonBox_accepted()
 {
     center=QPointF(xPosition, yPosition);
+}
+
+void GoToPointDialog::setStyleSheet()
+{
+    if(dark)
+    {
+        label->setStyleSheet(tr("QLabel {background-color: #b5922d}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        label_2->setStyleSheet(tr("QLabel {background-color: #b5922d}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+    }
+    else
+    {
+        label->setStyleSheet(tr("QLabel {background-color: #00c800}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        label_2->setStyleSheet(tr("QLabel {background-color: #00c800}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+    }
 }

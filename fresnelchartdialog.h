@@ -21,6 +21,7 @@ public:
     FresnelChartDialog(Reflector *reflector, bool _thema, QWidget *parent = nullptr);
     ~FresnelChartDialog();
     Ui::FresnelChartDialog *ui;
+    void setStyleSheet();
 
 private slots:
 

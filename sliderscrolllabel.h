@@ -30,6 +30,7 @@ public:
     void setMaximumExponent(int value);
     int getMaximumExponent()const;
     void setTitle(const QString);
+    void setDarkColor(bool dark);
     QString getTitle()const;
     void setValue(const double&);
     double getMantissa()const;

@@ -2,8 +2,8 @@
 #include <QColorDialog>
 #include "beaminspectordialog.h"
 
-BeamInspectorDialog::BeamInspectorDialog(BeamInspector *_beamInspector, QWidget *parent)
-    : QDialog(parent), beamInspector(_beamInspector)
+BeamInspectorDialog::BeamInspectorDialog(BeamInspector *_beamInspector, bool _dark, QWidget *parent)
+    : QDialog(parent), beamInspector(_beamInspector),dark(_dark)
 {
     setUpWidget();
 
@@ -186,12 +186,26 @@ void BeamInspectorDialog::setUpWidget()
     boldFont.setBold(true);
     setFont(boldFont);
 
-    QString nameStyle="QLabel {background-color: #00c800}\n"
-                      "QLabel {color: #fafafa}\n"
-                      "QLabel {border: 0px solid grey}\n"
-                      "QLabel {border-radius: 8px}\n"
-                      "QLabel {padding: 3px}\n"
-                      "QLabel {margin-left: 10px}";
+    QString nameStyle;
+
+    if(dark)
+    {
+        nameStyle="QLabel {background-color: #b5922d}\n"
+                  "QLabel {color: #fafafa}\n"
+                  "QLabel {border: 0px solid grey}\n"
+                  "QLabel {border-radius: 8px}\n"
+                  "QLabel {padding: 3px}\n"
+                  "QLabel {margin-left: 10px}";
+    }
+    else
+    {
+        nameStyle="QLabel {background-color: #00c800}\n"
+                  "QLabel {color: #fafafa}\n"
+                  "QLabel {border: 0px solid grey}\n"
+                  "QLabel {border-radius: 8px}\n"
+                  "QLabel {padding: 3px}\n"
+                  "QLabel {margin-left: 10px}";
+    }
 
     QString valueStyle="QLabel {background-color: #fafafa}\n"
                        "QLabel {color: #000000}\n"

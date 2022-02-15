@@ -5,8 +5,8 @@
 
 double ReflectorPropertiesDialog::MAX_DEFLECTION=50.0;
 
-ReflectorPropertiesDialog::ReflectorPropertiesDialog(Reflector *_reflector, QWidget *parent)
-    : QDialog(parent), ui(new Ui::ReflectorPropertiesDialog), reflector(_reflector)
+ReflectorPropertiesDialog::ReflectorPropertiesDialog(Reflector *_reflector, bool _dark, QWidget *parent)
+    : QDialog(parent), ui(new Ui::ReflectorPropertiesDialog), reflector(_reflector),dark(_dark)
 {
     ui->setupUi(this);
 
@@ -17,6 +17,7 @@ ReflectorPropertiesDialog::ReflectorPropertiesDialog(Reflector *_reflector, QWid
     ui->positioningSlider->setValue(reflector->getPositioning());
     ui->laserPhaseLabel->setText(QString::number(reflector->getLaserPhase(), 'f', 1));
 
+    setStyleSheet();
     semiLaserAperture=reflector->retrieveLaserAperture()/2;
 
     lambertian =reflector->getReflectorKind()==LAMBERTIAN_TARGET;
@@ -123,6 +124,112 @@ void ReflectorPropertiesDialog::on_ySpinBox_valueChanged(double arg1)
         ui->actualPositioningLabel->setText(QString::number(reflector->getPositioning()+laserPhase, 'f', 1));
     else
         ui->actualPositioningLabel->setText(QString::number(2*(reflector->getPositioning()+laserPhase), 'f', 1));
+}
+
+void ReflectorPropertiesDialog::setStyleSheet()
+{
+    if(dark)
+    {
+        ui->label->setStyleSheet(tr("QLabel {background-color: #b5922d}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->label_2->setStyleSheet(tr("QLabel {background-color: #b5922d}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->label_3->setStyleSheet(tr("QLabel {background-color: #b5922d}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->label_4->setStyleSheet(tr("QLabel {background-color: #b5922d}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->label_5->setStyleSheet(tr("QLabel {background-color: #b5922d}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->label_6->setStyleSheet(tr("QLabel {background-color: #b5922d}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->label_7->setStyleSheet(tr("QLabel {background-color: #b5922d}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->label_8->setStyleSheet(tr("QLabel {background-color: #b5922d}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+    }
+    else
+    {
+        ui->label->setStyleSheet(tr("QLabel {background-color: #00c800}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->label_2->setStyleSheet(tr("QLabel {background-color: #00c800}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->label_3->setStyleSheet(tr("QLabel {background-color: #00c800}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->label_4->setStyleSheet(tr("QLabel {background-color: #00c800}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->label_5->setStyleSheet(tr("QLabel {background-color: #00c800}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->label_6->setStyleSheet(tr("QLabel {background-color: #00c800}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->label_7->setStyleSheet(tr("QLabel {background-color: #00c800}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->label_8->setStyleSheet(tr("QLabel {background-color: #00c800}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+    }
 }
 
 void ReflectorPropertiesDialog::on_ZRLcheckBox_clicked(bool checked)

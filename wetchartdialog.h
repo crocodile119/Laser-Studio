@@ -23,6 +23,7 @@ public:
     WetChartDialog(Reflector *reflector, bool _thema, QWidget *parent = 0);
     ~WetChartDialog();
     Ui::WetChartDialog *ui;
+    void setStyleSheet();
 
 private slots:
     double getDistance() const;

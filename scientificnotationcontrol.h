@@ -30,6 +30,7 @@ public:
     void setExponent(const int);
     void setMantissa(const double);
     void setEnabled(bool _enabled);
+    void setDarkColor(bool dark);
     void setBackgroundColor(QString);
     void setStatusTipHelp(const QString &);
     void setUndoStack(QUndoStack*);

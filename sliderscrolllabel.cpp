@@ -167,6 +167,35 @@ int SliderScrollLabel::getMinimumExponent()const
     return -scrollBar->maximum();
 }
 
+void SliderScrollLabel::setDarkColor(bool dark)
+{
+    if(dark)
+    {
+        titleLabel->setStyleSheet(tr("QLabel {background-color: #b5922d}"
+                                     "QLabel {color: #fafafa}"
+                                     "QLabel {border-radius: 8px}"
+                                     "QLabel {border: 0px}"
+                                     "QLabel {padding: 3px}"
+                                     "QLabel {margin-left: 70px}"
+                                     "QLabel {margin-right: 70px}"));
+
+        slider->setStyleSheet(tr("QSlider::handle:horizontal {background-color: #e0e0e0}\n"
+                                 "QSlider::sub-page:horizontal{background: #b5922d}"));
+    }
+    else
+    {
+        titleLabel->setStyleSheet(tr("QLabel {background-color: #00c800}"
+                                     "QLabel {color: #fafafa}"
+                                     "QLabel {border-radius: 8px}"
+                                     "QLabel {border: 0px}"
+                                     "QLabel {padding: 3px}"
+                                     "QLabel {margin-left: 70px}"
+                                     "QLabel {margin-right: 70px}"));
+        slider->setStyleSheet(tr("QSlider::handle:horizontal {background-color: #e0e0e0}\n"
+                                 "QSlider::sub-page:horizontal{background: #00c800}"));
+    }
+}
+
 void SliderScrollLabel::setTitle(const QString _title)
 {
     titleLabel->setText(_title);

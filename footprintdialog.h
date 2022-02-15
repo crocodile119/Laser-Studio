@@ -13,15 +13,17 @@ class FootprintDialog : public QDialog, private Ui::FootprintDialog
     Q_OBJECT
 
 public:
-    FootprintDialog(FootprintObject *,QWidget *parent = 0);
+    FootprintDialog(FootprintObject *,bool _dark, QWidget *parent = 0);
     ~FootprintDialog();
     Ui::FootprintDialog *ui;
+    void setStyleSheet();
 
 private slots:
 
 private:
 
     FootprintObject *myFootprint;
+    bool dark;
 };
 
 #endif

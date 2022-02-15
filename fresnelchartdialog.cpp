@@ -13,6 +13,7 @@ FresnelChartDialog::FresnelChartDialog(Reflector *reflector, bool _thema, QWidge
     this->reflector=reflector;
 
     thema=_thema;
+    setStyleSheet();
     distance=reflector->getReflectorDistance();
     dnro=reflector->getOpticalDiameter();
     divergence=reflector->getDivergence();
@@ -126,4 +127,73 @@ void FresnelChartDialog::setLabelCorrectPositioning()
 void FresnelChartDialog::on_pushButton_clicked()
 {
     close();
+}
+
+void FresnelChartDialog::setStyleSheet()
+{
+    if(thema)
+    {
+        ui->tDistanceLabel->setStyleSheet(tr("QLabel {background-color: #b5922d}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->tHazardLabel->setStyleSheet(tr("QLabel {background-color: #b5922d}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->tCorrectPositioningLabel->setStyleSheet(tr("QLabel {background-color: #b5922d}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->tRefractionLabel->setStyleSheet(tr("QLabel {background-color: #b5922d}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->tDNRO_Label->setStyleSheet(tr("QLabel {background-color: #b5922d}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+    }
+    else
+    {
+        ui->tDistanceLabel->setStyleSheet(tr("QLabel {background-color: #00c800}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->tHazardLabel->setStyleSheet(tr("QLabel {background-color: #00c800}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->tCorrectPositioningLabel->setStyleSheet(tr("QLabel {background-color: #00c800}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->tRefractionLabel->setStyleSheet(tr("QLabel {background-color: #00c800}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->tDNRO_Label->setStyleSheet(tr("QLabel {background-color: #00c800}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));    }
 }

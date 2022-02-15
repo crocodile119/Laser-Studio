@@ -17,6 +17,7 @@ public:
     ~ScrollBarControl();
     void setValue(const int&);
     int value()const;
+    void setDarkColor(bool dark);
     void setTitle(const QString);
     QString getTitle()const;
     void setEnabled(bool);

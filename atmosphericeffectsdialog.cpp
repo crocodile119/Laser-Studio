@@ -3,14 +3,15 @@
 
 #include "atmosphericeffectsdialog.h"
 
-AtmosphericEffectsDialog::AtmosphericEffectsDialog(QWidget *parent, CentralWidget *_laserWindow, double _wavelength)
-    : QDialog(parent), ui(new Ui::AtmosphericEffectsDialog), wavelength(_wavelength), laserWindow(_laserWindow)
+AtmosphericEffectsDialog::AtmosphericEffectsDialog(QWidget *parent, CentralWidget *_laserWindow, double _wavelength, bool _dark)
+    : QDialog(parent), ui(new Ui::AtmosphericEffectsDialog), wavelength(_wavelength), laserWindow(_laserWindow), dark(_dark)
 {
     ui->setupUi(this);
 
     /*V è la distanza di visibilità espressa in metri
     la slider riporta la distanza di visibilità in km V/1000 */
 
+    setStyleSheet();
     A=laserWindow->getA_Coefficient();
     V=laserWindow->getMeteoRange();
     atmAttCoeff=3.91/V*std::pow(550/wavelength, A);
@@ -51,4 +52,50 @@ double AtmosphericEffectsDialog::getA()const
 double AtmosphericEffectsDialog::getV()const
 {
     return V;
+}
+
+void AtmosphericEffectsDialog::setStyleSheet()
+{
+    if(dark)
+    {
+        ui->label_4->setStyleSheet(tr("QLabel {background-color: #b5922d}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->label_2->setStyleSheet(tr("QLabel {background-color: #b5922d}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->label_5->setStyleSheet(tr("QLabel {background-color: #b5922d}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+    }
+    else
+    {
+        ui->label_4->setStyleSheet(tr("QLabel {background-color: #00c800}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->label_2->setStyleSheet(tr("QLabel {background-color: #00c800}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->label_5->setStyleSheet(tr("QLabel {background-color: #00c800}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+    }
 }

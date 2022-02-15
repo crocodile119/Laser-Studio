@@ -116,6 +116,8 @@ public:
     MyChartView* getChartView()const;
     MyChartView* getdChartView()const;
 
+    void setDarkChartTheme(bool);
+
     void computeOpticalDensity();
     void dComputeOpticalDensity();
     double getOpticalDensity();

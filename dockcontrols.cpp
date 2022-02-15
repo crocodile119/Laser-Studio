@@ -138,6 +138,7 @@ void DockControls::setUpGoggle()
 
     chartView = new MyChartView(0, dataVector, laserOutput);
     chartView->setRenderHint(QPainter::Antialiasing);
+
     dockGoggle->ui->gridLayout_5->addWidget(chartView, 1, 0, Qt::AlignCenter);
 
     /************************************************************************************************
@@ -180,7 +181,6 @@ void DockControls::setUpGoggle()
     dChartView = new MyChartView(0, frequencyDataVector, dLaserOutput);
     dChartView->setRenderHint(QPainter::Antialiasing);
     dockGoggle->ui->dGridLayout->addWidget(dChartView, 1, 0, Qt::AlignCenter);
-
     //inizializzo il laser per il calcolo dei livelli di emissione e la NOHD occhi
 
 }
@@ -5030,4 +5030,10 @@ void DockControls::verifyFeasibleDutyCycle()
 
     emit noFeasibleDutyCycle();
     emit statusBarSignal(whatThis);
+}
+
+void DockControls::setDarkChartTheme(bool dark)
+{       
+    chartView->setViewTheme(dark);
+    dChartView->setViewTheme(dark);
 }

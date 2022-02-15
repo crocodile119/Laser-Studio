@@ -37,6 +37,7 @@ public:
     void setAxisY(double);
     void setKindOfValue(const std::string);
     std::string getKindOfValue()const;
+    void setViewTheme(bool);
 
 private:
 

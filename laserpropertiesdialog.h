@@ -13,9 +13,10 @@ class LaserPropertiesDialog : public QDialog, private Ui::LaserPropertiesDialog
     Q_OBJECT
 
 public:
-    LaserPropertiesDialog(LaserPoint *_laserpoint, QWidget *parent = 0);
+    LaserPropertiesDialog(LaserPoint *_laserpoint, bool _dark, QWidget *parent = 0);
     ~LaserPropertiesDialog();
     Ui::LaserPropertiesDialog *ui;
+    void setStyleSheet();
 
 private slots:
     void on_filterCheckBox_stateChanged(int arg1);
@@ -24,6 +25,7 @@ private slots:
 
 private:
     LaserPoint *laserpoint;
+    bool dark;
 };
 
 #endif

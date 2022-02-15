@@ -20,6 +20,7 @@ SOURCES +=\
     comboboxbands.cpp \
     computeemp.cpp \
     computelea.cpp \
+    darktheme.cpp \
     description.cpp \
     dialcontrol.cpp \
     diffusionhazard.cpp \

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>443</width>
+    <width>772</width>
     <height>550</height>
    </rect>
   </property>
@@ -58,7 +58,7 @@
        <string notr="true"/>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_1">
        <attribute name="title">
@@ -81,14 +81,14 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>320</width>
-             <height>460</height>
+             <width>622</width>
+             <height>444</height>
             </rect>
            </property>
-           <layout class="QGridLayout" name="gridLayout_6">
-            <item row="0" column="1">
-             <layout class="QGridLayout" name="gridLayout_5"/>
-            </item>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <layout class="QFormLayout" name="formLayout">
             <item row="0" column="0">
              <widget class="QTableView" name="tableView">
               <property name="sizePolicy">
@@ -152,7 +152,7 @@
               </attribute>
              </widget>
             </item>
-            <item row="2" column="0" colspan="2">
+            <item row="1" column="0" colspan="2">
              <widget class="QScrollArea" name="scrollArea">
               <property name="frameShape">
                <enum>QFrame::Panel</enum>
@@ -168,7 +168,7 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>610</width>
+                 <width>678</width>
                  <height>117</height>
                 </rect>
                </property>
@@ -535,6 +535,9 @@ QLabel {margin-right: 10px}</string>
               </widget>
              </widget>
             </item>
+            <item row="0" column="1">
+             <layout class="QGridLayout" name="gridLayout_5"/>
+            </item>
            </layout>
           </widget>
          </widget>
@@ -562,8 +565,8 @@ QLabel {margin-right: 10px}</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>320</width>
-             <height>460</height>
+             <width>622</width>
+             <height>444</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_4">
@@ -651,10 +654,10 @@ QLabel {margin-right: 10px}</string>
               <widget class="QWidget" name="scrollAreaWidgetContents_2">
                <property name="geometry">
                 <rect>
-                 <x>-14</x>
+                 <x>0</x>
                  <y>0</y>
-                 <width>314</width>
-                 <height>117</height>
+                 <width>598</width>
+                 <height>113</height>
                 </rect>
                </property>
                <layout class="QGridLayout" name="gridLayout_2">

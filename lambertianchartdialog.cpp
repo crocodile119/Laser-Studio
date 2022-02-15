@@ -12,6 +12,7 @@ LambertianChartDialog::LambertianChartDialog(Reflector *reflector, bool _thema, 
 
     this->reflector=reflector;
     thema=_thema;
+    setStyleSheet();
     distance=reflector->getReflectorDistance();
     dnro=reflector->getOpticalDiameter();
     divergence=reflector->getDivergence();
@@ -229,6 +230,137 @@ void LambertianChartDialog::setWidgetsVisible(bool visible)
     ui->newRapLabel->setVisible(visible);
     ui->tNewRapLabel->setVisible(visible);
 }
+
+void LambertianChartDialog::setStyleSheet()
+{
+    if(thema)
+    {
+        ui->tKindLabel->setStyleSheet(tr("QLabel {background-color: #b5922d}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->tSurfaceLabel->setStyleSheet(tr("QLabel {background-color: #b5922d}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->tSpotDiameterLabel->setStyleSheet(tr("QLabel {background-color: #b5922d}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->tConstPosLabel->setStyleSheet(tr("QLabel {background-color: #b5922d}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->tOpticalDistanceLabel->setStyleSheet(tr("QLabel {background-color: #b5922d}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->tDNRO_Label->setStyleSheet(tr("QLabel {background-color: #b5922d}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->tAlphaLabel->setStyleSheet(tr("QLabel {background-color: #b5922d}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->tIndicatorLabel->setStyleSheet(tr("QLabel {background-color: #b5922d}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->tCE_Label->setStyleSheet(tr("QLabel {background-color: #b5922d}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->tNewRapLabel->setStyleSheet(tr("QLabel {background-color: #b5922d}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+    }
+    else
+    {
+        ui->tKindLabel->setStyleSheet(tr("QLabel {background-color: #00c800}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->tSurfaceLabel->setStyleSheet(tr("QLabel {background-color: #00c800}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->tSpotDiameterLabel->setStyleSheet(tr("QLabel {background-color: #00c800}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->tConstPosLabel->setStyleSheet(tr("QLabel {background-color: #00c800}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->tOpticalDistanceLabel->setStyleSheet(tr("QLabel {background-color: #00c800}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->tDNRO_Label->setStyleSheet(tr("QLabel {background-color: #00c800}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->tAlphaLabel->setStyleSheet(tr("QLabel {background-color: #00c800}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->tIndicatorLabel->setStyleSheet(tr("QLabel {background-color: #00c800}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->tCE_Label->setStyleSheet(tr("QLabel {background-color: #00c800}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+        ui->tNewRapLabel->setStyleSheet(tr("QLabel {background-color: #00c800}"
+                "QLabel {color: #fafafa}"
+                "QLabel {border: 0px solid grey}"
+                "QLabel {border-radius: 8px}"
+                "QLabel {padding: 3px}"
+                "QLabel {margin-left: 10px}"));
+    }
+}
+
 
 void LambertianChartDialog::on_pushButton_clicked()
 {

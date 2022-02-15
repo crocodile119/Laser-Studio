@@ -13,10 +13,11 @@ class ReflectorPropertiesDialog : public QDialog, private Ui::ReflectorPropertie
     Q_OBJECT
 
 public:
-    ReflectorPropertiesDialog(Reflector *reflector, QWidget *parent = 0);
+    ReflectorPropertiesDialog(Reflector *reflector, bool _dark, QWidget *parent = 0);
     ~ReflectorPropertiesDialog();
     Ui::ReflectorPropertiesDialog *ui;
     static double MAX_DEFLECTION;
+    void setStyleSheet();
 
 private slots:
     void on_positioningSlider_valueChanged(int value);
@@ -28,6 +29,7 @@ private:
     Reflector *reflector;
     bool lambertian;
     double semiLaserAperture;
+    bool dark;
 };
 
 #endif

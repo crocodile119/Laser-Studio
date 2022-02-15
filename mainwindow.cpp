@@ -486,7 +486,7 @@ void MainWindow::selectItemFromTree(QModelIndex index)
             laserWindow->graphicsView->scene->clearSelection();
             myLabRoom->setSelected(true);
 
-            LabEditDialog dialog(myLabRoom, this);
+            LabEditDialog dialog(myLabRoom, theme, this);
             dialog.exec();
         }
     }
@@ -495,7 +495,7 @@ void MainWindow::selectItemFromTree(QModelIndex index)
         laserWindow->graphicsView->scene->clearSelection();
         laserpoint->setSelected(true);
 
-        LaserPropertiesDialog dialog(laserpoint, this);
+        LaserPropertiesDialog dialog(laserpoint, theme, this);
         dialog.exec();
 
         if(dialog.result()==QDialog::Accepted)
@@ -509,7 +509,7 @@ void MainWindow::selectItemFromTree(QModelIndex index)
             laserWindow->graphicsView->scene->clearSelection();
             reflector->setSelected(true);
 
-            ReflectorPropertiesDialog dialog(reflector, this);
+            ReflectorPropertiesDialog dialog(reflector, theme, this);
             dialog.exec();
         }
     }
@@ -521,7 +521,7 @@ void MainWindow::selectItemFromTree(QModelIndex index)
             laserWindow->graphicsView->scene->clearSelection();
             binocular->setSelected(true);
 
-            BinocularPropertiesDialog dialog(binocular, laserWindow->myDockControls->getWavelength(), this);
+            BinocularPropertiesDialog dialog(binocular, laserWindow->myDockControls->getWavelength(), theme, this);
             dialog.exec();
 
             if(dialog.result()==QDialog::Accepted)
@@ -556,7 +556,7 @@ void MainWindow::selectItemFromTree(QModelIndex index)
             laserWindow->graphicsView->scene->clearSelection();
             beamInspector->setSelected(true);
 
-            BeamInspectorDialog dialog(beamInspector, this);
+            BeamInspectorDialog dialog(beamInspector, theme, this);
             QPointF position=beamInspector->pos();
             dialog.exec();
 
@@ -574,7 +574,7 @@ void MainWindow::selectItemFromTree(QModelIndex index)
 void MainWindow::setCondMeteo()
 {
     double wavelength=laserWindow->myDockControls->getWavelength();
-    AtmosphericEffectsDialog dialog(this, laserWindow, wavelength);
+    AtmosphericEffectsDialog dialog(this, laserWindow, wavelength, theme);
     dialog.exec();
     if(dialog.result()==QDialog::Accepted)       
     {
@@ -672,7 +672,7 @@ void MainWindow::properties()
 
     if (laserpoint)
     {
-        LaserPropertiesDialog dialog(laserpoint, this);
+        LaserPropertiesDialog dialog(laserpoint, theme, this);
         dialog.exec();
         if(dialog.result()==QDialog::Accepted)
         {
@@ -692,7 +692,7 @@ void MainWindow::properties()
     }
     else if(reflector)
     {
-        ReflectorPropertiesDialog dialog(reflector, this);
+        ReflectorPropertiesDialog dialog(reflector, theme, this);
         dialog.exec();
         if(dialog.result()==QDialog::Accepted)
         {
@@ -709,7 +709,7 @@ void MainWindow::properties()
     }
     else if(binocular)
     {
-        BinocularPropertiesDialog dialog(binocular, laserWindow->myDockControls->getWavelength(), this);
+        BinocularPropertiesDialog dialog(binocular, laserWindow->myDockControls->getWavelength(), theme, this);
         dialog.exec();
         if(dialog.result()==QDialog::Accepted)
         {
@@ -750,7 +750,7 @@ void MainWindow::properties()
     }
     else if(myLabRoom)
     {
-        LabEditDialog dialog(myLabRoom, this);
+        LabEditDialog dialog(myLabRoom, theme, this);
         dialog.exec();
 
         if(dialog.result()==QDialog::Accepted)
@@ -770,7 +770,7 @@ void MainWindow::properties()
     }
     else if(footprint)
     {
-        FootprintDialog dialog(footprint, this);
+        FootprintDialog dialog(footprint, theme, this);
         dialog.exec();
 
         if(dialog.result()==QDialog::Accepted)
@@ -791,7 +791,7 @@ void MainWindow::properties()
     {
         QPointF myPosition=beamInspector->pos(); 
         QString description=beamInspector->getDescription();
-        beamInspectorDialog = new BeamInspectorDialog(beamInspector, this);
+        beamInspectorDialog = new BeamInspectorDialog(beamInspector, theme, this);
         beamInspectorDialog->exec();
 
         if(beamInspectorDialog->result()==QDialog::Rejected)
@@ -811,7 +811,7 @@ void MainWindow::properties()
 
 void MainWindow::installationDescription()
 {
-    Description dialog(this);
+    Description dialog(theme, this);
 
     dialog.ui->FA_ComboBox->setCurrentText(laserWindow->getForce());
     dialog.ui->customerLineEdit->setText(laserWindow->getCustomer());
@@ -4060,7 +4060,7 @@ void MainWindow::enableControlsAndItems(bool enabled)
 
 void MainWindow::goToPoint()
 {
-    GoToPointDialog dialog(this, laserpoint->pos());
+    GoToPointDialog dialog(this, laserpoint->pos(), theme);
     QPointF center;
 
     if(dialog.exec()==1)
@@ -4593,41 +4593,6 @@ void MainWindow::changeGuiTheme()
 {
     theme=darkThemeAct->isChecked();
     setGuiDarkTheme();
-}
-
-void MainWindow::setGuiDarkTheme()
-{
-    if(theme)
-    {
-        setStyleSheet(tr("QWidget{background-color:#555555;}"
-                         "QWidget{color:#f0f0f0;}"
-                         "QMenu::item:selected{background-color:#00c800;}"
-                         "QMenu::item:selected{color:#f0f0f0;}"
-                         "QComboBox::item:selected{background-color:#00c800;}"
-                         "QComboBox::item:selected{color:#f0f0f0;}"
-                         "QMenu::item:checked{background-color:#666666;}"
-                         "QMenuBar::item:selected{color:#f0f0f0;}"
-                         "QMenuBar::item:selected{background-color:#00c800;}"
-                         "QToolBar{background-color:#555555;}"
-                         "QToolBar QToolButton:checked{background-color:#666666;}"
-                         "QTextEdit{background-color:#f0f0f0;}"
-                         "QGridLayout{color:#f0f0f0;}"
-                         "QGraphicsView{background-color:#f0f0f0;}"));
-
-        laserWindow->setStyleSheet(tr("QWidget {background-color: #555555;}\n"
-                         "QLabel {background: none;}\n"
-                         "QMenu::item:selected{background-color:#00c800;}"
-                         "QMenu::item:selected{color:#f0f0f0;}"
-                         "QGraphicsView {background-color:#f0f0f0;}"
-                         ));
-        laserWindow->myDockGoggle->setStyleSheet(tr("QLabel {color: #fafafa}"));
-    }
-    else
-    {
-        setStyleSheet(tr(""));
-        laserWindow->setStyleSheet(tr(""));
-        laserWindow->myDockGoggle->setStyleSheet(tr(""));
-    }
 }
 
 void MainWindow::setThemeOnStart()

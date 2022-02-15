@@ -86,6 +86,28 @@ int ScrollBarControl::value()const
     return scrollBarNumber;
 }
 
+void ScrollBarControl::setDarkColor(bool dark)
+{
+    if(dark)
+    {
+        titleLabel->setStyleSheet(tr("QLabel {background-color: #b5922d;"
+            "color: #fafafa;"
+            "border: 0px solid grey;"
+            "border-radius: 8px;"
+            "padding: 3px;"
+            "margin-right: 10px;}"));
+    }
+    else
+    {
+        titleLabel->setStyleSheet(tr("QLabel {background-color: #00c800;"
+            "color: #fafafa;"
+            "border: 0px solid grey;"
+            "border-radius: 8px;"
+            "padding: 3px;"
+            "margin-right: 10px;}"));
+    }
+}
+
 void ScrollBarControl::setTitle(const QString _title)
 {
     titleLabel->setText(_title);

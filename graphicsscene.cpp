@@ -27,6 +27,7 @@ void GraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             BeamInspector* beamInspector= qgraphicsitem_cast<BeamInspector*>(movingItem);
             FootprintObject *footprint= qgraphicsitem_cast<FootprintObject*>(movingItem);
             LabRoom *myLabRoom= qgraphicsitem_cast<LabRoom*>(movingItem);
+            SafetySignItem *safetySign= qgraphicsitem_cast<SafetySignItem*>(movingItem);
 
             if(laserpoint)
             {
@@ -82,6 +83,14 @@ void GraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
                 myLabRoom->setSelected(true);
                 emit labroomSelected();
             }
+            else if(safetySign)
+            {
+                qDebug()<<"Ho selezionato un cartello: ";
+                clearSelection();
+                safetySign->setSelected(true);
+                oldPos=safetySign->pos();
+                emit graphicItemSelected(movingItem);
+            }
         }
         else
             emit deselected();
@@ -103,6 +112,7 @@ void GraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
         Binocular *binocular= qgraphicsitem_cast<Binocular*>(movingItem);
         BeamInspector *beamInspector= qgraphicsitem_cast<BeamInspector*>(movingItem);
         FootprintObject *footprint= qgraphicsitem_cast<FootprintObject*>(movingItem);
+        SafetySignItem *safetySign= qgraphicsitem_cast<SafetySignItem*>(movingItem);
 
         if(footprint)
         {
@@ -144,6 +154,14 @@ void GraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
             {
                 emit graphicItemMoved(movingItem, oldPos);
                 qDebug()<<"Segnaposto di ispezione spostato: ";
+            }
+        }
+        else if(safetySign)
+        {
+            if(oldPos!= movingItem->pos())
+            {
+                emit graphicItemMoved(movingItem, oldPos);
+                qDebug()<<"Cartello spostato: ";
             }
         }
         movingItem=nullptr;

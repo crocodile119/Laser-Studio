@@ -83,7 +83,7 @@ string getMeanPowerFormulaSort();
 string getMeanPowerFormulaEMP();
 void computePulseNumber();
 double getEMP_MP();
-void setPRF(const int);
+void setPRF(const double &);
 double getPRF() const;
 double getMeanPower() const;
 double getMeanIrradiance() const;

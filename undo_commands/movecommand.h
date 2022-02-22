@@ -9,6 +9,7 @@
 #include "../laserpoint.h"
 #include "../labroom.h"
 #include "../footprintobject.h"
+#include "../safetysignitem.h"
 
 class MoveCommand : public QUndoCommand
 {

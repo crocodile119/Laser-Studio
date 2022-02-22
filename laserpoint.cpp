@@ -196,19 +196,50 @@ void LaserPoint::paint(QPainter *painter,
         beamPen.setWidth(2);
         beamPen.setColor(Qt::darkGray);
     }
+
     beamPen.setCosmetic(true);
 
     painter->setPen(beamPen);
     painter->setBrush(myBackgroundColor);
-    double firstPie=(360-aperture/2.0-pillow)*16;
-    double secondPie=(aperture+pillow)*16;
+    double firstPie=(360-aperture/2-pillow);
+    double secondPie=(aperture+pillow);
 
     if(opticalDiameter>skinDiameter)
     {
-        painter->setBrush(QColor(245,250,250, 127));
-        painter->drawPie(selectionOpticalRect(), firstPie, secondPie);
-        painter->setBrush(QColor(240,240,240, 127));
-        painter->drawPie(selectionSkinRect(), firstPie, secondPie);
+        QPainterPath myOpticalPie;
+        QPointF laserpointOrigin=QPointF(0.0,0.0);
+
+        myOpticalPie.moveTo(laserpointOrigin);
+
+        myOpticalPie.arcTo(selectionOpticalRect(), firstPie, secondPie);
+        myOpticalPie.lineTo(laserpointOrigin);
+        QPainterPath room;
+
+        QPainterPath mySkinPie;
+        mySkinPie.moveTo(laserpointOrigin);
+        mySkinPie.arcTo(selectionSkinRect(), firstPie, secondPie);
+        mySkinPie.lineTo(laserpointOrigin);
+
+        if(roomLimits!=QRectF())
+        {
+            room.addRect(roomLimits);
+            myOpticalPie=room.intersected(myOpticalPie);
+            mySkinPie=room.intersected(mySkinPie);
+            if(roomLimits.contains(QPointF(0,0)))
+            {
+                painter->setBrush(QColor(245,250,250, 127));
+                painter->drawPath(myOpticalPie);
+                painter->setBrush(QColor(240,240,240, 127));
+                painter->drawPath(mySkinPie);
+            }
+        }
+        else
+        {
+            painter->setBrush(QColor(245,250,250, 127));
+            painter->drawPath(myOpticalPie);
+            painter->setBrush(QColor(240,240,240, 127));
+            painter->drawPath(mySkinPie);
+        }
     }
     else
     {
@@ -218,8 +249,10 @@ void LaserPoint::paint(QPainter *painter,
         painter->drawPie(selectionSkinRect(), firstPie, secondPie);
     }
 
+
     painter->setPen(Qt::transparent);
     painter->setBrush(QColor(80, 255, 80, 200));
+
     painter->drawPath(laserShadowZone);
     painter->drawPath(enhacedShadowZone);
     //painter->drawPath(enhacedPath);
@@ -253,7 +286,6 @@ void LaserPoint::paint(QPainter *painter,
 
     painter->setTransform(myTransform);
     QRectF boundingRect=labelRect();
-
     setTextLabel();
 
     QPen textPen(myTextColor);
@@ -263,9 +295,8 @@ void LaserPoint::paint(QPainter *painter,
     painter->resetTransform();
     painter->restore();
     painter->setTransform(transform);
-
     setStringPosition();
-    update();
+        update();
 }
 
 QVariant LaserPoint::itemChange(GraphicsItemChange change,
@@ -395,6 +426,11 @@ void LaserPoint::setTextLabel()
                                     .arg(xString)
                                     .arg(yString);
     update();
+}
+
+void LaserPoint::setRoomLimits(const QRectF &_roomLimits)
+{
+    roomLimits=_roomLimits;
 }
 
 QString LaserPoint::getStringPosition()const

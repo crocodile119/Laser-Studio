@@ -37,6 +37,7 @@
 #include "gridlines.h"
 #include "laserreport.h"
 #include "treemodel.h"
+#include "safetysignitem.h"
 
 #if defined(QT_PRINTSUPPORT_LIB)
 #include <QtPrintSupport/qtprintsupportglobal.h>
@@ -47,6 +48,7 @@ class ReflectorLink;
 class LaserPoint;
 class Reflector;
 class Binocular;
+class SafetySignItem;
 
 class MainWindow : public QMainWindow
 {
@@ -106,6 +108,9 @@ private slots:
     void dragMode();
     void addRoom();
     void createRoom();
+
+    void addSafetySign(SafetySignItem::SafetyClass mySafetySign);
+
     void selectionMode();
     void statusBarSignalFunction(const QString &);
     double attenuatedDistance(const double&);
@@ -276,7 +281,6 @@ private:
     QLabel *statusLabel;
     CentralWidget *laserWindow;
     QRect previewRect;
-    QRect previewImage;
     QComboBox *sceneScaleCombo;
     QPainterPath shadowPathZone;
     QPainterPath ehnacedPathZone;
@@ -308,6 +312,7 @@ private:
     QMenu *environmentMenu;
     QMenu *placeMenu;
     QMenu *goggleMenu;
+    QMenu *signsMenu;
 
     QToolBar *fileToolBar;
     QToolBar *viewToolBar;
@@ -384,6 +389,9 @@ private:
 
     QAction *addBinocularAct;
     QAction *addLabAct;
+    QAction *addLaserSignAct;
+    QAction *addForbiddenSignAct;
+    QAction *addProtectionSignAct;
     QAction *addPinInspectorAction;
     QAction *addWetReflectorAction;
     QAction *addGlassReflectorAction;
@@ -408,6 +416,7 @@ private:
 
     QUndoCommand *addFootprintCommand;
     QUndoCommand *addReflectorCommand;
+    QUndoCommand *addSafetySignCommand;
     QUndoCommand *addBinocularCommand;
     QUndoCommand *addBeamInspectorCommand;
     QUndoCommand *addMeteoCommand;
@@ -415,6 +424,7 @@ private:
     QUndoCommand *deleteReflectorCommand;
     QUndoCommand *deleteBinocularCommand;
     QUndoCommand *deleteBeamInspectorCommand;
+    QUndoCommand *deleteSafetySignCommand;
 
     QGraphicsView *view;
     QList <Reflector *> myReflectors;
@@ -423,6 +433,7 @@ private:
     QList <FootprintObject*> myFootprints;
     QList <LaserPoint*> laserPointList;
     QList <LabRoom*> labroomList;
+    QList <SafetySignItem*> safetySignList;
     QPointF pointPosition;
 
     QModelIndex selectedIndex;

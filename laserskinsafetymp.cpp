@@ -240,7 +240,7 @@ double LaserSkinSafetyMP::getEMP_MP()
     return myMeanPower_SkinLaser.getEMP();
 }
 
-void LaserSkinSafetyMP::setPRF(const int _PRF)
+void LaserSkinSafetyMP::setPRF(const double& _PRF)
 {
 	PRF=_PRF;
 }

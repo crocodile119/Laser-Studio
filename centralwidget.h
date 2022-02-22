@@ -15,6 +15,7 @@
 #include "reflectorlink.h"
 #include "reflector.h"
 #include "labroom.h"
+#include "safetysignitem.h"
 
 class CentralWidget : public QWidget
 {
@@ -68,6 +69,8 @@ public:
     QString get_UASL_Assistant()const;
     QString getLaserDescription()const;
     QString getPlaceDescription()const;
+
+    QRect getPreviewRect()const;
 
     DockControls *myDockControls;
     DockControls *outDockControls;
@@ -125,6 +128,10 @@ public:
     QVector <QPointF> getFootprintPosVect();
     QVector <QRectF> getFootprintRectVect();
     QVector <QString> getFootprintDescriptionVect();
+
+    //parametri cartelli
+    QVector <QPointF> getSafetySignPosVect();
+    QVector <SafetySignItem::SafetyClass> getSafetySignKindVect();
 
     //Getters per gli ambienti
     QPointF getLabPosition()const;
@@ -217,9 +224,14 @@ private:
     QVector <QRectF> footprintRectVect;
     QVector <QString> footprintDescriptionVect;
 
+    //parametri cartelli
+    QVector <QPointF> SafetySignPosVect;
+    QVector <SafetySignItem::SafetyClass> SafetySignKindVect;
+
     bool atmEffectsBool;
     bool scintillationBool;   
 
     QDate compilingDate;
+    QRect previewRect;
 };
 #endif // CENTRALWIDGET_H

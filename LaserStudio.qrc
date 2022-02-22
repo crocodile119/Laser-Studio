@@ -66,5 +66,8 @@
         <file>images/prohibitedpix.png</file>
         <file>images/thumbs.png</file>
         <file>images/ok_circle.png</file>
+        <file>images/forbidden_sign.png</file>
+        <file>images/glass_sign.png</file>
+        <file>images/laser_sign.png</file>
     </qresource>
 </RCC>

@@ -134,6 +134,10 @@ bool CentralWidget::writeFile(const QString &fileName)
     QVector<QRectF>footprintRectVect;
     QVector<QString>footprintDescriptionVect;
 
+    //parametri cartelli
+    QVector <QPointF> SafetySignPosVect;
+    QVector <SafetySignItem::SafetyClass> SafetySignKindVect;
+
     QList<QGraphicsItem*>graphicElements=graphicsView->scene->items();
     
     QList<QGraphicsItem*>::iterator myIterator; // iterator
@@ -202,10 +206,16 @@ bool CentralWidget::writeFile(const QString &fileName)
                footprintDescriptionVect.push_back(footprint->getDescription());
                qDebug()<<"myRect quando salva"<<myRect;
            }
-
+           SafetySignItem *safetySign = dynamic_cast<SafetySignItem *>(*myIterator);
+           if (safetySign)
+           {
+               SafetySignPosVect.push_back(safetySign ->pos());
+               SafetySignKindVect.push_back(safetySign->SafetySignKind());
+           }
          ++myIterator;
     }
 
+    QRect previewRect=graphicsView->getSelectionRect();
     out << myLabRoomInserted << scintillationBool << atmEffectsBool << meteoRange << a_coefficient << atmoshericEffectsCoefficient
         << scaleIndex << scale << force << customer << uasl << uaslAssistant << laserDescription << placeDescription << gridState
         << goggleMaterial << myDockControls->ui->powerErgControl->getScientificNumber() << myDockControls->ui->pulseControl->getScientificNumber()
@@ -221,7 +231,7 @@ bool CentralWidget::writeFile(const QString &fileName)
         << ZValue << ReflectorKind << ReflectorPositioningVect << binocularPosVect << binocularOpticalGainVect
         << binocularMagnificationVect << binocularTransmissionVect << binocular_D0Vect << binocularDescriptionVect
         << beamInspectorPosVect <<beamInspectorDescriptionVect << myLabPosition<< myLabRect << roomNumber
-        << footprintPosVect << footprintRectVect << footprintDescriptionVect;
+        << footprintPosVect << footprintRectVect << footprintDescriptionVect << SafetySignPosVect << SafetySignKindVect << previewRect;
 
     QApplication::restoreOverrideCursor();
 
@@ -268,7 +278,6 @@ bool CentralWidget::readFile(const QString &fileName)
     bool isTeChecked;
     bool isGaussianBeamChecked;
     bool isInternalWaistChecked;
-
     QList<QGraphicsItem *> items;
 
     QApplication::setOverrideCursor(Qt::WaitCursor);
@@ -282,7 +291,8 @@ bool CentralWidget::readFile(const QString &fileName)
         >> StringPositionVect >> OpticalDiameterVect >> DivergenceVect >> ReflectorDistanceVect >> ReflectionCoeffVect >> ZValueVect
         >> ReflectorKindVect >> ReflectorPositioningVect >> binocularPosVect >> binocularOpticalGainVect >> binocularMagnificationVect
         >> binocularTransmissionVect >> binocular_D0Vect >> binocularDescriptionVect >> beamInspectorPosVect >> beamInspectorDescriptionVect
-        >> myLabPosition >> myLabRect >> roomNumber >> footprintPosVect >> footprintRectVect >> footprintDescriptionVect;
+        >> myLabPosition >> myLabRect >> roomNumber >> footprintPosVect >> footprintRectVect >> footprintDescriptionVect >> SafetySignPosVect
+        >> SafetySignKindVect >> previewRect;
 
      myDockControls->ui->operationCombo->setCurrentIndex(operationCombo);
      myDockControls->ui->enableTeCheckBox->setChecked(isTeChecked);
@@ -649,6 +659,16 @@ QVector <QString> CentralWidget::getFootprintDescriptionVect()
     return footprintDescriptionVect;
 }
 
+QVector <QPointF> CentralWidget::getSafetySignPosVect()
+{
+    return SafetySignPosVect;
+}
+
+QVector <SafetySignItem::SafetyClass> CentralWidget::getSafetySignKindVect()
+{
+    return SafetySignKindVect;
+}
+
 void CentralWidget::setUndoStack(QUndoStack* _undoStack)
 {
     myDockControls->setUndoStack(_undoStack);
@@ -662,6 +682,11 @@ QDate CentralWidget::getCompilingDate()const
 void CentralWidget::setCompilingDate(const QDate& _compilingDate)
 {
     compilingDate=_compilingDate;
+}
+
+QRect CentralWidget::getPreviewRect()const
+{
+    return previewRect;
 }
 
 CentralWidget::~CentralWidget()

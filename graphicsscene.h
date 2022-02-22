@@ -11,6 +11,7 @@
 #include "beaminspector.h"
 #include "labroom.h"
 #include "footprintobject.h"
+#include "safetysignitem.h"
 
 class GraphicsScene: public QGraphicsScene
 {

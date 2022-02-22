@@ -26,7 +26,7 @@ bool MoveCommand::mergeWith(const QUndoCommand *command)
 void MoveCommand::undo()
 {
     myMovedItem->setPos(myOldPos);
-    myMovedItem->scene()->update();
+    //myMovedItem->scene()->update();
     setText(QObject::tr("Sposto %1")
         .arg(createCommandString(myMovedItem, newPos)));
 
@@ -47,6 +47,7 @@ QString createCommandString(QGraphicsItem *movingItem, const QPointF &pos)
     LaserPoint *laserpoint=qgraphicsitem_cast<LaserPoint*>(movingItem);
     LabRoom *myLabRoom=qgraphicsitem_cast<LabRoom*>(movingItem);
     FootprintObject *footprint=qgraphicsitem_cast<FootprintObject*>(movingItem);
+    SafetySignItem *safetySign=qgraphicsitem_cast<SafetySignItem*>(movingItem);
 
     QString targetString;
     QString undoViewString;
@@ -112,6 +113,15 @@ QString createCommandString(QGraphicsItem *movingItem, const QPointF &pos)
 
         undoViewString=QObject::tr("%1 in (%2, %3)")
             .arg(myLabRoomString)
+            .arg(pos.x()).arg(pos.y());
+    }
+    else if(safetySign)
+    {
+        QString mySafetySignString;
+        mySafetySignString="cartello";
+
+        undoViewString=QObject::tr("%1 in (%2, %3)")
+            .arg(mySafetySignString)
             .arg(pos.x()).arg(pos.y());
     }
 

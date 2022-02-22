@@ -74,6 +74,7 @@ public:
                const QStyleOptionGraphicsItem *option, QWidget *widget)override;
 
     QString getStringPosition()const;
+    void setRoomLimits(const QRectF &);
     QString getLaserInstallation();
     static QString getInstallationforIndex(const int&);
     void setDutyCycleCheck(bool _feasibleDutyCycle);
@@ -136,6 +137,7 @@ private:
     bool filterOn;
     double transmittance;
     QUndoStack *undoStack=nullptr;
+    QRectF roomLimits;
 };
 
 #endif

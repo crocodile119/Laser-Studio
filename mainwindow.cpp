@@ -29,6 +29,7 @@
 #include "atmosphericeffectsdialog.h"
 #include "ui_atmosphericeffectsdialog.h"
 #include "undo_commands/addreflectorcommand.h"
+#include "undo_commands/addsafetysigncommand.h"
 #include "undo_commands/addbinocularcommand.h"
 #include "undo_commands/addbeaminspectorcommand.h"
 #include "undo_commands/addmeteocommand.h"
@@ -43,9 +44,9 @@
 #include "undo_commands/deletebinocularcommand.h"
 #include "undo_commands/deletebeaminspectorcommand.h"
 #include "undo_commands/deletefootprintcommand.h"
+#include "undo_commands/deletesafetysigncommand.h"
 #include "undo_commands/movecommand.h"
 #include "htmldelegate.h"
-
 #include <QtWidgets>
 #include <iterator>
 #if defined(QT_PRINTSUPPORT_LIB)
@@ -268,6 +269,7 @@ void MainWindow::newFile()
         myReflectors.clear();
         myBinoculars.clear();
         myBeamInspectors.clear();
+        safetySignList.clear();
         labroomList.clear();
         laserPointList.clear();
         myFootprints.clear();
@@ -1184,6 +1186,30 @@ void MainWindow::createActions()
     environmentGroup->addAction(addLabAct);
     setPolygonAct->setChecked(true);
 
+    signsMenu= environmentMenu ->addMenu(tr("Segnaletica"));
+    signsMenu->setFont(font);
+
+    addForbiddenSignAct = new QAction(tr("Vietato l'accesso"), this);
+    addForbiddenSignAct->setIcon(QIcon(":/images/forbidden_sign.png"));
+    addForbiddenSignAct->setStatusTip(tr("Inserisce nella scena grafica un segnale di divieto di accesso non autorizzato"));
+    SafetySignItem::SafetyClass mySafetyClass=SafetySignItem::SafetyClass::FORBIDDEN_ACCESS;
+    connect(addForbiddenSignAct, &QAction::triggered, this, [mySafetyClass, this]() {addSafetySign(mySafetyClass);});
+    signsMenu->addAction(addForbiddenSignAct);
+
+    addLaserSignAct = new QAction(tr("Pericolo radiazioni laser"), this);
+    addLaserSignAct->setIcon(QIcon(":/images/laser_sign.png"));
+    addLaserSignAct->setStatusTip(tr("Inserisce nella scena grafica un segnale di pericolo laser"));
+    mySafetyClass=SafetySignItem::SafetyClass::LASER_RADIATIONS;
+    connect(addLaserSignAct, &QAction::triggered, this, [mySafetyClass, this]() {addSafetySign(mySafetyClass);});
+    signsMenu->addAction(addLaserSignAct);
+
+    addProtectionSignAct = new QAction(tr("Obbligo occhiali"), this);
+    addProtectionSignAct->setIcon(QIcon(":/images/glass_sign.png"));
+    addProtectionSignAct->setStatusTip(tr("Inserisce nella scena grafica un segnale di obbligo di occhiali protettivi"));
+    mySafetyClass=SafetySignItem::SafetyClass::EYES_PROTECTION;
+    connect(addProtectionSignAct, &QAction::triggered, this, [mySafetyClass, this]() {addSafetySign(mySafetyClass);});
+    signsMenu->addAction(addProtectionSignAct);
+
     goggleMenu= environmentMenu ->addMenu(tr("Protettori ottici"));
     goggleMenu ->setFont(font);
 
@@ -1535,9 +1561,9 @@ void MainWindow::setImagePreview()
 void MainWindow::setImageRect()
 {
     QPainter myPainter;
-    previewImage=laserWindow->graphicsView->getSelectionRect();
-    qDebug() << "Image rect: " << previewImage;
-    QSize mySceneImageSize= QSize(previewImage.width(), previewImage.height());
+    previewRect=laserWindow->graphicsView->getSelectionRect();
+    qDebug() << "Image rect: " << previewRect;
+    QSize mySceneImageSize= QSize(previewRect.width(), previewRect.height());
     QImage mySceneImage = QImage(mySceneImageSize, QImage::Format::Format_RGB32);
     QRect imageRect=mySceneImage.rect();
     mySceneImage.fill(0);
@@ -1545,7 +1571,7 @@ void MainWindow::setImageRect()
 
     myPainter.begin(&mySceneImage);
 
-    laserWindow->graphicsView->render(&myPainter, imageRect, previewImage);
+    laserWindow->graphicsView->render(&myPainter, imageRect, previewRect);
 
     QString imageName = QFileDialog::getSaveFileName(this, tr("Esporta selezione scena"),
                                "../senza nome.png",
@@ -1758,7 +1784,6 @@ void MainWindow::writeSettings()
     settings.setValue("geometry", saveGeometry());
     settings.setValue("windowState", saveState());
     settings.setValue("theme", theme);
-
     /*****************************************************************
      * Application output segnala che non funziona quindi l'ho tolto *
      * settings.setValue("state", saveState());                      *
@@ -2244,6 +2269,17 @@ void MainWindow::updateScale()
             footprint=*myIterator;
             footprint->setItemScale(scale);
             footprint->setTransform(myTransform);
+            ++myIterator;
+        }
+    }
+    if(!safetySignList.empty())
+    {
+    QList<SafetySignItem*>::iterator myIterator; // iterator
+    myIterator = safetySignList.begin();
+        while (myIterator != safetySignList.end() )
+        {
+            SafetySignItem *safetySign=*myIterator;
+            safetySign->setPixScale(scale);
             ++myIterator;
         }
     }
@@ -2756,6 +2792,7 @@ void MainWindow::del()
     Reflector *reflector= qgraphicsitem_cast<Reflector*>(list.first());
     Binocular *binocular= qgraphicsitem_cast<Binocular*>(list.first());
     BeamInspector *beamInspector =qgraphicsitem_cast<BeamInspector*>(list.first());
+    SafetySignItem *safetySign=qgraphicsitem_cast<SafetySignItem*>(list.first());
     FootprintObject *footprint= qgraphicsitem_cast<FootprintObject*>(list.first());
 
     if (reflector)
@@ -2795,6 +2832,13 @@ void MainWindow::del()
    updateGraphicsItem(TreeModel::GraphicsItem::BEAM_INSPECTOR);
    }
 
+    if (safetySign)
+    {
+        QPointF deleletePosition=safetySign->pos();
+        deleteSafetySignCommand = new DeleteSafetySignCommand(safetySign, &scale, laserWindow, &safetySignList, deleletePosition);
+
+        undoStack->push(deleteSafetySignCommand);
+    }
     else if (footprint)
    {
        QPointF deleletePosition=footprint->pos();
@@ -3058,6 +3102,12 @@ void MainWindow::createToolBars()
     environmentToolBar->addAction(addFootprintAct);
     environmentToolBar->addAction(addAtmosphericEffectsAct);
     environmentToolBar->addAction(addScintillationAct);
+
+    sceneToolBar = addToolBar(tr("Segnaletica"));
+    sceneToolBar->setObjectName(tr("Segnaletica"));
+    sceneToolBar->addAction(addForbiddenSignAct);
+    sceneToolBar->addAction(addLaserSignAct);
+    sceneToolBar->addAction(addProtectionSignAct);
 }
 
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
@@ -3677,6 +3727,11 @@ void MainWindow::makeSceneOfSavedItems()
     QRectF myFootprintRect;    
     QString myFootprintDescription;
 
+    //parametri cartelli
+    SafetySignItem::SafetyClass safetySignKind;
+    QVector <QPointF> SafetySignPosVect;
+    QVector <SafetySignItem::SafetyClass> SafetySignKindVect;
+
     /***********************************************************************************
      * Pulisco la scena (cancellando gli oggetti ad uno ad uno con la funzione membro  *
      * clearScene() non essedo possibile con clean()) ed imposto una nuova scena       *
@@ -3693,6 +3748,7 @@ void MainWindow::makeSceneOfSavedItems()
     labroomList.clear();
     laserPointList.clear();
     myFootprints.clear();
+    safetySignList.clear();
 
     //riporto la variabile contatore degli elementi inseriti a 0
     seqNumber=0;
@@ -3764,6 +3820,10 @@ void MainWindow::makeSceneOfSavedItems()
     //Leggo i vettori riguardanti i segnaposti di ispezione
     beamInspectorPosVect=laserWindow->getBeamInspectorPosVect();
     beamInspectorDescriptionVect=laserWindow->getBeamInspectorDescriptionVect();
+
+    //Leggo i vettori riguardanti i cartelli
+    SafetySignPosVect=laserWindow->getSafetySignPosVect();
+    SafetySignKindVect=laserWindow->getSafetySignKindVect();
 
     //Leggo l'oggetto riguardante l'ambiente
     QRectF labRoomRect= laserWindow->getLabRect();
@@ -3917,6 +3977,26 @@ void MainWindow::makeSceneOfSavedItems()
         ++m;
     }
 
+    int NumberOfSafetySigns= SafetySignPosVect.size();
+    int p=0;
+
+    while(p< NumberOfSafetySigns)
+    {
+        myPos=SafetySignPosVect.at(p);
+        safetySignKind= SafetySignKindVect.at(p);
+
+        SafetySignItem* safetySign = new SafetySignItem(safetySignKind);
+
+        safetySign->setPixScale(scale);
+        safetySign->setPos(myPos);
+
+        laserWindow->graphicsView->scene->addItem(safetySign);
+
+        safetySignList.append(safetySign);
+
+        ++p;
+    }
+
     laserWindow->graphicsView->scene->clearSelection();
     laserPointList.clear();
 
@@ -4018,7 +4098,9 @@ void MainWindow::makeSceneOfSavedItems()
     laserWindow->myDockControls->updateGoggle();
     laserWindow->myDockControls->updateAllCompositeControlsFunctions();
     updateForCondMeteo();
+    previewRect=laserWindow->getPreviewRect();
     setWindowModified(false);
+
     updateActions();
 }
 
@@ -4053,6 +4135,15 @@ void MainWindow::enableControlsAndItems(bool enabled)
         binocular=*myBinocularIterator;
         binocular->setEnabled(enabled);
         ++myBinocularIterator;
+    }
+
+    QList<SafetySignItem*>::iterator mySafetySignIterator; // iterator
+    mySafetySignIterator = safetySignList.begin();
+    while (mySafetySignIterator != safetySignList.end() )
+    {
+        SafetySignItem* safetySign=*mySafetySignIterator;
+        safetySign->setEnabled(enabled);
+        ++mySafetySignIterator;
     }
     if(myLabRoom!=nullptr)
         myLabRoom->setFlag(QGraphicsItem::ItemIsSelectable, enabled);
@@ -4285,6 +4376,7 @@ void MainWindow::setPolygon()
         addAtmosphericEffectsAct->setEnabled(true);
         changeMeteoAct->setEnabled(true);
         menuSceneScaleChanged("100%", 4);
+        laserpoint->setRoomLimits(QRectF());
         setWindowModified(true);
         undoStack->clear();
         laserWindow->setUndoStack(undoStack);
@@ -4320,6 +4412,9 @@ void MainWindow::addRoom()
     myLabRoom->setZValue(zValue);
 
     laserpoint->setSelected(true);
+    QPainterPath roomPath;
+    roomPath.addRect(myLabRoom->getRoomRect());
+    laserpoint->setRoomLimits(myLabRoom->mapRectToItem(laserpoint, myLabRoom->getRoomRect()));
     laserWindow->graphicsView->centerOn(myLabRoom->pos()); 
 
     undoStack->clear();
@@ -4418,6 +4513,12 @@ void MainWindow::addFootprint()
 
 void MainWindow::setShadowZone()
 {
+    QRectF roomLimits;
+    roomLimits=myLabRoom->mapRectToItem(laserpoint, myLabRoom->getRoomRect());
+
+    if(environmentState)
+        laserpoint->setRoomLimits(roomLimits);
+
     if(footprint==0)
         return;
 
@@ -4442,8 +4543,31 @@ void MainWindow::setShadowZone()
 
         ++myIterator;
     }
-    laserpoint->setShadowZone(shadowPathZone);
-    laserpoint->setEhnacedShadowZone(ehnacedPathZone);    
+    QPainterPath roomLimitsPath;
+    roomLimitsPath.addRect(roomLimits);
+    if(environmentState)
+    {
+        if(roomLimits.contains(QPointF(0,0)))
+        {
+            shadowPathZone=shadowPathZone.intersected(roomLimitsPath);
+            ehnacedPathZone=ehnacedPathZone.intersected(roomLimitsPath);
+            laserpoint->setShadowZone(shadowPathZone);
+            laserpoint->setEhnacedShadowZone(ehnacedPathZone);
+        }
+        else
+        {
+            shadowPathZone.clear();
+            ehnacedPathZone.clear();
+            laserpoint->setShadowZone(shadowPathZone);
+            laserpoint->setEhnacedShadowZone(ehnacedPathZone);
+        }
+    }
+    else
+    {
+        laserpoint->setShadowZone(shadowPathZone);
+        laserpoint->setEhnacedShadowZone(ehnacedPathZone);
+    }
+
     setDistanceForBinocular();
     setDistanceForReflector();
     setDistanceForInspector();
@@ -5572,6 +5696,13 @@ void MainWindow::updateBinocularItem()
     }
 }
 
+void MainWindow::addSafetySign(SafetySignItem::SafetyClass mySafetySign)
+{
+    addSafetySignCommand = new AddSafetySignCommand (&scale, mySafetySign, laserWindow, &safetySignList,
+                                                     laserpoint->pos());
+    undoStack->push(addSafetySignCommand);
+}
+
 void MainWindow::removeRow()
 {
     const QModelIndex index = treeSelectionModel->currentIndex();
@@ -5579,3 +5710,5 @@ void MainWindow::removeRow()
     QAbstractItemModel *model = laserWindow->myGraphicsItemTree->ui->treeView->model();
     model->removeRow(index.row(), index.parent());
 }
+
+

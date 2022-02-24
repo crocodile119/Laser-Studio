@@ -128,5 +128,3 @@ QRectF DisplayScene::getViewportRect()const
 {
     return viewportRect;
 }
-
-

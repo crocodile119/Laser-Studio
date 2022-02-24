@@ -17,6 +17,7 @@ SafetySignItem::SafetySignItem(SafetyClass _mySignSafety):mySignSafety(_mySignSa
     myOutlineColor = Qt::transparent;
     setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges);
 }
+
 void SafetySignItem::paint(QPainter *painter,
                           const QStyleOptionGraphicsItem  * option,
                           QWidget * /* widget */)
@@ -34,6 +35,7 @@ void SafetySignItem::paint(QPainter *painter,
     painter->drawRect(pixRect);
     QRectF source(0.0, 0.0, safetySign.width(), safetySign.height());
     painter->drawPixmap(pixRect, safetySign, source);
+    update();
 }
 
 QRectF SafetySignItem::outlineRect() const

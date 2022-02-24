@@ -1119,7 +1119,7 @@ void MainWindow::createActions()
     deleteAction = new QAction(tr("&Cancella"), this);
     deleteAction->setIcon(QIcon(":/images/delete.png"));
     deleteAction->setStatusTip(tr("Elimina l'elemento grafico"));
-    deleteAction->setShortcut(tr("Del"));
+    deleteAction->setShortcut(QKeySequence::Delete);
     deleteAction->setObjectName("deleteAction");
 
     connect(deleteAction, SIGNAL(triggered()), this, SLOT(del()));
@@ -2831,8 +2831,7 @@ void MainWindow::del()
    removeRow();
    updateGraphicsItem(TreeModel::GraphicsItem::BEAM_INSPECTOR);
    }
-
-    if (safetySign)
+    else if (safetySign)
     {
         QPointF deleletePosition=safetySign->pos();
         deleteSafetySignCommand = new DeleteSafetySignCommand(safetySign, &scale, laserWindow, &safetySignList, deleletePosition);

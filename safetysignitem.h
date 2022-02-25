@@ -8,10 +8,13 @@
 class SafetySignItem : public QGraphicsItem
 {
 public:
-    //enum { Type = UserType + 11 };
+    enum { Type = UserType + 11 };
     enum class SafetyClass{FORBIDDEN_ACCESS, LASER_RADIATIONS, EYES_PROTECTION};
     SafetySignItem(SafetyClass _mySignSafety);
+    ~SafetySignItem();
     void setPixScale(const double &newScale);
+    int type() const override;
+
     SafetySignItem::SafetyClass SafetySignKind();
 
 protected:

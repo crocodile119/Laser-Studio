@@ -108,6 +108,7 @@ private slots:
     void dragMode();
     void addRoom();
     void createRoom();
+    void setStatusBarState();
 
     void addSafetySign(SafetySignItem::SafetyClass mySafetySign);
 
@@ -226,6 +227,7 @@ private:
     void createActions();
     void createMenus();
     void createToolBars();
+    void createActionsForToolbar();
     void createUndoView();
     void clearScene();
     void setZValue(int z);
@@ -244,6 +246,7 @@ private:
 
     void setMaxEhnacedOpticalDiameter();
     void createStatusBar();
+    void setStatusBar();
     QString strippedName(const QString &fullFileName);
     bool okToContinue();
     void setCurrentFile(const QString &fileName);
@@ -303,6 +306,7 @@ private:
     QMenu *fileMenu;
     QMenu *settingsMenu;
     QMenu *viewMenu;
+    QMenu *toolbarMenu;
     QMenu *reflectorsMenu;
     QMenu *sceneDetailsMenu;
     QMenu *helpMenu;
@@ -318,6 +322,7 @@ private:
     QToolBar *viewToolBar;
     QToolBar *environmentToolBar;
     QToolBar *sceneToolBar;
+    QToolBar *signSafetyToolBar;
 
     QAction *newAct;
     QAction *openAct;
@@ -356,6 +361,7 @@ private:
     QAction *printPreviewAct;
     QAction *zoomInAction;
     QAction *zoomOutAction;
+    QAction *statusBarViewAction;
     QAction *dragAct;
     QAction *aboutAct;
     QAction *aboutQtAct;
@@ -386,6 +392,7 @@ private:
     bool myLabRoomInserted;
     bool state;
     bool environmentState;
+    bool statusBarVisible;
 
     QAction *addBinocularAct;
     QAction *addLabAct;

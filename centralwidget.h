@@ -81,7 +81,6 @@ public:
     DockGoggle *myDockGoggle;
     GraphicsItemTree *myGraphicsItemTree;
     DisplayScene *graphicsView;
-    QLabel *label;
     QGridLayout *gridLayout;
     QWidget *myPanel;
 

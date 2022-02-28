@@ -103,6 +103,7 @@ QTextDocument* LaserReport::buildReportDocument()
     buidInspectorsDocumentPart();
     myCursor.insertHtml(htmlFootprints());
     myCursor.insertHtml(htmlBinoculars());
+    myCursor.insertHtml(htmlSafetySigns());
 
     myCursor.insertHtml(htmlSymbols());
     return textDocument;
@@ -689,6 +690,14 @@ void LaserReport::reflectorsValuation()
 
     if(reflector->getReflectorKind()!=MIRROR_TARGET)
         reflectors.append("DRO<sub>r max</sub> [m]: "+ QString::number(reflector->getMaxElement(),'f',1));
+}
+
+void LaserReport::safetySignsValuation()
+{
+    safetySigns.append("Segnale: "+ safetySign->getSafetySignKind());
+    safetySigns.append("Posizione [x, y]: " + QString("(%1,%2)")
+                          .arg(safetySign->pos().x())
+                          .arg(safetySign->pos().y()));
 }
 
 void LaserReport::binocularsValuation()
@@ -1386,9 +1395,47 @@ QString LaserReport::htmlBinoculars()
     return html;
 }
 
+QString LaserReport::htmlSafetySigns()
+{
+    QString html;
+
+    if(!mySafetySigns.empty())
+    {
+        QList<SafetySignItem*>::iterator myIterator; // iterator
+        myIterator = mySafetySigns.begin();
+        int i =1;
+
+        html +=
+        "<table width="+correction+">\n"
+        "<tr><th colspan=\"2\">Segnaletica di sicurezza installata</th></tr>\n";
+
+        while(myIterator != mySafetySigns.end())
+        {
+            safetySign=*myIterator;
+            safetySigns.clear();
+            safetySignsValuation();
+
+            html +=
+            "<tr><td colspan=\"2\"><i>Cartello n.<i> "+ QString::number(i) +"</td></tr>\n";
+            foreach (QString entry, safetySigns) {
+            QStringList fields = entry.split(": ");
+            QString title = fields[0];
+            QString body = fields[1];
+
+            html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b></td>\n"
+                   "<td>" + body + "</td>\n</tr>\n";
+            }
+            ++myIterator;
+          ++i;
+        }
+        html +="\n</table><br>\n";
+    }
+    return html;
+}
+
 QString LaserReport::htmlClassifier()
 {
-    QString html;   
+    QString html;
 
     html +="<br><h2>Valutazione della Classe secondo la procedura semplificata CEI EN 60825-1</h2>\n";
 
@@ -1410,7 +1457,7 @@ QString LaserReport::htmlClassifier()
         QString body = fields[1];
 
         if(body==" ")
-            html +="<tr>\n<td colspan=\"2\"><i>" + title + "</i></td>\n</tr>\n";      
+            html +="<tr>\n<td colspan=\"2\"><i>" + title + "</i></td>\n</tr>\n";
         else
             html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b></td>\n"
                "<td>" + body + "</td>\n</tr>\n";
@@ -1483,6 +1530,11 @@ void LaserReport::setFootprintsList(const QList<FootprintObject*> &_myFootprints
 void LaserReport::setBinocularsList(const QList<Binocular*> &_myBinoculars)
 {
     myBinoculars=_myBinoculars;
+}
+
+void LaserReport::setSafetySignsList(const QList<SafetySignItem*> &_mySafetySigns)
+{
+    mySafetySigns=_mySafetySigns;
 }
 
 void LaserReport::setBeamInspectorsList(const QList<BeamInspector*> &_myBeamInspectors)
@@ -1798,6 +1850,53 @@ QString LaserReport::htmlSymbols()
 "    <td><b>K</sub></b></td><td style=\"text-align: left;\">Guadagno ottico</td>"
 "    </tr>";
 }
+    if(!mySafetySigns.empty())
+    {
+     QImage laser_sign = QImage("./laser_sign.png");
+     QUrl UriSign1=QUrl("mydata://laser_sign.png");
+
+     QImage forbidden_sign = QImage("./forbidden_sign.png");
+     QUrl UriSign2=QUrl("mydata://forbidden_sign.png");
+
+     QImage glass_sign = QImage("./glass_sign.png");
+     QUrl UriSign3=QUrl("mydata://glass_sign.png");
+
+     textDocument->addResource(QTextDocument::ImageResource,
+     UriSign1, QVariant(laser_sign));
+
+     textDocument->addResource(QTextDocument::ImageResource,
+     UriSign2, QVariant(forbidden_sign));
+
+     textDocument->addResource(QTextDocument::ImageResource,
+     UriSign3, QVariant(glass_sign));
+
+     html+=
+            "    <tr>"
+            "    <td  style=\"text-align: left;\" colspan=\"2\" rowspan=\"1\"><i><br>Segnaletica di sicurezza.</i></td>"
+            "    </tr>"
+            "    <tr>"
+            "    <td> <img style= width: 40px; height: 40px;\"\n"
+            "    alt=\"Divieto\" title=\"Divieto\"\n"
+            "    src=\"mydata://forbidden_sign.png\">"
+            "    </td>"
+            "    <td style=\"text-align: left; vertical-align:middle;\">Pericolo radiazione laser></td>"
+            "    </tr>"
+            "    <tr>"
+            "    <td> <img style= width: 40px; height: 36px;\"\n"
+            "    alt=\"Pericolo\" title=\"Pericolo\"\n"
+            "    src=\"mydata://laser_sign.png\">"
+            "    </td>"
+            "    <td style=\"text-align: left; vertical-align:middle;\">Divieto di accesso</td>"
+            "    </tr>"
+            "    <tr>"
+            "    <td> <img style= width: 40px; height: 40px;\"\n"
+            "    alt=\"Obbligo\" title=\"Obbligo\"\n"
+            "    src=\"mydata://glass_sign.png\">"
+            "    </td>"
+            "    <td style=\"text-align: left; vertical-align:middle;\">Obbligo occhiali</td>"
+            "    </tr>";
+    }
+
     html+=
 "    <tr>"
 "    <td  style=\"text-align: left;\" colspan=\"2\" rowspan=\"1\"><i><br>Classificazione semplificata (rif. CEI EN 60825-1 2017).</i></td>"

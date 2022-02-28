@@ -27,6 +27,7 @@ public:
     void binocularsValuation();
     void footprintsValuation();
     void inspectorsValuation();
+    void safetySignsValuation();
 
     QString htmlInstallationDescription();
     QString htmlLaserInstallation();
@@ -45,6 +46,7 @@ public:
     void buidInspectorsDocumentPart();
     QString htmlFootprints();
     QString htmlBinoculars();
+    QString htmlSafetySigns();
     QString htmlClassifier();
     QString htmlMeteo();
     QString htmlSymbols();
@@ -60,6 +62,7 @@ public:
     void setFootprintsList(const QList<FootprintObject *> &);
     void setBinocularsList(const QList<Binocular*> &);
     void setBeamInspectorsList(const QList<BeamInspector*> &);
+    void setSafetySignsList(const QList<SafetySignItem*> &);
     void setReflectorsFilenameList(const QStringList &);
     void setReflectorsGraphImageList(const QList<QImage> &);
     void setInspectorsFilenameList(const QStringList &);
@@ -76,6 +79,7 @@ private:
     Binocular *binocular;
     FootprintObject *footprint;
     BeamInspector *beamInspector;
+    SafetySignItem *safetySign;
     QString correction;
 
     QStringList effects;
@@ -86,6 +90,7 @@ private:
     QStringList binoculars;
     QStringList inspectors;
     QStringList footprints;
+    QStringList safetySigns;
     QStringList laser;
     QStringList skin;
     QStringList classifierResultsOutput;
@@ -102,6 +107,7 @@ private:
     QList<Binocular*> myBinoculars;
     QList<BeamInspector*> myBeamInspectors;
     QList<FootprintObject*> myFootprints;
+    QList<SafetySignItem*> mySafetySigns;
 
     bool indoor;
     typeOfReport myTypeOfReport;

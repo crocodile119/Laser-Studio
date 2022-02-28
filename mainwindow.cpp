@@ -94,6 +94,7 @@ MainWindow::MainWindow()
     createActions();
     createStatusBar();
     createToolBars();
+    createActionsForToolbar();
     updateActions();
 
     setCurrentFile("");
@@ -168,6 +169,7 @@ MainWindow::MainWindow()
     }
 
     readSettings();
+    setStatusBar();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -265,6 +267,7 @@ void MainWindow::newFile()
         clearScene();
         laserWindow->graphicsView->scene->clear();
         laserWindow->setNewScene();
+        laserWindow->graphicsView->viewport()->adjustSize();
 
         myReflectors.clear();
         myBinoculars.clear();
@@ -306,8 +309,8 @@ void MainWindow::newFile()
         updateEnvironmentItem();
         updateGraphicsItemList();
         laserSettingsAction->setChecked(true);
-
         undoStack->clear();
+        setWindowModified(false);
 
         connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(updateActions()));
         connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(laserModified()));
@@ -931,7 +934,7 @@ void MainWindow::createActions()
 
     quitAct = fileMenu->addAction(tr("&Esci"), this, &QWidget::close);
     quitAct->setShortcuts(QKeySequence::Quit);
-    quitAct->setStatusTip(tr("Esce dall-applicativo"));
+    quitAct->setStatusTip(tr("Esce dall'applicativo"));
 
     viewMenu = menuBar()->addMenu(tr("&Visualizza"));
 
@@ -951,25 +954,6 @@ void MainWindow::createActions()
     connect(zoomOutAction, SIGNAL(triggered()), this, SLOT(sceneScaleDown()));
     zoomOutAction->setStatusTip(tr("Diminuisce la vista"));
     zoomMenu->addAction(zoomOutAction);
-
-    zoomMenu->addSeparator();
-
-    QActionGroup *zoomGroup = new QActionGroup(this);
-
-    for (int i = 0; i < nScales; ++i)
-    {
-        QString zoomScale=scales.at(i);
-        zoomActions[i] = new QAction(zoomScale, this);
-        zoomActions[i]  ->setCheckable(true);
-
-        connect(zoomActions[i], &QAction::triggered, this, [zoomScale, i, this]() {menuSceneScaleChanged(zoomScale, i);});
-
-        zoomMenu ->addAction(zoomActions[i]);
-        zoomGroup->addAction(zoomActions[i]);
-
-        if(zoomScale=="100%")
-           zoomActions[i]->setChecked(true);
-    }
 
     displayMenu = viewMenu->addMenu(tr("Display"));
     displayMenu ->setFont(font);
@@ -994,6 +978,34 @@ void MainWindow::createActions()
 
     displayGroup->addAction(dragAct);
     displayGroup->addAction(selectAct);
+
+    toolbarMenu= new QMenu();
+    toolbarMenu= viewMenu ->addMenu(tr("Barre strumenti"));
+
+    statusBarViewAction=new QAction(tr("Barra di stato"), this);
+    statusBarViewAction->setCheckable(true);
+    connect(statusBarViewAction, SIGNAL(triggered()), this, SLOT(setStatusBarState()));
+    statusBarViewAction->setStatusTip(tr("Visualizza barra di stato"));
+    viewMenu->addAction(statusBarViewAction);
+
+    zoomMenu->addSeparator();
+
+    QActionGroup *zoomGroup = new QActionGroup(this);
+
+    for (int i = 0; i < nScales; ++i)
+    {
+        QString zoomScale=scales.at(i);
+        zoomActions[i] = new QAction(zoomScale, this);
+        zoomActions[i]  ->setCheckable(true);
+
+        connect(zoomActions[i], &QAction::triggered, this, [zoomScale, i, this]() {menuSceneScaleChanged(zoomScale, i);});
+
+        zoomMenu ->addAction(zoomActions[i]);
+        zoomGroup->addAction(zoomActions[i]);
+
+        if(zoomScale=="100%")
+           zoomActions[i]->setChecked(true);
+    }
 
     viewMenu->addSeparator();
 
@@ -1061,6 +1073,7 @@ void MainWindow::createActions()
     setTabPosition(Qt::RightDockWidgetArea, QTabWidget::North);
 
     viewMenu->addSeparator();
+
     showGridAction=new QAction(tr("Griglia"), this);
     connect(showGridAction, SIGNAL(triggered()), this, SLOT(backgroundGrid()));  
     showGridAction->setStatusTip(tr("Visualizza la griglia"));
@@ -1292,7 +1305,6 @@ void MainWindow::createActions()
 
     reflectorsMenu->addAction(addLambertianReflectorAction);
 
-
     addMirrorReflectorAction = new QAction(tr("Specchio"), this);
     addMirrorReflectorAction->setIcon(QIcon(":/images/mirror.png"));    
     addMirrorReflectorAction->setStatusTip(tr("Aggiunge uno specchio alla scena"));
@@ -1380,6 +1392,47 @@ void MainWindow::createActions()
 
     aboutQtAct = helpMenu->addAction(tr("Informazioni su &Qt"), qApp, &QApplication::aboutQt);
     aboutQtAct->setStatusTip(tr("Ambiente di sviluppo per applicazioni C++ con licenza GPL"));
+}
+
+void MainWindow::createActionsForToolbar()
+{
+    QFont font;
+    font.setPointSize(8);
+
+    toolbarMenu->setFont(font);
+
+    QAction *fileToolBarViewAction=new QAction(tr("barra strumenti file"), this);
+    fileToolBarViewAction = fileToolBar->toggleViewAction();
+    fileToolBarViewAction->setStatusTip(tr("Visualizza la barra strumenti file"));
+    toolbarMenu->addAction(fileToolBarViewAction);
+
+    QAction *viewToolBarViewAction=new QAction(tr("barra strumenti visualizza"), this);
+    viewToolBarViewAction = viewToolBar->toggleViewAction();
+    viewToolBarViewAction->setStatusTip(tr("Visualizza la barra strumenti visualizza"));
+    toolbarMenu->addAction(viewToolBarViewAction);
+
+    QAction *sceneToolBarViewAction=new QAction(tr("barra strumenti scena"), this);
+    sceneToolBarViewAction = sceneToolBar->toggleViewAction();
+    sceneToolBarViewAction->setStatusTip(tr("Visualizza la barra strumenti scena"));
+    toolbarMenu->addAction(sceneToolBarViewAction);
+
+    QAction *environmentToolBarViewAction=new QAction(tr("barra strumenti ambiente"), this);
+    environmentToolBarViewAction = environmentToolBar->toggleViewAction();
+    environmentToolBarViewAction->setStatusTip(tr("Visualizza la barra strumenti ambiente"));
+    toolbarMenu->addAction(environmentToolBarViewAction);
+
+    QAction *signSafetyToolBarViewAction=new QAction(tr("barra strumenti segnaletica"), this);
+    signSafetyToolBarViewAction = signSafetyToolBar->toggleViewAction();
+    signSafetyToolBarViewAction->setStatusTip(tr("Visualizza la barra strumenti segnaletica di sicurezza"));
+    toolbarMenu->addAction(signSafetyToolBarViewAction);
+}
+
+void MainWindow::setStatusBarState()
+{
+    if(statusBarViewAction->isChecked())
+        statusBar()->show();
+    else
+        statusBar()->hide();
 }
 
 void MainWindow::createUndoView()
@@ -1693,10 +1746,19 @@ void MainWindow::createStatusBar()
     statusLabel = new QLabel("Pronto");
     QFont font;
     font.setPointSize(8);
-    statusLabel->setFont(font);
+    statusBar()->setFont(font);
     statusLabel->setAlignment(Qt::AlignHCenter);
     statusLabel->setMinimumSize(statusLabel->sizeHint());
     statusBar()->addWidget(statusLabel);
+}
+
+void MainWindow::setStatusBar()
+{
+    statusBarViewAction->setChecked(statusBarVisible);
+    if(statusBarVisible)
+        statusBar()->show();
+    else
+        statusBar()->hide();
 }
 
 #ifndef QT_NO_CONTEXTMENU
@@ -1769,7 +1831,7 @@ void MainWindow::readSettings()
      * Application output segnala che non funziona quindi l'ho tolto *
      * restoreState(settings.value("state").toByteArray());          *
      *****************************************************************/
-
+    statusBarVisible=settings.value("statusBar").toBool();
     recentFiles = settings.value("recentFiles").toStringList();
     updateRecentFileActions();
     settings.endGroup();
@@ -1781,6 +1843,7 @@ void MainWindow::writeSettings()
 
     settings.beginGroup("mainWindow");
     settings.setValue("size", size());
+    settings.setValue("statusBar", statusBarViewAction->isChecked());
     settings.setValue("geometry", saveGeometry());
     settings.setValue("windowState", saveState());
     settings.setValue("theme", theme);
@@ -1863,7 +1926,8 @@ void MainWindow::exportReport()
     myLaserReport->setReflectorsList(myReflectors);
     myLaserReport->setFootprintsList(myFootprints);
     myLaserReport->setBeamInspectorsList(myBeamInspectors);
-    myLaserReport->setBinocularsList(myBinoculars);;
+    myLaserReport->setBinocularsList(myBinoculars);
+    myLaserReport->setSafetySignsList(safetySignList);
 
     saveReportImages();
 
@@ -1902,6 +1966,7 @@ void MainWindow::printReport(QPrinter *printer)
         myLaserReport->setFootprintsList(myFootprints);
         myLaserReport->setBeamInspectorsList(myBeamInspectors);
         myLaserReport->setBinocularsList(myBinoculars);
+        myLaserReport->setSafetySignsList(safetySignList);
 
         saveReportImages();
 
@@ -3102,43 +3167,47 @@ void MainWindow::createToolBars()
     environmentToolBar->addAction(addAtmosphericEffectsAct);
     environmentToolBar->addAction(addScintillationAct);
 
-    sceneToolBar = addToolBar(tr("Segnaletica"));
-    sceneToolBar->setObjectName(tr("Segnaletica"));
-    sceneToolBar->addAction(addForbiddenSignAct);
-    sceneToolBar->addAction(addLaserSignAct);
-    sceneToolBar->addAction(addProtectionSignAct);
+    signSafetyToolBar = addToolBar(tr("Segnaletica"));
+    signSafetyToolBar->setObjectName(tr("Segnaletica"));
+    signSafetyToolBar->addAction(addForbiddenSignAct);
+    signSafetyToolBar->addAction(addLaserSignAct);
+    signSafetyToolBar->addAction(addProtectionSignAct);
 }
 
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 {
-    Q_UNUSED(*watched);
-    if (event->type() == QEvent::MouseMove)
+    if(watched==laserWindow->graphicsView->scene)
     {
-        double xCoordinate;
-        double yCoordinate;
-
-        xCoordinate=laserWindow->graphicsView->getMousePosition().x();
-        yCoordinate=laserWindow->graphicsView->getMousePosition().y();
-
-        if(scale>=15)
+        if (event->type() == QEvent::GraphicsSceneMouseMove)
         {
-        QString xCoordinateString=QString::number(xCoordinate, 'f', 2);
-        QString yCoordinateString=QString::number(yCoordinate, 'f', 2);
-        laserWindow->label->setText(QString("Coordinate del punto (%1,%2)")
-                                     .arg(xCoordinateString)
-                                     .arg(yCoordinateString));
+            QGraphicsSceneMouseEvent *mouseSceneEvent;
+            mouseSceneEvent = static_cast<QGraphicsSceneMouseEvent *>(event);
+
+            QString xCoordinateString;
+            QString yCoordinateString;
+
+            if(scale>=15)
+            {
+                xCoordinateString=QString::number(mouseSceneEvent->scenePos().x(), 'f', 2);
+                yCoordinateString=QString::number(mouseSceneEvent->scenePos().y(), 'f', 2);
+            }
+            else
+            {
+                xCoordinateString=QString::number(mouseSceneEvent->scenePos().x(), 'f', 0);
+                yCoordinateString=QString::number(mouseSceneEvent->scenePos().y(), 'f', 0);
+            }
+
+            statusBar()->showMessage(QString("Coordinate del punto (%1,%2)")
+                                         .arg(xCoordinateString)
+                                         .arg(yCoordinateString), 2000);
         }
-        else
-        {
-        QString xCoordinateString=QString::number(xCoordinate, 'f', 0);
-        QString yCoordinateString=QString::number(yCoordinate, 'f', 0);
-        laserWindow->label->setText(QString("Coordinate del punto (%1,%2)")
-                                     .arg(xCoordinateString)
-                                     .arg(yCoordinateString));
-        }
+            return false;
     }
-    return false;
+    else
+        return QMainWindow::eventFilter(watched, event);
 }
+
+
 
 void MainWindow::statusBarSignalFunction(const QString & whatThis)
 {
@@ -4376,10 +4445,10 @@ void MainWindow::setPolygon()
         changeMeteoAct->setEnabled(true);
         menuSceneScaleChanged("100%", 4);
         laserpoint->setRoomLimits(QRectF());
-        setWindowModified(true);
         undoStack->clear();
         laserWindow->setUndoStack(undoStack);
         updateGraphicsItem(TreeModel::GraphicsItem::ENVIRONMENT);
+        setWindowModified(true);
     }
 }
 

@@ -16,6 +16,7 @@ public:
     int type() const override;
 
     SafetySignItem::SafetyClass SafetySignKind();
+    QString getSafetySignKind()const;
 
 protected:
 

@@ -69,5 +69,6 @@
         <file>images/forbidden_sign.png</file>
         <file>images/glass_sign.png</file>
         <file>images/laser_sign.png</file>
+        <file>images/laser_warning_report.png</file>
     </qresource>
 </RCC>

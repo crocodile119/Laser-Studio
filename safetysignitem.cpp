@@ -77,3 +77,16 @@ QPainterPath SafetySignItem::shape() const
     path.addRect(boundingRect());
     return path;
 }
+
+QString SafetySignItem::getSafetySignKind()const
+{
+    QString safetySignKind;
+    if(mySignSafety==SafetyClass::FORBIDDEN_ACCESS)
+        safetySignKind="Divieto di accesso";
+    else if(mySignSafety==SafetyClass::LASER_RADIATIONS)
+        safetySignKind="Pericolo radiazioni laser";
+    else if(mySignSafety==SafetyClass::EYES_PROTECTION)
+        safetySignKind="Obbligo occhiali";
+
+    return safetySignKind;
+}

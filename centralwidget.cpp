@@ -44,14 +44,6 @@ CentralWidget::CentralWidget(QWidget *parent) :
     graphicsView =new DisplayScene(this);
 
     gridLayout->addWidget(graphicsView, 0, 0, 1, 1);
-    label = new QLabel();
-    label->setObjectName(QString::fromUtf8("label"));
-
-    QFont font;
-    font.setPointSize(8);
-    label->setFont(font);
-
-    gridLayout->addWidget(label, 1, 0, 1, 1);
 
     graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
     graphicsView->setRenderHints(QPainter::Antialiasing

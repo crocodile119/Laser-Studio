@@ -7,6 +7,7 @@ DockEffects::DockEffects(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->tDeltaLabel->setText("δ");
+    setObjectName(tr("Parametri"));
 }
 
 DockEffects::~DockEffects()

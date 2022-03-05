@@ -6,6 +6,7 @@ DockLea::DockLea(QWidget *parent) :
     ui(new Ui::DockLea)
 {
     ui->setupUi(this);
+    setObjectName(tr("Classificazione"));
 }
 
 DockLea::~DockLea()

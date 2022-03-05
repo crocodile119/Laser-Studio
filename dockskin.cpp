@@ -6,6 +6,7 @@ DockSkin::DockSkin(QWidget *parent) :
     ui(new Ui::DockSkin)
 {
     ui->setupUi(this);
+    setObjectName(tr("EMP pelle"));
 }
 
 DockSkin::~DockSkin()

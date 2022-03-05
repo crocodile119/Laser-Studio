@@ -6,6 +6,7 @@ DockResults::DockResults(QWidget *parent) :
     ui(new Ui::DockResults)
 {
     ui->setupUi(this);
+    setObjectName(tr("EMP occhi"));
 }
 
 DockResults::~DockResults()

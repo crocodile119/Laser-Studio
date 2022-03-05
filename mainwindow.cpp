@@ -90,6 +90,9 @@ MainWindow::MainWindow()
     footprintsCount=0;
     dragModeState=false;
 
+    setMouseTracking(true);
+    qApp->installEventFilter(this);
+
     createUndoView();
     createActions();
     createStatusBar();
@@ -98,9 +101,6 @@ MainWindow::MainWindow()
     updateActions();
 
     setCurrentFile("");
-
-    setMouseTracking(true);
-    qApp->installEventFilter(this);
 
     setLaserPoint();
     createRoom();
@@ -311,6 +311,7 @@ void MainWindow::newFile()
         laserSettingsAction->setChecked(true);
         undoStack->clear();
         setWindowModified(false);
+        statusBar()->showMessage(tr("Creato nuovo progetto"), 2000);
 
         connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(updateActions()));
         connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(laserModified()));
@@ -358,10 +359,10 @@ void MainWindow::setOpenFile()
 {
     makeSceneOfSavedItems();
 
+    statusBar()->showMessage(tr("File caricato"), 2000);
     laserSettingsAction->setChecked(true);
     undoStack->clear();
     laserWindow->setUndoStack(undoStack);
-
 
     connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(updateActions()));
     connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(laserModified()));
@@ -430,37 +431,11 @@ void MainWindow::openRecentFile()
     {
         QAction *action = qobject_cast<QAction *>(sender());
         if (action)
-            loadFile(action->data().toString());
-
-        makeSceneOfSavedItems();
-
-        undoStack->clear();
-        laserSettingsAction->setChecked(true);
-
-        connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(updateActions()));
-        connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(laserModified()));
-        connect(laserWindow->graphicsView->scene, &GraphicsScene::graphicItemSelected, this, &MainWindow::treeSelectionFromGraphics);
-        connect(laserWindow->graphicsView->scene, SIGNAL(deselected()), this, SLOT(listDeselectionFromGraphics()));
-        connect(laserWindow->graphicsView->scene, SIGNAL(footprintRelease()), this, SLOT(shadowZoneForLaser()));
-        connect(laserWindow->graphicsView->scene, SIGNAL(changed(const QList<QRectF> &)),this, SLOT(setViewportRect()));
-        connect(laserWindow->graphicsView->scene, &GraphicsScene::graphicItemMoved, this, &MainWindow::graphicItemMoveToStack);
-
-        connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setUpdatedPosition()));
-        connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setUpdatedPosition()));
-        connect(laserpoint, SIGNAL(xChanged()), this, SLOT(updateLaserItem()));
-        connect(laserpoint, SIGNAL(yChanged()), this, SLOT(updateLaserItem()));
-        connect(laserpoint, SIGNAL(xChanged()), this, SLOT(updateGraphicsItemList()));
-        connect(laserpoint, SIGNAL(yChanged()), this, SLOT(updateGraphicsItemList()));
-        connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setDistanceForReflector()));
-        connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setDistanceForReflector()));
-        connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setDistanceForInspector()));
-        connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setDistanceForInspector()));
-        connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setDistanceForBinocular()));
-        connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setDistanceForBinocular()));
-        connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setDistanceForFootprint()));
-        connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setDistanceForFootprint()));
-        connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setShadowZone()));
-        connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setShadowZone()));
+        {
+            QString actionName=action->data().toString();
+            loadFile(actionName);
+            setOpenFile();
+        }
     }
 }
 
@@ -1743,13 +1718,10 @@ void MainWindow::setupClassifierProspective()
 
 void MainWindow::createStatusBar()
 {
-    statusLabel = new QLabel("Pronto");
     QFont font;
     font.setPointSize(8);
     statusBar()->setFont(font);
-    statusLabel->setAlignment(Qt::AlignHCenter);
-    statusLabel->setMinimumSize(statusLabel->sizeHint());
-    statusBar()->addWidget(statusLabel);
+    statusBar()->addWidget(new QLabel(tr("Pronto")));
 }
 
 void MainWindow::setStatusBar()
@@ -1796,7 +1768,7 @@ bool MainWindow::saveFile(const QString &fileName)
 {
     if (!laserWindow->writeFile(fileName))
     {
-        statusBar()->showMessage(tr("Salvataggio annullato"), 2000);
+        statusBar()->showMessage(tr("Impossibile salvare il file"), 2000);
         return false;
     }
 
@@ -1809,12 +1781,11 @@ bool MainWindow::loadFile(const QString &fileName)
 {
     if (!laserWindow->readFile(fileName))
     {
-        statusBar()->showMessage(tr("Caricamento annullato"), 2000);
+        statusBar()->showMessage(tr("Impossibile leggere il file"), 2000);
         return false;
     }
 
     setCurrentFile(fileName);
-    statusBar()->showMessage(tr("File caricato"), 2000);
     return true;
 }
 
@@ -3176,38 +3147,42 @@ void MainWindow::createToolBars()
 
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 {
-    if(watched==laserWindow->graphicsView->scene)
+    if (event->type() == QEvent::GraphicsSceneMouseMove)
     {
-        if (event->type() == QEvent::GraphicsSceneMouseMove)
+        QGraphicsSceneMouseEvent *mouseSceneEvent;
+        mouseSceneEvent = static_cast<QGraphicsSceneMouseEvent *>(event);
+
+        QString xCoordinateString;
+        QString yCoordinateString;
+
+        if(scale>=15)
         {
-            QGraphicsSceneMouseEvent *mouseSceneEvent;
-            mouseSceneEvent = static_cast<QGraphicsSceneMouseEvent *>(event);
+            xCoordinateString=QString::number(mouseSceneEvent->scenePos().x(), 'f', 2);
+            yCoordinateString=QString::number(mouseSceneEvent->scenePos().y(), 'f', 2);
+        }
+        else
+        {
+            xCoordinateString=QString::number(mouseSceneEvent->scenePos().x(), 'f', 0);
+            yCoordinateString=QString::number(mouseSceneEvent->scenePos().y(), 'f', 0);
+        }
 
-            QString xCoordinateString;
-            QString yCoordinateString;
-
-            if(scale>=15)
-            {
-                xCoordinateString=QString::number(mouseSceneEvent->scenePos().x(), 'f', 2);
-                yCoordinateString=QString::number(mouseSceneEvent->scenePos().y(), 'f', 2);
-            }
-            else
-            {
-                xCoordinateString=QString::number(mouseSceneEvent->scenePos().x(), 'f', 0);
-                yCoordinateString=QString::number(mouseSceneEvent->scenePos().y(), 'f', 0);
-            }
-
-            statusBar()->showMessage(QString("Coordinate del punto (%1,%2)")
+        statusBar()->showMessage(QString("Coordinate del punto (%1,%2)")
                                          .arg(xCoordinateString)
                                          .arg(yCoordinateString), 2000);
-        }
-            return false;
+        return false;
+    }
+    else if (event->type() == QEvent::Enter)
+    {
+         if(watched->inherits("QDockWidget"))
+         {
+             QDockWidget* dockwidget=qobject_cast<QDockWidget*>(watched);
+            statusBar()->showMessage(dockwidget->objectName(), 2000);
+         }
+    return false;
     }
     else
         return QMainWindow::eventFilter(watched, event);
 }
-
-
 
 void MainWindow::statusBarSignalFunction(const QString & whatThis)
 {
@@ -3800,13 +3775,19 @@ void MainWindow::makeSceneOfSavedItems()
     QVector <QPointF> SafetySignPosVect;
     QVector <SafetySignItem::SafetyClass> SafetySignKindVect;
 
-    /***********************************************************************************
-     * Pulisco la scena (cancellando gli oggetti ad uno ad uno con la funzione membro  *
-     * clearScene() non essedo possibile con clean()) ed imposto una nuova scena       *
-     * grafica.                                                                        *
+    /************************************************************************************
+     * Pulisco la scena (cancellando gli oggetti ad uno ad uno con la funzione membro   *
+     * clearScene() non essedo possibile con clean()) ed imposto una nuova scena        *
+     * grafica (l'unica possibilità per riportare l'applicazione allo stato iniziale,   *
+     * cfr QGraphicsScene. Se la scena è impostata su polygon l'oggetto myLabRoom non   *
+     * è eliminato da qDeleteAll(item) dovrà perciò essere eliminato a parte.           *
      ***********************************************************************************/
 
-    clearScene();
+    clearScene();  
+
+    if(!environmentState)
+        delete myLabRoom;
+
     laserWindow->graphicsView->scene->clear();
     laserWindow->setNewScene();
 
@@ -4151,7 +4132,7 @@ void MainWindow::makeSceneOfSavedItems()
     {
         bool isAtmEffects=laserWindow->getAtmEffectsBool();
         bool isScintillation=laserWindow->getScintillationBool();
-
+        createRoom();
         environmentState=false;
         meteoWidgets(true, isAtmEffects, isScintillation);
 
@@ -4163,6 +4144,7 @@ void MainWindow::makeSceneOfSavedItems()
     updateEnvironmentItem();
     updateGraphicsItemList();
 
+    setShadowZone();
     laserWindow->myDockControls->updateGoggle();
     laserWindow->myDockControls->updateAllCompositeControlsFunctions();
     updateForCondMeteo();
@@ -4463,6 +4445,7 @@ void MainWindow::addRoom()
     menuSceneScaleChanged("8000%", 15);
 
     environmentState=true;
+
     laserWindow->graphicsView->scene->addItem(myLabRoom);
     labroomList.append(myLabRoom);
     myLabRoom->setPos(laserpoint->pos().x(), laserpoint->pos().y());
@@ -4582,10 +4565,11 @@ void MainWindow::addFootprint()
 void MainWindow::setShadowZone()
 {
     QRectF roomLimits;
-    roomLimits=myLabRoom->mapRectToItem(laserpoint, myLabRoom->getRoomRect());
-
     if(environmentState)
+    {
+        roomLimits=myLabRoom->mapRectToItem(laserpoint, myLabRoom->getRoomRect());
         laserpoint->setRoomLimits(roomLimits);
+    }
 
     if(footprint==0)
         return;

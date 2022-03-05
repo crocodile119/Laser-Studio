@@ -6,6 +6,7 @@ GraphicsItemTree::GraphicsItemTree(QWidget *parent) :
     ui(new Ui::GraphicsItemTree)
 {
     ui->setupUi(this);
+    setObjectName(tr("Scena"));
 }
 
 GraphicsItemTree::~GraphicsItemTree()

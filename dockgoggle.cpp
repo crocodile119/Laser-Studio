@@ -6,6 +6,7 @@ DockGoggle::DockGoggle(QWidget *parent) :
     ui(new Ui::DockGoggle)
 {
     ui->setupUi(this);
+    setObjectName(tr("Protettori ottici"));
 }
 
 DockGoggle::~DockGoggle()

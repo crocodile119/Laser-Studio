@@ -6,6 +6,7 @@ DockHistory::DockHistory(QWidget *parent) :
     ui(new Ui::DockHistory)
 {
     ui->setupUi(this);
+    setObjectName(tr("Cronologia comandi"));
 }
 
 DockHistory::~DockHistory()

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1485</width>
-    <height>160</height>
+    <height>161</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,8 +18,8 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>405</width>
-    <height>137</height>
+    <width>414</width>
+    <height>161</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -291,8 +291,8 @@ QLabel {margin-right: 10px}</string>
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1188</width>
-         <height>118</height>
+         <width>1156</width>
+         <height>111</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_2">

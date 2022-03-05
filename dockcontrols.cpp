@@ -67,6 +67,8 @@ DockControls::DockControls(QWidget *parent, DockResults *_dockResults, DockEffec
     displayScaleNumber();
     displayLaserOutput();
 
+    setObjectName(tr("Controlli"));
+
     enableTeEditing=false;
     setEMP();
     setEMP_Sort();

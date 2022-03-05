@@ -62,7 +62,6 @@ public:
     void fetchDLaserOutput();  
     void setUndoStack(QUndoStack*);
     void resetHistory();
-
     void setLaserGoggleWidgets();
     void displayScaleNumber();
     void displayDScaleNumber();

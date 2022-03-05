@@ -281,7 +281,6 @@ private:
     QList <QImage> reflectorsGraphImageList;
     QStringList inspectorsFilenameList;
     QList <QImage> inspectorsGraphImageList;
-    QLabel *statusLabel;
     CentralWidget *laserWindow;
     QRect previewRect;
     QComboBox *sceneScaleCombo;

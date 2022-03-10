@@ -104,11 +104,14 @@ private slots:
     void sceneScaleDown();
     void menuSceneScaleChanged(const QString &, const int &);
     void barSceneScaleChanged(const QString &scale);
+    void boundingRectForScale();
     void setSceneArea(QRect) const;
     void dragMode();
     void addRoom();
     void createRoom();
     void setStatusBarState();
+    void setGridState();
+    void setBoundingRect();
 
     void addSafetySign(SafetySignItem::SafetyClass mySafetySign);
 
@@ -161,14 +164,18 @@ private slots:
     void atmosphericEffectsOn(bool);
     void scintillationOn(bool);
     void properties();
+    void setBackgroundGrid();
     void atmosphericEffects();
     void scintillation();
     void installationDescription();
-    void backgroundGrid();
+    void createBackgroundGrid();
+    void backgroundGridOn();
+    void backgroundGridOff();
     void setPrintPreview();
     void exportReport();
     void setSelectionRect();
-    void goToPoint();
+    void setNewOriginPoint();
+    void originOnClick(const QPointF &);
     void setImageRect();
     void setImagePreview();
     void setShadowZone();
@@ -231,6 +238,7 @@ private:
     void createUndoView();
     void clearScene();
     void setZValue(int z);
+    void createSceneForOrigin(const QPointF&);
     Reflector *selectedReflector() const;
     LaserPoint *selectedLaserPoint() const;
     LabRoom *selectedLabRoom() const;
@@ -357,6 +365,7 @@ private:
     QAction *showReflectorsList;
     QAction *showDockLea;
     QAction *centerOnViewAction;
+    QAction *setNewOriginAct;
     QAction *printPreviewAct;
     QAction *zoomInAction;
     QAction *zoomOutAction;
@@ -386,10 +395,11 @@ private:
     int footprintSeqNumber;
     int inspectorSeqNumber;
     int scaleNumber;
+    QPointF origin;
     double gridUnit;
+    bool gridOn;
     bool dragModeState;
     bool myLabRoomInserted;
-    bool state;
     bool environmentState;
     bool statusBarVisible;
 
@@ -445,6 +455,8 @@ private:
     QModelIndex selectedIndex;
     QFont sceneFont;
     QTransform myTransform;
+    QRectF boundingRect;
+    QRectF boundingRectForOrigin;
 
     int footprintsCount=0;
 };

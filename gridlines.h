@@ -23,17 +23,18 @@ public:
 
 
 private:
+    QRectF outlineRect() const;
     QRectF labelRect()const;
     QRectF sceneRect;
     double step;
+    QPixmap referencePix;
     double scale;
     //QRectF myTextRect;
     QString textLabel;
     QPointF zeroViewportPoint;
     QColor myTextColor;
-
-    QRectF boundingRect() const;
-    void paint (QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    QRectF boundingRect() const override;
+    void paint (QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)override;
 };
 
 #endif // GRIDLINES_H

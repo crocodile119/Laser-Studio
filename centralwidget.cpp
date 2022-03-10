@@ -131,7 +131,7 @@ bool CentralWidget::writeFile(const QString &fileName)
     QVector <SafetySignItem::SafetyClass> SafetySignKindVect;
 
     QList<QGraphicsItem*>graphicElements=graphicsView->scene->items();
-    
+
     QList<QGraphicsItem*>::iterator myIterator; // iterator
     myIterator = graphicElements.begin();
     while (myIterator != graphicElements.end() )
@@ -209,7 +209,7 @@ bool CentralWidget::writeFile(const QString &fileName)
 
     QRect previewRect=graphicsView->getSelectionRect();
     out << myLabRoomInserted << scintillationBool << atmEffectsBool << meteoRange << a_coefficient << atmoshericEffectsCoefficient
-        << scaleIndex << scale << force << customer << uasl << uaslAssistant << laserDescription << placeDescription << gridState
+        << scaleIndex << scale << force << customer << uasl << uaslAssistant << laserDescription << placeDescription << free
         << goggleMaterial << myDockControls->ui->powerErgControl->getScientificNumber() << myDockControls->ui->pulseControl->getScientificNumber()
         << myDockControls->ui->divergenceControl->getScientificNumber() << myDockControls->ui->beamDiameterControl->getScientificNumber()
         << myDockControls->ui->prfControl->getScientificNumber() << myDockControls->ui->wavelengthScrollBar->value()
@@ -223,7 +223,8 @@ bool CentralWidget::writeFile(const QString &fileName)
         << ZValue << ReflectorKind << ReflectorPositioningVect << binocularPosVect << binocularOpticalGainVect
         << binocularMagnificationVect << binocularTransmissionVect << binocular_D0Vect << binocularDescriptionVect
         << beamInspectorPosVect <<beamInspectorDescriptionVect << myLabPosition<< myLabRect << roomNumber
-        << footprintPosVect << footprintRectVect << footprintDescriptionVect << SafetySignPosVect << SafetySignKindVect << previewRect;
+        << footprintPosVect << footprintRectVect << footprintDescriptionVect << SafetySignPosVect << SafetySignKindVect << previewRect
+        << mySceneRect << origin;
 
     QApplication::restoreOverrideCursor();
 
@@ -275,7 +276,7 @@ bool CentralWidget::readFile(const QString &fileName)
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
     in  >> myLabRoomInserted >> scintillationBool >> atmEffectsBool >> meteoRange >> a_coefficient >> atmoshericEffectsCoefficient
-        >> scaleIndex >> scale >> force >> customer >> uasl >> uaslAssistant >> laserDescription >> placeDescription >> gridState >> goggleMaterial
+        >> scaleIndex >> scale >> force >> customer >> uasl >> uaslAssistant >> laserDescription >> placeDescription >> free >> goggleMaterial
         >> powerErgControl >> pulseControl >> divergenceControl >> beamDiameterControl >> prfControl >> wavelengthScrollBar
         >> operationCombo >> isGaussianBeamChecked >> comboBox >> T_SkinSpinBox >> teControl >> isTeChecked >> isInternalWaistChecked
         >> lambertianMax >> laserEMP >> laserBeamDiameter >> laserPowerErg >> laserPosition >> laserZValue >> aperture >> installation
@@ -284,7 +285,7 @@ bool CentralWidget::readFile(const QString &fileName)
         >> ReflectorKindVect >> ReflectorPositioningVect >> binocularPosVect >> binocularOpticalGainVect >> binocularMagnificationVect
         >> binocularTransmissionVect >> binocular_D0Vect >> binocularDescriptionVect >> beamInspectorPosVect >> beamInspectorDescriptionVect
         >> myLabPosition >> myLabRect >> roomNumber >> footprintPosVect >> footprintRectVect >> footprintDescriptionVect >> SafetySignPosVect
-        >> SafetySignKindVect >> previewRect;
+        >> SafetySignKindVect >> previewRect >> mySceneRect >> origin;
 
      myDockControls->ui->operationCombo->setCurrentIndex(operationCombo);
      myDockControls->ui->enableTeCheckBox->setChecked(isTeChecked);
@@ -355,6 +356,25 @@ QString CentralWidget::getLaserDescription()const
 QString CentralWidget::getPlaceDescription()const
 {
     return placeDescription;
+}
+
+QRectF CentralWidget::getMySceneRect()const
+{
+    return mySceneRect;
+}
+
+void CentralWidget::setMySceneRect(const QRectF& _mySceneRect)
+{
+    mySceneRect=_mySceneRect;
+}
+
+QPointF CentralWidget::getOrigin()const
+{
+    return origin;
+}
+void CentralWidget::setOrigin(const QPointF& _origin)
+{
+    origin=_origin;
 }
 
 void CentralWidget::set_UASL(const QString _uasl)
@@ -490,16 +510,6 @@ QVector <QPointF> CentralWidget::getBeamInspectorPosVect()const
 QVector <QString > CentralWidget::getBeamInspectorDescriptionVect()const
 {
     return beamInspectorDescriptionVect;
-}
-
-bool CentralWidget::getGridState()const
-{
-    return gridState;
-}
-
-void CentralWidget::setGridState(const bool& _gridState)
-{
-    gridState=_gridState;
 }
 
 double CentralWidget::getAperture()const

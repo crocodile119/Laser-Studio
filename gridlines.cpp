@@ -4,7 +4,7 @@
 #include <QFontMetricsF>
 #include <QGuiApplication>
 
-GridLines::GridLines() : QGraphicsItem(), step(40.0)
+GridLines::GridLines() : QGraphicsItem(), step(40.0), referencePix(":/images/referencepix.png")
 {
 }
 
@@ -12,6 +12,11 @@ void GridLines::paint (QPainter *painter, const QStyleOptionGraphicsItem *option
 {
     Q_UNUSED(option);
     Q_UNUSED(widget);
+
+    QRectF pixRect=outlineRect();
+
+    QRectF source(0.0, 0.0, referencePix.width(), referencePix.height());
+    painter->drawPixmap(pixRect, referencePix, source);
 
     QPen gridPen;
     gridPen.setColor(Qt::black);
@@ -21,6 +26,8 @@ void GridLines::paint (QPainter *painter, const QStyleOptionGraphicsItem *option
 
     double width=sceneRect.width();
     double height=sceneRect.height();
+
+    painter->drawRect(sceneRect);
 
     for (int y= 0; y < height/2; y+=step)
     {
@@ -117,4 +124,14 @@ void GridLines::setTextColor(const QColor& color)
 {
     myTextColor = color;
     update();
+}
+
+QRectF GridLines::outlineRect() const
+{
+    double rectWidht=referencePix.width()/scale;
+    double rectHeight=referencePix.height()/scale;
+    QRectF rect=QRectF(0, 0, rectWidht, rectHeight);
+    QPointF center=QPointF(rectWidht/4, rectHeight/4);
+    rect.translate(-center);
+    return rect;
 }

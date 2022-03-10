@@ -28,11 +28,13 @@ private:
     QGraphicsItem *movingItem=nullptr;
     QRectF oldRectangle;
     class Rectangle myGraphicRect;
+    QPointF releaseScenePosition;
 
 signals:
     void labroomSelected();
     void deselected();
-    void footprintRelease();  
+    void footprintRelease();
+    void mouseReleasePos(const QPointF&);
     void graphicItemSelected(QGraphicsItem *movingItem);
     void graphicItemMoved(QGraphicsItem *movingItem, const QPointF& oldPos);
 };

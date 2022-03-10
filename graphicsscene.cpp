@@ -34,7 +34,8 @@ void GraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
                 qDebug()<<"Ho selezionato il punto laser: ";
                 clearSelection();
                 laserpoint->setSelected(true);
-                oldPos=laserpoint->pos();              
+                oldPos=laserpoint->pos();
+                qDebug()<<"Posizione: "<<oldPos;
                 emit graphicItemSelected(movingItem);
             }
 
@@ -106,7 +107,10 @@ void GraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 void GraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if(mouseEvent->button()==Qt::LeftButton)
-    {
+    { 
+        releaseScenePosition=mouseEvent->scenePos();
+        emit mouseReleasePos(releaseScenePosition);
+
         Reflector *reflector= qgraphicsitem_cast<Reflector*>(movingItem);
         LaserPoint *laserpoint= qgraphicsitem_cast<LaserPoint*>(movingItem);
         Binocular *binocular= qgraphicsitem_cast<Binocular*>(movingItem);

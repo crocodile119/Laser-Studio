@@ -296,7 +296,7 @@ void LaserPoint::paint(QPainter *painter,
     painter->restore();
     painter->setTransform(transform);
     setStringPosition();
-        update();
+    update();
 }
 
 QVariant LaserPoint::itemChange(GraphicsItemChange change,

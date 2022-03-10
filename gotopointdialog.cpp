@@ -4,43 +4,33 @@
 #include "gotopointdialog.h"
 #include "ui_gotopointdialog.h"
 
-GoToPointDialog::GoToPointDialog(QWidget *parent, QPointF position, bool _dark)
-    : QDialog(parent), center(position), dark(_dark)
+GoToPointDialog::GoToPointDialog(QWidget *parent,  bool _dark)
+    : QDialog(parent), dark(_dark), xPosition(0), yPosition(0)
 {
     setupUi(this);
-
     setStyleSheet();
-    xPosition=center.x();
-    yPosition=center.y();
-
-    xSpinBox->setValue(xPosition);
-    ySpinBox->setValue(yPosition);
 }
-
 
 QPointF GoToPointDialog::getViewCenter()
 {
     return center;
 }
 
-void GoToPointDialog::setViewCenter(const QPointF _center)
+void GoToPointDialog::setViewCenter()
 {
-    center=_center;
+    center=QPointF(xPosition, yPosition);
 }
 
 void GoToPointDialog::on_xSpinBox_valueChanged(int arg1)
 {
     xPosition=static_cast<double>(arg1);
+    setViewCenter();
 }
 
 void GoToPointDialog::on_ySpinBox_valueChanged(int arg1)
 {
     yPosition=static_cast<double>(arg1);
-}
-
-void GoToPointDialog::on_buttonBox_accepted()
-{
-    center=QPointF(xPosition, yPosition);
+    setViewCenter();
 }
 
 void GoToPointDialog::setStyleSheet()

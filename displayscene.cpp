@@ -11,14 +11,15 @@ DisplayScene::DisplayScene(QWidget* parent) : QGraphicsView(parent)
 {
     scene = new GraphicsScene(this);
     scene->clearSelection();
-
     setScene(scene);
+
     setMouseTracking(true);
 
     setDragMode(QGraphicsView::RubberBandDrag);
     setRenderHints(QPainter::Antialiasing
                         | QPainter::TextAntialiasing);
     setContextMenuPolicy(Qt::ActionsContextMenu);
+
 }
 
 void DisplayScene::resizeEvent(QResizeEvent *event)
@@ -40,10 +41,8 @@ DisplayScene::~DisplayScene()
 
 void DisplayScene::setNewScene()
 {
-    deleteScene();
-    scene= new GraphicsScene();
-
-    setScene(scene);
+    QRectF scenerect=scene->itemsBoundingRect();
+    scene->setSceneRect(scenerect);
 }
 
 void DisplayScene::deleteScene()

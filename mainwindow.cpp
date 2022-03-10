@@ -88,6 +88,7 @@ MainWindow::MainWindow()
 
     scale=1;
     footprintsCount=0;
+    origin=QPoint(0, 0);
     dragModeState=false;
 
     setMouseTracking(true);
@@ -108,7 +109,6 @@ MainWindow::MainWindow()
     previewRect=laserWindow->graphicsView->viewport()->rect();
     qDebug()<<"Rettangolo anteprima di stampa" << previewRect;
 
-    state=false;
     environmentState=false;
 
     QRectF fakeRect= QRectF(0.0, 0.0, 0.0, 0.0);
@@ -154,6 +154,16 @@ MainWindow::MainWindow()
     connect(laserWindow->graphicsView, SIGNAL(viewportChanged()),this, SLOT(setViewportRect()));
     connect(undoStack, &QUndoStack::indexChanged, this, &MainWindow::updateUndoStackList);
 
+    readSettings();
+    setStatusBar();
+
+    createBackgroundGrid();
+    setBoundingRect();
+    qDebug()<<"bounding rect: "<<boundingRect;
+    setBackgroundGrid();
+    laserWindow->graphicsView->update();
+    laserWindow->graphicsView->viewport()->adjustSize();
+
     externalFile=false;
     externalFile=(QCoreApplication::arguments().size()>1);
 
@@ -163,13 +173,10 @@ MainWindow::MainWindow()
         fileName = QApplication::arguments().at(1);
         timer = new QTimer(this);
         timer->setSingleShot(true);
-        timer->start(100);
+        timer->start(800);
         loadFile(fileName);
         connect(timer, SIGNAL(timeout()), this, SLOT(setOpenFile()));
     }
-
-    readSettings();
-    setStatusBar();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -197,9 +204,6 @@ void MainWindow::setLaserPoint()
     binocular=nullptr;
     beamInspector=nullptr;
     myLabRoom=nullptr;
-    gridlines=nullptr;
-
-    laserWindow->setGridState(false);
 
     laserpoint = new LaserPoint();
 
@@ -263,10 +267,10 @@ void MainWindow::newFile()
          * clearScene() non essedo possibile con clean()) ed imposto una nuova scena       *
          * grafica.                                                                        *
          ***********************************************************************************/
-
         clearScene();
         laserWindow->graphicsView->scene->clear();
         laserWindow->setNewScene();
+
         laserWindow->graphicsView->viewport()->adjustSize();
 
         myReflectors.clear();
@@ -278,14 +282,16 @@ void MainWindow::newFile()
         myFootprints.clear();
 
         laserWindow->clearInstallationDesription();
+
         setLaserPoint();
         createRoom();
 
-        showGridAction->setChecked(false);
+        origin=QPointF(0, 0);
+        setBoundingRect();
+        createBackgroundGrid();
 
         onlyReflectorGoggleAction->setChecked(true);
         setGoggleMaterial(LaserGoggle::ONLY_REFLECTOR);
-
         menuSceneScaleChanged("100%", 4);
 
         setControls();
@@ -296,6 +302,7 @@ void MainWindow::newFile()
         laserWindow->setMeteoRange(CentralWidget::STANDARD_VISIBILITY_DISTANCE);
         meteoWidgets(true, false, false);
         laserpoint->setSelected(true);
+        setGridState();
         laserWindow->graphicsView->centerOn(laserpoint->pos());
 
         QFont font;
@@ -310,16 +317,10 @@ void MainWindow::newFile()
         updateGraphicsItemList();
         laserSettingsAction->setChecked(true);
         undoStack->clear();
+
+        setBackgroundGrid();
         setWindowModified(false);
         statusBar()->showMessage(tr("Creato nuovo progetto"), 2000);
-
-        connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(updateActions()));
-        connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(laserModified()));
-        connect(laserWindow->graphicsView->scene, &GraphicsScene::graphicItemSelected, this, &MainWindow::treeSelectionFromGraphics);
-        connect(laserWindow->graphicsView->scene, SIGNAL(deselected()), this, SLOT(listDeselectionFromGraphics()));
-        connect(laserWindow->graphicsView->scene, SIGNAL(footprintRelease()), this, SLOT(shadowZoneForLaser()));
-        connect(laserWindow->graphicsView->scene, SIGNAL(changed(const QList<QRectF> &)),this, SLOT(setViewportRect()));
-        connect(laserWindow->graphicsView->scene, &GraphicsScene::graphicItemMoved, this, &MainWindow::graphicItemMoveToStack);
     }
 }
 
@@ -364,14 +365,6 @@ void MainWindow::setOpenFile()
     undoStack->clear();
     laserWindow->setUndoStack(undoStack);
 
-    connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(updateActions()));
-    connect(laserWindow->graphicsView->scene, SIGNAL(selectionChanged()), this, SLOT(laserModified()));
-    connect(laserWindow->graphicsView->scene, &GraphicsScene::graphicItemSelected, this, &MainWindow::treeSelectionFromGraphics);
-    connect(laserWindow->graphicsView->scene, SIGNAL(deselected()), this, SLOT(listDeselectionFromGraphics()));
-    connect(laserWindow->graphicsView->scene, SIGNAL(footprintRelease()), this, SLOT(shadowZoneForLaser()));
-    connect(laserWindow->graphicsView->scene, SIGNAL(changed(const QList<QRectF> &)),this, SLOT(setViewportRect()));
-    connect(laserWindow->graphicsView->scene, &GraphicsScene::graphicItemMoved, this, &MainWindow::graphicItemMoveToStack);
-
     connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setUpdatedPosition()));
     connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setUpdatedPosition()));
     connect(laserpoint, SIGNAL(xChanged()), this, SLOT(updateLaserItem()));
@@ -389,12 +382,13 @@ void MainWindow::setOpenFile()
     connect(laserpoint, SIGNAL(xChanged()), this, SLOT(setShadowZone()));
     connect(laserpoint, SIGNAL(yChanged()), this, SLOT(setShadowZone()));
 
+    laserWindow->graphicsView->scene->setSceneRect(laserWindow->getMySceneRect());
+    origin=laserWindow->getOrigin();
+
     laserpoint->setPos(laserpoint->pos()+QPointF(-1,-1));
     laserpoint->setPos(laserpoint->pos()+QPointF(1,1));
-    laserWindow->graphicsView->centerOn(laserpoint->pos());
 
     laserWindow->graphicsView->update();
-
 }
 
 bool MainWindow::save()
@@ -450,10 +444,12 @@ void MainWindow::about()
 
 void MainWindow::onLineHelp()
 {
-    //QDesktopServices::openUrl(QUrl("http://www.techspotlighter.com/help/index.php"));
+    QDesktopServices::openUrl(QUrl("http://www.techspotlighter.com/help/index.php"));
+    /*
     QUrl helpFile;
     helpFile.setPath("LaserStudio.chm", QUrl::TolerantMode);
     QDesktopServices::openUrl(helpFile);
+    */
 }
 
 void MainWindow::selectItemFromTree(QModelIndex index)
@@ -954,6 +950,14 @@ void MainWindow::createActions()
     displayGroup->addAction(dragAct);
     displayGroup->addAction(selectAct);
 
+    setNewOriginAct=new QAction(tr("Imposta l'origine"), this);
+    setNewOriginAct->setIcon(QIcon(":/images/ruler.png"));
+    setNewOriginAct->setCheckable(true);
+    setNewOriginAct->setChecked(false);
+    connect(setNewOriginAct, SIGNAL(triggered()), this, SLOT(setNewOriginPoint()));
+    setNewOriginAct->setStatusTip(tr("Imposta nel punto specificato"));
+    displayMenu->addAction(setNewOriginAct);
+
     toolbarMenu= new QMenu();
     toolbarMenu= viewMenu ->addMenu(tr("Barre strumenti"));
 
@@ -1050,20 +1054,11 @@ void MainWindow::createActions()
     viewMenu->addSeparator();
 
     showGridAction=new QAction(tr("Griglia"), this);
-    connect(showGridAction, SIGNAL(triggered()), this, SLOT(backgroundGrid()));  
+    connect(showGridAction, SIGNAL(triggered()), this, SLOT(setGridState()));
     showGridAction->setStatusTip(tr("Visualizza la griglia"));
     showGridAction->setIcon(QIcon(":/images/grid.png"));
     showGridAction->setCheckable(true);
-    showGridAction->setChecked(false);
     viewMenu->addAction(showGridAction);
-
-    centerOnViewAction=new QAction(tr("Centra la vista"), this);
-    centerOnViewAction->setIcon(QIcon(":/images/point.png"));
-
-    connect(centerOnViewAction, SIGNAL(triggered()), this, SLOT(goToPoint()));
-
-    centerOnViewAction->setStatusTip(tr("Centra la vista nel punto specificato"));
-    viewMenu->addAction(centerOnViewAction);
 
     darkThemeAct = new QAction(tr("Dark thema"), this);
     darkThemeAct->setStatusTip(tr("Imposta un tema con tonalità scure"));
@@ -1313,6 +1308,7 @@ void MainWindow::createActions()
     addAtmosphericEffectsAct->setCheckable(true);
     addAtmosphericEffectsAct->setChecked(false);
     connect(addAtmosphericEffectsAct, SIGNAL(triggered()), this, SLOT(atmosphericEffects()));
+
     environmentMenu->addAction(addAtmosphericEffectsAct);
 
     addScintillationAct = new QAction(tr("Scintillazione"), this);
@@ -1410,6 +1406,15 @@ void MainWindow::setStatusBarState()
         statusBar()->hide();
 }
 
+void MainWindow::setGridState()
+{
+    gridOn=showGridAction->isChecked();
+    if(gridOn)
+        backgroundGridOn();
+    else
+        backgroundGridOff();
+}
+
 void MainWindow::createUndoView()
 {
     undoView = new QUndoView(undoStack);
@@ -1422,35 +1427,48 @@ void MainWindow::createUndoView()
     undoView->setAttribute(Qt::WA_QuitOnClose, false);
 }
 
-void MainWindow::backgroundGrid()
+void MainWindow::createBackgroundGrid()
 {
-    if(showGridAction->isChecked())
-    {
-        QRectF viewportRect= laserWindow->graphicsView->viewport()->rect();
-        QPointF center=viewportRect.center();
-        viewportRect.translate(-center);
+    gridlines = new GridLines();
+    gridlines->setPos(gridlines->mapToScene(QPointF(0.0, 0.0)));
+}
 
-        gridlines = new GridLines();
-        gridlines->setPos(QPointF(0.0, 0.0));
-        gridlines->setSceneRect(viewportRect);
-        laserWindow->graphicsView->scene->addItem(gridlines);
-        --minZ;
-        gridlines->setZValue(minZ);
+void MainWindow::backgroundGridOn()
+{
+    QRectF viewportRect= laserWindow->graphicsView->viewport()->rect();
+    QPointF center=viewportRect.center();
+    viewportRect.translate(-center);
 
-        backgroundGridPixmap();
-    }
-    else
-    {
-        if(gridlines!=nullptr)
-        {
-            laserWindow->graphicsView->scene->removeItem(gridlines);
-            delete gridlines;
-            gridlines=nullptr;
-        }
-    }
-        laserWindow->graphicsView->scene->update();
-        laserWindow->graphicsView->update();
-        laserWindow->setGridState(showGridAction->isChecked());
+    gridlines->setSceneRect(viewportRect);
+    qDebug()<<"Rettangolo viewport; "<<viewportRect;
+
+    laserWindow->graphicsView->scene->addItem(gridlines);
+    gridlines->stackBefore(laserpoint);
+
+    backgroundGridPixmap();
+    gridlines->setScale(scale);
+
+    //laserWindow->graphicsView->scene->setSceneRect(laserWindow->graphicsView->scene->itemsBoundingRect());
+    laserWindow->graphicsView->scene->update();
+    laserWindow->graphicsView->update();
+}
+
+void MainWindow::backgroundGridOff()
+{
+    QRectF viewportRect= laserWindow->graphicsView->viewport()->rect();
+    QPointF center=viewportRect.center();
+    viewportRect.translate(-center);
+
+    gridlines->setSceneRect(viewportRect);
+    QRectF rect=laserWindow->graphicsView->scene->sceneRect();
+    laserWindow->graphicsView->scene->setSceneRect(viewportRect);
+
+    laserWindow->graphicsView->scene->removeItem(gridlines);
+    gridlines->setSceneRect(rect);
+    createSceneForOrigin(QPointF(0,0));
+
+    laserWindow->graphicsView->scene->update();
+    laserWindow->graphicsView->update();
 }
 
 void MainWindow::backgroundGridPixmap()
@@ -1733,6 +1751,16 @@ void MainWindow::setStatusBar()
         statusBar()->hide();
 }
 
+void MainWindow::setBackgroundGrid()
+{
+    showGridAction->setChecked(gridOn);
+    if(gridOn)
+        backgroundGridOn();
+    else
+        backgroundGridOff();
+}
+
+
 #ifndef QT_NO_CONTEXTMENU
 void MainWindow::contextMenuEvent(QContextMenuEvent *event)
 {
@@ -1804,6 +1832,7 @@ void MainWindow::readSettings()
      *****************************************************************/
     statusBarVisible=settings.value("statusBar").toBool();
     recentFiles = settings.value("recentFiles").toStringList();
+    gridOn=settings.value("grid").toBool();
     updateRecentFileActions();
     settings.endGroup();
 }
@@ -1818,6 +1847,7 @@ void MainWindow::writeSettings()
     settings.setValue("geometry", saveGeometry());
     settings.setValue("windowState", saveState());
     settings.setValue("theme", theme);
+    settings.setValue("grid", gridOn);
     /*****************************************************************
      * Application output segnala che non funziona quindi l'ho tolto *
      * settings.setValue("state", saveState());                      *
@@ -2334,13 +2364,33 @@ void MainWindow::sceneScaleChanged(const QString &_scale)
     laserWindow->setScaleIndex(index);
     myTransform = laserWindow->graphicsView->transform();
 
+    //boundingRectForScale();
+
     updateScale();
 
-    if(showGridAction->isChecked())
-    {
-        setViewportRect();
+    setViewportRect();
+    if(gridOn)
         backgroundGridPixmap();
-    }
+
+    gridlines->setScale(scale);
+}
+
+void MainWindow::boundingRectForScale()
+{
+    QPointF laserPosition=laserpoint->pos();
+
+
+    QRectF scaleBoundingRect=QRectF(laserPosition.x(), laserPosition.y(),
+                                        boundingRect.width()/scale,
+                                        boundingRect.height()/scale);
+
+    QPointF center=scaleBoundingRect.center();
+    scaleBoundingRect.translate(-center);
+    QPointF shift=QPointF(boundingRect.width()/scale, 0);
+    scaleBoundingRect.translate(shift);
+    laserWindow->graphicsView->scene->setSceneRect(scaleBoundingRect);
+    qDebug()<<"bounding rect for scale: "<< scaleBoundingRect;
+    laserWindow->graphicsView->centerOn(laserPosition);
 }
 
 void MainWindow::sceneScaleUp()
@@ -2352,7 +2402,6 @@ void MainWindow::sceneScaleUp()
 
     if(index>=nScales )
         return;
-
 
     QGraphicsView *view = new QGraphicsView();
     view=laserWindow->graphicsView;
@@ -2369,18 +2418,14 @@ void MainWindow::sceneScaleUp()
     sceneScaleCombo->setCurrentIndex(index);
 
     updateScale();
-
+    setViewportRect();
     if(gridlines!=nullptr)
-    {
         backgroundGridPixmap();
-        setViewportRect();
-    }
 
-    if(showGridAction->isChecked())
-    {        
+    if(showGridAction->isChecked())     
         backgroundGridPixmap();
-        setViewportRect();
-    }
+
+    gridlines->setScale(scale);
 }
 
 void MainWindow::sceneScaleDown()
@@ -2413,6 +2458,8 @@ void MainWindow::sceneScaleDown()
 
     if(showGridAction->isChecked())
         backgroundGridPixmap();
+
+    gridlines->setScale(scale);
 }
 
 void MainWindow::dragMode()
@@ -2429,6 +2476,8 @@ void MainWindow::dragMode()
     addLambertianReflectorAction->setEnabled(false);
     addLabAct->setEnabled(false);
     addBinocularAct->setEnabled(false);
+
+    laserWindow->graphicsView->scene->setSceneRect(QRectF());
 
     if(reflector==0)
         return;
@@ -3103,6 +3152,7 @@ void MainWindow::createToolBars()
     viewToolBar->addAction(zoomOutAction);
     viewToolBar->addAction(selectAct);
     viewToolBar->addAction(dragAct);
+    viewToolBar->addAction(setNewOriginAct);
 
     viewToolBar->addAction(showDockWidgetControls);
     viewToolBar->addAction(showDockWidgetResults);
@@ -3112,7 +3162,7 @@ void MainWindow::createToolBars()
     viewToolBar->addAction(showDockWidgetGoggle);
     viewToolBar->addAction(showReflectorsList);
     viewToolBar->addAction(showDockHistory);
-    viewToolBar->addAction(centerOnViewAction);
+    //viewToolBar->addAction(centerOnViewAction);
     viewToolBar->addAction(showGridAction);
 
     sceneToolBar = addToolBar(tr("Scena"));
@@ -3175,7 +3225,7 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
     {
          if(watched->inherits("QDockWidget"))
          {
-             QDockWidget* dockwidget=qobject_cast<QDockWidget*>(watched);
+            QDockWidget* dockwidget=qobject_cast<QDockWidget*>(watched);
             statusBar()->showMessage(dockwidget->objectName(), 2000);
          }
     return false;
@@ -3821,8 +3871,6 @@ void MainWindow::makeSceneOfSavedItems()
 
     //Visualizzo la griglia se presente durante il salvataggio del file
     scale=laserWindow->getScale();
-    showGridAction->setChecked(laserWindow->getGridState());
-    backgroundGrid();
 
     LaserGoggle::material goggleMaterial=laserWindow->myDockControls->getGoggleMaterial();
     if(goggleMaterial==LaserGoggle::GLASS)
@@ -4101,7 +4149,17 @@ void MainWindow::makeSceneOfSavedItems()
     scale=laserWindow->getScale();
     QString scaleString = QString::number(scale*100).append("%");
     int index=laserWindow->getScaleIndex();
+    origin=QPointF(0, 0);
+    createBackgroundGrid();
+    if(gridOn)
+        backgroundGridOn();
+    else
+    {
+        laserWindow->graphicsView->scene->removeItem(gridlines);
 
+        laserWindow->graphicsView->scene->update();
+        laserWindow->graphicsView->update();
+    }
     menuSceneScaleChanged(scaleString, index);
     labroomList.append(myFakeRoom);
 
@@ -4114,6 +4172,7 @@ void MainWindow::makeSceneOfSavedItems()
         laserWindow->graphicsView->scene->addItem(myLabRoom);
         myLabRoom->setTextLabel();
         labroomList.append(myLabRoom);
+        myLabRoom->stackBefore(laserpoint);
 
         environmentState=true;
 
@@ -4149,6 +4208,7 @@ void MainWindow::makeSceneOfSavedItems()
     laserWindow->myDockControls->updateAllCompositeControlsFunctions();
     updateForCondMeteo();
     previewRect=laserWindow->getPreviewRect();
+
     setWindowModified(false);
 
     updateActions();
@@ -4168,6 +4228,7 @@ void MainWindow::enableControlsAndItems(bool enabled)
     sceneToolBar->setEnabled(enabled);
     laserWindow->myDockControls->setEnabled(enabled);
     laserpoint->setEnabled(enabled);
+    signSafetyToolBar->setEnabled(enabled);
 
     QList<Reflector*>::iterator myIterator; // iterator
     myIterator = myReflectors.begin();
@@ -4199,18 +4260,48 @@ void MainWindow::enableControlsAndItems(bool enabled)
         myLabRoom->setFlag(QGraphicsItem::ItemIsSelectable, enabled);
 }
 
-void MainWindow::goToPoint()
+void MainWindow::setNewOriginPoint()
 {
-    GoToPointDialog dialog(this, laserpoint->pos(), theme);
-    QPointF center;
+    if(setNewOriginAct->isChecked())
+    {
+        QGuiApplication::setOverrideCursor(QCursor(Qt::CrossCursor));
+        enableControlsAndItems(false);
+        connect(laserWindow->graphicsView->scene, SIGNAL(mouseReleasePos(const QPointF&)), this, SLOT(originOnClick(const QPointF&)));
+    }
+}
 
-    if(dialog.exec()==1)
-        {
-            center=dialog.getViewCenter();
-            qDebug()<< "Laser point position: "<< center;
-        }
+void MainWindow::originOnClick(const QPointF& pointPosition)
+{
+    createSceneForOrigin(pointPosition);
+    disconnect(laserWindow->graphicsView->scene, SIGNAL(mouseReleasePos(const QPointF&)), this, SLOT(originOnClick(const QPointF&)));
+    statusBar()->showMessage(tr("Nuova origine impostata"), 2000);
+    enableControlsAndItems(true);
+    setWindowModified(true);
+    setNewOriginAct->setChecked(false);
+    QGuiApplication::restoreOverrideCursor();
+}
 
-    laserWindow->graphicsView->centerOn(center);
+void MainWindow::createSceneForOrigin(const QPointF& pointPosition)
+{
+    qDebug() << "origin: " << origin;
+
+    boundingRectForOrigin=laserWindow->graphicsView->scene->sceneRect();
+    qDebug() << "boundingRectForOrigin: " << boundingRectForOrigin;
+    QRectF rect(0, 0, boundingRectForOrigin.width(), boundingRectForOrigin.height());
+    //rect.translate(-pointPosition.x(), -pointPosition.y());
+    qDebug() << "rect: " << rect;
+    rect.translate(-boundingRectForOrigin.width()/2, -boundingRectForOrigin.height()/2);
+    rect.translate(origin-pointPosition);
+    qDebug() << "rect: " << rect;
+    origin=origin-pointPosition;
+
+    laserWindow->setMySceneRect(rect);
+    laserWindow->setOrigin(origin);
+
+    laserWindow->graphicsView->scene->setSceneRect(rect);
+    laserWindow->graphicsView->scene->update();
+
+    qDebug() << "origin: " << origin;
 }
 
 void MainWindow::meteoWidgets(bool meteoEnabled, bool isAtmEffects, bool isScintillation)
@@ -4455,12 +4546,9 @@ void MainWindow::addRoom()
     meteoWidgets(meteoWidgetsON, meteoWidgetsON, meteoWidgetsON);
     updateForCondMeteo();
 
-    int zValue = 0;
-
     setWindowModified(true);
 
-    zValue=laserpoint->zValue()-1;
-    myLabRoom->setZValue(zValue);
+    myLabRoom->stackBefore(laserpoint);
 
     laserpoint->setSelected(true);
     QPainterPath roomPath;
@@ -4717,14 +4805,16 @@ void MainWindow::setViewportRect()
         return;
 
     QRectF viewportRect=laserWindow->graphicsView->getViewportRect();
-    viewportRect.adjust(-40.0, -40.0, 40.0, 40.0);
+    //viewportRect.adjust(-40.0, -40.0, 40.0, 40.0);
     QSizeF viewportSize=viewportRect.size()/scale;
     viewportRect.setSize(viewportSize);
     QRectF sceneRect=laserWindow->graphicsView->scene->itemsBoundingRect();
     double width=fmax(viewportRect.width(), sceneRect.width());
     double height=fmax(viewportRect.height(), sceneRect.height());
     QRectF myRect=QRectF(0.0, 0.0, width, height);
-    gridlines->setSceneRect(myRect);
+    QRectF myRectTranslated=myRect.translated(-origin);
+    QRectF myRectUnited=myRectTranslated.united(myRect);
+    gridlines->setSceneRect(myRectUnited);
 
     QTransform transform =laserWindow->graphicsView->viewportTransform();
     QPointF bottomRightViewport=gridlines->deviceTransform(transform)
@@ -5763,4 +5853,10 @@ void MainWindow::removeRow()
     model->removeRow(index.row(), index.parent());
 }
 
+void MainWindow::setBoundingRect()
+{
+    boundingRect=laserWindow->graphicsView->scene->itemsBoundingRect();
+    QRectF temporaryboundingRect=boundingRect;
+    laserWindow->graphicsView->scene->setSceneRect(temporaryboundingRect);
+}
 

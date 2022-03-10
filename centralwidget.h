@@ -137,12 +137,14 @@ public:
     QRectF getLabRect()const;
     int getRoomNumber()const;
 
-    bool getGridState()const;
-    void setGridState(const bool&);
-
     bool isLabRoomInserted();
     QDate getCompilingDate()const;
     void setCompilingDate(const QDate& _compilingDate);
+
+    QRectF getMySceneRect()const;
+    void setMySceneRect(const QRectF&);
+    QPointF getOrigin()const;
+    void setOrigin(const QPointF&);
 
 signals:
     void modified();
@@ -172,15 +174,14 @@ private:
     bool filterOn;
     double transmittance;
 
-    //Parametri scena
-    bool gridState;
-
     //Parametri riflettori
     double lambertianMax;
     double laserEMP;
     double laserBeamDiameter;
     double laserPowerErg;
     double scale;
+    QRectF mySceneRect;
+    QPointF origin;
     int scaleIndex;
     QVector <QPointF> posVect;
     QVector <bool> isSelectedVect;
@@ -232,5 +233,8 @@ private:
 
     QDate compilingDate;
     QRect previewRect;
+
+    //variabile non impiegata
+    bool free;
 };
 #endif // CENTRALWIDGET_H

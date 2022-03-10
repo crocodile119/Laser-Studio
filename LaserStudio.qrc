@@ -70,5 +70,7 @@
         <file>images/glass_sign.png</file>
         <file>images/laser_sign.png</file>
         <file>images/laser_warning_report.png</file>
+        <file>images/ruler.png</file>
+        <file>images/referencepix.png</file>
     </qresource>
 </RCC>

@@ -51,6 +51,7 @@ SOURCES +=\
     lambertianchartdialog.cpp \
     lambertianchartview.cpp \
     lambertianreflector.cpp \
+    laseraerealview.cpp \
     laserapplication.cpp \
     laserclasscw.cpp \
     laserclassmp.cpp \
@@ -106,6 +107,7 @@ SOURCES +=\
     undo_commands/deletereflectorcommand.cpp \
     undo_commands/deletesafetysigncommand.cpp \
     undo_commands/movecommand.cpp \
+    view.cpp \
     wetchartdialog.cpp \
     wetchartview.cpp \
     wetreflector.cpp
@@ -155,6 +157,7 @@ HEADERS  += mainwindow.h \
     lambertianchartdialog.h \
     lambertianchartview.h \
     lambertianreflector.h \
+    laseraerealview.h \
     laserapplication.h \
     laserclasscw.h \
     laserclassmp.h \
@@ -209,6 +212,7 @@ HEADERS  += mainwindow.h \
     undo_commands/deletereflectorcommand.h \
     undo_commands/deletesafetysigncommand.h \
     undo_commands/movecommand.h \
+    view.h \
     wetchartdialog.h \
     wetchartview.h \
     wetreflector.h

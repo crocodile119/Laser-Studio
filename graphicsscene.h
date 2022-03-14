@@ -12,10 +12,12 @@
 #include "labroom.h"
 #include "footprintobject.h"
 #include "safetysignitem.h"
+#include "displayscene.h"
 
 class GraphicsScene: public QGraphicsScene
 {
     Q_OBJECT
+
 public:
     explicit GraphicsScene(QObject *parent=nullptr);
 

@@ -76,6 +76,9 @@ void AtmosphericEffectsDialog::setStyleSheet()
                 "QLabel {border-radius: 8px}"
                 "QLabel {padding: 3px}"
                 "QLabel {margin-left: 10px}"));
+        ui->meteoRangeSlider->setStyleSheet(tr(
+                 "QSlider::handle:horizontal {background-color: #e0e0e0}\n"
+                 "QSlider::sub-page:horizontal{background: #b5922d}"));
     }
     else
     {
@@ -97,5 +100,8 @@ void AtmosphericEffectsDialog::setStyleSheet()
                 "QLabel {border-radius: 8px}"
                 "QLabel {padding: 3px}"
                 "QLabel {margin-left: 10px}"));
+        ui->meteoRangeSlider->setStyleSheet(tr(
+                 "QSlider::handle:horizontal {background-color: #e0e0e0}\n"
+                 "QSlider::sub-page:horizontal{background: #00c800}"));
     }
 }

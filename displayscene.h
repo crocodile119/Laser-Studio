@@ -3,11 +3,14 @@
 
 #include "graphicsscene.h"
 #include <QObject>
-#include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QGraphicsSceneMouseEvent>
 #include <QMouseEvent>
 #include <QUndoStack>
+
+QT_BEGIN_NAMESPACE
+class GraphicsScene;
+QT_END_NAMESPACE
 
 class DisplayScene : public QGraphicsView{
 
@@ -20,7 +23,7 @@ void setNewScene();
 void deleteScene();
 QRect getSelectionRect();
 QRectF getViewportRect()const;
-GraphicsScene *scene;
+GraphicsScene* scene()const;
 
 private:
 QPointF cursorPosition;
@@ -28,7 +31,7 @@ QPoint pressPosition;
 QPoint releasePosition;
 QRect selectionRect;
 QRectF viewportRect;
-
+GraphicsScene* graphicsScene;
 QRubberBand *rubberBand;
 
 signals:

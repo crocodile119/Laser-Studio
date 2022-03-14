@@ -81,7 +81,7 @@ protected:
 #endif // QT_NO_CONTEXTMENU
 
 signals:
-    void nohdModified();
+    void sceneRectChanged(const QRectF &);
 
 private slots:
     bool save();
@@ -99,11 +99,12 @@ private slots:
     void deletedViewCenter();
     void laserModified();
     void updateScale();
-    void sceneScaleChanged(const QString &scale);
     void sceneScaleUp();
     void sceneScaleDown();
-    void menuSceneScaleChanged(const QString &, const int &);
-    void barSceneScaleChanged(const QString &scale);
+    void sceneScaleReset();
+    void sceneScroll();
+    void sceneRoomView();
+    void setSceneScale();
     void boundingRectForScale();
     void setSceneArea(QRect) const;
     void dragMode();
@@ -307,7 +308,6 @@ private:
     DockHistory* myDockHistory;
 
     enum { MaxRecentFiles = 5 };
-    enum { nScales = 20 };
 
     //Scene
     QMenu *fileMenu;
@@ -349,11 +349,10 @@ private:
     QAction *fieldSettingsAction;
     QAction *classifierSettingsAction;
     QAction *goggleSettingsAction;
+    QAction *showDockAerealView;
     QAction *showGridAction;
     QAction *recentFileActions[MaxRecentFiles];
 
-    QStringList scales;
-    QAction *zoomActions[nScales];
     QAction *selectAct;
     QAction *darkThemeAct;
     QAction *separatorAction;
@@ -369,6 +368,7 @@ private:
     QAction *printPreviewAct;
     QAction *zoomInAction;
     QAction *zoomOutAction;
+    QAction *zoomResetAction;
     QAction *statusBarViewAction;
     QAction *dragAct;
     QAction *aboutAct;

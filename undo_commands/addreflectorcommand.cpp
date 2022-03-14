@@ -39,13 +39,13 @@ AddReflectorCommand::AddReflectorCommand(double _attenuatedDNRO, double _attenua
 
 void AddReflectorCommand::undo()
 {
-    laserWindow->graphicsView->scene->removeItem(reflector);
-    laserWindow->graphicsView->scene->removeItem(reflectorlink);
-    laserWindow->graphicsView->scene->update();
+    laserWindow->graphicsView->scene()->removeItem(reflector);
+    laserWindow->graphicsView->scene()->removeItem(reflectorlink);
+    laserWindow->graphicsView->scene()->update();
 
     myReflectors->clear();
 
-    QList<QGraphicsItem *> items = laserWindow->graphicsView->scene->items();
+    QList<QGraphicsItem *> items = laserWindow->graphicsView->scene()->items();
 
     QMutableListIterator<QGraphicsItem *> k(items);
     while (k.hasNext())
@@ -61,19 +61,19 @@ void AddReflectorCommand::undo()
 void AddReflectorCommand::redo()
 {
     reflector->setPixScale(*scale);
-    laserWindow->graphicsView->scene->addItem(reflector);
-    laserWindow->graphicsView->scene->clearSelection();
+    laserWindow->graphicsView->scene()->addItem(reflector);
+    laserWindow->graphicsView->scene()->clearSelection();
 
-    laserWindow->graphicsView->scene->addItem(reflectorlink);
+    laserWindow->graphicsView->scene()->addItem(reflectorlink);
 
-    QGraphicsItem *item =laserWindow->graphicsView->scene->itemAt(initialPosition, QTransform());
+    QGraphicsItem *item =laserWindow->graphicsView->scene()->itemAt(initialPosition, QTransform());
     reflectorOnScene= qgraphicsitem_cast<Reflector*>(item);
 
     QString reflectorName=reflector->objectName();
 
     if(reflectorOnScene==nullptr)
     {
-        QList<QGraphicsItem*>items=laserWindow->graphicsView->scene->collidingItems(item);
+        QList<QGraphicsItem*>items=laserWindow->graphicsView->scene()->collidingItems(item);
 
         QMutableListIterator<QGraphicsItem *> k(items);
         while (k.hasNext())
@@ -92,7 +92,7 @@ void AddReflectorCommand::redo()
 
     laserpoint->setSelected(false);
 
-    laserWindow->graphicsView->scene->clearSelection();
+    laserWindow->graphicsView->scene()->clearSelection();
     //imposto la NOHD del punto laser
     laserpoint->setOpticalDiameter(laserWindow->myDockControls->getOpticalDistance());
     reflector->setSelected(true);
@@ -102,7 +102,7 @@ void AddReflectorCommand::redo()
 
 AddReflectorCommand::~AddReflectorCommand()
 {
-    if(!laserWindow->graphicsView->scene)
+    if(!laserWindow->graphicsView->scene())
         delete reflector;
 }
 

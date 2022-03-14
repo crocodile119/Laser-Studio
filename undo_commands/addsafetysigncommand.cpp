@@ -14,12 +14,12 @@ AddSafetySignCommand::AddSafetySignCommand(double *_scale, SafetySignItem::Safet
 
 void AddSafetySignCommand::undo()
 {
-    laserWindow->graphicsView->scene->removeItem(safetySign);
-    laserWindow->graphicsView->scene->update();
+    laserWindow->graphicsView->scene()->removeItem(safetySign);
+    laserWindow->graphicsView->scene()->update();
 
     safetySignList->clear();
 
-    QList<QGraphicsItem *> items = laserWindow->graphicsView->scene->items();
+    QList<QGraphicsItem *> items = laserWindow->graphicsView->scene()->items();
 
     QMutableListIterator<QGraphicsItem *> k(items);
     while (k.hasNext())
@@ -36,14 +36,14 @@ void AddSafetySignCommand::redo()
 {
     safetySign->setPixScale(*scale);
     safetySignList->push_back(safetySign);
-    laserWindow->graphicsView->scene->addItem(safetySign);
-    laserWindow->graphicsView->scene->clearSelection();
+    laserWindow->graphicsView->scene()->addItem(safetySign);
+    laserWindow->graphicsView->scene()->clearSelection();
     safetySign->setSelected(true);
 }
 
 AddSafetySignCommand::~AddSafetySignCommand()
 {
-    if(!laserWindow->graphicsView->scene)
+    if(!laserWindow->graphicsView->scene())
         delete safetySign;
 }
 

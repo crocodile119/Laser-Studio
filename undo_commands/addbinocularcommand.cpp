@@ -31,13 +31,13 @@ AddBinocularCommand::AddBinocularCommand(double _attenuatedDNRO, double _binocul
 
 void AddBinocularCommand::undo()
 {
-    laserWindow->graphicsView->scene->removeItem(binocular);
-    laserWindow->graphicsView->scene->removeItem(binocularLink);
-    laserWindow->graphicsView->scene->update();
+    laserWindow->graphicsView->scene()->removeItem(binocular);
+    laserWindow->graphicsView->scene()->removeItem(binocularLink);
+    laserWindow->graphicsView->scene()->update();
 
     myBinoculars->clear();
 
-    QList<QGraphicsItem *> items = laserWindow->graphicsView->scene->items();
+    QList<QGraphicsItem *> items = laserWindow->graphicsView->scene()->items();
     QMutableListIterator<QGraphicsItem *> k(items);
     while (k.hasNext())
     {
@@ -52,21 +52,21 @@ void AddBinocularCommand::undo()
 void AddBinocularCommand::redo()
 {
     binocular->setPixScale(*scale);
-    laserWindow->graphicsView->scene->addItem(binocular);
-    laserWindow->graphicsView->scene->clearSelection();
+    laserWindow->graphicsView->scene()->addItem(binocular);
+    laserWindow->graphicsView->scene()->clearSelection();
 
-    laserWindow->graphicsView->scene->addItem(binocularLink);
+    laserWindow->graphicsView->scene()->addItem(binocularLink);
 
     binocular->setTextLabel();
     binocular->setStringPosition();
     binocular->setBinSeqNumber(binSeqNumber);
     QString binocularName=binocular->objectName();
-    QGraphicsItem *item =laserWindow->graphicsView->scene->itemAt(initialPosition, QTransform());
+    QGraphicsItem *item =laserWindow->graphicsView->scene()->itemAt(initialPosition, QTransform());
     binocularOnScene= qgraphicsitem_cast<Binocular*>(item);
 
     if(binocularOnScene==nullptr)
     {
-        QList<QGraphicsItem*>items=laserWindow->graphicsView->scene->collidingItems(item);
+        QList<QGraphicsItem*>items=laserWindow->graphicsView->scene()->collidingItems(item);
 
         QMutableListIterator<QGraphicsItem *> k(items);
         while (k.hasNext())
@@ -84,7 +84,7 @@ void AddBinocularCommand::redo()
 
     laserpoint->setSelected(false);
 
-    laserWindow->graphicsView->scene->clearSelection();
+    laserWindow->graphicsView->scene()->clearSelection();
     //imposto la NOHD del punto laser
     laserpoint->setOpticalDiameter(laserWindow->myDockControls->getOpticalDistance());
     binocular->setSelected(true);
@@ -94,7 +94,7 @@ void AddBinocularCommand::redo()
 
 AddBinocularCommand::~AddBinocularCommand()
 {
-    if(!laserWindow->graphicsView->scene)
+    if(!laserWindow->graphicsView->scene())
         delete binocular;
 }
 

@@ -24,13 +24,13 @@ AddBeamInspectorCommand::AddBeamInspectorCommand(double _inspectorDistance, doub
 
 void AddBeamInspectorCommand::undo()
 {
-    laserWindow->graphicsView->scene->removeItem(beamInspector);
-    laserWindow->graphicsView->scene->removeItem(inspectorLink);
-    laserWindow->graphicsView->scene->update();
+    laserWindow->graphicsView->scene()->removeItem(beamInspector);
+    laserWindow->graphicsView->scene()->removeItem(inspectorLink);
+    laserWindow->graphicsView->scene()->update();
 
     myBeamInspectors->clear();
 
-    QList<QGraphicsItem *> items = laserWindow->graphicsView->scene->items();
+    QList<QGraphicsItem *> items = laserWindow->graphicsView->scene()->items();
 
     QMutableListIterator<QGraphicsItem *> k(items);
     while (k.hasNext())
@@ -46,22 +46,22 @@ void AddBeamInspectorCommand::undo()
 void AddBeamInspectorCommand::redo()
 {
     beamInspector->setPixScale(*scale);
-    laserWindow->graphicsView->scene->addItem(beamInspector);
-    laserWindow->graphicsView->scene->clearSelection();
+    laserWindow->graphicsView->scene()->addItem(beamInspector);
+    laserWindow->graphicsView->scene()->clearSelection();
 
-    laserWindow->graphicsView->scene->addItem(inspectorLink);
+    laserWindow->graphicsView->scene()->addItem(inspectorLink);
 
     beamInspector->setStringPosition();
     beamInspector->setInspectorSeqNumber(inspectorSeqNumber);
     QPointF shiftPosition =initialPosition-BeamInspector::positionShift(*scale);
-    QGraphicsItem *item =laserWindow->graphicsView->scene->itemAt(shiftPosition, QTransform());
+    QGraphicsItem *item =laserWindow->graphicsView->scene()->itemAt(shiftPosition, QTransform());
     beamInspectorOnScene= qgraphicsitem_cast<BeamInspector*>(item);
 
     QString reflectorName=beamInspector->objectName();
 
     if(beamInspectorOnScene==nullptr)
     {
-        QList<QGraphicsItem*>items=laserWindow->graphicsView->scene->collidingItems(item);
+        QList<QGraphicsItem*>items=laserWindow->graphicsView->scene()->collidingItems(item);
 
         QMutableListIterator<QGraphicsItem *> k(items);
         while (k.hasNext())
@@ -79,7 +79,7 @@ void AddBeamInspectorCommand::redo()
 
     laserpoint->setSelected(false);
 
-    laserWindow->graphicsView->scene->clearSelection();
+    laserWindow->graphicsView->scene()->clearSelection();
     //imposto la NOHD del punto laser
     laserpoint->setOpticalDiameter(laserWindow->myDockControls->getOpticalDistance());
 
@@ -89,7 +89,7 @@ void AddBeamInspectorCommand::redo()
 
 AddBeamInspectorCommand::~AddBeamInspectorCommand()
 {
-    if(!laserWindow->graphicsView->scene)
+    if(!laserWindow->graphicsView->scene())
         delete beamInspector;
 }
 

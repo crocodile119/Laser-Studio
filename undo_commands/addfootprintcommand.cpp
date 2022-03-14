@@ -27,14 +27,14 @@ AddFootprintCommand::AddFootprintCommand(double _attenuatedDNRO, double *_scale,
 
 void AddFootprintCommand::undo()
 {
-    laserWindow->graphicsView->scene->removeItem(footprint);
-    laserWindow->graphicsView->scene->removeItem(objectLink);
-    laserWindow->graphicsView->scene->clearSelection();
-    laserWindow->graphicsView->scene->update();
+    laserWindow->graphicsView->scene()->removeItem(footprint);
+    laserWindow->graphicsView->scene()->removeItem(objectLink);
+    laserWindow->graphicsView->scene()->clearSelection();
+    laserWindow->graphicsView->scene()->update();
 
     myFootprints->clear();
 
-    QList<QGraphicsItem *> items = laserWindow->graphicsView->scene->items();
+    QList<QGraphicsItem *> items = laserWindow->graphicsView->scene()->items();
 
     QMutableListIterator<QGraphicsItem *> k(items);
     while (k.hasNext())
@@ -48,18 +48,18 @@ void AddFootprintCommand::undo()
 void AddFootprintCommand::redo()
 {
     footprint->setItemScale(*scale);
-    laserWindow->graphicsView->scene->addItem(footprint);
+    laserWindow->graphicsView->scene()->addItem(footprint);
     footprint->paintFootprint(true);
-    laserWindow->graphicsView->scene->clearSelection();
+    laserWindow->graphicsView->scene()->clearSelection();
 
-    laserWindow->graphicsView->scene->addItem(objectLink);
+    laserWindow->graphicsView->scene()->addItem(objectLink);
     QString footprintName=footprint->objectName();
-    QGraphicsItem *item =laserWindow->graphicsView->scene->itemAt(initialPosition, QTransform());
+    QGraphicsItem *item =laserWindow->graphicsView->scene()->itemAt(initialPosition, QTransform());
     footprintOnScene= qgraphicsitem_cast<FootprintObject*>(item);
 
     if(footprintOnScene==nullptr)
     {
-        QList<QGraphicsItem*>items=laserWindow->graphicsView->scene->collidingItems(item);
+        QList<QGraphicsItem*>items=laserWindow->graphicsView->scene()->collidingItems(item);
 
         QMutableListIterator<QGraphicsItem *> k(items);
         while (k.hasNext())
@@ -77,7 +77,7 @@ void AddFootprintCommand::redo()
 
     laserpoint->setSelected(false);
 
-    laserWindow->graphicsView->scene->clearSelection();
+    laserWindow->graphicsView->scene()->clearSelection();
     //imposto la NOHD del punto laser
     laserpoint->setOpticalDiameter(laserWindow->myDockControls->getOpticalDistance());
     footprint->setSelected(true);
@@ -87,7 +87,7 @@ void AddFootprintCommand::redo()
 
 AddFootprintCommand::~AddFootprintCommand()
 {
-    if(!laserWindow->graphicsView->scene)
+    if(!laserWindow->graphicsView->scene())
         delete footprint;
 }
 

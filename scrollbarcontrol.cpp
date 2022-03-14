@@ -96,6 +96,8 @@ void ScrollBarControl::setDarkColor(bool dark)
             "border-radius: 8px;"
             "padding: 3px;"
             "margin-right: 10px;}"));
+        scrollBar->setStyleSheet(tr(" QScrollBar:horizontal {"
+            "border: 1px solid #666666;}"));
     }
     else
     {
@@ -105,6 +107,7 @@ void ScrollBarControl::setDarkColor(bool dark)
             "border-radius: 8px;"
             "padding: 3px;"
             "margin-right: 10px;}"));
+        scrollBar->setStyleSheet(tr(" QScrollBar:horizontal {}"));
     }
 }
 

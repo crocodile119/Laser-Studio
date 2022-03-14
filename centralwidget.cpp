@@ -41,9 +41,12 @@ CentralWidget::CentralWidget(QWidget *parent) :
     myDockControls= new DockControls(this, myDockResults, myDockEffects, myDockSkin, myDockGoggle, myDockLea);
 
     gridLayout = new QGridLayout(this);
-    graphicsView =new DisplayScene(this);
 
-    gridLayout->addWidget(graphicsView, 0, 0, 1, 1);
+    view = new View(this);
+
+    graphicsView =view->displayScene();
+
+    gridLayout->addWidget(view, 0, 0, 1, 1);
 
     graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
     graphicsView->setRenderHints(QPainter::Antialiasing
@@ -130,7 +133,7 @@ bool CentralWidget::writeFile(const QString &fileName)
     QVector <QPointF> SafetySignPosVect;
     QVector <SafetySignItem::SafetyClass> SafetySignKindVect;
 
-    QList<QGraphicsItem*>graphicElements=graphicsView->scene->items();
+    QList<QGraphicsItem*>graphicElements=graphicsView->scene()->items();
 
     QList<QGraphicsItem*>::iterator myIterator; // iterator
     myIterator = graphicElements.begin();
@@ -206,7 +209,7 @@ bool CentralWidget::writeFile(const QString &fileName)
            }
          ++myIterator;
     }
-
+    scale=view->scale();
     QRect previewRect=graphicsView->getSelectionRect();
     out << myLabRoomInserted << scintillationBool << atmEffectsBool << meteoRange << a_coefficient << atmoshericEffectsCoefficient
         << scaleIndex << scale << force << customer << uasl << uaslAssistant << laserDescription << placeDescription << free
@@ -556,22 +559,6 @@ void CentralWidget::clearInstallationDesription()
     placeDescription.clear();
 }
 
-void CentralWidget::setScale(const double& _scale)
-{
-    scale=_scale;
-    graphicsView->scale(scale, _scale);
-}
-
-void CentralWidget::setScaleIndex(const int& _scaleIndex)
-{
-    scaleIndex=_scaleIndex;
-}
-
-int CentralWidget::getScaleIndex()const
-{
-    return scaleIndex;
-}
-
 double CentralWidget::getScale()const
 {
     return scale;
@@ -694,4 +681,9 @@ QRect CentralWidget::getPreviewRect()const
 CentralWidget::~CentralWidget()
 {
 
+}
+
+View* CentralWidget::getView()const
+{
+    return view;
 }

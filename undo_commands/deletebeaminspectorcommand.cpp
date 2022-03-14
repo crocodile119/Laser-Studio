@@ -19,16 +19,16 @@ DeleteBeamInspectorCommand::~DeleteBeamInspectorCommand()
 void DeleteBeamInspectorCommand::undo()
 {
     beamInspectorOnScene->setPixScale(*scale);
-    laserWindow->graphicsView->scene->addItem(inspectorLink);
-    laserWindow->graphicsView->scene->addItem(beamInspectorOnScene);
+    laserWindow->graphicsView->scene()->addItem(inspectorLink);
+    laserWindow->graphicsView->scene()->addItem(beamInspectorOnScene);
     beamInspectorOnScene->setPos(deletePosition);
-    laserWindow->graphicsView->scene->clearSelection();
-    laserWindow->graphicsView->scene->update();
+    laserWindow->graphicsView->scene()->clearSelection();
+    laserWindow->graphicsView->scene()->update();
 
     myBeamInspectors->append(beamInspectorOnScene);
     laserpoint->setSelected(false);
 
-    laserWindow->graphicsView->scene->clearSelection();
+    laserWindow->graphicsView->scene()->clearSelection();
     //imposto la NOHD del punto laser
     laserpoint->setOpticalDiameter(laserWindow->myDockControls->getOpticalDistance());
     beamInspectorOnScene->setSelected(true);
@@ -38,12 +38,12 @@ void DeleteBeamInspectorCommand::undo()
 
 void DeleteBeamInspectorCommand::redo()
 {
-    laserWindow->graphicsView->scene->removeItem(inspectorLink);
-    laserWindow->graphicsView->scene->removeItem(beamInspectorOnScene);
+    laserWindow->graphicsView->scene()->removeItem(inspectorLink);
+    laserWindow->graphicsView->scene()->removeItem(beamInspectorOnScene);
 
     myBeamInspectors->clear();
 
-    QList<QGraphicsItem *> items = laserWindow->graphicsView->scene->items();
+    QList<QGraphicsItem *> items = laserWindow->graphicsView->scene()->items();
 
     QMutableListIterator<QGraphicsItem *> k(items);
     while (k.hasNext())

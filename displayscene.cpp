@@ -9,10 +9,9 @@
 
 DisplayScene::DisplayScene(QWidget* parent) : QGraphicsView(parent)
 {
-    scene = new GraphicsScene(this);
-    scene->clearSelection();
-    setScene(scene);
-
+    graphicsScene = new GraphicsScene(this);
+    graphicsScene->clearSelection();
+    setScene(graphicsScene);
     setMouseTracking(true);
 
     setDragMode(QGraphicsView::RubberBandDrag);
@@ -41,13 +40,13 @@ DisplayScene::~DisplayScene()
 
 void DisplayScene::setNewScene()
 {
-    QRectF scenerect=scene->itemsBoundingRect();
-    scene->setSceneRect(scenerect);
+    QRectF scenerect=scene()->itemsBoundingRect();
+    scene()->setSceneRect(scenerect);
 }
 
 void DisplayScene::deleteScene()
 {
-    delete scene;
+    delete scene();
 }
 
 void DisplayScene::mousePressEvent(QMouseEvent *event)
@@ -89,4 +88,9 @@ QRect DisplayScene::getSelectionRect()
 QRectF DisplayScene::getViewportRect()const
 {
     return viewportRect;
+}
+
+GraphicsScene* DisplayScene::scene()const
+{
+    return graphicsScene;
 }

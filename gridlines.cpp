@@ -4,7 +4,9 @@
 #include <QFontMetricsF>
 #include <QGuiApplication>
 
-GridLines::GridLines() : QGraphicsItem(), step(40.0), referencePix(":/images/referencepix.png")
+const double GridLines::GRID_STEP= 100.0;
+
+GridLines::GridLines() : QGraphicsItem(), step(GRID_STEP), referencePix(":/images/referencepix.png")
 {
 }
 
@@ -83,7 +85,7 @@ QRectF GridLines::boundingRect() const
 
 void GridLines::setSceneRect(const QRectF& _sceneRect)
 {
-    sceneRect=_sceneRect.translated(-_sceneRect.center());
+    sceneRect=_sceneRect;
 }
 
 void GridLines::setScale(const double& _newScale)

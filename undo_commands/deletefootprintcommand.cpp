@@ -18,18 +18,18 @@ DeleteFootprintCommand::~DeleteFootprintCommand()
 void DeleteFootprintCommand::undo()
 {
     footprintOnScene->setScale(*scale);
-    laserWindow->graphicsView->scene->addItem(objectLink);
-    laserWindow->graphicsView->scene->addItem(footprintOnScene);
+    laserWindow->graphicsView->scene()->addItem(objectLink);
+    laserWindow->graphicsView->scene()->addItem(footprintOnScene);
 
     footprintOnScene->setPos(deletePosition);
 
-    QGraphicsItem *item =laserWindow->graphicsView->scene->itemAt(deletePosition, QTransform());
+    QGraphicsItem *item =laserWindow->graphicsView->scene()->itemAt(deletePosition, QTransform());
     footprintOnScene= qgraphicsitem_cast<FootprintObject*>(item);
 
     myFootprints->append(footprintOnScene);
 
-    laserWindow->graphicsView->scene->clearSelection();
-    laserWindow->graphicsView->scene->update();
+    laserWindow->graphicsView->scene()->clearSelection();
+    laserWindow->graphicsView->scene()->update();
     //imposto la NOHD del punto laser
     laserpoint->setOpticalDiameter(laserWindow->myDockControls->getOpticalDistance());
     footprintOnScene->setSelected(true);
@@ -39,13 +39,13 @@ void DeleteFootprintCommand::undo()
 
 void DeleteFootprintCommand::redo()
 {
-    laserWindow->graphicsView->scene->removeItem(objectLink);
-    laserWindow->graphicsView->scene->removeItem(footprintOnScene);   
-    laserWindow->graphicsView->scene->update();
+    laserWindow->graphicsView->scene()->removeItem(objectLink);
+    laserWindow->graphicsView->scene()->removeItem(footprintOnScene);
+    laserWindow->graphicsView->scene()->update();
 
     myFootprints->clear();
 
-    QList<QGraphicsItem *> items = laserWindow->graphicsView->scene->items();
+    QList<QGraphicsItem *> items = laserWindow->graphicsView->scene()->items();
 
     QMutableListIterator<QGraphicsItem *> k(items);
     while (k.hasNext())

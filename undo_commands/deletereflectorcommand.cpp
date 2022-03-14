@@ -18,15 +18,15 @@ DeleteReflectorCommand::~DeleteReflectorCommand()
 void DeleteReflectorCommand::undo()
 {
     reflectorOnScene->setPixScale(*scale);
-    laserWindow->graphicsView->scene->addItem(reflectorlink);
-    laserWindow->graphicsView->scene->addItem(reflectorOnScene);
+    laserWindow->graphicsView->scene()->addItem(reflectorlink);
+    laserWindow->graphicsView->scene()->addItem(reflectorOnScene);
     reflectorOnScene->setPos(deletePosition);
-    laserWindow->graphicsView->scene->clearSelection();
-    laserWindow->graphicsView->scene->update();
+    laserWindow->graphicsView->scene()->clearSelection();
+    laserWindow->graphicsView->scene()->update();
 
     myReflectors->append(reflectorOnScene);
 
-    laserWindow->graphicsView->scene->clearSelection();
+    laserWindow->graphicsView->scene()->clearSelection();
     //imposto la NOHD del punto laser
     laserpoint->setOpticalDiameter(laserWindow->myDockControls->getOpticalDistance());
     reflectorOnScene->setSelected(true);
@@ -36,12 +36,12 @@ void DeleteReflectorCommand::undo()
 
 void DeleteReflectorCommand::redo()
 {
-    laserWindow->graphicsView->scene->removeItem(reflectorlink);
-    laserWindow->graphicsView->scene->removeItem(reflectorOnScene);
+    laserWindow->graphicsView->scene()->removeItem(reflectorlink);
+    laserWindow->graphicsView->scene()->removeItem(reflectorOnScene);
 
     myReflectors->clear();
 
-    QList<QGraphicsItem *> items = laserWindow->graphicsView->scene->items();
+    QList<QGraphicsItem *> items = laserWindow->graphicsView->scene()->items();
 
     QMutableListIterator<QGraphicsItem *> k(items);
     while (k.hasNext())

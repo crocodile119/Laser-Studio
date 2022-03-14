@@ -14,6 +14,7 @@ public:
     GridLines();
 
     public :
+    const static double GRID_STEP;
     void setSceneRect(const QRectF& _sceneRect);
     void setScale(const double&);
     void setGridLines(const double& _step);

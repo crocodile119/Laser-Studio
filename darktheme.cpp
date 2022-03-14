@@ -23,8 +23,13 @@ void MainWindow::setGuiDarkTheme()
                          "QLabel {background: none;}\n"
                          "QMenu::item:selected{background-color:#b5922d;}"
                          "QMenu::item:selected{color:#f0f0f0;}"
-                         "QGraphicsView {background-color:#f0f0f0;}"
-                         ));
+                         "QGraphicsView {background-color:#f0f0f0;}"));
+        laserWindow->getView()->slider()->setStyleSheet(tr(
+                          "QSlider::handle:vertical {background: #e0e0e0}\n"
+                          "QSlider::sub-page:vertical{background: #555555; border: 1px solid black}"
+                          "QSlider::add-page:vertical{background: #b5922d}"));
+
+
         laserWindow->myDockControls->setDarkChartTheme(true);
         laserWindow->myDockEffects->ui->tCA_Label->setStyleSheet(tr("QLabel {background-color: #b5922d;"
         "color: #fafafa;"
@@ -405,6 +410,10 @@ void MainWindow::setGuiDarkTheme()
     {
         setStyleSheet(tr(""));
         laserWindow->setStyleSheet(tr(""));
+        laserWindow->getView()->slider()->setStyleSheet(tr(
+                        "QSlider::handle:vertical{background: #e0e0e0}\n"
+                        "QSlider::sub-page:vertical{background: #d0d0d0; border: 1px solid grey}"
+                        "QSlider::add-page:vertical{background: #00c800}"));
         laserWindow->myDockControls->setDarkChartTheme(false);
         laserWindow->myDockEffects->ui->tCA_Label->setStyleSheet(tr("QLabel {background-color: #00c800;"
         "color: #fafafa;"

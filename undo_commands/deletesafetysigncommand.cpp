@@ -18,13 +18,13 @@ void DeleteSafetySignCommand::undo()
 {
     safetySign->setPixScale(*scale);
     safetySignList->push_back(safetySign);
-    laserWindow->graphicsView->scene->addItem(safetySign);
+    laserWindow->graphicsView->scene()->addItem(safetySign);
     safetySign->setPos(deletePosition);
 }
 
 void DeleteSafetySignCommand::redo()
 {
-    laserWindow->graphicsView->scene->removeItem(safetySign);
+    laserWindow->graphicsView->scene()->removeItem(safetySign);
     safetySignList->pop_back();
 }
 

@@ -16,6 +16,7 @@
 #include "reflector.h"
 #include "labroom.h"
 #include "safetysignitem.h"
+#include "view.h"
 
 class CentralWidget : public QWidget
 {
@@ -41,10 +42,8 @@ public:
     void set_UASL_Assistant(const QString);
     void setLaserDescription(const QString);
     void setPlaceDescription(const QString);
-    void setScale(const double& _scale);
-    void setScaleIndex(const int&);
-    int getScaleIndex()const;
     double getScale()const;
+    View* getView()const;
 
     void setAtmEffectsBool(bool);
     bool getAtmEffectsBool();
@@ -236,5 +235,7 @@ private:
 
     //variabile non impiegata
     bool free;
+
+    View *view;
 };
 #endif // CENTRALWIDGET_H

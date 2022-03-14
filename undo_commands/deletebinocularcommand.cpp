@@ -18,17 +18,17 @@ DeleteBinocularCommand::~DeleteBinocularCommand()
 void DeleteBinocularCommand::undo()
 {
     binocularOnScene->setPixScale(*scale);
-    laserWindow->graphicsView->scene->addItem(binocularLink);
-    laserWindow->graphicsView->scene->addItem(binocularOnScene);
+    laserWindow->graphicsView->scene()->addItem(binocularLink);
+    laserWindow->graphicsView->scene()->addItem(binocularOnScene);
     binocularOnScene->setPos(deletePosition);
-    laserWindow->graphicsView->scene->clearSelection();
-    laserWindow->graphicsView->scene->update();
+    laserWindow->graphicsView->scene()->clearSelection();
+    laserWindow->graphicsView->scene()->update();
 
     myBinoculars->append(binocularOnScene);
 
     laserpoint->setSelected(false);
 
-    laserWindow->graphicsView->scene->clearSelection();
+    laserWindow->graphicsView->scene()->clearSelection();
     //imposto la NOHD del punto laser
     laserpoint->setOpticalDiameter(laserWindow->myDockControls->getOpticalDistance());
     binocularOnScene->setSelected(true);
@@ -38,12 +38,12 @@ void DeleteBinocularCommand::undo()
 
 void DeleteBinocularCommand::redo()
 {
-    laserWindow->graphicsView->scene->removeItem(binocularLink);
-    laserWindow->graphicsView->scene->removeItem(binocularOnScene);
+    laserWindow->graphicsView->scene()->removeItem(binocularLink);
+    laserWindow->graphicsView->scene()->removeItem(binocularOnScene);
 
     myBinoculars->clear();
 
-    QList<QGraphicsItem *> items = laserWindow->graphicsView->scene->items();
+    QList<QGraphicsItem *> items = laserWindow->graphicsView->scene()->items();
 
     QMutableListIterator<QGraphicsItem *> k(items);
     while (k.hasNext())

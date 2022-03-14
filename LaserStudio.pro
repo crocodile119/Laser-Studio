@@ -51,7 +51,6 @@ SOURCES +=\
     lambertianchartdialog.cpp \
     lambertianchartview.cpp \
     lambertianreflector.cpp \
-    laseraerealview.cpp \
     laserapplication.cpp \
     laserclasscw.cpp \
     laserclassmp.cpp \
@@ -157,7 +156,6 @@ HEADERS  += mainwindow.h \
     lambertianchartdialog.h \
     lambertianchartview.h \
     lambertianreflector.h \
-    laseraerealview.h \
     laserapplication.h \
     laserclasscw.h \
     laserclassmp.h \

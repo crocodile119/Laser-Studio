@@ -105,6 +105,7 @@ private slots:
     void sceneScroll();
     void sceneRoomView();
     void setSceneScale();
+    void sceneGridScaleUpdate();
     void boundingRectForScale();
     void setSceneArea(QRect) const;
     void dragMode();

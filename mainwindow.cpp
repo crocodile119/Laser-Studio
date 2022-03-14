@@ -2259,13 +2259,7 @@ void MainWindow::sceneScroll()
 {
     scale=laserWindow->getView()->scale();
 
-    updateScale();
-
-    if(showGridAction->isChecked())
-    {
-        gridlines->setScale(scale);
-        backgroundGridPixmap();
-    }
+    sceneGridScaleUpdate();
 }
 
 void MainWindow::sceneRoomView()
@@ -2273,13 +2267,7 @@ void MainWindow::sceneRoomView()
     laserWindow->getView()->roomView();
     scale=laserWindow->getView()->scale();
 
-    updateScale();
-
-    if(showGridAction->isChecked())
-    {
-        gridlines->setScale(scale);
-        backgroundGridPixmap();
-    }
+    sceneGridScaleUpdate();
 }
 
 void MainWindow::setSceneScale()
@@ -2287,6 +2275,8 @@ void MainWindow::setSceneScale()
     int sliderIndex=View::SLIDER_MAXVALUE/2+View::SLIDER_FORMAXEXPONENT*std::log2f(scale);
     View* view=laserWindow->getView();
     view->slider()->setValue(sliderIndex);
+
+    sceneGridScaleUpdate();
 }
 
 void MainWindow::sceneScaleUp()
@@ -2294,13 +2284,7 @@ void MainWindow::sceneScaleUp()
     laserWindow->getView()->zoomIn();
     scale=laserWindow->getView()->scale();
 
-    updateScale();
-
-    if(showGridAction->isChecked())
-    {
-        gridlines->setScale(scale);
-        backgroundGridPixmap();
-    }
+    sceneGridScaleUpdate();
 }
 
 void MainWindow::sceneScaleDown()
@@ -2308,13 +2292,7 @@ void MainWindow::sceneScaleDown()
     laserWindow->getView()->zoomOut();
     scale=laserWindow->getView()->scale();
 
-    updateScale();
-
-    if(showGridAction->isChecked())
-    {
-        gridlines->setScale(scale);
-        backgroundGridPixmap();
-    }
+    sceneGridScaleUpdate();
 }
 
 void MainWindow::sceneScaleReset()
@@ -2322,6 +2300,11 @@ void MainWindow::sceneScaleReset()
     laserWindow->getView()->resetView();
     scale=laserWindow->getView()->scale();
 
+    sceneGridScaleUpdate();
+}
+
+void MainWindow::sceneGridScaleUpdate()
+{
     updateScale();
 
     if(showGridAction->isChecked())

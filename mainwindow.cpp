@@ -920,6 +920,14 @@ void MainWindow::createActions()
     zoomOutAction->setStatusTip(tr("Diminuisce la vista"));
     zoomMenu->addAction(zoomOutAction);
 
+    zoomWinAction= new QAction(tr("Zoom della selezione"), this);
+    zoomWinAction->setIcon(QIcon(":/images/zoomwin.png"));
+    zoomWinAction->setCheckable(true);
+    zoomWinAction->setChecked(false);
+    connect(zoomWinAction, &QAction::triggered, this, &MainWindow::setZoomWin);
+    zoomWinAction->setStatusTip(tr("Fornisce lo zoom della selezione"));
+    zoomMenu->addAction(zoomWinAction);
+
     zoomResetAction=new QAction(tr("Reimposta"), this);
     zoomResetAction->setIcon(QIcon(":/images/reset.png"));
     connect(zoomResetAction, SIGNAL(triggered()), this, SLOT(sceneScaleReset()));
@@ -1473,7 +1481,6 @@ void MainWindow::setPrintPreview()
     bool previewChecked=setPreviewAct->isChecked();
     if(previewChecked)
     {
-        laserpoint->setEnabled(false);
         laserWindow->graphicsView->setBackgroundBrush(QColor(220, 220, 220));
         enableControlsAndItems(false);
         connect(laserWindow->graphicsView, SIGNAL(mouseRelease()), this, SLOT(setSelectionRect()));
@@ -1496,8 +1503,6 @@ void MainWindow::setImagePreview()
     bool previewChecked=exportImageAct->isChecked();
     if(previewChecked)
     {
-        laserpoint->setEnabled(false);
-        //laserWindow->graphicsView->setBackgroundBrush(QColor(220, 220, 220));
         enableControlsAndItems(false);
         connect(laserWindow->graphicsView, SIGNAL(mouseRelease()), this, SLOT(setImageRect()));
     }
@@ -2272,9 +2277,7 @@ void MainWindow::sceneRoomView()
 
 void MainWindow::setSceneScale()
 {
-    int sliderIndex=View::SLIDER_MAXVALUE/2+View::SLIDER_FORMAXEXPONENT*std::log2f(scale);
-    View* view=laserWindow->getView();
-    view->slider()->setValue(sliderIndex);
+    laserWindow->getView()->setScale(scale);
 
     sceneGridScaleUpdate();
 }
@@ -2293,6 +2296,26 @@ void MainWindow::sceneScaleDown()
     scale=laserWindow->getView()->scale();
 
     sceneGridScaleUpdate();
+}
+
+void MainWindow::setZoomWin()
+{
+    bool zoomWinChecked=zoomWinAction->isChecked();
+    if(zoomWinChecked)
+    {
+        enableControlsAndItems(false);
+        connect(laserWindow->graphicsView, SIGNAL(mouseRelease()), this, SLOT(setZoomRect()));
+    }
+}
+
+void MainWindow::setZoomRect()
+{
+    laserWindow->getView()->zoomWin();
+    sceneGridScaleUpdate();
+    statusBar()->showMessage(tr("Zoom della selezione eseguito"), 2000);
+    disconnect(laserWindow->graphicsView, SIGNAL(mouseRelease()), this, SLOT(setZoomRect()));
+    enableControlsAndItems(true);
+    zoomWinAction->setChecked(false);
 }
 
 void MainWindow::sceneScaleReset()
@@ -2994,7 +3017,8 @@ void MainWindow::createToolBars()
     viewToolBar->setObjectName(tr("Visualizza"));
 
     viewToolBar->addAction(zoomInAction);
-    viewToolBar->addAction(zoomOutAction);   
+    viewToolBar->addAction(zoomOutAction);
+    viewToolBar->addAction(zoomWinAction);
     viewToolBar->addWidget(laserWindow->getView()->getZoomLabel());
     viewToolBar->addAction(zoomResetAction);
     viewToolBar->addAction(selectAct);

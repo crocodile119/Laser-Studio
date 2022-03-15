@@ -72,5 +72,6 @@
         <file>images/ruler.png</file>
         <file>images/referencepix.png</file>
         <file>images/reset.png</file>
+        <file>images/zoomwin.png</file>
     </qresource>
 </RCC>

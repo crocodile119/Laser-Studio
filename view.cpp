@@ -180,3 +180,26 @@ QSlider* View::slider()const
 {
     return zoomSlider;
 }
+
+void View::setScale(const double& scale)
+{
+    int sliderIndex=View::SLIDER_MAXVALUE/2+View::SLIDER_FORMAXEXPONENT*std::log2f(scale);
+    zoomSlider->setValue(sliderIndex);
+}
+
+void View::zoomWin()
+{
+    QPointF rubberBandRectTopLeft=graphicsView->mapToScene(graphicsView->getSelectionRect().topLeft());
+    QPointF rubberBandRectBottomRight=graphicsView->mapToScene(graphicsView->getSelectionRect().bottomRight());
+    QPointF viewportTopLeft=graphicsView->mapToScene(graphicsView->viewport()->rect().topLeft());
+    QPointF viewportBottomRight=graphicsView->mapToScene(graphicsView->viewport()->rect().bottomRight());
+    QSizeF viewportSize=QRectF(viewportTopLeft, viewportBottomRight).size();
+    QSizeF rubberBandSize=QRectF(rubberBandRectTopLeft, rubberBandRectBottomRight).size();
+    double scale=zoomScale*std::min(viewportSize.height()/rubberBandSize.height(),
+                          viewportSize.width()/rubberBandSize.width());
+
+    int sliderIndex=View::SLIDER_MAXVALUE/2+View::SLIDER_FORMAXEXPONENT*std::log2f(scale);
+
+    zoomSlider->setValue(sliderIndex);
+    graphicsView->centerOn(QRectF(rubberBandRectTopLeft, rubberBandRectBottomRight).center());
+}

@@ -180,6 +180,8 @@ private slots:
     void originOnClick(const QPointF &);
     void setImageRect();
     void setImagePreview();
+    void setZoomWin();
+    void setZoomRect();
     void setShadowZone();
     void setEhnacedShadowZone();
     void setViewportRect();
@@ -369,6 +371,7 @@ private:
     QAction *printPreviewAct;
     QAction *zoomInAction;
     QAction *zoomOutAction;
+    QAction *zoomWinAction;
     QAction *zoomResetAction;
     QAction *statusBarViewAction;
     QAction *dragAct;

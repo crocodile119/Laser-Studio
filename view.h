@@ -74,7 +74,9 @@ public:
 public slots:
     void zoomIn();
     void zoomOut();
+    void zoomWin();
     void roomView();
+    void setScale(const double&);
     double scale()const;
     QSlider* slider()const;
     void resetView();

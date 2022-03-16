@@ -4095,15 +4095,18 @@ void MainWindow::enableControlsAndItems(bool enabled)
     environmentToolBar->setEnabled(enabled);
     sceneToolBar->setEnabled(enabled);
     laserWindow->myDockControls->setEnabled(enabled);
-    laserpoint->setEnabled(enabled);
     signSafetyToolBar->setEnabled(enabled);
+
+    laserpoint->setFlag(QGraphicsItem::ItemIsSelectable, enabled);
+    laserpoint->setFlag(QGraphicsItem::ItemIsMovable, enabled);
 
     QList<Reflector*>::iterator myIterator; // iterator
     myIterator = myReflectors.begin();
     while (myIterator != myReflectors.end() )
     {
         reflector=*myIterator;
-        reflector->setEnabled(enabled);
+        reflector->setFlag(QGraphicsItem::ItemIsSelectable, enabled);
+        reflector->setFlag(QGraphicsItem::ItemIsMovable, enabled);
         ++myIterator;
     }
 
@@ -4112,8 +4115,29 @@ void MainWindow::enableControlsAndItems(bool enabled)
     while (myBinocularIterator != myBinoculars.end() )
     {
         binocular=*myBinocularIterator;
-        binocular->setEnabled(enabled);
+        binocular->setFlag(QGraphicsItem::ItemIsSelectable, enabled);
+        binocular->setFlag(QGraphicsItem::ItemIsMovable, enabled);
         ++myBinocularIterator;
+    }
+
+    QList <FootprintObject*>::iterator myFootprintIterator;
+    myFootprintIterator = myFootprints.begin();
+    while (myFootprintIterator != myFootprints.end() )
+    {
+        footprint=*myFootprintIterator;
+        footprint->setFlag(QGraphicsItem::ItemIsSelectable, enabled);
+        footprint->setFlag(QGraphicsItem::ItemIsMovable, enabled);
+        ++myFootprintIterator;
+    }
+
+    QList <BeamInspector*>::iterator myBeamInspectorIterator;
+    myBeamInspectorIterator = myBeamInspectors.begin();
+    while (myBeamInspectorIterator != myBeamInspectors.end() )
+    {
+        beamInspector=*myBeamInspectorIterator;
+        beamInspector->setFlag(QGraphicsItem::ItemIsSelectable, enabled);
+        beamInspector->setFlag(QGraphicsItem::ItemIsMovable, enabled);
+        ++myBeamInspectorIterator;
     }
 
     QList<SafetySignItem*>::iterator mySafetySignIterator; // iterator
@@ -4121,11 +4145,15 @@ void MainWindow::enableControlsAndItems(bool enabled)
     while (mySafetySignIterator != safetySignList.end() )
     {
         SafetySignItem* safetySign=*mySafetySignIterator;
-        safetySign->setEnabled(enabled);
+        safetySign->setFlag(QGraphicsItem::ItemIsSelectable, enabled);
+        safetySign->setFlag(QGraphicsItem::ItemIsMovable, enabled);
         ++mySafetySignIterator;
     }
     if(myLabRoom!=nullptr)
+    {
         myLabRoom->setFlag(QGraphicsItem::ItemIsSelectable, enabled);
+        myLabRoom->setFlag(QGraphicsItem::ItemIsMovable, enabled);
+    }
 }
 
 void MainWindow::setNewOriginPoint()

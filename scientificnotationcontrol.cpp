@@ -256,6 +256,10 @@ void ScientificNotationControl::setStatusTipHelp(const QString & whatThis)
 
 void ScientificNotationControl::on_verticalScrollBar_actionTriggered(int action)
 {
+    if(((exponent==-verticalScrollBar->maximum())&(action==1))
+     ||((exponent==-verticalScrollBar->minimum())&(action==2)))
+        return;
+
     if((action==1)||(action==2))
     {      
         QUndoCommand *scrollCommand = new AddControlValueCommand(dial, verticalScrollBar, dialOldValue, scrollBarOldValue,

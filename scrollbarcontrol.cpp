@@ -152,6 +152,10 @@ void ScrollBarControl::setMaximum(int value)
 
 void ScrollBarControl::on_scrollBar_actionTriggered(int action)
 {
+    if(((scrollBar->value()==scrollBar->maximum())&(action==1))
+     ||((scrollBar->value()==scrollBar->minimum())&(action==2)))
+        return;
+
     if((action==1)||(action==2)||(action==3)||(action==4))
     {
         QUndoCommand *scrollCommand = new AddScrollBarValueCommand(scrollBar, scrollBarOldValue, titleLabel->text(),

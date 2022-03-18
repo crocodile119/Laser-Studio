@@ -908,16 +908,16 @@ void MainWindow::createActions()
     zoomMenu = viewMenu->addMenu(tr("&Zoom"));
     zoomMenu ->setFont(font);
 
-    zoomInAction=new QAction(tr("Ingrandisci"), this);
+    zoomInAction=new QAction(tr("Aumenta lo zoom"), this);
     zoomInAction->setIcon(QIcon(":/images/zoomin.png"));
     connect(zoomInAction, SIGNAL(triggered()), this, SLOT(sceneScaleUp()));
-    zoomInAction->setStatusTip(tr("Ingrandisce la vista"));
+    zoomInAction->setStatusTip(tr("Aumenta lo zoom"));
     zoomMenu->addAction(zoomInAction);
 
-    zoomOutAction=new QAction(tr("Diminuisci"), this);
+    zoomOutAction=new QAction(tr("Diminuisce lo zoom"), this);
     zoomOutAction->setIcon(QIcon(":/images/zoomout.png"));
     connect(zoomOutAction, SIGNAL(triggered()), this, SLOT(sceneScaleDown()));
-    zoomOutAction->setStatusTip(tr("Diminuisce la vista"));
+    zoomOutAction->setStatusTip(tr("Diminuisce lo zoom"));
     zoomMenu->addAction(zoomOutAction);
 
     zoomWinAction= new QAction(tr("Zoom della selezione"), this);
@@ -928,10 +928,10 @@ void MainWindow::createActions()
     zoomWinAction->setStatusTip(tr("Fornisce lo zoom della selezione"));
     zoomMenu->addAction(zoomWinAction);
 
-    zoomResetAction=new QAction(tr("Reimposta"), this);
+    zoomResetAction=new QAction(tr("Reimposta lo zoom"), this);
     zoomResetAction->setIcon(QIcon(":/images/reset.png"));
     connect(zoomResetAction, SIGNAL(triggered()), this, SLOT(sceneScaleReset()));
-    zoomResetAction->setStatusTip(tr("Reimposta la vista"));
+    zoomResetAction->setStatusTip(tr("Reimposta la zoom"));
     zoomMenu->addAction(zoomResetAction);
 
     displayMenu = viewMenu->addMenu(tr("Display"));

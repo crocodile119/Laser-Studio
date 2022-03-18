@@ -8,6 +8,7 @@ const double GridLines::GRID_STEP= 100.0;
 
 GridLines::GridLines() : QGraphicsItem(), step(GRID_STEP), referencePix(":/images/referencepix.png")
 {
+   setFlag(QGraphicsItem::ItemStacksBehindParent);
 }
 
 void GridLines::paint (QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)

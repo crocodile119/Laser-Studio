@@ -88,12 +88,14 @@ View::View(QWidget *parent)
     zoomSlider->setMaximum(SLIDER_MAXVALUE);
     zoomSlider->setValue(SLIDER_MAXVALUE/2);
     zoomSlider->setTickPosition(QSlider::TicksRight);
-
     zoomLabel=new QLabel("1");
+    zoomLabel->setToolTip(tr("ingrandimento percentuale dello zoom"));
+    zoomLabel->setMinimumWidth(70);
+    zoomLabel->setAlignment(Qt::AlignCenter);
     zoomLabel->setStyleSheet(tr(
     "QLabel {background-color: #fafafa}"
     "QLabel {color: #000000}"
-    "QLabel {border: 0px solid grey}"
+    "QLabel {border: 1px solid grey}"
     "QLabel {border-radius: 8px}"
     "QLabel {padding: 3px}"
     "QLabel {margin: 5px}"));

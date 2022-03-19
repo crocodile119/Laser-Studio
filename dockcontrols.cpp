@@ -3598,7 +3598,7 @@ void DockControls::updateMP_LEA_data()
     leaModel->setData(thirdIndex, QVariant(QString("a<sub>b1</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::MEANBEAMATSTOPCOND1)))));
 
     thirdIndex=leaModel->index(1, 0, secondIndex);
-    leaModel->setData(thirdIndex, QVariant(QString("a<sub>b3</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::MEANBEAMATSTOPCOND3)))));;
+    leaModel->setData(thirdIndex, QVariant(QString("a<sub>b3</sub>=%1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::MEANBEAMATSTOPCOND3)))));
 
     secondIndex=leaModel->index(6, 0, firstIndex);
     leaModel->setData(secondIndex, QVariant(QString("Classificazione parziale: %1").arg(LEA_Data.at(static_cast<int>(DockLea::MP_Mean_Data::MEANCLASS)))));

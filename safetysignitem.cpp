@@ -35,6 +35,7 @@ void SafetySignItem::paint(QPainter *painter,
     painter->setPen(pen);
 
     QRectF pixRect=outlineRect();
+    painter->setBrush(Qt::NoBrush);
     painter->drawRect(pixRect);
     QRectF source(0.0, 0.0, safetySign.width(), safetySign.height());
     painter->drawPixmap(pixRect, safetySign, source);

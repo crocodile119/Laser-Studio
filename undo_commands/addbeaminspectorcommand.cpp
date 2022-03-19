@@ -97,7 +97,7 @@ InspectorLink* AddBeamInspectorCommand::addInspectorLink()
 {
     InspectorNodePair nodes = selectedInspectorNodePair();
     if (nodes == InspectorNodePair())
-        return nullptr;;
+        return nullptr;
 
     InspectorLink *inspectorLink = new InspectorLink(nodes.first, nodes.second);
 

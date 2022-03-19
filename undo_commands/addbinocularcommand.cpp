@@ -17,7 +17,7 @@ AddBinocularCommand::AddBinocularCommand(double _attenuatedDNRO, double _binocul
                               divergence,
                               laserWindow->myDockControls->getBeamDiameter());
 
-    binocular->setPos(initialPosition);  
+    binocular->setPos(initialPosition);
     binocular->setBinocularObjectName(initialPosition);
     binocularLink=addBinocularLink();
 
@@ -102,7 +102,7 @@ BinocularLink* AddBinocularCommand::addBinocularLink()
 {
     BinocularNodePair nodes = selectedBinocularNodePair();
     if (nodes == BinocularNodePair())
-        return nullptr;;
+        return nullptr;
 
     BinocularLink *binocularLink = new BinocularLink(nodes.first, nodes.second);
 

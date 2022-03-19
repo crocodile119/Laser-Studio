@@ -27,7 +27,6 @@ AddReflectorCommand::AddReflectorCommand(double _attenuatedDNRO, double _attenua
     reflector->setSkinDistance(attenuatedDNRC);
     reflector->setReflectorColor();
     reflector->setBackgroundColor(QColor(247, 247, 247, 170));
-    reflector->setPos(initialPosition);
     reflector->setTextLabel();
     reflector->setStringDetails();
     reflector->setSeqNumber(seqNumber);
@@ -110,7 +109,7 @@ ReflectorLink* AddReflectorCommand::addReflectorLink()
 {
     ReflectorNodePair reflectorNodes = selectedReflectorNodePair();
     if (reflectorNodes == ReflectorNodePair())
-        return nullptr;;
+        return nullptr;
 
     ReflectorLink *reflectorlink = new ReflectorLink(reflectorNodes.first, reflectorNodes.second);
 

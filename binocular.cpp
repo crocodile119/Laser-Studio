@@ -32,6 +32,7 @@ Binocular::Binocular(double DNRO, double _binocularDistance, double _wavelength,
     else
         dangerous=false;
 
+    setPixmap();
     setStringPosition();
     setTextLabel();
     setToolTip(position);
@@ -111,6 +112,11 @@ QRectF Binocular::boundingRect() const
     return rect.adjusted(-Margin, -Margin, +Margin, +Margin);
 }
 
+void Binocular::setPixmap()
+{
+    binocularPix=QPixmap(":/images/binocularpix.png");
+}
+
 QPainterPath Binocular::shape() const
 {
     QRectF myRect=outlineRect();
@@ -136,10 +142,9 @@ void Binocular::paint(QPainter *painter,
 
     painter->setPen(pen);
     QRectF rect = outlineRect();
+    painter->setBrush(Qt::NoBrush);
     painter->drawRect(rect);
     QRectF pixRect=outlineRect();
-
-    binocularPix=QPixmap(":/images/binocularpix.png");
 
     QRectF source(0.0, 0.0, binocularPix.width(), binocularPix.height());
     painter->drawPixmap(pixRect, binocularPix, source);

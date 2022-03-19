@@ -2460,6 +2460,15 @@ FootprintObject *MainWindow::selectedFootprint() const
         return 0;
 }
 
+SafetySignItem *MainWindow::selectedSafetySignItem() const
+{
+    QList<QGraphicsItem *> items = laserWindow->graphicsView->scene()->selectedItems();
+    if (items.count() == 1)
+        return dynamic_cast<SafetySignItem *>(items.first());
+    else
+        return 0;
+}
+
 LaserPoint *MainWindow::selectedLaserPoint() const
 {
     QList<QGraphicsItem *> items = laserWindow->graphicsView->scene()->selectedItems();
@@ -2854,6 +2863,7 @@ void MainWindow::setZValue(int z)
     Binocular *binocular = selectedBinocular();
     BeamInspector *beamInspector = selectedBeamInspector();
     FootprintObject *footprint = selectedFootprint();
+    SafetySignItem *safetySign = selectedSafetySignItem();
     QGraphicsItem *myLab = selectedLab();
 
     if (reflector)
@@ -2866,6 +2876,8 @@ void MainWindow::setZValue(int z)
         beamInspector->setZValue(z);
     else if (footprint)
         footprint->setZValue(z);
+    else if (safetySign)
+        safetySign->setZValue(z);
     else if(myLab)
         myLab->setZValue(z);
 }

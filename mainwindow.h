@@ -251,6 +251,7 @@ private:
     LabRoom *selectedLab() const;
     FootprintObject *selectedFootprint()const;
     BeamInspector *selectedBeamInspector() const;
+    SafetySignItem *selectedSafetySignItem() const;
     ReflectorNodePair selectedReflectorNodePair() const;
     BinocularNodePair selectedBinocularNodePair() const;
     ObjectNodePair selectedObjectNodePair() const;

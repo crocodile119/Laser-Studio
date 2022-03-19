@@ -8,7 +8,7 @@ AddNIndexCommand::AddNIndexCommand(Reflector *_reflector, double _n_index, QUndo
 
 void AddNIndexCommand::undo()
 {
-    reflector->setRefraction_n(old_n_index);;
+    reflector->setRefraction_n(old_n_index);
     reflector->setStringDetails();
     setText(createNIndexCommandString(n_index));
 }

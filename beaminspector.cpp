@@ -132,6 +132,7 @@ void BeamInspector::paint(QPainter *painter,
 
     painter->setPen(pen);
     QRectF rect = outlineRect();
+    painter->setBrush(Qt::NoBrush);
     painter->drawRect(rect);
     QRectF pixRect=outlineRect();
 
@@ -240,7 +241,6 @@ QRectF BeamInspector::outlineRect() const
     QPointF bottom=rect.bottomLeft();
     QPointF center=rect.center();
     rect.translate(QPointF(-center.x(), -bottom.y()));
-    //rect.translate(-center);
     return rect;
 }
 

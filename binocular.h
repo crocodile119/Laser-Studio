@@ -30,6 +30,7 @@ public:
     QColor outlineColor() const;
     void setBackgroundColor(const QColor &color);
     QColor backgroundColor() const;
+    void setPixmap();
     void setDNRO_Diameter(double newRadius);
     void setOpticalGain(const double&);
     double getOpticalGain()const;

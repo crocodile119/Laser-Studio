@@ -18,6 +18,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <cassert>
 
 const double Reflector::radDeg = 3.1415926535897932384626433832795/180;
 const double Reflector::phi_const = 2.5;
@@ -528,7 +529,7 @@ void Reflector::setStringDetails()
 
         break;
         default:
-        refrectorDetailsString="Problems";
+        assert(myTarget>=0 && myTarget>=3);
      }
 }
 
@@ -744,7 +745,7 @@ void Reflector::reflectorOperation()
         }
         break;
         default:
-        qDebug()<< "Problems ;-)";
+        assert(myTarget>=0 && myTarget<=3);
     }
 }
 
@@ -986,8 +987,8 @@ void Reflector::setPixmap()
 
         break;
         default:
-        qDebug()<<"errore";
-     }
+        assert(!reflectorPix.isNull());
+    }
 }
 
 void Reflector::setLaserShape(const QPainterPath& path)

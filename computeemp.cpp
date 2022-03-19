@@ -687,9 +687,7 @@ switch ((EmpLeaTables::typeOfOutput)myEmpData.effects)
 	break;
 	
 	default:
-    radiation="c'è qualcosa che non va";
-    eyeDamage="c'è qualcosa che non va";
-    skinDamage="c'è qualcosa che non va";
+    assert(myEmpData.effects<=7 && myEmpData.effects>0);
 	break;
     }
 }

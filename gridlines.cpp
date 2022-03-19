@@ -131,10 +131,11 @@ void GridLines::setTextColor(const QColor& color)
 
 QRectF GridLines::outlineRect() const
 {
+    const double CENTER=9;
+    QPointF centerPoint=QPointF(CENTER,CENTER)/scale;
     double rectWidht=referencePix.width()/scale;
     double rectHeight=referencePix.height()/scale;
     QRectF rect=QRectF(0, 0, rectWidht, rectHeight);
-    QPointF center=QPointF(rectWidht/4, rectHeight/4);
-    rect.translate(-center);
+    rect.translate(-centerPoint);
     return rect;
 }

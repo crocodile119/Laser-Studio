@@ -153,6 +153,11 @@ double LaserSafetyMP::getTe()const
     return Te;
 }
 
+double LaserSafetyMP::getMeanLimitingAperture() const
+{
+    return myMeanPower_Laser.getLimitingAperture();
+}
+
 void LaserSafetyMP::computeTmin()
 {
     /***********************************************************************************************************************
@@ -755,4 +760,14 @@ string LaserSafetyMP::getFormulaSort_3rdCondition()
         formulaSort_Tmin=myLaser.getFormulaSort();
 
     return formulaSort_Tmin;
+}
+
+void LaserSafetyMP::computeMeanEffectsLimitingApertureArea()
+{
+    meanEffectsLimitingApertureArea=PI*std::pow(meanLimitingAperture*1.0e-03, 2)/4;
+}
+
+double LaserSafetyMP::getMeanEffectsLimitingApertureArea() const
+{
+    return meanEffectsLimitingApertureArea;
 }

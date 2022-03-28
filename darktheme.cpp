@@ -67,6 +67,18 @@ void MainWindow::setGuiDarkTheme()
         "border-radius: 8px;"
         "padding: 3px;"
         "margin-right: 10px;}"));
+        laserWindow->myDockEffects->ui->tLimitingApertureLabel->setStyleSheet(tr("QLabel {background-color: #b5922d;"
+        "color: #fafafa;"
+        "border: 0px solid grey;"
+        "border-radius: 8px;"
+        "padding: 3px;"
+        "margin-right: 10px;}"));
+        laserWindow->myDockEffects->ui->tLimitingApertureMeanLabel->setStyleSheet(tr("QLabel {background-color: #b5922d;"
+        "color: #fafafa;"
+        "border: 0px solid grey;"
+        "border-radius: 8px;"
+        "padding: 3px;"
+        "margin-right: 10px;}"));
         laserWindow->myDockEffects->ui->tGammaLabel->setStyleSheet(tr("QLabel {background-color: #b5922d;"
         "color: #fafafa;"
         "border: 0px solid grey;"
@@ -446,6 +458,18 @@ void MainWindow::setGuiDarkTheme()
         "padding: 3px;"
         "margin-right: 10px;}"));
         laserWindow->myDockEffects->ui->tT2_Label->setStyleSheet(tr("QLabel {background-color: #00c800;"
+        "color: #fafafa;"
+        "border: 0px solid grey;"
+        "border-radius: 8px;"
+        "padding: 3px;"
+        "margin-right: 10px;}"));
+        laserWindow->myDockEffects->ui->tLimitingApertureLabel->setStyleSheet(tr("QLabel {background-color: #00c800;"
+        "color: #fafafa;"
+        "border: 0px solid grey;"
+        "border-radius: 8px;"
+        "padding: 3px;"
+        "margin-right: 10px;}"));
+        laserWindow->myDockEffects->ui->tLimitingApertureMeanLabel->setStyleSheet(tr("QLabel {background-color: #00c800;"
         "color: #fafafa;"
         "border: 0px solid grey;"
         "border-radius: 8px;"

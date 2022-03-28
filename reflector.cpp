@@ -529,7 +529,7 @@ void Reflector::setStringDetails()
 
         break;
         default:
-        assert(myTarget>=0 && myTarget>=3);
+        assert(myTarget>=0 && myTarget<=3);
      }
 }
 

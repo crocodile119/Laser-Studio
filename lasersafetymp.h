@@ -198,6 +198,8 @@ quello relativo agli effetti termici.
  Tale valore risulta utile allorquando si voglia determinare il massimo valore della trasmittanza <b>&tau;</b> del filtro necessario ad abbattre
  la radiazioni a livelli inferiori al massimo permesso.
  */
+void computeMeanEffectsLimitingApertureArea();
+double getMeanEffectsLimitingApertureArea() const;
 void computeMeanPower_NOHD();/*!< Calcola la <b>DNRO</b> in metri per l'<b>EMP</b> ottenuto con il criterio della potenza applicando la nota formula:
 \f[DNRO=\frac{\sqrt{\frac{4 \cdot P_{media}}{\pi \cdot E_{Te}}}-a}{\varphi}\f]
 dove <b>E<sub>EMP</sub></b> è l'<b>EMP<sub>Te</sub></b> ricavato della tabella dell'Allegato XXXVII espresso in irradianza misurata in W/m<sup>2</sup>,
@@ -277,7 +279,7 @@ void setTe();/*!< Imposta il valore del tempo effettivo di esposizione in second
  * ed il tempo di eposizione <b>T<sub>e</sub></b>. Il valore del tempo <b>T<sub>2</sub></b> può cambiare nel caso di funzionamento
  * ad alta frequenza. */
 double getTe()const;/*!< Restituisce il valore del parametro <b>T<sub>eff</sub></b> in secondi*/
-
+double getMeanLimitingAperture()const;
 
 private:
 double PRF;
@@ -309,6 +311,8 @@ double meanPow_EMP_Equate;
 double Tmin;
 string formula_Tmin;
 string formulaSort_Tmin;
+double meanLimitingAperture;
+double meanEffectsLimitingApertureArea;
 };
 
 #endif // LASERSAFETYMP_H

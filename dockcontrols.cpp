@@ -1389,7 +1389,7 @@ void DockControls::setWidgets()
         dockResults->ui->OD_MeanFilterLabel->setVisible(false);
 
         dockResults->ui->tOD_FilterLabel->setText("OD Filtro");
-        dockResults->ui->OD_FilterLabel->setText(QString::number(opticalDensity, 'e', 2));
+        dockResults->ui->OD_FilterLabel->setText(QString::number(opticalDensity, 'f', 2));
 
         /*******************************************************
         * Effects widgets                                      *
@@ -1398,6 +1398,8 @@ void DockControls::setWidgets()
         //Label non visibili
         dockEffects->ui->tTminLabel->setVisible(false);
         dockEffects->ui->TminLabel->setVisible(false);
+        dockEffects->ui->tLimitingApertureMeanLabel->setVisible(false);
+        dockEffects->ui->limitingApertureMeanLabel->setVisible(false);
 
         dockEffects->ui->tCA_Label->setText("C<sub>A</sub>");
         dockEffects->ui->CA_Label->setText(QString::number(MyLaserCW_Pr->getCA(),'e', 2));
@@ -1416,6 +1418,9 @@ void DockControls::setWidgets()
 
         dockEffects->ui->tT2_Label->setText("T<sub>2</sub> [s]");
         dockEffects->ui->T2_Label->setText(QString::number(MyLaserCW_Pr->getT2(),'e', 2));
+
+        dockEffects->ui->tLimitingApertureLabel->setText(tr("a<sub>L</sub> [mm]"));
+        dockEffects->ui->limitingApertureLabel->setText(QString::number(MyLaserCW_Pr->getLimitingAperture(),'e', 2));
 
         QString gamma="γ";
         dockEffects->ui->tGammaLabel->setText(gamma.toHtmlEscaped() + " [mrad]");
@@ -1555,7 +1560,7 @@ void DockControls::setWidgets()
         dockResults->ui->OD_MeanFilterLabel->setVisible(false);
 
         dockResults->ui->tOD_FilterLabel->setText("OD Filtro");
-        dockResults->ui->OD_FilterLabel->setText(QString::number(opticalDensity, 'e', 2));
+        dockResults->ui->OD_FilterLabel->setText(QString::number(opticalDensity, 'f', 2));
 
         /********************************************************
          * Results effects                                      *
@@ -1564,6 +1569,8 @@ void DockControls::setWidgets()
         //Label non visibili
         dockEffects->ui->tTminLabel->setVisible(false);
         dockEffects->ui->TminLabel->setVisible(false);
+        dockEffects->ui->tLimitingApertureMeanLabel->setVisible(false);
+        dockEffects->ui->limitingApertureMeanLabel->setVisible(false);
 
         dockEffects->ui->CA_Label->setText(QString::number(MyLaserSP_Pr->getCA(),'e', 2));
         dockEffects->ui->CB_Label->setText(QString::number(MyLaserSP_Pr->getCB(),'e', 2));
@@ -1571,6 +1578,8 @@ void DockControls::setWidgets()
         dockEffects->ui->CE_Label->setText(QString::number(MyLaserSP_Pr->getCE(),'e', 2));
         dockEffects->ui->T1_Label->setText(QString::number(MyLaserSP_Pr->getT1(),'e', 2));
         dockEffects->ui->T2_Label->setText(QString::number(MyLaserSP_Pr->getT2(),'e', 2));
+        dockEffects->ui->tLimitingApertureLabel->setText(tr("a<sub>L</sub> [mm]"));
+        dockEffects->ui->limitingApertureLabel->setText(QString::number(MyLaserSP_Pr->getLimitingAperture(),'e', 2));
 
         if(MyLaserSP_Pr->getGamma()==0)
             dockEffects->ui->GammaLabel->setText("Non applicabile");
@@ -1828,9 +1837,9 @@ void DockControls::setWidgets()
         dockResults->ui->OD_MeanFilterLabel->setVisible(true);
 
         dockResults->ui->tOD_FilterLabel->setText("OD Filtro");
-        dockResults->ui->OD_FilterLabel->setText(QString::number(opticalDensity, 'e', 2));
+        dockResults->ui->OD_FilterLabel->setText(QString::number(opticalDensity, 'f', 2));
         dockResults->ui->tOD_MeanFilterLabel->setText("OD Filtro medio");
-        dockResults->ui->OD_MeanFilterLabel->setText(QString::number(dOpticalDensity, 'e', 2));
+        dockResults->ui->OD_MeanFilterLabel->setText(QString::number(dOpticalDensity, 'f', 2));
 
         /********************************************************
         * Results effects                                       *
@@ -1838,6 +1847,8 @@ void DockControls::setWidgets()
 
         dockEffects->ui->tTminLabel->setVisible(true);
         dockEffects->ui->TminLabel->setVisible(true);
+        dockEffects->ui->tLimitingApertureMeanLabel->setVisible(true);
+        dockEffects->ui->limitingApertureMeanLabel->setVisible(true);
 
         dockEffects->ui->CA_Label->setText(QString::number(MyLaserMP_Pr->getCA(),'e', 2));
         dockEffects->ui->CB_Label->setText(QString::number(MyLaserMP_Pr->getCB(),'e', 2));
@@ -1846,6 +1857,11 @@ void DockControls::setWidgets()
         dockEffects->ui->T1_Label->setText(QString::number(MyLaserMP_Pr->getT1(),'e', 2));
         dockEffects->ui->T2_Label->setText(QString::number(MyLaserMP_Pr->getT2(),'e', 2));
 
+        dockEffects->ui->tLimitingApertureLabel->setText(tr("a<sub>L</sub> [mm]"));
+        dockEffects->ui->limitingApertureLabel->setText(QString::number(MyLaserMP_Pr->getLimitingAperture(),'e', 2));
+
+        dockEffects->ui->tLimitingApertureMeanLabel->setText(tr("a<sub>L mean</sub> [mm]"));
+        dockEffects->ui->limitingApertureMeanLabel->setText(QString::number(MyLaserMP_Pr->getMeanLimitingAperture(),'e', 2));
 
         dockEffects->ui->tTminLabel->setText("T<sub>min</sub> [s]");
         dockEffects->ui->TminLabel->setText(QString::number(MyLaserMP_Pr->getTmin(),'e', 2));
@@ -2738,7 +2754,7 @@ void DockControls::computeOpticalDensity()
     double powerErg;
     double firstAndThirdEMP;
     double opticalDensityRatio=0.0;
-    double beamArea;
+    double limitingApertureArea;
     double timeBase;
     QString formulaSort;
 
@@ -2747,11 +2763,11 @@ void DockControls::computeOpticalDensity()
         double irradiance;
         CW_EMP=MyLaserCW_Pr->getEMP();
         formulaSort=QString::fromStdString(MyLaserCW_Pr->getFormulaSort());
-        MyLaserCW_Pr->computeBeamArea();
+        MyLaserCW_Pr->computeLimitingApertureArea();
         timeBase=MyLaserCW_Pr->getExposureTime();
-        beamArea=MyLaserCW_Pr->getBeamArea();
+        limitingApertureArea=MyLaserCW_Pr->getLimitingApertureArea();
         powerErg=MyLaserCW_Pr->getPowerErg();
-        irradiance=powerErg/beamArea;
+        irradiance=powerErg/limitingApertureArea;
 
         if(formulaSort=='E')
             opticalDensityRatio=irradiance/CW_EMP;
@@ -2770,9 +2786,9 @@ void DockControls::computeOpticalDensity()
         powerErg=MyLaserSP_Pr->getPowerErg();
         formulaSort=QString::fromStdString(MyLaserSP_Pr->getFormulaSort());
         double pulseWidth=MyLaserSP_Pr->getPulseWidth();
-        MyLaserSP_Pr->computeBeamArea();
-        beamArea=MyLaserSP_Pr->getBeamArea();
-        energyExposure=powerErg/beamArea;
+        MyLaserSP_Pr->computeLimitingApertureArea();
+        limitingApertureArea=MyLaserSP_Pr->getLimitingApertureArea();
+        energyExposure=powerErg/limitingApertureArea;
 
             if(formulaSort=='E'){
                 opticalDensityRatio=energyExposure/(SP_EMP*pulseWidth);
@@ -2807,8 +2823,8 @@ void DockControls::computeOpticalDensity()
 
         powerErg=MyLaserMP_Pr->getPowerErg();
 
-        MyLaserMP_Pr->computeBeamArea();
-        beamArea=MyLaserMP_Pr->getBeamArea();
+        MyLaserMP_Pr->computeLimitingApertureArea();
+        limitingApertureArea=MyLaserMP_Pr->getLimitingApertureArea();
 
         /****************************************************************************
         * L'EMP da considerare nel caso di laser MODELOCKED è riferito             *
@@ -2816,7 +2832,7 @@ void DockControls::computeOpticalDensity()
         * > 1400 e < 400 nm e che t< 10^9 l'uscita del laser va calcolata come Q/t *
         ****************************************************************************/
 
-            exposure=powerErg/beamArea;
+            exposure=powerErg/limitingApertureArea;
             if(formulaSort=="E")
                 opticalDensityRatio=exposure/(firstAndThirdEMP*timeForPulse);
             else if(formulaSort=="H")
@@ -2834,7 +2850,7 @@ void DockControls::dComputeOpticalDensity()
         double secondEMP=0.0;
         double powerErg;
         double meanPower;
-        double beamArea;
+        double meanEffectsLimitingApertureArea;
         double PRF;
         double opticalDensityRatio;
         double radiance;
@@ -2842,16 +2858,16 @@ void DockControls::dComputeOpticalDensity()
         QString formulaSort;
         int pulseNumber;
 
-        MyLaserMP_Pr->computeBeamArea();
-        beamArea=MyLaserMP_Pr->getBeamArea();
+        MyLaserMP_Pr->computeMeanEffectsLimitingApertureArea();
+        meanEffectsLimitingApertureArea=MyLaserMP_Pr->getMeanEffectsLimitingApertureArea();
 
         powerErg=MyLaserMP_Pr->getPowerErg();
         formulaSort=QString::fromStdString(MyLaserMP_Pr->getMeanPowerFormulaSort());
         PRF=MyLaserMP_Pr->getPRF();
         pulseNumber=ceil(PRF*MyLaserMP_Pr->getExposureTime());
         meanPower=powerErg*PRF;
-        irradiance=meanPower/beamArea;
-        radiance=powerErg/beamArea;
+        irradiance=meanPower/meanEffectsLimitingApertureArea;
+        radiance=powerErg/meanEffectsLimitingApertureArea;
         secondEMP=MyLaserMP_Pr->getEMP_MP();
 
         if(formulaSort=='E')

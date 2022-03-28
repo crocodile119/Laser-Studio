@@ -289,7 +289,6 @@ private:
     bool externalFile;
     QStringList recentFiles;
     double reflectorDistance;
-    QTimer *timer;
     QStringList reflectorsFilenameList;
     QList <QImage> reflectorsGraphImageList;
     QStringList inspectorsFilenameList;

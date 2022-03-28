@@ -161,6 +161,7 @@ void LaserReport::laserAssessmentResults()
         output.append(laserWindow->myDockEffects->ui->tCE_Label->text()+"$"+laserWindow->myDockEffects->ui->CE_Label->text());
         output.append(laserWindow->myDockEffects->ui->tT1_Label->text()+"$"+laserWindow->myDockEffects->ui->T1_Label->text());
         output.append(laserWindow->myDockEffects->ui->tT2_Label->text()+"$"+laserWindow->myDockEffects->ui->T2_Label->text());
+        output.append(laserWindow->myDockEffects->ui->tLimitingApertureLabel->text()+"$"+laserWindow->myDockEffects->ui->limitingApertureLabel->text());
         output.append(laserWindow->myDockResults->ui->tNOHDLabel->text()+"$"+laserWindow->myDockResults->ui->NOHDLabel->text());
         output.append(laserWindow->myDockResults->ui->tOD_FilterLabel->text()+"$"+laserWindow->myDockResults->ui->tOD_FilterLabel->text());
 
@@ -193,6 +194,7 @@ void LaserReport::laserAssessmentResults()
         output.append(laserWindow->myDockEffects->ui->tT1_Label->text()+"$"+laserWindow->myDockEffects->ui->T1_Label->text());
         output.append(laserWindow->myDockEffects->ui->tT2_Label->text()+"$"+laserWindow->myDockEffects->ui->T2_Label->text());
         output.append(laserWindow->myDockEffects->ui->tGammaLabel->text()+"$"+laserWindow->myDockEffects->ui->GammaLabel->text());
+        output.append(laserWindow->myDockEffects->ui->tLimitingApertureLabel->text()+"$"+laserWindow->myDockEffects->ui->limitingApertureLabel->text());
         output.append(laserWindow->myDockResults->ui->tNOHDLabel->text()+"$"+laserWindow->myDockResults->ui->NOHDLabel->text());
         output.append(laserWindow->myDockResults->ui->tOD_FilterLabel->text()+"$"+laserWindow->myDockResults->ui->tOD_FilterLabel->text());
 
@@ -240,6 +242,8 @@ void LaserReport::laserAssessmentResults()
         output.append(laserWindow->myDockEffects->ui->tCE_Label->text()+"$"+laserWindow->myDockEffects->ui->CE_Label->text());
         output.append(laserWindow->myDockEffects->ui->tT1_Label->text()+"$"+laserWindow->myDockEffects->ui->T1_Label->text());
         output.append(laserWindow->myDockEffects->ui->tT2_Label->text()+"$"+laserWindow->myDockEffects->ui->T2_Label->text());
+        output.append(laserWindow->myDockEffects->ui->tLimitingApertureLabel->text()+"$"+laserWindow->myDockEffects->ui->limitingApertureLabel->text());
+        output.append(laserWindow->myDockEffects->ui->tLimitingApertureMeanLabel->text()+"$"+laserWindow->myDockEffects->ui->limitingApertureMeanLabel->text());
 
         output.append(laserWindow->myDockResults->ui->tMeanPowerLabel->text()+"$"+laserWindow->myDockResults->ui->MeanPowerLabel->text());
         output.append(laserWindow->myDockResults->ui->tMeanIrradianceLabel->text()+"$"+laserWindow->myDockResults->ui->MeanIrradianceLabel->text());
@@ -1639,6 +1643,12 @@ QString LaserReport::htmlSymbols()
 "    </tr>"
 "    <tr>"
 "    <td><b>δ</b></td><td  style=\"text-align: left;\">Duty Cycle</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>a<sub>L</sub></b> [mm]</td><td style=\"text-align: left;\">Apertura limite</td>"
+"    </tr>"
+"    <tr>"
+"    <td><b>a<sub>L mean</sub></b> [mm]</td><td style=\"text-align: left;\">Apertura limite per la durata del treno di impulsi</td>"
 "    </tr>"
 "    <tr>"
 "    <td  style=\"text-align: left;\" colspan=\"2\" rowspan=\"1\"><i><br>Esposizione massima permessa nel funzionamento ad onda continua e ad impulso (rif. D.Lgs 81/2008).</i></td>"

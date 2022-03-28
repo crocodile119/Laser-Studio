@@ -31,6 +31,7 @@ LaserSafety::LaserSafety(double _beamDiameter, double _powerErg,  double _diverg
     CE=myLaser.getCE();
     T1=myLaser.getT1();
     T2=myLaser.getT2();
+    limitingAperture=myLaser.getLimitingAperture();
 
     gamma=myLaser.getGamma();
     radiation=myLaser.getRadiation();
@@ -134,9 +135,19 @@ void LaserSafety::computeBeamArea()
     beamArea=PI*std::pow(beamDiameter*1.0e-03, 2)/4;
 }
 
+void LaserSafety::computeLimitingApertureArea()
+{
+    limitingApertureArea=PI*std::pow(limitingAperture*1.0e-03, 2)/4;
+}
+
 double LaserSafety::getBeamArea() const
 {
     return beamArea;
+}
+
+double LaserSafety::getLimitingApertureArea() const
+{
+    return limitingApertureArea;
 }
 
 void LaserSafety::computeNOHD()
@@ -214,6 +225,11 @@ double LaserSafety::getT1() const
 double LaserSafety::getT2() const
 {
     return myLaser.getT2();
+}
+
+double LaserSafety::getLimitingAperture() const
+{
+    return myLaser.getLimitingAperture();
 }
 
 string LaserSafety::getRadiation() const

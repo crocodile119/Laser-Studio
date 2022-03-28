@@ -598,19 +598,7 @@ QLabel {margin-right: 10px}</string>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="tDeltaLabel">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>16777215</height>
-             </size>
-            </property>
+           <widget class="QLabel" name="tLimitingApertureLabel">
             <property name="font">
              <font>
               <pointsize>8</pointsize>
@@ -628,9 +616,6 @@ QLabel {margin-right: 10px}</string>
             </property>
             <property name="text">
              <string>TextLabel</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
             </property>
            </widget>
           </item>
@@ -694,13 +679,7 @@ QLabel {margin-right: 10px}</string>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="deltaLabel">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>0</height>
-             </size>
-            </property>
+           <widget class="QLabel" name="limitingApertureLabel">
             <property name="styleSheet">
              <string notr="true">QLabel {background-color: #fafafa}
 QLabel {color: #000000}
@@ -711,9 +690,6 @@ QLabel {margin-right: 10px}</string>
             </property>
             <property name="text">
              <string>TextLabel</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
             </property>
            </widget>
           </item>
@@ -735,7 +711,66 @@ QLabel {margin-right: 10px}</string>
         <item row="0" column="8">
          <layout class="QVBoxLayout" name="verticalLayout_9">
           <item>
+           <widget class="QLabel" name="tDeltaLabel">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>8</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel {background-color: #00c800}
+QLabel {color: #fafafa}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+            </property>
+            <property name="text">
+             <string>TextLabel</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QLabel" name="tTminLabel">
+            <property name="font">
+             <font>
+              <pointsize>8</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel {background-color: #00c800}
+QLabel {color: #fafafa}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+            </property>
+            <property name="text">
+             <string>TextLabel</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="tLimitingApertureMeanLabel">
             <property name="font">
              <font>
               <pointsize>8</pointsize>
@@ -774,6 +809,30 @@ QLabel {margin-right: 10px}</string>
         <item row="0" column="9">
          <layout class="QVBoxLayout" name="verticalLayout_10">
           <item>
+           <widget class="QLabel" name="deltaLabel">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+            </property>
+            <property name="text">
+             <string>TextLabel</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QLabel" name="TminLabel">
             <property name="font">
              <font>
@@ -781,6 +840,21 @@ QLabel {margin-right: 10px}</string>
               <pointsize>8</pointsize>
              </font>
             </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+            </property>
+            <property name="text">
+             <string>TextLabel</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="limitingApertureMeanLabel">
             <property name="styleSheet">
              <string notr="true">QLabel {background-color: #fafafa}
 QLabel {color: #000000}

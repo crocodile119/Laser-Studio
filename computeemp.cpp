@@ -6,6 +6,7 @@
 #include <iostream>
 #include <array>
 #include <algorithm>
+#include <cassert>
 #include "tablescontroller.h"
 #include "floatcomparison.h"
 
@@ -96,6 +97,7 @@ void ComputeEMP::EMP()
     selectLeaRow();
 
     ComputeParameters();
+    computeLimitingAperture();
     BioEffects();
 	 
     if (((wavelength>=400) and (wavelength<=1400)) and ((pulseWidth>10) and (pulseWidth<30000)))
@@ -775,4 +777,58 @@ std::array<empdata, EmpLeaTables::TABLEROW_EMP> ComputeEMP::getEMP_Table()const
 empdata ComputeEMP::getEMP_Data()const
 {
     return myEmpData;
+}
+
+void ComputeEMP::computeLimitingAperture()
+{
+    if((wavelength >= 400) && (wavelength < 1400))
+        limitingAperture=7;
+    else
+    if((wavelength >= 180) && (wavelength < 400))
+    {
+        if(pulseWidth<0.3)
+        {
+            limitingAperture=1;
+        }
+        else if(((pulseWidth>0.3)||almostEqualUlps(pulseWidth, 0.3))&&(pulseWidth<10))
+        {
+            limitingAperture=1.5*std::pow(pulseWidth,0.375);
+        }
+        else if(((pulseWidth>10)||almostEqualUlps(pulseWidth, 10))&&((pulseWidth<3.0e+04)||almostEqualUlps(pulseWidth, 3.0e+04)))
+        {
+           limitingAperture=3.5;
+        }
+        else
+        {
+           assert((pulseWidth>1.0e-13) &&(pulseWidth<=3.0e+04));
+        }
+    }
+    if((wavelength >= 1400) && (wavelength < 1.0e+05))
+    {
+        if(pulseWidth<0.3)
+        {
+            limitingAperture=1;
+        }
+        else if(((pulseWidth>0.3)||almostEqualUlps(pulseWidth, 0.3))&&(pulseWidth<10))
+        {
+            limitingAperture=1.5*std::pow(pulseWidth,0.375);
+        }
+        else if(((pulseWidth>10)||almostEqualUlps(pulseWidth, 0.3))&&((pulseWidth<3.0e+04)||almostEqualUlps(pulseWidth, 3.0e+04)))
+        {
+            limitingAperture=3.5;
+        }
+        else
+        {
+           assert((pulseWidth>=1.0e-13)&&(pulseWidth<=3.0e+04));
+        }
+    }
+    if((wavelength >= 1.0e+05) && (wavelength < 1.0e+06))
+    {
+        limitingAperture=3.5;
+    }
+}
+
+double ComputeEMP::getLimitingAperture()const
+{
+    return limitingAperture;
 }

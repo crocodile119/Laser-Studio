@@ -21,6 +21,7 @@ const double BeamInspector::fe_min= 14.53*1.0e-03;//distanza di focalizzazione m
 const double BeamInspector::NO_INTERESTING_EXPOSURE_TIME=1.0;
 const double BeamInspector::NO_MULTI_PULSE=1.0;
 const double BeamInspector::SHORT_TIME_LIMIT=10.0;
+const double BeamInspector::PUPIL_DIAMETER=7.0;
 double BeamInspector::rayleighDistance;
 double BeamInspector::TEM00_RayleighDistance;
 double BeamInspector::qualityFactor;
@@ -667,21 +668,21 @@ void BeamInspector::valuateLongExposurePosition()
                 longExposurePowerErg=powerErg;
         }
 
-        EMP_PoweErgRatio=(4*longExposurePowerErg)/(PI*std::pow(1e-03*spotDiameter,2)*longExposure_EMP);
+        EMP_PoweErgRatio=(4*longExposurePowerErg)/(PI*std::pow(1e-03*effectiveDiameter,2)*longExposure_EMP);
     }
     else if(laserOperation==DockControls::operation::MULTI_PULSE)
     {
         if(alpha_r<1.5)
         {
             longExposurePowerErg=powerErg;
-            EMP_PoweErgRatio=(4*longExposurePowerErg)/(PI*std::pow(1e-03*spotDiameter,2)*longExposure_EMP*exposureTime/numberOfPulses);
+            EMP_PoweErgRatio=(4*longExposurePowerErg)/(PI*std::pow(1e-03*effectiveDiameter,2)*longExposure_EMP*exposureTime/numberOfPulses);
         }
         else
         {
             if(exposureTime<=T2)
-                EMP_PoweErgRatio=(4*longExposurePowerErg)/(PI*std::pow(1e-03*spotDiameter,2)*longExposure_EMP/numberOfPulses);
+                EMP_PoweErgRatio=(4*longExposurePowerErg)/(PI*std::pow(1e-03*effectiveDiameter,2)*longExposure_EMP/numberOfPulses);
             else
-                EMP_PoweErgRatio=(4*longExposurePowerErg)/(PI*std::pow(1e-03*spotDiameter,2)*longExposure_EMP*exposureTime/numberOfPulses);
+                EMP_PoweErgRatio=(4*longExposurePowerErg)/(PI*std::pow(1e-03*effectiveDiameter,2)*longExposure_EMP*exposureTime/numberOfPulses);
         }
     }
     else
@@ -690,7 +691,7 @@ void BeamInspector::valuateLongExposurePosition()
 
 void BeamInspector::valuatePosition()
 {
-    EMP_PoweErgRatio=(4*powerErgForEMP)/(PI*std::pow(1e-03*spotDiameter,2)*EMP);
+    EMP_PoweErgRatio=(4*powerErgForEMP)/(PI*std::pow(1e-03*effectiveDiameter,2)*EMP);
 }
 
 void BeamInspector::computeFm()
@@ -756,6 +757,16 @@ void BeamInspector::compute_d_s()
 void BeamInspector::computeSpotDiameter()
 {
     spotDiameter=beamDiameter+divergence*inspectorDistance;
+}
+
+void BeamInspector::setEffectiveDiameter()
+{
+    effectiveDiameter=std::max(spotDiameter, PUPIL_DIAMETER);
+}
+
+double BeamInspector::getEffectiveDiameter()const
+{
+    return effectiveDiameter;
 }
 
 double BeamInspector::getSpotDiameter()const
@@ -965,6 +976,7 @@ std::string BeamInspector::mainEffect(const double& meanEMP, const double& pulse
 void BeamInspector::inspectorUpdate()
 {
     computeSpotDiameter();
+    setEffectiveDiameter();
     if(isRetinalHazard())
     {
         computeCurvaureRadius(inspectorDistance);

@@ -76,17 +76,21 @@ definita dalla nota formula:
 void computeBeamArea();/*!< Calcola l'area della sezione trasversale del fascio in prossimità dell'apertura <b>A<sub>b</sub></b> in m<sup>2</sup> con la nota formula:
 \f[A_b=\frac{\pi a^2}{4}\f]
 */
+void computeLimitingApertureArea();
 double getNOHD() const;/*!< Restituisce il valore della <b>DNRO</b> calcolata in metri. */
 double getLambertianMax() const;/*!< Restituisce il valore calcolato del valore massimo della distanza di sicurezza espressa in metri di una eventuale riflessione puntiforme
 * su di una superficie diffondente con coefficiente di riflessione <b>&rho;</b> unitario:
 \f[DRO=\sqrt{\frac{Q}{\pi \cdot H_{EMP}}}\f]*/
 double getBeamArea() const;/*!< Restituisce il valore dell'area della sezione trasversale del fascio <b>A<sub>b</sub></b> misurata in m<sup>2</sup>.*/
+double getLimitingApertureArea() const; /*!< Restituisce il valore dell'area del parametro apertura <b>A<sub>p</sub></b> misurata in m<sup>2</sup>.*/
 double getCA() const;/*!< Restituisce il valore numerico del parametro <b>C<sub>A</sub></b>.*/
 double getCB() const;/*!< Restituisce il valore numerico del parametro <b>C<sub>B</sub></b>.*/
 double getCC() const;/*!< Restituisce il valore numerico del parametro <b>C<sub>C</sub></b>.*/
 double getCE() const;/*!< Restituisce il valore numerico del parametro <b>C<sub>E</sub></b>.*/
 double getT1() const;/*!< Restituisce il valore numerico del parametro <b>T<sub>1</sub></b> misurato in secondi.*/
 double getT2() const;/*!< Restituisce il valore numerico del parametro <b>T<sub>2</sub></b> misurato in secondi.*/
+double getLimitingAperture() const;/*!< Restituisce il valore numerico del parametro diametro dell'apertura in mm.*/
+
 void EMP();/*!< Calcola l'EMP del dispositivo dall'oggetto istanza della Classe ComputeEMP. */
 string getRadiation() const;/*!< Restituisce il tipo di radiazione emessa dal dispositivo.*/
 string getSkinDamage() const;/*!< Restituisce il tipo di danno che il dispositivo può produrre alla cute.*/
@@ -129,6 +133,8 @@ double CC;
 double CE;
 double T1;
 double T2;
+double limitingAperture;
+double limitingApertureArea;
 double t_exp;
 double gamma;
 string radiation;

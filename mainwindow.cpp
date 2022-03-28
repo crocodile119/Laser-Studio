@@ -167,7 +167,7 @@ MainWindow::MainWindow()
     if (externalFile==true)
     {
         fileName = QApplication::arguments().at(1);
-        timer = new QTimer(this);
+        QTimer* timer = new QTimer(this);
         timer->setSingleShot(true);
         timer->start(800);
         loadFile(fileName);
@@ -383,6 +383,7 @@ void MainWindow::setOpenFile()
 
     laserpoint->setPos(laserpoint->pos()+QPointF(-1,-1));
     laserpoint->setPos(laserpoint->pos()+QPointF(1,1));
+    laserWindow->graphicsView->centerOn(laserpoint->pos());
 
     laserWindow->graphicsView->update();
 }
@@ -3044,7 +3045,6 @@ void MainWindow::createToolBars()
     viewToolBar->addAction(showDockWidgetGoggle);
     viewToolBar->addAction(showReflectorsList);
     viewToolBar->addAction(showDockHistory);
-    //viewToolBar->addAction(centerOnViewAction);
     viewToolBar->addAction(showGridAction);
 
     sceneToolBar = addToolBar(tr("Scena"));

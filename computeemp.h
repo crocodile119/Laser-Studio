@@ -48,6 +48,7 @@ public:
     double getCE() const;/*!< Restituisce il valore del parametro C<sub>E</sub>. */
     double getT1() const;/*!< Restituisce il valore del parametro T<sub>1</sub> in secondi. */
     double getT2() const;/*!< Restituisce il valore del parametro T<sub>1</sub> in secondi. */
+    double getLimitingAperture() const;/*!< Restituisce il valore del diametro dell'apertura in mm. */
     double getEMP() const;/*!< Restituisce il valore numerico dell'EMP. */
     empdata getEMP_Data()const;
     string getFormulaEMP() const;/*!< Restituisce la formula usata per il calcolo dell'EMP. */
@@ -72,6 +73,7 @@ protected:
     void valutateFormula();/*!< Costruisce la formula dell'EMP semplice.*/
     void EMP_Value();/*!< Calcola il valore dell'EMP semplice.*/
     void ComputeParameters();/*!< Calcola i valori dei parametri.*/
+    void computeLimitingAperture();
 
     void PhotoEffects();/*!< Calcola l'EMP, costruisce la formula ed il tipo di esposizione, per effetti fotochimici nel caso di valutazione complessa.*/
     void ThermoEffects();/*!< Calcola l'EMP, costruisce la formula ed il tipo di esposizione, per effetti termici nel caso di valutazione complessa.*/
@@ -92,6 +94,7 @@ private:
     double T1;
     double T2;
     double t_exp;
+    double limitingAperture;
     string radiation;
     string skinDamage;
     string eyeDamage;

@@ -30,6 +30,7 @@ public:
     static const double NO_INTERESTING_EXPOSURE_TIME;
     static const double NO_MULTI_PULSE;
     static const double SHORT_TIME_LIMIT;
+    static const double PUPIL_DIAMETER;
 
     QString text() const;
     void setTextColor(const QColor &color);
@@ -105,7 +106,9 @@ public:
     static QString kindOfOcularDamage(const double &_wavelength);
 
     //parte dedicata ai dati membro relativi alle caratteristiche del fascio
-    void computeSpotDiameter();
+    void computeSpotDiameter(); 
+    void setEffectiveDiameter();
+    double getEffectiveDiameter()const;
     void computeCurvaureRadius(const double& distance);
     void computeFm();
     void compute_d_r_FarField();
@@ -204,6 +207,7 @@ private:
     //parte dedicata ai dati membro relativi alle caratteristiche del fascio
 
     double spotDiameter;
+    double effectiveDiameter;
     double fm;// valore della distanza focale del cristallino che minimizza l'immagine retinica;
     double curvatureRadius;
     double d_r;//diametro dell'immagine retinica

@@ -27,6 +27,7 @@ AddFootprintCommand::AddFootprintCommand(double _attenuatedDNRO, double *_scale,
 
 void AddFootprintCommand::undo()
 {
+    footprint->paintFootprint(false);
     laserWindow->graphicsView->scene()->removeItem(footprint);
     laserWindow->graphicsView->scene()->removeItem(objectLink);
     laserWindow->graphicsView->scene()->clearSelection();

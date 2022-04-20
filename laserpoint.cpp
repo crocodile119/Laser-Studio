@@ -204,36 +204,26 @@ void LaserPoint::paint(QPainter *painter,
     double firstPie=(360-aperture/2-pillow);
     double secondPie=(aperture+pillow);
 
-    if(opticalDiameter>skinDiameter)
+    QPointF laserpointOrigin=QPointF(0.0,0.0);
+
+    QPainterPath myOpticalPie;
+    myOpticalPie.moveTo(laserpointOrigin);
+    myOpticalPie.arcTo(selectionOpticalRect(), firstPie, secondPie);
+    myOpticalPie.lineTo(laserpointOrigin);
+
+    QPainterPath room;
+
+    QPainterPath mySkinPie;
+    mySkinPie.moveTo(laserpointOrigin);
+    mySkinPie.arcTo(selectionSkinRect(), firstPie, secondPie);
+    mySkinPie.lineTo(laserpointOrigin);
+
+    if(roomLimits!=QRectF())
     {
-        QPainterPath myOpticalPie;
-        QPointF laserpointOrigin=QPointF(0.0,0.0);
-
-        myOpticalPie.moveTo(laserpointOrigin);
-
-        myOpticalPie.arcTo(selectionOpticalRect(), firstPie, secondPie);
-        myOpticalPie.lineTo(laserpointOrigin);
-        QPainterPath room;
-
-        QPainterPath mySkinPie;
-        mySkinPie.moveTo(laserpointOrigin);
-        mySkinPie.arcTo(selectionSkinRect(), firstPie, secondPie);
-        mySkinPie.lineTo(laserpointOrigin);
-
-        if(roomLimits!=QRectF())
-        {
-            room.addRect(roomLimits);
-            myOpticalPie=room.intersected(myOpticalPie);
-            mySkinPie=room.intersected(mySkinPie);
-            if(roomLimits.contains(QPointF(0,0)))
-            {
-                painter->setBrush(QColor(245,250,250, 127));
-                painter->drawPath(myOpticalPie);
-                painter->setBrush(QColor(240,240,240, 127));
-                painter->drawPath(mySkinPie);
-            }
-        }
-        else
+        room.addRect(roomLimits);
+        myOpticalPie=room.intersected(myOpticalPie);
+        mySkinPie=room.intersected(mySkinPie);
+        if(roomLimits.contains(QPointF(0,0)))
         {
             painter->setBrush(QColor(245,250,250, 127));
             painter->drawPath(myOpticalPie);
@@ -243,12 +233,11 @@ void LaserPoint::paint(QPainter *painter,
     }
     else
     {
-        painter->setBrush(QColor(240,240,240, 127));
-        painter->drawPie(selectionSkinRect(), firstPie, secondPie);
         painter->setBrush(QColor(245,250,250, 127));
-        painter->drawPie(selectionSkinRect(), firstPie, secondPie);
+        painter->drawPath(myOpticalPie);
+        painter->setBrush(QColor(240,240,240, 127));
+        painter->drawPath(mySkinPie);
     }
-
 
     painter->setPen(Qt::transparent);
     painter->setBrush(QColor(80, 255, 80, 200));

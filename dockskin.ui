@@ -286,7 +286,7 @@ QLabel {margin-right: 10px}</string>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="tminEMP_SkinLabel">
+           <widget class="QLabel" name="tEMP_MP_SkinLabel">
             <property name="font">
              <font>
               <pointsize>8</pointsize>
@@ -373,7 +373,7 @@ QLabel {margin-right: 10px}</string>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="minEMP_SkinLabel">
+           <widget class="QLabel" name="EMP_MP_SkinLabel">
             <property name="font">
              <font>
               <family>Verdana</family>
@@ -458,7 +458,7 @@ QLabel {margin-right: 10px}</string>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="tPulseNumberSkinLabel">
+           <widget class="QLabel" name="tminEMP_SkinLabel">
             <property name="font">
              <font>
               <pointsize>8</pointsize>
@@ -545,7 +545,7 @@ QLabel {margin-right: 10px}</string>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="PulseNumberSkinLabel">
+           <widget class="QLabel" name="minEMP_SkinLabel">
             <property name="font">
              <font>
               <family>Verdana</family>
@@ -562,6 +562,9 @@ QLabel {margin-right: 10px}</string>
             </property>
             <property name="text">
              <string>TextLabel</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
             </property>
            </widget>
           </item>
@@ -606,6 +609,28 @@ QLabel {margin-right: 10px}</string>
           </item>
           <item>
            <widget class="QLabel" name="tFormulaSkinMP_Label">
+            <property name="font">
+             <font>
+              <pointsize>8</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel {background-color: #00c800}
+QLabel {color: #fafafa}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+            </property>
+            <property name="text">
+             <string>TextLabel</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="tPulseNumberSkinLabel">
             <property name="font">
              <font>
               <pointsize>8</pointsize>
@@ -694,6 +719,27 @@ QLabel {margin-right: 10px}</string>
            </widget>
           </item>
           <item>
+           <widget class="QLabel" name="PulseNumberSkinLabel">
+            <property name="font">
+             <font>
+              <family>Verdana</family>
+              <pointsize>8</pointsize>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel {background-color: #fafafa}
+QLabel {color: #000000}
+QLabel {border: 0px solid grey}
+QLabel {border-radius: 8px}
+QLabel {padding: 3px}
+QLabel {margin-right: 10px}</string>
+            </property>
+            <property name="text">
+             <string>TextLabel</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <spacer name="verticalSpacer_5">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
@@ -733,7 +779,7 @@ QLabel {margin-right: 10px}</string>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="tEMP_MP_SkinLabel">
+           <widget class="QLabel" name="ttpulseskin_Label">
             <property name="font">
              <font>
               <pointsize>8</pointsize>
@@ -796,13 +842,7 @@ QLabel {margin-right: 10px}</string>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="EMP_MP_SkinLabel">
-            <property name="font">
-             <font>
-              <family>Verdana</family>
-              <pointsize>8</pointsize>
-             </font>
-            </property>
+           <widget class="QLabel" name="tpulseskin_Label">
             <property name="styleSheet">
              <string notr="true">QLabel {background-color: #fafafa}
 QLabel {color: #000000}
@@ -813,9 +853,6 @@ QLabel {margin-right: 10px}</string>
             </property>
             <property name="text">
              <string>TextLabel</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
             </property>
            </widget>
           </item>

@@ -941,7 +941,7 @@ void MainWindow::createActions()
     QActionGroup *displayGroup = new QActionGroup(this);
 
     const QIcon dragIcon = QIcon::fromTheme("Scrolla", QIcon(":/images/drag.png"));
-    dragAct = new QAction(dragIcon, tr("Scrolla..."), this);
+    dragAct = new QAction(dragIcon, tr("Scrolla"), this);
     dragAct->setStatusTip(tr("Scrolla la zona"));
     connect(dragAct, &QAction::triggered, this, &MainWindow::dragMode);
     dragAct->setCheckable(true);
@@ -949,7 +949,7 @@ void MainWindow::createActions()
     displayMenu->addAction(dragAct);
 
     const QIcon selectionIcon = QIcon::fromTheme("Seleziona", QIcon(":/images/selection.png"));
-    selectAct = new QAction(selectionIcon, tr("Seleziona gli elementi grafici..."), this);
+    selectAct = new QAction(selectionIcon, tr("Seleziona"), this);
     selectAct->setStatusTip(tr("Seleziona gli elementi grafici"));
     connect(selectAct, &QAction::triggered, this, &MainWindow::selectionMode);
     selectAct->setCheckable(true);

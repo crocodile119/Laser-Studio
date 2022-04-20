@@ -85,6 +85,8 @@ public:
     LaserGoggle::material getGoggleMaterial()const;
     void updateAllCompositeControlsFunctions();
 
+
+    void setT_SkinControlDuration(const int &defaultDuration);
     void setUV();
     void setVIS();
     void setIRA_NIR();

@@ -50,7 +50,8 @@ const static double PUPIL_DIAMETER; /*!< Parametro di default del diametro del f
 const static double POWER_ENERGY;/*!< Parametro di default della potenza ottica del dispositivo in Watt o dell'energia dell'impulso in Joule
 a seconda della modalità di funzionamento, CW o ad impulso. */
 const static double DIVERGENCE;/*!< Parametro di default della divergenza del fascio in mrad. */
-const static double EXPOSURE_TIME;/*!< Parametro di default del tempo di esposizione alla radiazione in secondi. */
+const static double EXPOSURE_TIME;/*!< Parametro di default del tempo di esposizione alla radiazione in secondi riguardante le bande VIS e IR. */
+const static double LONG_EXPOSURE_TIME;/*!< Parametro di default del tempo di esposizione alla radiazione in secondi riguardante la banda UV. */
 
 double getWavelength()const;/*!< Restituisce il valore della lunghezza d'onda <b>&lambda;</b> in nm.*/
 void setWavelength(const double &);/*!< Imposta il valore della lunghezza d'onda <b>&lambda;</b> in nm. */

@@ -424,6 +424,11 @@ void DockControls::on_T_SkinControl_valueChanged()
 
     T_Skin=mantissa*std::pow(10, exponent);
 
+    if(T_Skin>=30000)
+    {
+        T_Skin=30000;
+        ui->T_SkinControl->setValue(T_Skin);
+    }
     /*****************
     * CONTINUOS WAVE *
     * ****************/
@@ -1904,6 +1909,9 @@ void DockControls::setWidgets()
         dockSkin->ui->tEMP_SkinLabel->setText(QString::fromStdString(MyLaserSkinMP_Pr->getFormulaSort()) + empSkinUnit);
         dockSkin->ui->EMP_SkinLabel->setText(QString::number(MyLaserSkinMP_Pr->getEMP(),'e', 2));
 
+        dockSkin->ui->ttpulseskin_Label->setVisible(true);
+        dockSkin->ui->tpulseskin_Label->setVisible(true);
+
         dockSkin->ui->tFormulaSkinMP_Label->setVisible(true);
         dockSkin->ui->FormulaSkinMP_Label->setVisible(true);
 
@@ -1922,11 +1930,17 @@ void DockControls::setWidgets()
         dockSkin->ui->tminEMP_SkinLabel->setVisible(true);
         dockSkin->ui->minEMP_SkinLabel->setVisible(true);
 
+        dockSkin->ui->ttpulseskin_Label->setVisible(true);
+        dockSkin->ui->tpulseskin_Label->setVisible(true);
+
         dockSkin->ui->tEMP_MP_SkinLabel->setText(QString::fromStdString(MyLaserSkinMP_Pr->getMeanPowerFormulaSort()) + "<sub>Te</sub> " + empSkinUnitMP);
         dockSkin->ui->EMP_MP_SkinLabel->setText(QString::number(MyLaserSkinMP_Pr->getEMP_MP(),'e', 2));
 
         dockSkin->ui->tFormulaSkinMP_Label->setText("Formula T<sub>e</sub>");
         dockSkin->ui->FormulaSkinMP_Label->setText(QString::fromStdString(MyLaserSkinMP_Pr->getMeanPowerFormulaEMP()));
+
+        dockSkin->ui->ttpulseskin_Label->setText("t<sub>skin</sub>");
+        dockSkin->ui->tpulseskin_Label->setText(QString::number(MyLaserSkinMP_Pr->getPulseWidth(),'e', 2));
 
         dockSkin->ui->tMeanPowerSkinLabel->setText("P<sub>m</sub> [W]");
         dockSkin->ui->MeanPowerSkinLabel->setText(QString::number(MyLaserSkinMP_Pr->getMeanPower(),'e', 2));
@@ -2035,7 +2049,11 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
 
     on_powerErgControl_valueChanged();
 
-    T_Skin=LaserSkinSafety::EXPOSURE_TIME;
+    if(wavelength>=400)
+        T_Skin=LaserSkinSafety::EXPOSURE_TIME;
+    else
+        T_Skin=LaserSkinSafety::LONG_EXPOSURE_TIME;
+
     //tempo esposizione pelle
     ui->T_SkinControl->setValue(T_Skin);
     on_T_SkinControl_valueChanged();
@@ -2247,7 +2265,11 @@ void DockControls::on_operationCombo_currentIndexChanged(int index)
     MyLaserClassMP_Pr->setPRF(prf);
     myLaserGoggle->setFrequency(prf);
 	
-    T_Skin=LaserSkinSafety::EXPOSURE_TIME;
+    if(wavelength>=400)
+        T_Skin=LaserSkinSafety::EXPOSURE_TIME;
+    else
+        T_Skin=LaserSkinSafety::LONG_EXPOSURE_TIME;
+
     MyLaserSkinMP_Pr->setExposureTime(T_Skin);
     on_T_SkinControl_valueChanged();
     ui->T_SkinControl->setValue(T_Skin);
@@ -2328,22 +2350,23 @@ void DockControls::setSkinWidgetsSingle()
 
     if(MyLaserSkinSP_Pr->getFormulaSort()=="E")
     {
-            empSkinUnit="[W/m<sup>2</sup>]";
+        empSkinUnit="[W/m<sup>2</sup>]";
     }
-    else
-        if(MyLaserSkinSP_Pr->getFormulaSort()=="H")
-        {
-            empSkinUnit="[J/m<sup>2</sup>]";
-        }
+    else if(MyLaserSkinSP_Pr->getFormulaSort()=="H")
+    {
+        empSkinUnit="[J/m<sup>2</sup>]";
+    }
 
     if(n_laser==operation::CONTINUOS_WAVE)
-                skinPowerErgUnit="P [W]";
-    else
-        if(n_laser==operation::PULSE)
-                skinPowerErgUnit="Q [J]";
+        skinPowerErgUnit="P [W]";
+    else if(n_laser==operation::PULSE)
+        skinPowerErgUnit="Q [J]";
 
     dockSkin->ui->tFormulaSkinMP_Label->setVisible(false);
     dockSkin->ui->FormulaSkinMP_Label->setVisible(false);
+
+    dockSkin->ui->ttpulseskin_Label->setVisible(false);
+    dockSkin->ui->tpulseskin_Label->setVisible(false);
 
     dockSkin->ui->tMeanPowerSkinLabel->setVisible(false);
     dockSkin->ui->MeanPowerSkinLabel->setVisible(false);
@@ -2382,14 +2405,13 @@ void DockControls::setSkinWidgetsSingle()
         DNRC_scientNot=NSHD>1.0e+03;
         if(DNRC_scientNot)
             dockSkin->ui->NSHDLabel->setText(QString::number(NSHD,'e', 2));
-            else
+        else
             dockSkin->ui->NSHDLabel->setText(QString::number(NSHD,'f', 1));
 
          dockSkin->ui->conditions_Label->setText("EMP \nper esposizioni\nda onda continua");
 
     }
-        else
-    if(n_laser==operation::PULSE)
+    else if(n_laser==operation::PULSE)
     {
         NSHD=MyLaserSkinSP_Pr->getErgNSHD();
         emit NSHD_Changed();
@@ -2397,10 +2419,16 @@ void DockControls::setSkinWidgetsSingle()
         DNRC_scientNot=NSHD>1.0e+03;
         if(DNRC_scientNot)
             dockSkin->ui->NSHDLabel->setText(QString::number(NSHD,'e', 2));
-            else
+        else
             dockSkin->ui->NSHDLabel->setText(QString::number(NSHD,'f', 1));
 
          dockSkin->ui->conditions_Label->setText("EMP \nper esposizioni\nda impulso singolo");
+
+         dockSkin->ui->ttpulseskin_Label->setVisible(true);
+         dockSkin->ui->tpulseskin_Label->setVisible(true);
+
+         dockSkin->ui->ttpulseskin_Label->setText("t<sub>skin</sub>");
+         dockSkin->ui->tpulseskin_Label->setText(QString::number(MyLaserSkinSP_Pr->getPulseWidth(),'e', 2));
     }
 
     dockSkin->ui->tEMP_1st_Label->setVisible(false);
@@ -2611,8 +2639,8 @@ void DockControls::setDialControls()
 
     ui->T_SkinControl->setTitle(tr("t<sub>cute</sub> [s]"));
     ui->T_SkinControl->setMinimumExponent(-4);
-    ui->T_SkinControl->setMaximumExponent(3);
-    ui->T_SkinControl->setValue(5.0e+00);
+    ui->T_SkinControl->setMaximumExponent(4);
+    ui->T_SkinControl->setValue(1.0e+01);
 
     ui->teControl->setTitle(tr("T<sub>e</sub> [s]"));
     ui->teControl->setDialNumber(10);
@@ -2630,11 +2658,18 @@ void DockControls::setDialControls()
     ui->internalWaist_checkBox->setChecked(false);
 }
 
+void DockControls::setT_SkinControlDuration(const int &defaultDuration)
+{
+    if(n_laser!=operation::PULSE)
+        ui->T_SkinControl->setValue(defaultDuration);
+}
+
 void DockControls::setUV()
 {
     ui->wavelengthScrollBar->setMinimum(181);
     ui->wavelengthScrollBar->setMaximum(399);
     ui->wavelengthScrollBar->setValue(380);
+    setT_SkinControlDuration(30000);
 }
 
 void DockControls::setVIS()
@@ -2642,6 +2677,7 @@ void DockControls::setVIS()
     ui->wavelengthScrollBar->setMinimum(400);
     ui->wavelengthScrollBar->setMaximum(700);
     ui->wavelengthScrollBar->setValue(633);
+    setT_SkinControlDuration(10);
 }
 
 void DockControls::setIRA_NIR()
@@ -2649,6 +2685,7 @@ void DockControls::setIRA_NIR()
     ui->wavelengthScrollBar->setMinimum(701);
     ui->wavelengthScrollBar->setMaximum(1400);
     ui->wavelengthScrollBar->setValue(1064);
+    setT_SkinControlDuration(10);
 }
 
 void DockControls::setIRB_SWIR()
@@ -2656,6 +2693,7 @@ void DockControls::setIRB_SWIR()
     ui->wavelengthScrollBar->setMinimum(1401);
     ui->wavelengthScrollBar->setMaximum(3000);
     ui->wavelengthScrollBar->setValue(1583);
+    setT_SkinControlDuration(10);
 }
 
 void DockControls::setIRC_MWIR()
@@ -2663,6 +2701,7 @@ void DockControls::setIRC_MWIR()
     ui->wavelengthScrollBar->setMinimum(3001);
     ui->wavelengthScrollBar->setMaximum(8000);
     ui->wavelengthScrollBar->setValue(3391);
+    setT_SkinControlDuration(10);
 }
 
 void DockControls::setIRC_LWIR()
@@ -2670,6 +2709,7 @@ void DockControls::setIRC_LWIR()
     ui->wavelengthScrollBar->setMinimum(8001);
     ui->wavelengthScrollBar->setMaximum(15000);
     ui->wavelengthScrollBar->setValue(10600);
+    setT_SkinControlDuration(10);
 }
 
 void DockControls::setIRC_FIR()
@@ -2677,6 +2717,7 @@ void DockControls::setIRC_FIR()
     ui->wavelengthScrollBar->setMinimum(15001);
     ui->wavelengthScrollBar->setMaximum(999999);
     ui->wavelengthScrollBar->setValue(571699);
+    setT_SkinControlDuration(10);
 }
 
 void DockControls::on_enableTeCheckBox_toggled(bool checked)

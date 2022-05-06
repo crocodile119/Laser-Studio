@@ -23,7 +23,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>Dettagli riflettore di vetro</string>
+   <string>Dettagli riflettore di vetro ottico</string>
   </property>
   <property name="layoutDirection">
    <enum>Qt::LeftToRight</enum>

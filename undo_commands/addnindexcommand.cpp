@@ -28,7 +28,7 @@ AddNIndexCommand::~AddNIndexCommand()
 QString createNIndexCommandString(const double n_index)
 {
     QString n_indexString;
-    n_indexString="Cambio l'indice di rifrazione del riflettore di vetro:";
+    n_indexString="Cambio l'indice di rifrazione del riflettore di vetro ottico:";
 
     return QObject::tr("%1: %2")
         .arg(n_indexString)

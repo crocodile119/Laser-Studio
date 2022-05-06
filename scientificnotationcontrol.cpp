@@ -219,6 +219,13 @@ void ScientificNotationControl::setEnabled(bool _enabled)
         scientNotLabel->setStyleSheet(scientNotLabelSyle);
     else
         scientNotLabel->setStyleSheet(scientNotLabelSyleOff);
+
+    enabled=_enabled;
+}
+
+bool ScientificNotationControl::isEnabled()
+{
+    return enabled;
 }
 
 void ScientificNotationControl::setBackgroundColor(QString htmlColor)

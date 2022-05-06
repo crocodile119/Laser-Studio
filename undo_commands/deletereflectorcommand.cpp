@@ -65,7 +65,7 @@ QString createDeleteCommandString(Reflector *item, const QPointF &pos)
     else if(myTarget==MIRROR_TARGET)
         targetString="superficie speculare";
     else if(myTarget==GLASS_TARGET)
-        targetString="superficie di vetro";
+        targetString="superficie di vetro ottico";
 
     return QObject::tr("%1 in (%2, %3)")
         .arg(targetString)

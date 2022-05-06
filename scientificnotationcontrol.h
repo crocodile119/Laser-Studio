@@ -37,6 +37,7 @@ public:
     void setPhysicalDimension();
     void setDialInitialValue();
     void setScrollBarInitialValue();
+    bool isEnabled();
 
 private slots:
     void on_dial_valueChanged(int value);
@@ -64,6 +65,7 @@ private:
     QScrollBar *verticalScrollBar;
     QString scientNotLabelSyle;
     QString scientNotLabelSyleOff;
+    bool enabled;
 
     QUndoStack *undoStack = nullptr;
     int scrollBarOldValue;

@@ -17,6 +17,7 @@ const int LaserGoggle::HE_NE_WAVELENGTH=633;
 const double LaserGoggle::PULSE_WIDTH=1.0e-06;
 const double LaserGoggle::POWER_ENERGY=1.0;
 const double LaserGoggle::PUPIL_DIAMETER=7.0;
+const double LaserGoggle::MAX_MATERIAL_DIAMETER=15;
 
 LaserGoggle::LaserGoggle(int _wavelength, double _pulseWidth, double _powerErg, double _beamDiameter):
         wavelength(_wavelength), powerErg(_powerErg), beamDiameter(_beamDiameter), frequency(0),
@@ -273,7 +274,13 @@ vector< pair <int,double> > LaserGoggle::buildDataVector(const array<int, LaserG
 
 double LaserGoggle::laserIrrRadCorrected(double _laserOutput)
 {
-    myExpositionValue=pulseTrainCorrectionK()*get_Ki()*laserIrrRad(_laserOutput);
+    double ki;
+    double irrRad;
+
+    ki=get_Ki();
+    irrRad=laserIrrRad(_laserOutput);
+
+    myExpositionValue=pulseTrainCorrectionK()*ki*irrRad;
     return myExpositionValue;
 }
 
@@ -472,14 +479,14 @@ string LaserGoggle::getCodeUnit()
     return codeUnit;
 }
 
-void LaserGoggle::setMaterial(material typeOfMaterial)
+void LaserGoggle::setMaterialCorrection(material typeOfMaterial)
 {
     double myBeam;
 
-    if(beamDiameter<15)
-    myBeam=beamDiameter;
+    if(beamDiameter<MAX_MATERIAL_DIAMETER)
+        myBeam=beamDiameter;
     else
-    myBeam=15;
+        myBeam=MAX_MATERIAL_DIAMETER;
 
     switch (typeOfMaterial)
     {

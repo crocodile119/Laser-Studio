@@ -51,6 +51,7 @@ void LaserSafety::laserUpdate()
     computePowerForExended();
     computeNOHD();
     computeLambertianMax();
+    computeLimitingApertureArea();
 }
 
 double LaserSafety::getWavelength() const
@@ -137,6 +138,7 @@ void LaserSafety::computeBeamArea()
 
 void LaserSafety::computeLimitingApertureArea()
 {
+    limitingAperture=getLimitingAperture();
     limitingApertureArea=PI*std::pow(limitingAperture*1.0e-03, 2)/4;
 }
 

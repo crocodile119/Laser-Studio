@@ -1138,7 +1138,7 @@ QString LaserReport::htmlReflectors(const int & number)
     {
         if(reflector->getOpticalDiameter()!=0)
         {
-            htmlImage+="<h3>Coefficienti di riflessione da superficie di vetro</h3>\n";
+            htmlImage+="<h3>Coefficienti di riflessione da superficie di vetro ottico</h3>\n";
             htmlImage+=printSpecularReflectorCoefficients(reflector->getRho_sVect());
 
             htmlImage+="<h3>Distanza di sicurezza in funzione dell'angolo di riflessione (valori non nulli)</h3>\n";
@@ -1871,6 +1871,9 @@ QString LaserReport::htmlSymbols()
      QImage glass_sign = QImage("./glass_sign.png");
      QUrl UriSign3=QUrl("mydata://glass_sign.png");
 
+     QImage skin_sign = QImage("./skin_sign.png");
+     QUrl UriSign4=QUrl("mydata://skin_sign.png");
+
      textDocument->addResource(QTextDocument::ImageResource,
      UriSign1, QVariant(laser_sign));
 
@@ -1879,6 +1882,9 @@ QString LaserReport::htmlSymbols()
 
      textDocument->addResource(QTextDocument::ImageResource,
      UriSign3, QVariant(glass_sign));
+
+     textDocument->addResource(QTextDocument::ImageResource,
+     UriSign4, QVariant(skin_sign));
 
      html+=
             "    <tr>"
@@ -1904,6 +1910,13 @@ QString LaserReport::htmlSymbols()
             "    src=\"mydata://glass_sign.png\">"
             "    </td>"
             "    <td style=\"text-align: left; vertical-align:middle;\">Obbligo occhiali</td>"
+            "    </tr>"
+            "    <tr>"
+            "    <td> <img style= width: 40px; height: 40px;\"\n"
+            "    alt=\"Obbligo\" title=\"Obbligo\"\n"
+            "    src=\"mydata://skin_sign.png\">"
+            "    </td>"
+            "    <td style=\"text-align: left; vertical-align:middle;\">Obbligo protezione per la pelle</td>"
             "    </tr>";
     }
 

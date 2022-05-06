@@ -56,6 +56,8 @@ QString createAddSafetySignCommandString(SafetySignItem::SafetyClass mySafetySig
         safetySignString="radiazione laser";
     else if(mySafetySign==SafetySignItem::SafetyClass::EYES_PROTECTION)
         safetySignString="protezione oculare";
+    else if(mySafetySign==SafetySignItem::SafetyClass::SKIN_PROTECTION)
+        safetySignString="protezione per la pelle";
 
     QString xpos=QString::number(laserPos.x());
     QString ypos=QString::number(laserPos.y());

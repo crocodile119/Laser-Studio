@@ -218,7 +218,7 @@ bool CentralWidget::writeFile(const QString &fileName)
         << myDockControls->ui->prfControl->getScientificNumber() << myDockControls->ui->wavelengthScrollBar->value()
         << myDockControls->ui->operationCombo->currentIndex() << myDockControls->ui->checkGaussianBeam->isChecked()
         << myDockControls->ui->comboBoxBands->currentIndex() << myDockControls->ui->T_SkinControl->getScientificNumber()
-        << myDockControls->ui->teControl->getDialNumber() << myDockControls->ui->enableTeCheckBox->isChecked()
+        << myDockControls->ui->teControl->getScientificNumber() << myDockControls->ui->enableTeCheckBox->isChecked()
         << myDockControls->ui->internalWaist_checkBox->isChecked() << myDockControls->getLambertianMax() << myDockControls->getEMP()
         << myDockControls->getBeamDiameter() << myDockControls->getPowerErg() << laserPosition << laserZValue
         << aperture << installation << filterOn << transmittance << pos << Type << Text << ReflectorDescriptionVect
@@ -298,7 +298,7 @@ bool CentralWidget::readFile(const QString &fileName)
      myDockControls->ui->divergenceControl->setValue(divergenceControl);
      myDockControls->ui->beamDiameterControl->setValue(beamDiameterControl);
      myDockControls->ui->wavelengthScrollBar->setValue(wavelengthScrollBar);
-     myDockControls->ui->teControl->setDialNumber(teControl);
+     myDockControls->ui->teControl->setValue(teControl);
      if(operationCombo==2)
          myDockControls->ui->prfControl->setValue(prfControl);
      else

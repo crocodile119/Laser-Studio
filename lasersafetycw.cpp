@@ -23,7 +23,8 @@ LaserSafetyCW::LaserSafetyCW(double _beamDiameter, double _powerErg,  double _di
     myLaser.getEMP();
 
     computeNOHD();
-    computeLambertianMax();
+    computeLambertianMax(); 
+    computeLimitingApertureArea();
 }
 
 void LaserSafetyCW::computeNOHD()
@@ -80,6 +81,7 @@ void LaserSafetyCW::laserUpdate()
     EMP_Result=getEMP();
     computeNOHD();
     computeLambertianMax();
+    computeLimitingApertureArea();
 }
 
 void LaserSafetyCW::setExposureTime()
@@ -87,17 +89,11 @@ void LaserSafetyCW::setExposureTime()
     if(!timeEditable)
     {
         if ((wavelength>=400) and (wavelength<=700))
-        {
             exposureTime=0.25;
-        }
         else if((wavelength>=180)and (wavelength<400))
-        {
             exposureTime=30000;
-        }
         else
-        {
             exposureTime=10;
-        }
     }
 }
 

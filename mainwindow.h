@@ -412,6 +412,7 @@ private:
     QAction *addLaserSignAct;
     QAction *addForbiddenSignAct;
     QAction *addProtectionSignAct;
+    QAction *addProtectionSkinSignAct;
     QAction *addPinInspectorAction;
     QAction *addWetReflectorAction;
     QAction *addGlassReflectorAction;

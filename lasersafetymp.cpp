@@ -604,6 +604,9 @@ void LaserSafetyMP::laserUpdate()
 	
 	computeNOHD();
     computeLambertianMax();
+
+    computeLimitingApertureArea();
+    computeMeanEffectsLimitingApertureArea();
 }
 
 	/*--------------------------------------------------------------------------------------------------------
@@ -764,6 +767,7 @@ string LaserSafetyMP::getFormulaSort_3rdCondition()
 
 void LaserSafetyMP::computeMeanEffectsLimitingApertureArea()
 {
+    meanLimitingAperture=getMeanLimitingAperture();
     meanEffectsLimitingApertureArea=PI*std::pow(meanLimitingAperture*1.0e-03, 2)/4;
 }
 

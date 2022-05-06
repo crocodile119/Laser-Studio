@@ -13,6 +13,8 @@ SafetySignItem::SafetySignItem(SafetyClass _mySignSafety):mySignSafety(_mySignSa
         safetySign=QPixmap(":/images/laser_sign.png");
     else if(mySignSafety==SafetyClass::EYES_PROTECTION)
         safetySign=QPixmap(":/images/glass_sign.png");
+    else if(mySignSafety==SafetyClass::SKIN_PROTECTION)
+        safetySign=QPixmap(":/images/skin_sign.png");
 
     myOutlineColor = Qt::transparent;
     setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges);
@@ -88,6 +90,8 @@ QString SafetySignItem::getSafetySignKind()const
         safetySignKind="Pericolo radiazioni laser";
     else if(mySignSafety==SafetyClass::EYES_PROTECTION)
         safetySignKind="Obbligo occhiali";
+    else if(mySignSafety==SafetyClass::SKIN_PROTECTION)
+        safetySignKind="Obbligo protezione pelle";
 
     return safetySignKind;
 }

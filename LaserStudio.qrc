@@ -73,5 +73,6 @@
         <file>images/referencepix.png</file>
         <file>images/reset.png</file>
         <file>images/zoomwin.png</file>
+        <file>images/skin_sign.png</file>
     </qresource>
 </RCC>

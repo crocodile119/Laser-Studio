@@ -20,7 +20,7 @@ const qreal FresnelChartView::radialMin = 0;
 
 
     series = new QLineSeries();
-    series->setName("Distanza di rischio riflessione su superficie di vetro [m]");
+    series->setName("Distanza di rischio riflessione su superficie di vetro ottico [m]");
     series=buildDataSerie();
 
     positioningSeries= new QLineSeries();

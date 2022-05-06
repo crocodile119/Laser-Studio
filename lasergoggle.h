@@ -50,7 +50,7 @@ public:
     const static double POWER_ENERGY;/*!< Parametro di default della potenza ottica del dispositivo in Watt o dell'energia dell'impulso in Joule
 a seconda della modalità di funzionamento, CW o ad impulso. */
     const static double PUPIL_DIAMETER;/*!< Parametro di default del diametro del fascio in mm. */
-
+    const static double MAX_MATERIAL_DIAMETER;/*!< Per diametri maggiori di 15mm,nel caso di plastica o vetroil vaore di d è 15mm*/
     enum material{ONLY_REFLECTOR,
     /**< Riflettori semplici. */
     GLASS,
@@ -138,7 +138,7 @@ secondo i criteri illustrati di seguito:
 </td><td>Il tempo impostato è la durata dell'impulso </td></tr>
 </table> */
 
-    void setMaterial(material typeOfMaterial);/*!<Imposta il materiale principale del filtro.
+    void setMaterialCorrection(material typeOfMaterial);/*!<Imposta il materiale principale del filtro.
 <table>
 <tr><th>Valore impostato</th><th>Materiale</th>
 <tr><td>ONLY_REFLECTOR</td><td>Riflettori semplici</td>

@@ -1113,10 +1113,10 @@ void MainWindow::createActions()
     wetTargetAction->setStatusTip(tr("Dettagli del riflettore bagnato"));
     sceneDetailsMenu->addAction(wetTargetAction);
 
-    fresnelTargetAction = new QAction(tr("Dettagli riflettore di vetro..."), this);
+    fresnelTargetAction = new QAction(tr("Dettagli riflettore di vetro ottico..."), this);
 
     connect(fresnelTargetAction, SIGNAL(triggered()), this, SLOT(fresnelTarget()));
-    fresnelTargetAction->setStatusTip(tr("Dettagli del riflettore di vetro"));
+    fresnelTargetAction->setStatusTip(tr("Dettagli del riflettore di vetro ottico"));
     sceneDetailsMenu->addAction(fresnelTargetAction);
 
     lambertianTargetAction = new QAction(tr("Detagli riflettore lambertiano..."), this);
@@ -1184,6 +1184,13 @@ void MainWindow::createActions()
     connect(addProtectionSignAct, &QAction::triggered, this, [mySafetyClass, this]() {addSafetySign(mySafetyClass);});
     signsMenu->addAction(addProtectionSignAct);
 
+    addProtectionSkinSignAct = new QAction(tr("Obbligo protezione per la pelle"), this);
+    addProtectionSkinSignAct->setIcon(QIcon(":/images/skin_sign.png"));
+    addProtectionSkinSignAct->setStatusTip(tr("Inserisce nella scena grafica un segnale di obbligo protezione per la pelle"));
+    mySafetyClass=SafetySignItem::SafetyClass::SKIN_PROTECTION;
+    connect(addProtectionSkinSignAct, &QAction::triggered, this, [mySafetyClass, this]() {addSafetySign(mySafetyClass);});
+    signsMenu->addAction(addProtectionSkinSignAct);
+
     goggleMenu= environmentMenu ->addMenu(tr("Protettori ottici"));
     goggleMenu ->setFont(font);
 
@@ -1241,9 +1248,9 @@ void MainWindow::createActions()
 
     reflectorsMenu->addAction(addWetReflectorAction);
 
-    addGlassReflectorAction = new QAction(tr("Riflettore di vetro"), this);
+    addGlassReflectorAction = new QAction(tr("Riflettore di vetro ottico"), this);
     addGlassReflectorAction->setIcon(QIcon(":/images/window.png")); 
-    addGlassReflectorAction->setStatusTip(tr("Aggiunge un riflettore di vetro alla scena"));
+    addGlassReflectorAction->setStatusTip(tr("Aggiunge un riflettore di vetro ottico alla scena"));
     addGlassReflectorAction->setObjectName(tr("Riflettore di vetro)"));
     myTarget= GLASS_TARGET;
 
@@ -3075,6 +3082,7 @@ void MainWindow::createToolBars()
     signSafetyToolBar->addAction(addForbiddenSignAct);
     signSafetyToolBar->addAction(addLaserSignAct);
     signSafetyToolBar->addAction(addProtectionSignAct);
+    signSafetyToolBar->addAction(addProtectionSkinSignAct);
 }
 
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)

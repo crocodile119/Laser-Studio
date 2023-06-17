@@ -10,6 +10,7 @@
 #include "dockcontrols.h"
 #include "dockskin.h"
 #include "docklea.h"
+#include "dockkind.h"
 #include "displayscene.h"
 #include "graphicsitemtree.h"
 #include "reflectorlink.h"
@@ -77,6 +78,7 @@ public:
     DockEffects *myDockEffects;
     DockSkin *myDockSkin;
     DockLea *myDockLea;
+    DockKind *myDockKind;
     DockGoggle *myDockGoggle;
     GraphicsItemTree *myGraphicsItemTree;
     DisplayScene *graphicsView;

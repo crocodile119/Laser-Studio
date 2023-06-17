@@ -95,7 +95,7 @@ La classe prevede inoltre un costruttore di default con i seguenti parametri:
     * contestualmente imposta il valore della durata dell'impulso dell'oggetto myMeanLaserClass a T<sub>i</sub>.
     */
 
-    array<double, ComputeLEA::N_LEA> meanPowerUnit(array<int, ComputeLEA::N_LEA>, const double &, const double &);/*!< Restituisce un array di double lungo 4 nel quale
+    array<double, ComputeLEA::N_LEA> meanPowerUnit(array<int, ComputeLEA::N_LEA>, const double &, const double &, const double meanBeamAreaForAverage);/*!< Restituisce un array di double lungo 4 nel quale
     * sono memorizzati i valori dell'uscita media del dispositivo espressi nell'unità di misura omogenee al LEA corrispondente.
     *     Unità di Misura LEA  | Uscita
     * :-----------------------:|:------------------:
@@ -151,8 +151,10 @@ La classe prevede inoltre un costruttore di default con i seguenti parametri:
     * corrispondente ai valori impostati di <b>&lambda;</b> e <b>t</b>. */
     array<string, ComputeLEA::N_LEA> getMeanLEA_FormulaTipo()const;/*!< Restituisce le grandezze fisiche dei LEA delle Classi previste, relativamente agli effetti medi,
     corrispondente ai valori impostati di <b>&lambda;</b> e <b>t</b>. */
-    array<double, ComputeLEA::N_LEA> getMeanPowerErgEq()const; /*!<  Restituisce un puntatore ad un array di double lungo 4 nel quale sono memorizzati i valori medi
-    * dell'uscita del dispositivo espressi nell'unità di misura omogenee al LEA corrispondente.*/
+    array<double, ComputeLEA::N_LEA> getMeanPowerErgEq_1()const; /*!<  Restituisce un puntatore ad un array di double lungo 4 nel quale sono memorizzati i valori medi,
+    dell'uscita del dispositivo espressi nell'unità di misura omogenee al LEA corrispondente.*/
+    array<double, ComputeLEA::N_LEA> getMeanPowerErgEq_3()const; /*!<  Restituisce un puntatore ad un array di double lungo 4 nel quale sono memorizzati i valori medi,
+    dell'uscita del dispositivo espressi nell'unità di misura omogenee al LEA corrispondente.*/
     array<bool, LaserClassCW::N_CLASS> getMeanClassValutation()const;/*!< Restituisce la Classe del dispositivo per le emissioni medie. */
     double getMeanDistCond_1()const;/*!< Restituisce il valore in mm della distanza dal diaframma della 1<sup>a</sup> condizione per la valutazione
     * degli effetti medi. L'impiego della funzione presupppone che in precedenza sia stata invocata la funzione membro protetta
@@ -198,7 +200,8 @@ La classe prevede inoltre un costruttore di default con i seguenti parametri:
     * corrispondente ai valori impostati di <b>&lambda;</b> e <b>t</b>. */
     array<string, ComputeLEA::N_LEA> getTiLEA_FormulaTipo()const;/*!< Restituisce le grandezze fisiche dei LEA delle Classi previste, relativamente al caso di alta frequenza,
     corrispondente ai valori impostati di <b>&lambda;</b> e <b>t</b>. */
-    array<double, ComputeLEA::N_LEA> getTiPowerErgEq()const;
+    array<double, ComputeLEA::N_LEA> getTiPowerErgEq_1()const;
+    array<double, ComputeLEA::N_LEA> getTiPowerErgEq_3()const;
     array<bool, LaserClassCW::N_CLASS> getTiClassValutation()const;
     double getTiDistCond_1()const;/*!< Restituisce il valore in mm del diametro dal diaframma della 1<sup>a</sup> condizione. L'impiego della funzione
     * presupppone che in precedenza sia stata invocata la funzione membro protetta tiClassUpdate(const double&, const double&). */
@@ -269,7 +272,8 @@ private:
     array <string, ComputeLEA::N_LEA> meanLEA_formulaTipo;
     array <string, ComputeLEA::N_LEA> meanLEA_formulaUnit;
     array<int, ComputeLEA::N_LEA> meanLEA_formulaSort;
-    array<double, ComputeLEA::N_LEA> meanPowerErgEq;
+    array<double, ComputeLEA::N_LEA> meanPowerErgEq_1;
+    array<double, ComputeLEA::N_LEA> meanPowerErgEq_3;
     array<bool, LaserClassCW::N_CLASS> meanClassValutation;
     double C5;
     double meanDistCond_1;
@@ -280,6 +284,9 @@ private:
     double meanBeamAtStop_Cond_3;
     double meanCouplingFactor_Cond_1;
     double meanCouplingFactor_Cond_3;
+    double meanBeamAreaForAverage_1;
+    double meanBeamAreaForAverage_3;
+
     array<double, ComputeLEA::N_LEA> meanPowerErg_Cond_1;
     array<double, ComputeLEA::N_LEA> meanPowerErg_Cond_3;
     laserClass meanLaserClassAssigned;
@@ -293,7 +300,8 @@ private:
     array <string, ComputeLEA::N_LEA> tiLEA_formulaTipo;
     array <string, ComputeLEA::N_LEA> tiLEA_formulaUnit;
     array <int, ComputeLEA::N_LEA> tiLEA_formulaSort;
-    array<double, ComputeLEA::N_LEA> tiPowerErgEq;
+    array<double, ComputeLEA::N_LEA> tiPowerErgEq_1;
+    array<double, ComputeLEA::N_LEA> tiPowerErgEq_3;
     array<bool, LaserClassCW::N_CLASS> tiClassValutation;
     double tiDistCond_1;
     double tiDistCond_3;
@@ -303,6 +311,8 @@ private:
     double tiBeamAtStop_Cond_3;
     double tiCouplingFactor_Cond_1;
     double tiCouplingFactor_Cond_3;
+    double tiBeamAreaForAverage_1;
+    double tiBeamAreaForAverage_3;
     array<double, ComputeLEA::N_LEA> tiPowerErg_Cond_1;
     array<double, ComputeLEA::N_LEA>tiPowerErg_Cond_3;
     laserClass tiLaserClassAssigned;

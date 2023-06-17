@@ -26,10 +26,6 @@ LaserClassCW::LaserClassCW(double _beamDiameter, double _powerErg,  double _dive
 
 void LaserClassCW::classUpdate(laserOperation myLaserOperation, const double & time, const double& _powerErg)
     {
-    //In base a ciacuno dei LEA delle varie classi trasformo l'unità di misura dell'uscita laser
-    powerErgEq=leaPowerErgUnit(myLaserOperation, myLaserClass.getLEA_FormulaSort(), _powerErg, time);
-    //del laser calcolo le distanze e le aperture relative alle condizioni 1 e 3
-
     /****************************************************
      * prelevo le distanza calcolata per la condizione 1*
      * **************************************************/
@@ -58,7 +54,8 @@ void LaserClassCW::classUpdate(laserOperation myLaserOperation, const double & t
         beamAtStop_Cond_1=std::nan("N.A.");
     }
 
-     couplingFactor_Cond_1=valuateCouplingFactor(apCond_1, beamAtStop_Cond_1, true);
+    couplingFactor_Cond_1=valuateCouplingFactor(apCond_1, beamAtStop_Cond_1, true);
+    beamAreaForAverage_1=beamAreaToAveragePowerErg(apCond_1, beamAtStop_Cond_1);
 
     /****************************************************************************
      * prelevo l'apertura calcolata per la condizione 1 e calcolo il fattore di *
@@ -74,12 +71,21 @@ void LaserClassCW::classUpdate(laserOperation myLaserOperation, const double & t
     apCond_3=myLaserClass.getApertureStopCond_3();
     couplingFactor_Cond_3=valuateCouplingFactor(apCond_3, beamAtStop_Cond_3, false);
 
+    beamAreaForAverage_3=beamAreaToAveragePowerErg(apCond_3, beamAtStop_Cond_3);
+
+
+    //In base a ciacuno dei LEA delle varie classi trasformo l'unità di misura dell'uscita laser
+
+    powerErgEq_1=leaPowerErgUnit(myLaserOperation, myLaserClass.getLEA_FormulaSort(), _powerErg, time, beamAreaForAverage_1);
+    powerErgEq_3=leaPowerErgUnit(myLaserOperation, myLaserClass.getLEA_FormulaSort(), _powerErg, time, beamAreaForAverage_3);
+    //del laser calcolo le distanze e le aperture relative alle condizioni 1 e 3
+
     /******************************************************************
      * correggo i valori relativi all'uscita del laser per i fattori  *
      * di accoppiamento corrispondenti                                *
      ******************************************************************/
-    powerErg_Cond_1=computePowerErgCond_1(powerErgEq, couplingFactor_Cond_1);
-    powerErg_Cond_3=computePowerErgCond_3(powerErgEq, couplingFactor_Cond_3);
+    powerErg_Cond_1=computePowerErgCond_1(powerErgEq_1, couplingFactor_Cond_1);
+    powerErg_Cond_3=computePowerErgCond_3(powerErgEq_3, couplingFactor_Cond_3);
 
     /***********************************
      * valuto la classe corrispondente *
@@ -136,7 +142,8 @@ double LaserClassCW::getBeamArea() const
 }
 
 array<double, ComputeLEA::N_LEA> LaserClassCW::leaPowerErgUnit(laserOperation myOperation, array<int, ComputeLEA::N_LEA>
-                                                               _LEA_formulaSort, const double &_powerErg, const double &time)
+                                                               _LEA_formulaSort, const double &_powerErg, const double &time,
+                                                              const double &beamAreaForAverage)
 {
     array<double, ComputeLEA::N_LEA>myPowerErgEq;
     if(myOperation==laserOperation::CW)
@@ -144,9 +151,9 @@ array<double, ComputeLEA::N_LEA> LaserClassCW::leaPowerErgUnit(laserOperation my
         for(size_t i=0; i<ComputeLEA::N_LEA; i++)
         {
         if(_LEA_formulaSort[i]==static_cast<int>(ComputeLEA::FormulaKind::IRRADIANCE))
-            myPowerErgEq[i]=_powerErg/beamArea;
+            myPowerErgEq[i]=_powerErg/beamAreaForAverage;
         else if(_LEA_formulaSort[i]==static_cast<int>(ComputeLEA::FormulaKind::EXPOSURE_ENERGY))
-            myPowerErgEq[i]=_powerErg*time/beamArea;
+            myPowerErgEq[i]=_powerErg*time/beamAreaForAverage;
         else if(_LEA_formulaSort[i]==static_cast<int>(ComputeLEA::FormulaKind::POWER))
             myPowerErgEq[i]=_powerErg;
         else if(_LEA_formulaSort[i]==static_cast<int>(ComputeLEA::FormulaKind::PULSE_ENERGY))
@@ -158,9 +165,9 @@ array<double, ComputeLEA::N_LEA> LaserClassCW::leaPowerErgUnit(laserOperation my
         for(size_t i=0; i<ComputeLEA::N_LEA; i++)
         {
         if(_LEA_formulaSort[i]==static_cast<int>(ComputeLEA::FormulaKind::IRRADIANCE))
-            myPowerErgEq[i]=_powerErg/(time*beamArea);
+            myPowerErgEq[i]=_powerErg/(time*beamAreaForAverage);
         else if(_LEA_formulaSort[i]==static_cast<int>(ComputeLEA::FormulaKind::EXPOSURE_ENERGY))
-            myPowerErgEq[i]=_powerErg/beamArea;
+            myPowerErgEq[i]=_powerErg/beamAreaForAverage;
         else if(_LEA_formulaSort[i]==static_cast<int>(ComputeLEA::FormulaKind::POWER))
             myPowerErgEq[i]=_powerErg/time;
         else if(_LEA_formulaSort[i]==static_cast<int>(ComputeLEA::FormulaKind::PULSE_ENERGY))
@@ -177,18 +184,37 @@ double LaserClassCW::valuateBeamDiameterAtStop(const double &condDistance,
     return diameterAtStop;
 }
 
+double LaserClassCW::beamAreaToAveragePowerErg(double apertureDiameter, double beamDiameterAtStop)
+{
+    double beamAreaForAverage;
+    if(apertureDiameter/beamDiameterAtStop>=1)
+        beamAreaForAverage=LaserClassCW::PI * pow(apertureDiameter,2)/4;
+    else
+        beamAreaForAverage=beamArea;
+
+    return beamAreaForAverage;
+}
+
+
 double LaserClassCW::valuateCouplingFactor(const double &apertureDiameter,
                                          const double &beamDiameterAtStop, bool cond_1)
 {
+    double diametersRatio;
     double couplingFactor;
     double diametersPower;
+    diametersRatio=apertureDiameter/beamDiameterAtStop;
 
     if(((wavelength<302.5)and(wavelength>=4000))&&(cond_1))
         couplingFactor=nan("N.A.");
     else
         {
-        diametersPower=std::pow(apertureDiameter/beamDiameterAtStop, 2);
-        couplingFactor= 1-std::exp(-diametersPower);
+        if(diametersRatio<1)
+        {
+            diametersPower=std::pow(apertureDiameter/beamDiameterAtStop, 2);
+            couplingFactor= 1-std::exp(-diametersPower);
+        }
+        else
+           couplingFactor= 1;
         }
 
     return couplingFactor;

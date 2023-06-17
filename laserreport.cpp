@@ -126,16 +126,33 @@ void LaserReport::laserAssessmentResults()
     effects.clear();
     skin.clear();
 
-    QString powerErgStr= laserWindow->myDockControls->ui->powerErgControl->getTitle()+ "= " + QString::number(laserWindow->myDockControls->ui->powerErgControl->getScientificNumber(), 'e', 2);
-    QString wavelengthStr= "&lambda; [nm]= " + QString::number(laserWindow->myDockControls->ui->wavelengthScrollBar->value());
-    QString pulseStr= laserWindow->myDockControls->ui->pulseControl->getTitle()+ "= " + QString::number(laserWindow->myDockControls->ui->pulseControl->getScientificNumber(), 'e', 2);
-    QString divergenceStr= "&phi; [mrad]= " +  QString::number(laserWindow->myDockControls->ui->divergenceControl->getScientificNumber(), 'e', 2);
-    QString diameterStr= "a [mm]= " + QString::number(laserWindow->myDockControls->ui->beamDiameterControl->getScientificNumber(), 'e', 2);
-    QString prfStr= laserWindow->myDockControls->ui->prfControl->getTitle()+ "= " + QString::number(laserWindow->myDockControls->ui->prfControl->getScientificNumber(), 'e', 2);
-    QString teSkin="T<sub>cute</sub> [s]= " +QString::number(laserWindow->myDockControls->ui->T_SkinControl->getScientificNumber(),'f', 2);
+    QString powerErgStr= laserWindow->myDockControls->ui->powerErgControl->getTitle()+ "$ " + QString::number(laserWindow->myDockControls->ui->powerErgControl->getScientificNumber(), 'e', 2);
+    QString wavelengthStr= "&lambda; [nm]$ " + QString::number(laserWindow->myDockControls->ui->wavelengthScrollBar->value());
+    QString pulseStr= laserWindow->myDockControls->ui->pulseControl->getTitle()+ "$ " + QString::number(laserWindow->myDockControls->ui->pulseControl->getScientificNumber(), 'e', 2);
+    QString divergenceStr= "&phi; [mrad]$ " +  QString::number(laserWindow->myDockControls->ui->divergenceControl->getScientificNumber(), 'e', 2);
+    QString diameterStr= "a [mm]$ " + QString::number(laserWindow->myDockControls->ui->beamDiameterControl->getScientificNumber(), 'e', 2);
+    QString prfStr= laserWindow->myDockControls->ui->prfControl->getTitle()+ "$ " + QString::number(laserWindow->myDockControls->ui->prfControl->getScientificNumber(), 'e', 2);
+    QString teSkin="T<sub>cute</sub> [s]$ " +QString::number(laserWindow->myDockControls->ui->T_SkinControl->getScientificNumber(),'f', 2);
+
+    QStringList laserTechList=laserWindow->myDockControls->getLaserTechList();
+    QString laserTechString;
+    QString laserTechReString;
 
     input.append(powerErgStr);
     input.append(wavelengthStr);
+
+    foreach (QString entry, laserTechList)
+    {
+        QStringList fields = entry.split("-");
+        laserTechString = QString("Tecnologia: %1; Tipo: %2; Prestazioni: %3; Lunghezza d'onda: %4.")
+                .arg(fields[0])
+                .arg(fields[1])
+                .arg(fields[2])
+                .arg(fields[3]);
+        laserTechReString=QString("rowspan$ %1").arg(laserTechString);
+        input.append(laserTechReString);
+    }
+
     input.append(pulseStr);
     input.append(divergenceStr);
     input.append(diameterStr);
@@ -248,7 +265,7 @@ void LaserReport::laserAssessmentResults()
         output.append(laserWindow->myDockResults->ui->tMeanPowerLabel->text()+"$"+laserWindow->myDockResults->ui->MeanPowerLabel->text());
         output.append(laserWindow->myDockResults->ui->tMeanIrradianceLabel->text()+"$"+laserWindow->myDockResults->ui->MeanIrradianceLabel->text());
         output.append(laserWindow->myDockResults->ui->tThermalEMP_Label->text()+"$"+laserWindow->myDockResults->ui->ThermalEMP_Label->text());
-        output.append(laserWindow->myDockResults->ui->tEMP_mean_Label->text()+"$"+laserWindow->myDockResults->ui->tEMP_mean_Label->text());
+        output.append(laserWindow->myDockResults->ui->tEMP_mean_Label->text()+"$"+laserWindow->myDockResults->ui->EMP_mean_Label->text());
         output.append(laserWindow->myDockEffects->ui->tTminLabel->text()+"$"+laserWindow->myDockEffects->ui->TminLabel->text());
         output.append(laserWindow->myDockEffects->ui->tDeltaLabel->text()+"$"+laserWindow->myDockEffects->ui->deltaLabel->text());
 
@@ -560,14 +577,12 @@ void LaserReport::firstPageReport()
     reflectors.clear();
 
     //leggo i valori riguradanti laserpoint
-
-    QString laserPositionStr= QString("Posizione [x, y] : (%1,%2)")
+    QString laserPositionStr= QString("Posizione [x, y]$(%1,%2)")
                                       .arg(laserpoint->pos().x())
                                       .arg(laserpoint->pos().y());
 
     double qualityFactor=BeamInspector::getQualityFactor();
-    QString qualityFactorString="M<sup>2</sup>: " +QString::number(qualityFactor);
-
+    QString qualityFactorString="M<sup>2</sup>$ " +QString::number(qualityFactor);
     bool noFeasible;
     DockControls::operation laserOperation=laserWindow->myDockControls->laserOperation();
     if(laserOperation==DockControls::operation::MULTI_PULSE)
@@ -576,16 +591,16 @@ void LaserReport::firstPageReport()
         noFeasible=false;
 
     double rayleighDistance=BeamInspector::getRayleighDistance();
-    QString rayleighDistanceString="z<sub>R</sub>: " +QString::number(rayleighDistance, 'e', 2);
+    QString rayleighDistanceString="z<sub>R</sub>$ " +QString::number(rayleighDistance, 'e', 2);
 
-    QString aperturaStr ="Apertura zona di sgombero: " +
+    QString aperturaStr ="Apertura zona di sgombero$ " +
             QString::number(laserpoint->getAperture())+"&deg;";
 
-    QString laserPillowZone= QString("Ampiezza zona cuscinetto [gradi] : %1")
+    QString laserPillowZone= QString("Ampiezza zona cuscinetto [gradi] $ %1")
                                       .arg(laserpoint->getPillow());
 
     int installation=laserpoint->getInstallationIndex();
-            QString installationStr="Tipo installazione: ";
+            QString installationStr="Tipo installazione$ ";
 
     switch(installation)
     {
@@ -606,7 +621,7 @@ void LaserReport::firstPageReport()
         break;
     }
 
-    QString environment="Ambiente:";
+    QString environment="Ambiente$";
 
     if(isIndoor())
         environment+=" laboratorio";
@@ -618,20 +633,20 @@ void LaserReport::firstPageReport()
 
     if(isIndoor())
     {
-        armAttenuationString= "Effetti Atmosferici: non applicabile";
-        scintillationString= "Scintillazione: non applicabile";
+        armAttenuationString= "Effetti Atmosferici$ non applicabile";
+        scintillationString= "Scintillazione$ non applicabile";
     }
     else
     {
         if(laserWindow->getAtmEffectsBool())
-            armAttenuationString= "Effetti Atmosferici: valutati";
+            armAttenuationString= "Effetti Atmosferici$ valutati";
         else
-            armAttenuationString= "Effetti Atmosferici: non valutati";
+            armAttenuationString= "Effetti Atmosferici$ non valutati";
 
         if(laserWindow->getScintillationBool())
-            scintillationString= "Scintillazione: valutata";
+            scintillationString= "Scintillazione$ valutata";
         else
-            scintillationString= "Scintillazione: non valutata";
+            scintillationString= "Scintillazione$ non valutata";
     }
 
 
@@ -640,16 +655,16 @@ void LaserReport::firstPageReport()
 
     if(laserpoint->isFilterOn())
     {
-        filterStr="Filtro montato su ottica: presente";
-        transmittanceStr="Transmittanza: "+ QString::number(laserpoint->getTransmittance());
+        filterStr="Filtro montato su ottica$ presente";
+        transmittanceStr="Transmittanza$ "+ QString::number(laserpoint->getTransmittance());
     }
 
     else
-    filterStr="Filtro montato su ottica: assente";
+    filterStr="Filtro montato su ottica$ assente";
 
     if(qualityFactor<1 || noFeasible)
     {
-        QString noPhysicalString="Fascio fisicamente non realizzabile :dr";
+        QString noPhysicalString="Fascio fisicamente non realizzabile $dr";
         laser.append(noPhysicalString);
     }
 
@@ -867,17 +882,17 @@ QString LaserReport::htmlLaserInstallation()
 
     foreach (QString entry, laser)
     {
-        QStringList fields = entry.split(":");
+        QStringList fields = entry.split("$");
         QString title = fields[0];
         QString body = fields[1];
 
         if(body=="dr")
             html +="<tr>\n<td colspan=\"2\"><i>" + title + "</i></td>\n</tr>\n";
         else
-            html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b>\n</td>\n"
-                   "<td>" + body + "</td>\n</tr>";
+            html +="<tr>\n<td><b>" + title + "</b></td>\n<td>" + body + "</td>\n</tr>";
     }
-    html += "</table><br>\n";
+
+html += "</table><br>\n";
 
     return html;
 }
@@ -905,13 +920,25 @@ QString LaserReport::htmlInputData(const QString & kindOfLaser)
             "<tr>\n<td bgcolor=\"#fbfbfb\"><b>Tipo di laser</b></td>\n"
                            "<td>" + kindOfLaser + "</td>\n</tr>";
 
+    int rowCount=0;
+
     foreach (QString entry, input)
     {
-        QStringList fields = entry.split("=");
+        QStringList fields = entry.split("$");
         QString title = fields[0];
         QString body = fields[1];
 
-        html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b></td>\n"
+        if(title=="rowspan")
+        {
+            rowCount++;
+            if(rowCount==1)
+                html +="<tr>\n<td rowspan=\"" + QString::number(laserWindow->myDockControls->getNsolution()) + "\"><b>Tecnologie laser applicabili</b></td>\n"
+                "<td>" + body + "</td>\n</tr>";
+            else
+                html +="<tr>\n<td>" + body + "</td>\n</tr>";
+        }
+        else
+            html +="<tr>\n<td bgcolor=\"#fbfbfb\"><b>" + title + "</b></td>\n"
                "<td>" + body + "</td>\n</tr>";
     }
 

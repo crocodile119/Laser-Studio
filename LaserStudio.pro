@@ -29,6 +29,7 @@ SOURCES +=\
     dockeffects.cpp \
     dockgoggle.cpp \
     dockhistory.cpp \
+    dockkind.cpp \
     docklea.cpp \
     dockresults.cpp \
     dockskin.cpp \
@@ -133,6 +134,7 @@ HEADERS  += mainwindow.h \
     dockeffects.h \
     dockgoggle.h \
     dockhistory.h \
+    dockkind.h \
     docklea.h \
     dockresults.h \
     dockskin.h \
@@ -225,6 +227,7 @@ FORMS    += \
     dockeffects.ui \
     dockgoggle.ui \
     dockhistory.ui \
+    dockkind.ui \
     docklea.ui \
     dockresults.ui \
     dockskin.ui \

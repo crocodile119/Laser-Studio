@@ -20,6 +20,7 @@
 #include "ui_dockgoggle.h"
 #include "ui_dockcontrols.h"
 #include "ui_docklea.h"
+#include "ui_dockkind.h"
 #include "ui_graphicsitemtree.h"
 #include "laserpoint.h"
 #include "binocular.h"
@@ -31,14 +32,14 @@
 
 CentralWidget::CentralWidget(QWidget *parent) :
     QWidget(parent), myDockResults(new DockResults(this)), myDockEffects(new DockEffects(this)),
-    myDockSkin(new DockSkin(this)), myDockLea(new DockLea(this)), myDockGoggle(new DockGoggle(this)),
+    myDockSkin(new DockSkin(this)), myDockLea(new DockLea(this)), myDockKind(new DockKind(this)), myDockGoggle(new DockGoggle(this)),
     myGraphicsItemTree(new GraphicsItemTree(this))
 {
     clearInstallationDesription();
     scale=1;
     scaleIndex=4;
     myLabRoomInserted=false;
-    myDockControls= new DockControls(this, myDockResults, myDockEffects, myDockSkin, myDockGoggle, myDockLea);
+    myDockControls= new DockControls(this, myDockResults, myDockEffects, myDockSkin, myDockGoggle, myDockLea, myDockKind);
 
     gridLayout = new QGridLayout(this);
 

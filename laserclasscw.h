@@ -131,6 +131,7 @@ void computeBeamArea(); /*!< Calcola l'area del fascio laser in m<sup>2</sup> co
     * la relazione approssimata:
     * \f[a_B = a + \varphi \cdot d\f]
     */
+    double beamAreaToAveragePowerErg(double, double);
     double valuateCouplingFactor(const double&, const double&, bool);/*!< Calcola il valore del fattore di accoppiamento assegnati il diametro del diaframma
     * ed il diametro del fascio per la distanza prevista.
     * Nel caso in cui 302,5 < <b>&lambda;</b> < 4000 nm si imipega la formula, valida per fasci gaussiani: \f[\eta= 1-e^{-\left(\frac{d_a}{db}\right)^2}\f]
@@ -141,7 +142,7 @@ void computeBeamArea(); /*!< Calcola l'area del fascio laser in m<sup>2</sup> co
     * la distanza per la 3 <sup>a</sup> condizione va impostata a 0. Per fare ciò prima dell'aggiornamento sarà necessario impostare la variabile internalWaist
     * al valore vero usando la funzione membro setInternalWaist(bool) (a tale proposito si consulti anche getDistCond_3()).*/
 
-    array <double, ComputeLEA::N_LEA> leaPowerErgUnit(laserOperation myLaserOperation, array <int, ComputeLEA::N_LEA>, const double & time, const double& _powerErg);/*!< E' la prima chiamata della funzione membro
+    array <double, ComputeLEA::N_LEA> leaPowerErgUnit(laserOperation myLaserOperation, array <int, ComputeLEA::N_LEA>, const double & time, const double& _powerErg, const double &beamAreaForAverage);/*!< E' la prima chiamata della funzione membro
     * classUpdate e restituisce un puntatore ad un array di double lungo 4 nel quale sono memorizzati i valori dell'uscita del dispositivo espressi
     * nell'unità di misura omogenee al LEA corrispondente. Il parametro time è la base dei tempi in secondi.
     *     Unità di Misura LEA  | Uscita
@@ -236,7 +237,8 @@ protected:
     array<string, ComputeLEA::N_LEA> LEA_formulaTipo;
     array<string, ComputeLEA::N_LEA> LEA_formulaUnit;
     array<int, ComputeLEA::N_LEA> LEA_formulaSort;
-    array<double, ComputeLEA::N_LEA>powerErgEq;
+    array<double, ComputeLEA::N_LEA>powerErgEq_1;
+    array<double, ComputeLEA::N_LEA>powerErgEq_3;
     array<bool, N_CLASS>classValutation;
 
     double distanceCond_1;
@@ -255,6 +257,9 @@ protected:
 
     double apCond_1;
     double apCond_3;
+
+    double beamAreaForAverage_1;
+    double beamAreaForAverage_3;
 
     array<double, ComputeLEA::N_LEA> powerErg_Cond_1;
     array<double, ComputeLEA::N_LEA> powerErg_Cond_3;

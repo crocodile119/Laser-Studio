@@ -74,5 +74,6 @@
         <file>images/reset.png</file>
         <file>images/zoomwin.png</file>
         <file>images/skin_sign.png</file>
+        <file>images/lab_jacket.png</file>
     </qresource>
 </RCC>

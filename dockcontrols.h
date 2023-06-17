@@ -24,12 +24,14 @@
 #include "dockskin.h"
 #include "dockgoggle.h"
 #include "docklea.h"
+#include "dockkind.h"
 #include "graphicsitemtree.h"
 #include "ui_dockeffects.h"
 #include "ui_dockresults.h"
 #include "ui_dockskin.h"
 #include "ui_dockgoggle.h"
 #include "ui_docklea.h"
+#include "ui_dockkind.h"
 #include "ui_dockcontrols.h"
 #include "ui_graphicsitemtree.h"
 #include "undo_commands/addscrollbarvaluecommand.h"
@@ -46,7 +48,8 @@ class DockControls : public QDockWidget
 public:
     enum class operation{CONTINUOS_WAVE, PULSE, MULTI_PULSE, NOT_WORKING};
     DockControls(QWidget *parent, DockResults *dockResults, DockEffects *dockEffects,
-                          DockSkin *dockSkin, DockGoggle *dockGoggle, DockLea *dockLea);
+                          DockSkin *dockSkin, DockGoggle *dockGoggle, DockLea *dockLea,
+                          DockKind *dockKind);
     ~DockControls();
     Ui::DockControls *ui;
 
@@ -139,6 +142,9 @@ public:
     void setMP_LEAModel();
     void setMP_Thermal_LEAModel();
     void setMP_ThermalTi_LEAModel();
+    void setTechModel();
+    QStringList getLaserTechList()const;
+    int getNsolution()const;
     void updateCW_SP_LEA_data();
     void updateMP_LEA_data();
     void updateMP_Thermal_LEA_data(const QString & header);
@@ -169,6 +175,8 @@ public:
 
     bool isHF_LaserCLass();
     bool isThermal_LaserCLass();
+
+    void laserSort();
 
 private slots:
     void on_operationCombo_currentIndexChanged(int index);
@@ -239,6 +247,7 @@ private:
     DockSkin *dockSkin;
     DockGoggle *dockGoggle;
     DockLea *dockLea;
+    DockKind *dockKind;
     GraphicsItemTree *dockReflectorsList;
     QUndoStack* undoStack;
 
@@ -286,9 +295,12 @@ private:
     QUndoCommand *scrollBarCommandPressed;
 
     QStandardItemModel *leaModel;
+    QStandardItemModel *techModel;
     QVector<QString>LEA_Data;
 
     bool isThermalHazard;
+    QStringList laserTechList;
+    int nsolution;
 };
 
 #endif // DOCKCONTROLS_H

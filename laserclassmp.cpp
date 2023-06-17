@@ -24,9 +24,6 @@ void LaserClassMP::meanClassUpdate(const double& _timeBase, const double& _meanP
     //In base a ciacuno dei LEA delle varie classi trasformo l'unità di misura dell'uscita laser
     meanLEA_formulaSort=getMeanLEA_FormulaSort();
 
-    meanPowerErgEq=meanPowerUnit(meanLEA_formulaSort, _meanPower, _timeBase);
-    //del laser calcolo le distanze e le aperture relative alle condizioni 1 e 3
-
     /****************************************************
      * prelevo le distanza calcolata per la condizione 1*
      * **************************************************/
@@ -57,6 +54,8 @@ void LaserClassMP::meanClassUpdate(const double& _timeBase, const double& _meanP
         meanBeamAtStop_Cond_1=std::nan("N.A.");
     }
 
+     meanBeamAreaForAverage_1=beamAreaToAveragePowerErg(meanApCond_1, meanBeamAtStop_Cond_1);
+
     /****************************************************************************
      * prelevo l'apertura calcolata per la condizione 1 e calcolo il fattore di *
      * accoppiamento corrispondente                                             *
@@ -81,9 +80,14 @@ void LaserClassMP::meanClassUpdate(const double& _timeBase, const double& _meanP
      *  - se il valore del LEA in timeBase è espresso in W allora il suo valore medio è proprio a P;                *
      *  - se il valore del LEA in timeBase è espresso in J allora il suo valore medio è pari Q/(prf*timeBase).   *
     *****************************************************************************************************************/
+    meanBeamAreaForAverage_3=beamAreaToAveragePowerErg(meanApCond_3, meanBeamAtStop_Cond_3);
 
     meanLEA_Corrected=computeMeanLEA_Corrected(meanLEA_formulaSort);
 
+    meanPowerErgEq_1=meanPowerUnit(meanLEA_formulaSort, _meanPower, _timeBase, meanBeamAreaForAverage_1);
+    meanPowerErgEq_3=meanPowerUnit(meanLEA_formulaSort, _meanPower, _timeBase, meanBeamAreaForAverage_3);
+    //del laser calcolo le distanze e le aperture relative alle condizioni 1 e 3
+
     /******************************************************************
      * correggo i valori relativi all'uscita del laser per i fattori  *
      * di accoppiamento corrispondenti                                *
@@ -92,8 +96,8 @@ void LaserClassMP::meanClassUpdate(const double& _timeBase, const double& _meanP
      * correggo i valori relativi all'uscita del laser per i fattori  *
      * di accoppiamento corrispondenti                                *
      ******************************************************************/
-    meanPowerErg_Cond_1=computePowerErgCond_1(meanPowerErgEq, meanCouplingFactor_Cond_1);
-    meanPowerErg_Cond_3=computePowerErgCond_3(meanPowerErgEq, meanCouplingFactor_Cond_3);
+    meanPowerErg_Cond_1=computePowerErgCond_1(meanPowerErgEq_1, meanCouplingFactor_Cond_1);
+    meanPowerErg_Cond_3=computePowerErgCond_3(meanPowerErgEq_3, meanCouplingFactor_Cond_3);
 
     /***********************************
      * valuto la classe corrispondente *
@@ -121,10 +125,6 @@ void LaserClassMP::c5ClassUpdate()
 
 void LaserClassMP::tiClassUpdate(const double& _Tmin, const double& _powerErg)
 {
-    //In base a ciacuno dei LEA delle varie classi trasformo l'unità di misura dell'uscita laser
-    tiPowerErgEq=leaPowerErgUnit(laserOperation::MULTIPULSED, myTiLaserClass.getLEA_FormulaSort(), _powerErg, _Tmin);
-    //del laser calcolo le distanze e le aperture relative alle condizioni 1 e 3
-
     /****************************************************
      * prelevo le distanza calcolata per la condizione 1*
      * **************************************************/
@@ -155,6 +155,8 @@ void LaserClassMP::tiClassUpdate(const double& _Tmin, const double& _powerErg)
         tiBeamAtStop_Cond_1=std::nan("N.A.");
     }
 
+    tiBeamAreaForAverage_1=beamAreaToAveragePowerErg(tiApCond_1, tiBeamAtStop_Cond_1);
+
     /****************************************************************************
      * prelevo l'apertura calcolata per la condizione 1 e calcolo il fattore di *
      * accoppiamento corrispondente                                             *
@@ -170,6 +172,8 @@ void LaserClassMP::tiClassUpdate(const double& _Tmin, const double& _powerErg)
     tiApCond_3=myTiLaserClass.getApertureStopCond_3();
     tiCouplingFactor_Cond_3=valuateCouplingFactor(tiApCond_3, tiBeamAtStop_Cond_3, false);
 
+    tiBeamAreaForAverage_3=beamAreaToAveragePowerErg(tiApCond_3, tiBeamAtStop_Cond_3);
+
     /******************************************************************
      * correggo i valori relativi all'uscita del laser per il fattore *
      * di correzione termica C5                                       *
@@ -178,13 +182,18 @@ void LaserClassMP::tiClassUpdate(const double& _Tmin, const double& _powerErg)
     tiLEA_Value=getTiLEA();
     tiLEA_Corrected=computeLEA_ThermalCorrection(tiLEA_Value);
 
+    //In base a ciacuno dei LEA delle varie classi trasformo l'unità di misura dell'uscita laser
+    tiPowerErgEq_1=leaPowerErgUnit(laserOperation::MULTIPULSED, myTiLaserClass.getLEA_FormulaSort(), _powerErg, _Tmin, tiBeamAreaForAverage_1);
+    tiPowerErgEq_3=leaPowerErgUnit(laserOperation::MULTIPULSED, myTiLaserClass.getLEA_FormulaSort(), _powerErg, _Tmin, tiBeamAreaForAverage_3);
+    //del laser calcolo le distanze e le aperture relative alle condizioni 1 e 3
+
     /******************************************************************
      * correggo i valori relativi all'uscita del laser per i fattori  *
      * di accoppiamento corrispondenti                                *
      ******************************************************************/
 
-    tiPowerErg_Cond_1=computePowerErgCond_1(tiPowerErgEq, tiCouplingFactor_Cond_1);
-    tiPowerErg_Cond_3=computePowerErgCond_3(tiPowerErgEq, tiCouplingFactor_Cond_3);
+    tiPowerErg_Cond_1=computePowerErgCond_1(tiPowerErgEq_1, tiCouplingFactor_Cond_1);
+    tiPowerErg_Cond_3=computePowerErgCond_3(tiPowerErgEq_3, tiCouplingFactor_Cond_3);
 
     /***********************************
      * valuto la classe corrispondente *
@@ -354,15 +363,16 @@ void LaserClassMP::setTimeBase()
 }
 
 
-array<double, ComputeLEA::N_LEA> LaserClassMP::meanPowerUnit(array<int, ComputeLEA::N_LEA> _meanLEA_formulaSort, const double &_powerErg, const double &time)
+array<double, ComputeLEA::N_LEA> LaserClassMP::meanPowerUnit(array<int, ComputeLEA::N_LEA> _meanLEA_formulaSort, const double &_powerErg, const double &time, const double meanBeamAreaForAverage)
 {
     array<double, ComputeLEA::N_LEA> myPowerErgEq;
+
     for(size_t i=0; i<ComputeLEA::N_LEA; i++)
     {
     if(_meanLEA_formulaSort[i]==static_cast<int>(ComputeLEA::FormulaKind::IRRADIANCE))
-        myPowerErgEq[i]=_powerErg/beamArea;
+        myPowerErgEq[i]=_powerErg/meanBeamAreaForAverage;
     else if(_meanLEA_formulaSort[i]==static_cast<int>(ComputeLEA::FormulaKind::EXPOSURE_ENERGY))
-        myPowerErgEq[i]=_powerErg*time/beamArea;
+        myPowerErgEq[i]=_powerErg*time/meanBeamAreaForAverage;
     else if(_meanLEA_formulaSort[i]==static_cast<int>(ComputeLEA::FormulaKind::POWER))
         myPowerErgEq[i]=_powerErg;
     else if(_meanLEA_formulaSort[i]==static_cast<int>(ComputeLEA::FormulaKind::PULSE_ENERGY))
@@ -560,9 +570,14 @@ array<int, ComputeLEA::N_LEA> LaserClassMP::getMeanLEA_FormulaSort()const
     return myMeanLaserClass.getLEA_FormulaSort();
 }
 
-array<double, ComputeLEA::N_LEA> LaserClassMP::getMeanPowerErgEq()const
+array<double, ComputeLEA::N_LEA> LaserClassMP::getMeanPowerErgEq_1()const
 {
-    return meanPowerErgEq;
+    return meanPowerErgEq_1;
+}
+
+array<double, ComputeLEA::N_LEA> LaserClassMP::getMeanPowerErgEq_3()const
+{
+    return meanPowerErgEq_3;
 }
 
 array<string, ComputeLEA::N_LEA> LaserClassMP::getMeanLEA_Expressions()const
@@ -712,9 +727,14 @@ array<string, ComputeLEA::N_LEA> LaserClassMP::getThermalLEA_Expressions()const
     return leaExpr;
 }
 
-array<double, ComputeLEA::N_LEA> LaserClassMP::getTiPowerErgEq()const
+array<double, ComputeLEA::N_LEA> LaserClassMP::getTiPowerErgEq_1()const
 {
-    return tiPowerErgEq;
+    return tiPowerErgEq_1;
+}
+
+array<double, ComputeLEA::N_LEA> LaserClassMP::getTiPowerErgEq_3()const
+{
+    return tiPowerErgEq_3;
 }
 
 array<bool, LaserClassCW::N_CLASS> LaserClassMP::getTiClassValutation()const

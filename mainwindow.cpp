@@ -1014,6 +1014,13 @@ void MainWindow::createActions()
     showDockLea->setStatusTip(tr("Visualizza risultati i risultati della classificazione CEI EN 60825-1"));
     viewMenu->addAction(showDockLea);
 
+    addDockWidget(Qt::LeftDockWidgetArea, laserWindow->myDockKind);
+    showDockKind = new QAction(tr("Possibile tecnologia laser"), this);
+    showDockKind = laserWindow->myDockKind->toggleViewAction();
+    showDockKind->setIcon(QIcon(":/images/lab_jacket.png"));
+    showDockKind->setStatusTip(tr("Possibile dispositivo laser"));
+    viewMenu->addAction(showDockKind);
+
     tabifyDockWidget(laserWindow->myDockEffects,laserWindow->myDockSkin);
     tabifyDockWidget(laserWindow->myDockSkin,laserWindow->myDockResults);
     setTabPosition(Qt::BottomDockWidgetArea, QTabWidget::North);
@@ -3049,6 +3056,7 @@ void MainWindow::createToolBars()
     viewToolBar->addAction(showDockWidgetSkin);
     viewToolBar->addAction(showDockWidgetEffects);
     viewToolBar->addAction(showDockLea);
+    viewToolBar->addAction(showDockKind);
     viewToolBar->addAction(showDockWidgetGoggle);
     viewToolBar->addAction(showReflectorsList);
     viewToolBar->addAction(showDockHistory);

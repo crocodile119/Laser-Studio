@@ -20,12 +20,12 @@ const int DockControls::DOCKGOGGLEMAXIMUN=550;
 const double DockControls::MODELOCKED_LIMIT=std::pow(10,-9);
 
 DockControls::DockControls(QWidget *parent, DockResults *_dockResults, DockEffects *_dockEffects,
-                           DockSkin *_dockSkin, DockGoggle *_dockGoggle, DockLea* _dockLea)
+                           DockSkin *_dockSkin, DockGoggle *_dockGoggle, DockLea* _dockLea, DockKind* _dockKind)
                            : QDockWidget(parent), ui(new Ui::DockControls),
                              powerErg(LaserSafetyCW::POWER), wavelength(EmpLeaTables::HE_NE_WAVELENGTH), pulseWidth(EmpLeaTables::NATURAL_AVERSION_TIME),
                              alpha(EmpLeaTables::ALPHA_MIN),  divergence(LaserSafety::DIVERGENCE), beamDiameter(LaserSafety::PUPIL_DIAMETER),
                              prf(LaserSafetyMP::PULSE_REPETITION_FREQUENCY), dockResults(_dockResults), dockEffects(_dockEffects),
-                             dockSkin(_dockSkin), dockGoggle(_dockGoggle), dockLea(_dockLea), MyLaserSafetyMP(new LaserSafetyMP),
+                             dockSkin(_dockSkin), dockGoggle(_dockGoggle), dockLea(_dockLea), dockKind(_dockKind), MyLaserSafetyMP(new LaserSafetyMP),
                              MyLaserSkinSafetyMP(new LaserSkinSafetyMP), MyLaserClassMP(new LaserClassMP)
 {
     ui->setupUi(this);
@@ -35,6 +35,7 @@ DockControls::DockControls(QWidget *parent, DockResults *_dockResults, DockEffec
 
     showControls(false);
     dockGoggle->setFixedWidth(DOCKGOGGLEMINIMUN);
+    laserTechList.append("Elio neon (HeNe): Gas: CW fino a 100 mW");
     exposureTimeControl=10;
     gaussianBeam=true;
     beamCorrection=1.0;
@@ -352,6 +353,7 @@ void DockControls::on_wavelengthScrollBar_valueChanged(int value)
     /******************************************
     * Imposto i widget per la visualizzazione *
     *******************************************/
+    laserSort();
     setWidgets();
     set_LEA_Widgets();
     kindOfHazardChanged();
@@ -4891,6 +4893,179 @@ bool DockControls::isThermal_LaserCLass()
             isThermal=true;
     }
     return isThermal;
+}
+
+void DockControls::laserSort()
+{
+    laserTechList.clear();
+
+    if (wavelength==633)
+    {
+        laserTechList.append("Elio neon (HeNe) - Gas - CW fino a 100 mW - &lambda; = 632,8 nm");
+        laserTechList.append("GaAlAs - Semiconduttore - CW (alcune a impulsi) fino a 30 W - 600 &lt; &lambda; &lt; 900 nm");
+        laserTechList.append("Tinta laser - Liquido tinta - A impulsi fino a 2,5 J - 300 &lt; &lambda; &lt; 1800 nm");
+     }
+    else if (wavelength==422)
+    {
+        laserTechList.append("Elio cadmio (HeCd) - Gas - CW fino a 100 mW - &lambda; = 422 nm");
+        laserTechList.append("GaN - Semiconduttore - CW (alcune a impulsi) fino a 30 W - 400 &lt; &lambda; &lt; 450 nm");
+        laserTechList.append("Tinta laser - Liquido tinta - A impulsi fino a 2,5 J - 300 &lt; &lambda; &lt; 1800 nm");
+    }
+    else if (wavelength==488)
+    {
+        laserTechList.append("Argon ionizzato (Ar) - Gas - CW fino a 20 W - &lambda; = 488 nm");
+        laserTechList.append("Tinta laser - Liquido tinta - A impulsi fino a 2,5 J - 300 &lt; &lambda; &lt; 1800 nm");
+    }
+    else if (wavelength==514)
+    {
+        laserTechList.append("Argon ionizzato (Ar) - Gas - CW fino a 20 W - &lambda; = 514 nm");
+        laserTechList.append("Tinta laser - Liquido tinta - A impulsi fino a 2,5 J - 300 &lt; &lambda; &lt; 1800 nm");
+    }
+    else if (wavelength==647)
+    {
+        laserTechList.append("Kripton ionizzato (Kr) - Gas - CW fino a 10 W - &lambda; = 647 nm");
+        laserTechList.append("GaAlAs - Semiconduttore - CW (alcune a impulsi) fino a 30 W - 600 &lt; &lambda; &lt; 900 nm");
+        laserTechList.append("Tinta laser - Liquido tinta - A impulsi fino a 2,5 J - 300 &lt; &lambda; &lt; 1800 nm");
+    }
+    else if (wavelength==10600)
+    {
+        laserTechList.append("Anidride carbonica (CO2) - Gas - A impulsi o CW fino a 50 kW - &lambda; = 10600 nm");
+        laserTechList.append("Anidride carbonica (CO2) Cristallo laser - Lastra - CW fino a 8 000 W - &lambda; = 10600 nm");
+        laserTechList.append("Itterbio (Yb) - Fibra - CW fino a kW - 1030 &lt; &lambda; &lt; 1120 nm");
+    }
+    else if (wavelength==337)
+    {
+        laserTechList.append("Azoto (N) - Gas - A impulsi > 40 mJ - &lambda; = 337 nm");
+        laserTechList.append("Tinta laser - Liquido tinta - A impulsi fino a 2,5 J - 300 &lt; &lambda; &lt; 1800 nm");
+    }
+    else if (wavelength==308)
+    {
+        laserTechList.append("Cloruro di xeno (XeCl) - Gas - A impulsi fino a 1 J - &lambda; = 308 nm");
+        laserTechList.append("Tinta laser - Liquido tinta - A impulsi fino a 2,5 J - 300 &lt; &lambda; &lt; 1800 nm");
+    }
+        else if (wavelength==248)
+        laserTechList.append("Fluoruro di kripton (KrF) - Gas - A impulsi fino a 1 J - &lambda; = 248 nm");
+    else if (wavelength==350)
+    {
+        laserTechList.append("Fluoruro di xeno (XeF) - Gas - A impulsi fino a 1 J - &lambda; = 350 nm");
+        laserTechList.append("Tinta laser - Liquido tinta - A impulsi fino a 2,5 J - 300 &lt; &lambda; &lt; 1800 nm");
+    }
+    else if (wavelength==193)
+        laserTechList.append("Fluoruro di argon (ArF) - Gas - A impulsi fino a 1 J - &lambda; = 193 nm");
+    else if (wavelength==694)
+    {
+        laserTechList.append("Rubino - Stato solido - A impulsi fino a 40 J - - &lambda; = 694 nm");
+        laserTechList.append("GaAlAs - Semiconduttore - CW (alcune a impulsi) fino a 30 W - 600 &lt; &lambda; &lt; 900 nm");
+        laserTechList.append("Tinta laser - Liquido tinta - A impulsi fino a 2,5 J - 300 &lt; &lambda; &lt; 1800 nm");
+    }
+    else if (wavelength==1064)
+    {
+        laserTechList.append("Neodimio:YAG (Nd:YAG) - Stato solido - A impulsi o CW fino a TW, CW media da 100W - &lambda; = 1064 nm");
+        laserTechList.append("Neodimio:Vetro(Nd:Vetro) - Stato solido - A impulsi fino a 150 J - &lambda; = 1064 nm");
+        laserTechList.append("Tinta laser - Liquido tinta - A impulsi fino a 2,5 J - 300 &lt; &lambda; &lt; 1800 nm");
+        laserTechList.append("Itterbio (Yb) - Fibra - CW fino a kW - 1030 &lt; &lambda; &lt; 1120 nm");
+    }
+    else if (wavelength==532)
+    {
+        laserTechList.append("Neodimio:YAG (Nd:YAG) - Stato solido - A impulsi o CW fino a TW, CW media da 100W - &lambda; = 532 nm");
+        laserTechList.append("Tinta laser - Liquido tinta - A impulsi fino a 2,5 J - 300 &lt; &lambda; &lt; 1800 nm");
+    }
+    else if (wavelength==1030)
+    {
+        laserTechList.append("Itterbio:YAG (Yb:YAG) - Disco sottile - CW fino a 8 000 W - &lambda; = 1030 nm");
+        laserTechList.append("Tinta laser - Liquido tinta - A impulsi fino a 2,5 J - 300 &lt; &lambda; &lt; 1800 nm");
+        laserTechList.append("Itterbio (Yb) - Fibra - CW fino a kW - 1030 &lt; &lambda; &lt; 1120 nm");
+    }
+    else if ((wavelength>=400) and (wavelength<=450))
+    {
+        laserTechList.append("GaN - Semiconduttore - CW (alcune a impulsi) fino a 30 W - 400 &lt; &lambda; &lt; 450 nm");
+        laserTechList.append("Tinta laser - Liquido tinta - A impulsi fino a 2,5 J - 300 &lt; &lambda; &lt; 1800 nm");
+    }
+    else if ((wavelength>=600) and (wavelength<=900))
+    {
+        laserTechList.append("GaAlAs - Semiconduttore - CW (alcune a impulsi) fino a 30 W - 600 &lt; &lambda; &lt; 900 nm");
+        laserTechList.append("Tinta laser - Liquido tinta - A impulsi fino a 2,5 J - 300 &lt; &lambda; &lt; 1800 nm");
+    }
+    else if ((wavelength>1030) and (wavelength<=1120))
+    {
+        laserTechList.append("Itterbio (Yb) - Fibra - CW fino a kW - 1030 &lt; &lambda; &lt; 1120 nm");
+        if (wavelength>=1100)
+            laserTechList.append("InGaAsP - Semiconduttore - CW (alcune a impulsi) fino a 30 W - 1100 &lt; &lambda; &lt; 1600 nm");
+    }
+    else if ((wavelength>=1100) and (wavelength<=1600))
+    {
+        laserTechList.append("InGaAsP - Semiconduttore - CW (alcune a impulsi) fino a 30 W - 1100 &lt; &lambda; &lt; 1600 nm");
+        laserTechList.append("Tinta laser - Liquido tinta - A impulsi fino a 2,5 J - 300 &lt; &lambda; &lt; 1800 nm");
+   }
+    else if ((wavelength>=300) and (wavelength<=1800))
+        laserTechList.append("Tinta laser - Liquido tinta - A impulsi fino a 2,5 J - 300 &lt; &lambda; &lt; 1800 nm");
+    else if ((wavelength>=1100) and (wavelength<=1600))
+        laserTechList.append("Tinta laser - Liquido tinta - CW fino a 5 W - 1100 &lt; &lambda; &lt; 1600 nm");
+    else
+        laserTechList.append("da valutare - da valutare - da valutare - da valutare");
+    setTechModel();
+}
+
+void DockControls::setTechModel()
+{
+    techModel=new QStandardItemModel();
+
+    QStandardItem* possibleTech;
+    QStandardItem* tech;
+    QStandardItem* kind;
+    QStandardItem* performances;
+    QStandardItem* availableWavelength;
+    nsolution=0;
+
+    foreach (QString entry, laserTechList)
+    {
+        nsolution++;
+        possibleTech=new QStandardItem(QString("Soluzione: %1").arg(nsolution));
+        kind=new QStandardItem(QString());
+        tech=new QStandardItem(QString());
+        performances=new QStandardItem();
+        availableWavelength=new QStandardItem(QString());
+        QStringList fields = entry.split("-");
+        QString techString = fields[0];
+        QString kindString = fields[1];
+        QString performancesString = fields[2];
+        QString availableWavelengthString = fields[3];
+        tech->setText(QString("Tecnologia: %1").arg(kindString));
+        kind->setText(QString("Tipo: %1").arg(techString));
+        performances->setText(QString("Prestazioni: %1").arg(performancesString));
+        availableWavelength->setText(QString("Lunghezza d'onda: %1").arg(availableWavelengthString));
+
+        possibleTech->appendRow(tech);
+        possibleTech->appendRow(kind);
+        possibleTech->appendRow(availableWavelength);
+        possibleTech->appendRow(performances);
+
+        techModel->appendRow(possibleTech);
+    }
+
+
+    HtmlDelegate* treeHtmlDelegate = new HtmlDelegate();
+    dockKind->ui->treeView->setModel(techModel);
+    dockKind->ui->treeView->setItemDelegate(treeHtmlDelegate);
+
+    QModelIndex modelIndex;
+    int rows=techModel->rowCount();
+
+    for(int i=0; i<rows; i++)
+    {
+        modelIndex=techModel->index(i,0);
+        dockKind->ui->treeView->setExpanded(modelIndex, true);
+    }
+}
+
+QStringList DockControls::getLaserTechList() const
+{
+    return laserTechList;
+}
+
+int DockControls::getNsolution() const
+{
+    return nsolution;
 }
 
 DockControls::operation DockControls::laserOperation() const

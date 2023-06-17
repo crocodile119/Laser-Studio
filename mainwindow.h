@@ -366,6 +366,7 @@ private:
     QAction *showDockWidgetGoggle;
     QAction *showReflectorsList;
     QAction *showDockLea;
+    QAction *showDockKind;
     QAction *centerOnViewAction;
     QAction *setNewOriginAct;
     QAction *printPreviewAct;
